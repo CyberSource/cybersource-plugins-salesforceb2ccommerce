@@ -1,0 +1,44 @@
+/*
+ * Gets a file list from an HTTP(S) server
+ *
+ * @input Directory : dw.io.File the directory to browse
+ * @input SortDirection : String 'ASCENDING' or 'DESCENDING'
+ * @input NamePattern : String The pattern for the filenames (use ".*" to get all)
+ *
+ * @output FileList : dw.util.Collection The files matching the pattern
+ * 
+ * @Author: Danny Gehl
+ * @Date:	29.09.2006
+ */
+
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.io );
+
+importScript( "bc_sally:util/libUtils.ds" );
+
+/*
+*/ 
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// input variables 
+	var directory		 : File   = pdict.Directory;
+	var sortDirection 	 : String = pdict.SortDirection;
+	var patternString	 : String = pdict.NamePattern;
+	
+	if(directory == null || !directory.isDirectory()){
+		return PIPELET_ERROR;
+	}
+	
+	var sorted : SortedSet = getSortedFileList(directory, patternString, sortDirection);
+	
+	if (sorted != null)
+	{	
+		pdict.FileList = sorted;
+		return PIPELET_NEXT;
+	}
+	else
+	{
+		return PIPELET_ERROR;
+	}
+}
