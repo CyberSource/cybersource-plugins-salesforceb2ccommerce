@@ -142,6 +142,18 @@ var CybersourceHelper = {
 	getPAMerchantName : function (){
 		return Site.getCurrent().getCustomPreferenceValue("CsPaMerchantName");
 	},
+	
+	getDigitalFingerprintOrgId : function (){
+		return Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintOrgId')
+	},
+	
+	getDigitalFingerprintJetmetrixLocation : function (){
+		return Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintJetmetrixLocation')
+	},
+	
+	getDigitalFingerprintEnabled : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CsDeviceFingerprintEnabled");
+	},
 
 	/*****************************************************************************
 	 * Name: getNexus
@@ -411,10 +423,16 @@ var CybersourceHelper = {
 	 * card     : Card_Object,
 	 * refCode  : String   - Basket.UUID
 	 *****************************************************************************/	
-	addCCAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object,refCode : String)
+	addCCAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object , refCode : String , enableDeviceFingerprint : Boolean)
 	{
+		
 		request.merchantID = CybersourceHelper.getMerchantID();
-		__setClientData( request, refCode );
+		var fingerprint : String  = null;
+		if (enableDeviceFingerprint) {
+		  fingerprint =  session.sessionID;
+		}
+		
+		__setClientData( request, refCode , fingerprint );
 		request.billTo = __copyBillTo( billTo );
 		request.shipTo = __copyShipTo( shipTo );
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
@@ -587,12 +605,15 @@ function getCybersourceHelper()
 	return CybersourceHelper;
 }
 
-function __setClientData( request : Object, refCode : String  )
+function __setClientData( request : Object, refCode : String , fingerprint : String  )
 {
 	request.merchantReferenceCode = refCode; 
 	request.clientLibrary='Demandware';
 	request.clientLibraryVersion='2.2';
 	request.clientEnvironment='Linux';
+	if (fingerprint) {
+	  request.deviceFingerprintID = fingerprint;
+	}
 }
 
 function __copyBillTo( billTo : BillTo_Object ) : Object
