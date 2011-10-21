@@ -1,0 +1,9 @@
+<!--- TEMPLATENAME: BillingAddress.isml --->
+${pdict.StandardizedAddress.firstName} ${pdict.StandardizedAddress.lastName}<br/>
+${pdict.StandardizedAddress.address1}<br/>
+<isif condition="${!empty(pdict.StandardizedAddress.address2)}">
+	${pdict.StandardizedAddress.address2}<br/>
+</isif>
+${pdict.StandardizedAddress.city}, ${pdict.StandardizedAddress.state} ${pdict.StandardizedAddress.country}<br/>
+${pdict.StandardizedAddress.postalCode}<br/><br/>
+

@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+	<type-extension type-id="SitePreferences">
+		<custom-attribute-definitions>
+			<attribute-definition attribute-id="CsMerchantId">
+				<display-name xml:lang="x-default">CyberSource Merchant Id</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsAvsDeclineFlags">
+				<display-name xml:lang="x-default">CyberSource AVS Decline Flags (AVS)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsAvsIgnoreResult">
+				<display-name xml:lang="x-default">CyberSource Ignore AVS Result (AVS)</display-name>
+				<type>boolean</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDavEnable">
+				<display-name xml:lang="x-default">Cybersource - Enable Delivery Address Verification</display-name>
+				<description xml:lang="x-default">This will enable Delivery Address Verification, to help minimize risk of undeliverable or returns orders, because of user data entry errors.</description>
+				<type>enum-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<value-definitions>
+					<value-definition default="true">
+						<display xml:lang="x-default">YES</display>
+						<value>YES</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">NO</display>
+						<value>NO</value>
+					</value-definition>
+				</value-definitions>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDavOnAddressVerificationFailure">
+				<display-name xml:lang="x-default">Cybersource - On Delivery Address Verification Failure</display-name>
+				<description xml:lang="x-default">Prevent/enable authorization of payment if the DeliveryAddressVerification results in an error or rejection response.</description>
+				<type>enum-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<value-definitions>
+					<value-definition default="true">
+						<display xml:lang="x-default">DECLINE</display>
+						<value>DECLINE</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">APPROVE</display>
+						<value>APPROVE</value>
+					</value-definition>
+				</value-definitions>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsSecurityKey">
+				<display-name xml:lang="x-default">CyberSource Merchant Key</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsEndpoint">
+				<display-name xml:lang="x-default">CyberSource Endpoint</display-name>
+				<type>enum-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<value-definitions>
+					<value-definition>
+						<display xml:lang="x-default">Production</display>
+						<value>Production</value>
+					</value-definition>
+					<value-definition default="true">
+						<display xml:lang="x-default">Test</display>
+						<value>Test</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">Development</display>
+						<value>Development</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">Missing</display>
+						<value>Missing</value>
+					</value-definition>
+				</value-definitions>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDebugCybersource">
+				<display-name xml:lang="x-default">Disable logging of Cybersource traces</display-name>
+				<description xml:lang="x-default">Some trace information will be stored in the impex folder on the server with the order ID as the name</description>
+				<type>boolean</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsShipFromCity">
+				<display-name xml:lang="x-default">CyberSource ShipFrom City</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>Lyndhurst</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsShipFromCountryCode">
+				<display-name xml:lang="x-default">CyberSource ShipFrom Country Code</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>US</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsShipFromStateCode">
+				<display-name xml:lang="x-default">CyberSource ShipFrom StateCode</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>NJ</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsShipFromZipCode">
+				<display-name xml:lang="x-default">CyberSource ShipFrom ZipCode</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>07071</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlMerchantId">
+				<display-name xml:lang="x-default">CyberSource Merchant ID (BML)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlPassword">
+				<display-name xml:lang="x-default">CyberSource Merchant Password (BML)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlItemCategory">
+				<display-name xml:lang="x-default">CyberSource Item Category (BML)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlTCVersion">
+				<display-name xml:lang="x-default">CyberSource Terms And ConditionVersion (BML)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlNewAcctNo">
+				<display-name xml:lang="x-default">CyberSource Account Sign-Up number (BML)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlPromoCode">
+				<display-name xml:lang="x-default">CyberSource Merchant Promotion Code (BML)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlPromoMerchantId">
+				<display-name xml:lang="x-default">CyberSource Merchant ID (BML-Promo)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlPromoMerchantPassword">
+				<display-name xml:lang="x-default">CyberSource Merchant Password (BML-Promo)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsBmlPromoPromoCode">
+				<display-name xml:lang="x-default">CyberSource Merchant Promotion Code (BML-Promo)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPaMerchantId">
+				<display-name xml:lang="x-default">CyberSource Merchant ID (PA)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPaMerchantPassword">
+				<display-name xml:lang="x-default">CyberSource Merchant Password (PA)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPaMerchantName">
+				<display-name xml:lang="x-default">CyberSource Merchant Name (PA)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPoaCity">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance City (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>Lyndhurst</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPoaCountryCode">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance Country Code (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>US</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPoaStateCode">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance State Code (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>NJ</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPoaZipCode">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance Zip Code (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<default-value>76208</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPooCity">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Origin City (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>Lyndhurst</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPooCountryCode">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Origin Country Code (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>US</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPooStateCode">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Origin StateCode (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>NJ</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsPooZipCode">
+				<display-name xml:lang="x-default">CyberSource Purchase Order Origin ZipCode (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+				<field-height>0</field-height>
+				<default-value>76208</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDefaultProductTaxCode">
+				<display-name xml:lang="x-default">CyberSource Default Product Tax Code (Tax)</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<default-value>5310</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsNexus">
+				<display-name xml:lang="x-default">CyberSource Nexus States List</display-name>
+				<type>set-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsNoNexus">
+				<display-name xml:lang="x-default">CyberSource No Nexus States List</display-name>
+				<type>set-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDeviceFingerprintEnabled">
+				<display-name xml:lang="x-default">Cybersource Device Fingeprint enabled</display-name>
+				<description xml:lang="x-default">If enabled, a unique ID (fingerprint) of the customer's environment will be checked to detect spam / fraud.</description>
+				<type>boolean</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDeviceFingerprintJetmetrixLocation">
+				<display-name xml:lang="x-default">Jetmetrix Location</display-name>
+				<description xml:lang="x-default">Jetmetrix Location for Device fingerprint</description>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDeviceFingerprintOrgId">
+				<display-name xml:lang="x-default">CsDeviceFingerprintOrgId</display-name>
+				<description xml:lang="x-default">Organization ID for the device fingerprint check.</description>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="CsDeviceFingerprintRedirectionType">
+				<display-name xml:lang="x-default">Device Fingerprint Redirection</display-name>
+				<description xml:lang="x-default">'none' for no redirection, 'static' for pipeline redirection, 'dynamic' for mapping-rule based redirection.&#13;
+A mapping rule based redirection requires a mapping rule at static mappings Site Urls-&gt;Static mapping:&#13;
+&#13;
+# Mapping for Cybersource Device Fingerprint Service&#13;
+/fp/** p,,,Cybersource-RedirectFpLocation,,,Location,{_url}</description>
+				<type>enum-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<value-definitions>
+					<value-definition default="true">
+						<display xml:lang="x-default">none</display>
+						<value>none</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">static</display>
+						<value>static</value>
+					</value-definition>
+					<value-definition>
+						<value>dynamic</value>
+					</value-definition>
+				</value-definitions>
+			</attribute-definition>
+		</custom-attribute-definitions>
+		<group-definitions>
+			<attribute-group group-id="Cybersource">
+				<display-name xml:lang="x-default">Cybersource</display-name>
+				<attribute attribute-id="CsMerchantId"/>
+				<attribute attribute-id="CsSecurityKey"/>
+				<attribute attribute-id="CsEndpoint"/>
+				<attribute attribute-id="CsShipFromCity"/>
+				<attribute attribute-id="CsShipFromStateCode"/>
+				<attribute attribute-id="CsShipFromZipCode"/>
+				<attribute attribute-id="CsShipFromCountryCode"/>
+				<attribute attribute-id="CsBmlMerchantId"/>
+				<attribute attribute-id="CsBmlPassword"/>
+				<attribute attribute-id="CsBmlItemCategory"/>
+				<attribute attribute-id="CsBmlTCVersion"/>
+				<attribute attribute-id="CsBmlNewAcctNo"/>
+				<attribute attribute-id="CsBmlPromoCode"/>
+				<attribute attribute-id="CsBmlPromoMerchantId"/>
+				<attribute attribute-id="CsBmlPromoMerchantPassword"/>
+				<attribute attribute-id="CsBmlPromoPromoCode"/>
+				<attribute attribute-id="CsAvsIgnoreResult"/>
+				<attribute attribute-id="CsAvsDeclineFlags"/>
+				<attribute attribute-id="CsDavOnAddressVerificationFailure"/>
+				<attribute attribute-id="CsDavEnable"/>
+				<attribute attribute-id="CsPaMerchantId"/>
+				<attribute attribute-id="CsPaMerchantPassword"/>
+				<attribute attribute-id="CsPaMerchantName"/>
+				<attribute attribute-id="CsProductTaxCode"/>
+				<attribute attribute-id="CsPoaCity"/>
+				<attribute attribute-id="CsPoaStateCode"/>
+				<attribute attribute-id="CsPoaZipCode"/>
+				<attribute attribute-id="CsPoaCountryCode"/>
+				<attribute attribute-id="CsPooCity"/>
+				<attribute attribute-id="CsPooStateCode"/>
+				<attribute attribute-id="CsPooZipCode"/>
+				<attribute attribute-id="CsPooCountryCode"/>
+				<attribute attribute-id="CsNexus"/>
+				<attribute attribute-id="CsNoNexus"/>
+				<attribute attribute-id="CsDebugCybersource"/>
+				<attribute attribute-id="CsDeviceFingerprintJetmetrixLocation"/>
+				<attribute attribute-id="CsDeviceFingerprintOrgId"/>
+				<attribute attribute-id="CsDeviceFingerprintEnabled"/>
+				<attribute attribute-id="CsDeviceFingerprintRedirectionType"/>
+
+			</attribute-group>
+		</group-definitions>
+	</type-extension>
+</metadata>
