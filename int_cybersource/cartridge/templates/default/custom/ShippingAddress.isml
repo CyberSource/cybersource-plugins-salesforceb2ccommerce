@@ -1,0 +1,11 @@
+<!--- TEMPLATENAME: BillingAddress.isml --->
+${pdict.shipto.firstName} ${pdict.shipto.lastName}<br/>
+${pdict.shipto.street1}<br/>
+<isif condition="${!empty(pdict.shipto.street2)}">
+	${pdict.shipto.street2}<br/>
+</isif>
+${pdict.shipto.city}, ${pdict.shipto.state} ${pdict.shipto.country}<br/>
+${pdict.shipto.postalCode}<br/><br/>
+Phone: ${pdict.shipto.phoneNumber}<br/>
+Email: ${pdict.shipto.email}<br/>
+Shipping Method: ${pdict.shipto.shippingMethod}
