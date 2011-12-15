@@ -196,6 +196,8 @@
                       <key-binding alias="shipto" key="shipTo"/>
                       <key-binding alias="purchaseTotals" key="purchaseTotals"/>
                       <key-binding alias="TempResponse" key="Temp"/>
+                      <key-binding alias="Response" key="Response"/>
+                      <key-binding alias="CurrentSession.sessionID" key="sessionId"/>
                     </pipelet-node>
                     <node-display x="0" y="1"/>
                     <branch basename="b2" source-connector="error">
@@ -278,7 +280,7 @@
                   <simple-transition/>
                   <node>
                     <decision-node condition-key="CybersourceHelper.getAvsIgnoreResult()==true" condition-operator="expr"/>
-                    <node-display x="0" y="2"/>
+                    <node-display x="0" y="1"/>
                     <branch basename="b4" source-connector="yes">
                       <transition target-connector="in">
                         <transition-display>
@@ -355,16 +357,12 @@
                           <join-node/>
                           <node-display x="-3" y="2"/>
                         </node>
-                        <simple-transition>
-                          <transition-display>
-                            <bend-point relative-to="target" x="-1" y="0"/>
-                          </transition-display>
-                        </simple-transition>
+                        <simple-transition/>
                         <node>
                           <decision-node condition-key="ReasonCode == 100" condition-operator="expr">
                             <description>Successful transaction.</description>
                           </decision-node>
-                          <node-display orientation="horizontal" x="0" y="2"/>
+                          <node-display orientation="horizontal" x="0" y="1"/>
                           <branch basename="b2" source-connector="yes">
                             <transition target-connector="in">
                               <transition-display>
@@ -472,7 +470,7 @@
                           <branch basename="b4" source-connector="yes">
                             <transition target-connector="in">
                               <transition-display>
-                                <bend-point relative-to="target" x="-3" y="-2"/>
+                                <bend-point relative-to="source" x="5" y="0"/>
                                 <bend-point relative-to="target" x="-2" y="0"/>
                               </transition-display>
                             </transition>
@@ -501,7 +499,7 @@
                                   <key-binding alias="null" key="To_9"/>
                                   <key-binding alias="AuthorizationAmount" key="From_4"/>
                                 </pipelet-node>
-                                <node-display orientation="horizontal" x="4" y="1"/>
+                                <node-display orientation="horizontal" x="4" y="3"/>
                               </node>
                               <transition target-connector="in1" target-path="../b6.2">
                                 <transition-display>
@@ -520,7 +518,7 @@
                           <decision-node condition-key="ReasonCode == 234" condition-operator="expr">
                             <description>There is a problem with your CyberSource merchant configuration.</description>
                           </decision-node>
-                          <node-display orientation="horizontal" x="0" y="1"/>
+                          <node-display orientation="horizontal" x="0" y="3"/>
                           <branch basename="b5" source-connector="yes">
                             <transition target-connector="in">
                               <transition-display>
@@ -996,13 +994,13 @@
         <branch basename="b2" source-connector="error">
           <transition target-connector="in">
             <transition-display>
-              <bend-point relative-to="target" x="-1" y="0"/>
+              <bend-point relative-to="source" x="1" y="0"/>
             </transition-display>
           </transition>
           <segment>
             <node>
               <end-node name="ERROR"/>
-              <node-display orientation="horizontal" x="2" y="0"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
             </node>
           </segment>
         </branch>
@@ -2436,7 +2434,409 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_15">
+  <branch basename="DAVCheck">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="DAVCheck" secure="false"/>
+        <node-display x="50" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="true" key="From_0"/>
+          <key-binding alias="ReadFromBasket" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="CybersourceData-CreateBillTo"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="CybersourceData-CreateShipTo"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/DAVRequest.ds"/>
+          <key-binding alias="ScriptLog" key="ScriptLog"/>
+          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+          <key-binding alias="DAVReasonCode" key="ReasonCode"/>
+          <key-binding alias="Decision" key="Decision"/>
+          <key-binding alias="RequestID" key="RequestID"/>
+          <key-binding alias="RequestToken" key="RequestToken"/>
+          <key-binding alias="billto" key="billTo"/>
+          <key-binding alias="shipto" key="shipTo"/>
+          <key-binding alias="InvalidFieldsArray" key="InvalidFieldsArray"/>
+          <key-binding alias="MissingFieldsArray" key="MissingFieldsArray"/>
+          <key-binding alias="StandardizedAddress" key="StandardizedAddress"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="3" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1/b3.1/b2.2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(DAVReasonCode)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in1" target-path="./+1"/>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="ReasonCode" key="From_0"/>
+          <key-binding alias="DAVReasonCode" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="2" y="0"/>
+      </node>
+      <transition target-connector="in3" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="2"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="-2" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="DAVReasonCode==100" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="authorized"/>
+              <node-display x="0" y="13"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="DAVReasonCode!=101" condition-operator="expr"/>
+        <node-display x="1" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="DAVReasonCode!=102" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="target" x="0" y="-1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <decision-node condition-key="DAVReasonCode!=150 &amp;&amp; DAVReasonCode!=151 &amp;&amp; DAVReasonCode!=152" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in"/>
+                      <segment>
+                        <node>
+                          <decision-node condition-key="DAVReasonCode!=234" condition-operator="expr"/>
+                          <node-display x="0" y="2"/>
+                          <branch basename="b2" source-connector="yes">
+                            <transition target-connector="in"/>
+                            <segment>
+                              <node>
+                                <decision-node condition-key="DAVReasonCode!=450&amp;&amp;DAVReasonCode!=451&amp;&amp;DAVReasonCode!=452&amp;&amp;DAVReasonCode!=453&amp;&amp;DAVReasonCode!=454&amp;&amp;DAVReasonCode!=455&amp;&amp;DAVReasonCode!=456&amp;&amp;DAVReasonCode!=457&amp;&amp;DAVReasonCode!=458&amp;&amp;DAVReasonCode!=459&amp;&amp;DAVReasonCode!=460" condition-operator="expr"/>
+                                <node-display x="0" y="2"/>
+                                <branch basename="b2" source-connector="yes">
+                                  <transition target-connector="in"/>
+                                  <segment>
+                                    <node>
+                                      <decision-node condition-key="DAVReasonCode!=700" condition-operator="expr"/>
+                                      <node-display x="0" y="2"/>
+                                      <branch basename="b2" source-connector="yes">
+                                        <transition target-connector="in2" target-path="../../../+4">
+                                          <transition-display>
+                                            <bend-point relative-to="source" x="0" y="2"/>
+                                          </transition-display>
+                                        </transition>
+                                      </branch>
+                                    </node>
+                                    <transition target-connector="in2" target-path="../../../+3"/>
+                                  </segment>
+                                </branch>
+                              </node>
+                              <transition target-connector="in1" target-path="../../../../+3"/>
+                            </segment>
+                          </branch>
+                        </node>
+                        <transition target-connector="in2" target-path="../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="2" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="4"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="target" x="0" y="-1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in2" target-path="../+2">
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="3" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="6"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="decline"/>
+        <node-display x="0" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="IncludeDigitalFingerprint">
+    <segment>
+      <node>
+        <start-node call-mode="public" name="IncludeDigitalFingerprint" secure="false"/>
+        <node-display x="52" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <description>RedirectionType could be Level_0,Level_1,Level_2:</description>
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintEnabled')" key="From_0"/>
+          <key-binding alias="DeviceFingerprintEnabled" key="To_0"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintJetmetrixLocation')" key="From_1"/>
+          <key-binding alias="DeviceFingerprintJetmetrixLocation" key="To_1"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintOrgId')" key="From_2"/>
+          <key-binding alias="DeviceFingerprintOrgId" key="To_2"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsMerchantId')" key="From_3"/>
+          <key-binding alias="MerchantId" key="To_3"/>
+          <key-binding alias="CurrentSession.sessionID" key="From_4"/>
+          <key-binding alias="SessionId" key="To_4"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue(&quot;CsDeviceFingerprintRedirectionType&quot;)" key="From_5"/>
+          <key-binding alias="RedirectionType" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="cart/fingerprint"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RedirectFpLocation">
+    <segment>
+      <node>
+        <start-node name="RedirectFpLocation" secure="false"/>
+        <node-display x="54" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintEnabled')" key="From_0"/>
+          <key-binding alias="DeviceFingerprintEnabled" key="To_0"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintJetmetrixLocation')" key="From_1"/>
+          <key-binding alias="DeviceFingerprintJetmetrixLocation" key="To_1"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintOrgId')" key="From_2"/>
+          <key-binding alias="DeviceFingerprintOrgId" key="To_2"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('CsMerchantId')" key="From_3"/>
+          <key-binding alias="MerchantId" key="To_3"/>
+          <key-binding alias="CurrentSession.sessionID" key="From_4"/>
+          <key-binding alias="SessionId" key="To_4"/>
+          <key-binding alias="CurrentHttpParameterMap.type.value" key="From_5"/>
+          <key-binding alias="LinkType" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="cart/fingerprintredirect"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_18">
     <segment>
       <node>
         <text-node>
@@ -2446,7 +2846,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_16">
+  <branch basename="_ANONYMOUS_BRANCH_19">
     <segment>
       <node>
         <text-node>
@@ -2456,7 +2856,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_17">
+  <branch basename="_ANONYMOUS_BRANCH_20">
     <segment>
       <node>
         <text-node>
@@ -2468,7 +2868,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_18">
+  <branch basename="_ANONYMOUS_BRANCH_21">
     <segment>
       <node>
         <text-node>
@@ -2478,7 +2878,29 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_19">
+  <branch basename="_ANONYMOUS_BRANCH_22">
+    <segment>
+      <node>
+        <text-node>
+          <description>Missing or invalid fields</description>
+        </text-node>
+        <node-display x="52" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_23">
+    <segment>
+      <node>
+        <text-node>
+          <description>Service Time-out,
+Server Time-out or
+General Error</description>
+        </text-node>
+        <node-display x="52" y="11"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_24">
     <segment>
       <node>
         <text-node>
@@ -2488,7 +2910,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_20">
+  <branch basename="_ANONYMOUS_BRANCH_25">
     <segment>
       <node>
         <text-node>
@@ -2498,7 +2920,27 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_21">
+  <branch basename="_ANONYMOUS_BRANCH_26">
+    <segment>
+      <node>
+        <text-node>
+          <description>Config error.  MerchantID is unrecognized</description>
+        </text-node>
+        <node-display x="52" y="13"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_27">
+    <segment>
+      <node>
+        <text-node>
+          <description>Miscellanous address verfication issues.  Customer needs to update information and re-submit</description>
+        </text-node>
+        <node-display x="52" y="15"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_28">
     <segment>
       <node>
         <text-node>
@@ -2508,7 +2950,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_22">
+  <branch basename="_ANONYMOUS_BRANCH_29">
     <segment>
       <node>
         <text-node>
@@ -2518,7 +2960,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_23">
+  <branch basename="_ANONYMOUS_BRANCH_30">
     <segment>
       <node>
         <text-node>
@@ -2528,7 +2970,47 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_24">
+  <branch basename="_ANONYMOUS_BRANCH_31">
+    <segment>
+      <node>
+        <text-node>
+          <description>Unsupported character set</description>
+        </text-node>
+        <node-display x="52" y="17"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_32">
+    <segment>
+      <node>
+        <text-node>
+          <description>DAVCheck success</description>
+        </text-node>
+        <node-display x="49" y="20"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_33">
+    <segment>
+      <node>
+        <text-node>
+          <description>Service-related, unknown or undocumented api error ReasonCode</description>
+        </text-node>
+        <node-display x="52" y="20"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_34">
+    <segment>
+      <node>
+        <text-node>
+          <description>Missing or invalid information</description>
+        </text-node>
+        <node-display x="55" y="20"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_35">
     <segment>
       <node>
         <text-node>
