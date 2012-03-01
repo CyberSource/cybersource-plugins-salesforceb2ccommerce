@@ -1,0 +1,43 @@
+/**
+ * CreateCartStateString.ds
+ *
+ * This script writes the product IDs, quantities and prices of the line items in the cart to a string and appends the adjusted shipping total and cart totals to the end of the string.
+ * This string is used by the Cybersource cartridge to determine if the cart has been updated since tax was last calculated. 
+ * If the cart was updated or if tax has not been previously been calculated on the session then a tax call will be made to cybersource.
+ * This logic is in place to prevent un-needed tax calls to avoid unnessary service charges by cybersource. 
+ *
+ * @input Basket : dw.order.Basket;
+ * @output CartStateString : String
+ */
+ importPackage( dw.customer );
+ importPackage( dw.order );
+ importPackage( dw.system );
+
+ 
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : Basket = pdict.Basket;
+	var cartStateString = "";
+	
+	var productLineItems : Iterator = basket.getAllProductLineItems().iterator();
+	while(productLineItems.hasNext())
+	{
+		var productLineItem : ProductLineItem = productLineItems.next();	
+		cartStateString += productLineItem.productID +";"+ productLineItem.quantityValue +";"+ productLineItem.adjustedPrice + "|";
+	}	
+	
+	// Append shipping totals and basket totals to string (adjustedMerchandizeTotalPrice includes order level price adjustments). Basket Net total checked as catch all for both taxation policies not including taxe.
+	
+	cartStateString += basket.adjustedShippingTotalPrice.valueOrNull + "|" + basket.adjustedMerchandizeTotalPrice.valueOrNull + "|" + basket.totalNetPrice.valueOrNull + "|";
+	
+	// Check if the cartStateString in session is the same as the newly calculated cartStateString. 
+	// If the strings are the same, then the cart has not changed and tax calculation will be skipped
+	
+	if( !empty(session.custom.cartStateString) && session.custom.cartStateString == cartStateString){
+		return PIPELET_ERROR;
+	}
+
+	pdict.CartStateString = cartStateString;
+	
+    return PIPELET_NEXT;
+}
