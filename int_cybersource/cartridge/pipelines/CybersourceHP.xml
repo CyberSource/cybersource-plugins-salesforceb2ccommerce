@@ -72,7 +72,7 @@
           <key-binding alias="CCPaymentInstrument.paymentTransaction.amount" key="Amount"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="OrderNo" key="OrderNo"/>
-          <key-binding alias="CurrentForms.checkout.creditcard" key="CreditCardForm"/>
+          <key-binding alias="CurrentForms.billing.creditcard" key="CreditCardForm"/>
           <key-binding alias="CurrentRequest.httpRemoteAddress" key="IPAddress"/>
           <key-binding alias="AuthCode" key="AuthorizationCode"/>
           <key-binding alias="Decision" key="Decision"/>

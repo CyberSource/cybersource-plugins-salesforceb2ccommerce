@@ -18,9 +18,9 @@ importPackage( dw.order );
 importPackage( dw.rpc );
 importPackage( dw.util );
 
-importScript('cybersource/libCybersource.ds');
-importScript('cybersource/Cybersource_BillTo_Object.ds');
-importScript('cybersource/Cybersource_ShipTo_Object.ds');
+importScript('int_cybersource:cybersource/libCybersource.ds');
+importScript('int_cybersource:cybersource/Cybersource_BillTo_Object.ds');
+importScript('int_cybersource:cybersource/Cybersource_ShipTo_Object.ds');
 
 
 function execute( pdict : PipelineDictionary ) : Number
@@ -51,7 +51,7 @@ function execute( pdict : PipelineDictionary ) : Number
 
 	var request = new csReference.RequestMessage();
 	
-	CybersourceHelper.addDAVRequestInfo(request,billToObject,shipToObject);
+	CybersourceHelper.addDAVRequestInfo(request,billToObject,shipToObject,false,"shippingDAV");
 
 	var response = null;
 	// send request
@@ -76,5 +76,22 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.DAVReasonCode = response.davReply.reasonCode.get();
 	}
 	
+	 if( response.decision=="REJECT" ) {
+		var missingFields = "";
+		var invalidFields = "";
+		if( null!=response.missingField ) {
+			for(var i : Number = 0; i < response.missingField.length; i++){
+				missingFields += response.missingField[i];
+			}
+		}
+		if( null!=response.invalidField ) {
+			for(var i : Number = 0; i < response.invalidField.length; i++){
+				invalidFields += response.invalidField[i];
+			}
+		}
+		Logger.error("[libCybersource.ds] Request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",response.reasonCode,response.requestToken,missingFields,invalidFields);
+	 }
+		
+		
     return PIPELET_NEXT;
 }

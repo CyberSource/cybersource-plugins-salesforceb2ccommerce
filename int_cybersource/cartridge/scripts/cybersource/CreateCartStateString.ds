@@ -28,7 +28,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	// Append shipping totals and basket totals to string (adjustedMerchandizeTotalPrice includes order level price adjustments). Basket Net total checked as catch all for both taxation policies not including taxe.
 	
-	cartStateString += basket.adjustedShippingTotalPrice.valueOrNull + "|" + basket.adjustedMerchandizeTotalPrice.valueOrNull + "|" + basket.totalNetPrice.valueOrNull + "|";
+	cartStateString += basket.adjustedShippingTotalPrice.valueOrNull + "|" + basket.adjustedMerchandizeTotalPrice.valueOrNull + "|" + basket.totalNetPrice.valueOrNull + "|" + basket.shipments[0];
 	
 	// Check if the cartStateString in session is the same as the newly calculated cartStateString. 
 	// If the strings are the same, then the cart has not changed and tax calculation will be skipped

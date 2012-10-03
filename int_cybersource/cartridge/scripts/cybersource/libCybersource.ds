@@ -142,18 +142,6 @@ var CybersourceHelper = {
 	getPAMerchantName : function (){
 		return Site.getCurrent().getCustomPreferenceValue("CsPaMerchantName");
 	},
-	
-	getDigitalFingerprintOrgId : function (){
-		return Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintOrgId')
-	},
-	
-	getDigitalFingerprintJetmetrixLocation : function (){
-		return Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintJetmetrixLocation')
-	},
-	
-	getDigitalFingerprintEnabled : function (){
-		return Site.getCurrent().getCustomPreferenceValue("CsDeviceFingerprintEnabled");
-	},
 
 	/*****************************************************************************
 	 * Name: getNexus
@@ -317,7 +305,7 @@ var CybersourceHelper = {
 	addCCCreditRequestInfo : function(request : Object, order : dw.order.Order, pi : OrderPaymentInstrument)
 	{
 		request.merchantID = CybersourceHelper.getMerchantID();
-
+		request.merchantReferenceCode = order.orderNo;
 		__setClientData( request, order.orderNo );
 		
 		var billingAddress : OrderAddress = order.billingAddress;
@@ -423,16 +411,10 @@ var CybersourceHelper = {
 	 * card     : Card_Object,
 	 * refCode  : String   - Basket.UUID
 	 *****************************************************************************/	
-	addCCAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object , refCode : String , enableDeviceFingerprint : Boolean)
+	addCCAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object,refCode : String)
 	{
-		
 		request.merchantID = CybersourceHelper.getMerchantID();
-		var fingerprint : String  = null;
-		if (enableDeviceFingerprint) {
-		  fingerprint =  session.sessionID;
-		}
-		
-		__setClientData( request, refCode , fingerprint );
+		__setClientData( request, refCode );
 		request.billTo = __copyBillTo( billTo );
 		request.shipTo = __copyShipTo( shipTo );
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
@@ -568,8 +550,8 @@ var CybersourceHelper = {
 		__setClientData( request, refCode );
 		request.billTo     = __copyBillTo( billTo );
 		request.shipTo     = __copyShipTo( shipTo );
-		request.purchaseTotals = __copyPurchaseTotals( purchase );
-		request.card       = __copyCreditCard( card );
+		//request.purchaseTotals = __copyPurchaseTotals( purchase );  This field is not required and caused "invalid field" in the request
+		//request.card       = __copyCreditCard( card );
 		request.taxService = __copyTaxService( taxService );
 		request.shipFrom   = __copyShipFrom  ( shipFrom );
 		
@@ -605,15 +587,12 @@ function getCybersourceHelper()
 	return CybersourceHelper;
 }
 
-function __setClientData( request : Object, refCode : String , fingerprint : String  )
+function __setClientData( request : Object, refCode : String  )
 {
 	request.merchantReferenceCode = refCode; 
 	request.clientLibrary='Demandware';
 	request.clientLibraryVersion='2.2';
 	request.clientEnvironment='Linux';
-	if (fingerprint) {
-	  request.deviceFingerprintID = fingerprint;
-	}
 }
 
 function __copyBillTo( billTo : BillTo_Object ) : Object

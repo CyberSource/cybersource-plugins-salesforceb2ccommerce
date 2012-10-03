@@ -500,7 +500,7 @@
               <join-node/>
               <node-display x="1" y="0"/>
             </node>
-            <transition target-connector="in1" target-path="../b9.4"/>
+            <transition target-connector="in1" target-path="../b8.3"/>
           </segment>
         </branch>
       </node>
@@ -520,7 +520,7 @@
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b6" source-connector="error">
-          <transition target-connector="in1" target-path="./b9.4"/>
+          <transition target-connector="in1" target-path="./b8.3"/>
         </branch>
       </node>
       <simple-transition>
@@ -538,7 +538,7 @@
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b7" source-connector="error">
-          <transition target-connector="in1" target-path="./b9.3"/>
+          <transition target-connector="in1" target-path="./b8.2"/>
         </branch>
       </node>
       <simple-transition>
@@ -558,54 +558,11 @@
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b8" source-connector="error">
-          <transition target-connector="in1" target-path="./b9.2"/>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="true"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestTax.ds"/>
-          <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="ReasonCode" key="ReasonCode"/>
-          <key-binding alias="AuthorizationReasonCode" key="AuthorizationReasonCode"/>
-          <key-binding alias="AuthorizationAmount" key="AuthorizationAmount"/>
-          <key-binding alias="AuthorizationCode" key="AuthorizationCode"/>
-          <key-binding alias="Decision" key="Decision"/>
-          <key-binding alias="RequestID" key="RequestID"/>
-          <key-binding alias="RequestToken" key="RequestToken"/>
-          <key-binding alias="CybersourceBillTo" key="billTo"/>
-          <key-binding alias="CybersourcePaymentCard" key="card"/>
-          <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
-          <key-binding alias="CybersourceShipTo" key="shipTo"/>
-          <key-binding alias="ia" key="itemArray"/>
-          <key-binding alias="itemmap" key="itemMap"/>
-          <key-binding alias="Basket" key="Basket"/>
-          <key-binding alias="shipFrom" key="shipFrom"/>
-          <key-binding alias="taxService" key="taxService"/>
-          <key-binding alias="taxamount" key="totalTaxAmount"/>
-          <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
-          <key-binding alias="TaxReply" key="TaxReply"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b9" source-connector="error">
           <transition target-connector="in1"/>
           <segment>
             <node>
               <join-node/>
               <node-display x="1" y="0"/>
-            </node>
-            <transition target-connector="in1" target-path="./+1"/>
-          </segment>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="0" y="-1"/>
             </node>
             <transition target-connector="in1" target-path="./+1"/>
           </segment>
@@ -641,6 +598,45 @@
         </transition-display>
       </simple-transition>
       <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestTax.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="AuthorizationReasonCode" key="AuthorizationReasonCode"/>
+          <key-binding alias="AuthorizationAmount" key="AuthorizationAmount"/>
+          <key-binding alias="AuthorizationCode" key="AuthorizationCode"/>
+          <key-binding alias="Decision" key="Decision"/>
+          <key-binding alias="RequestID" key="RequestID"/>
+          <key-binding alias="RequestToken" key="RequestToken"/>
+          <key-binding alias="CybersourceBillTo" key="billTo"/>
+          <key-binding alias="CybersourcePaymentCard" key="card"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="CybersourceShipTo" key="shipTo"/>
+          <key-binding alias="ia" key="itemArray"/>
+          <key-binding alias="itemmap" key="itemMap"/>
+          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="shipFrom" key="shipFrom"/>
+          <key-binding alias="taxService" key="taxService"/>
+          <key-binding alias="taxamount" key="totalTaxAmount"/>
+          <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+          <key-binding alias="TaxReply" key="TaxReply"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b9" source-connector="error">
+          <transition target-connector="in2" target-path="./+1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
         <interaction-node transaction-required="false">
           <template buffered="true" dynamic="false" name="custom/TaxUnitTestResults"/>
         </interaction-node>
@@ -662,7 +658,7 @@
       <node>
         <pipelet-node pipelet-name="GetProduct" pipelet-set-identifier="bc_api">
           <key-binding alias="Product" key="Product"/>
-          <key-binding alias="&quot;S1915063&quot;" key="ProductID"/>
+          <key-binding alias="&quot;99225&quot;" key="ProductID"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
         <branch basename="b2" source-connector="error">
@@ -747,7 +743,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="billingaddress/PopulateBillingAddress.ds"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/billingaddress/PopulateBillingAddress.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="Address" key="billingAddress"/>
@@ -763,7 +759,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="shipping/CreateBasketShipment.ds"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/shipping/CreateBasketShipment.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="Shipment" key="Shipment"/>
@@ -791,7 +787,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="shipping/PopulateShippingAddress.ds"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/shipping/PopulateShippingAddress.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="ShippingAddress" key="shippingAddress"/>
@@ -807,7 +803,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="payment/CreatePaymentInstrument.ds"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/payment/CreatePaymentInstrument.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
         </pipelet-node>
@@ -854,7 +850,7 @@
         </transition-display>
       </simple-transition>
       <node>
-        <call-node start-name-ref="Payment-AuthorizeBasicCreditCard"/>
+        <call-node start-name-ref="CybersourceUnitTesting-TestCCAuth"/>
         <node-display x="0" y="1"/>
       </node>
       <simple-transition>
@@ -1343,7 +1339,7 @@
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="billto" key="CyberSourceBillTo"/>
           <key-binding alias="CurrentRequest.httpHeaders[&quot;x-is-remote_addr&quot;]" key="ipAddress"/>
-          <key-binding alias="CurrentForms.checkout.bml" key="BMLForm"/>
+          <key-binding alias="CurrentForms.billing.bml" key="BMLForm"/>
           <key-binding alias="asd" key="asd"/>
           <key-binding alias="true" key="UseBillingAddr"/>
           <key-binding alias="ReadFromForm" key="ReadFromForm"/>

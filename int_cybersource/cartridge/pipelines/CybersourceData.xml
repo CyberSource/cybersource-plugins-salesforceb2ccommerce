@@ -41,11 +41,12 @@
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="billto" key="CyberSourceBillTo"/>
           <key-binding alias="CurrentRequest.httpHeaders[&quot;x-is-remote_addr&quot;]" key="ipAddress"/>
-          <key-binding alias="CurrentForms.checkout.bml" key="BMLForm"/>
+          <key-binding alias="CurrentForms.billing &amp;&amp; CurrentForms.billing.bml" key="BMLForm"/>
           <key-binding alias="asd" key="asd"/>
           <key-binding alias="true" key="UseBillingAddr"/>
           <key-binding alias="ReadFromForm" key="ReadFromForm"/>
           <key-binding alias="ReadFromBasket" key="ReadFromBasket"/>
+          <key-binding alias="CurrentForms.billing.billingAddress" key="BillForms"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
         <branch basename="b2" source-connector="error">

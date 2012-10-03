@@ -13,6 +13,7 @@
 * @input  shipTo : Object
 * @input  card : Object
 * @input  purchaseTotals : Object 
+
 *
 * optional payer auth input data 
 * if XID is provided (not null) the PA data is added to the request
@@ -38,6 +39,7 @@
 * @output StandardizedAddress : Object Contains any 'corrections' made to the address from standards point of view
 *
 * @output Temp : Object;
+*
 * Author: Danny Gehl
 */
 importPackage( dw.system );
@@ -92,7 +94,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	// the request object holds the input parameter for the AUTH request
 	//**************************************************************************//	
 	var request = new csReference.RequestMessage();
-	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,basket.UUID, CybersourceHelper.getDigitalFingerprintEnabled());		
+	//CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,basket.UUID);		
+	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,orderNo);
 	if(pdict.XID != null)
 	{
 		CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID);
@@ -141,9 +144,6 @@ function execute( pdict : PipelineDictionary ) : Number
 		
 		return PIPELET_ERROR;
 	}
-	
-	Logger.debug(response);
-	
 	
 	if(response == null)
 	{
