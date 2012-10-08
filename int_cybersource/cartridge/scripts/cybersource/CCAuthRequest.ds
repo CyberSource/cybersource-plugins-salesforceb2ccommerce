@@ -31,6 +31,7 @@
 * @output AuthorizationReasonCode : Number The auth reason code returned by Cybersource (100 = Success)
 * @output AuthorizationAmount : String the amount authorized by Cybersource
 * @output AuthorizationCode : String the authorizationCode by Cybersource
+* @output SubscriptionId : String the authorizationCode by Cybersource
 *
 * @output DAVReasonCode : Number The DAV reason code returned by Cybersource (100 = Success)
 * @output MissingFieldsArray : Array Contains any missing (and required) fields to complete DAV processing
@@ -159,6 +160,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	pdict.RequestID = response.requestID;
 	pdict.RequestToken = response.requestToken;
+	pdict.SubscriptionId = response.paySubscriptionCreateReply.subscriptionID;
 	pdict.ReasonCode = response.reasonCode.get();
 	pdict.Decision = response.decision;
 	

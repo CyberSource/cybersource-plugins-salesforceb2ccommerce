@@ -198,6 +198,7 @@
                       <key-binding alias="TempResponse" key="Temp"/>
                       <key-binding alias="Response" key="Response"/>
                       <key-binding alias="CurrentSession.sessionID" key="sessionId"/>
+                      <key-binding alias="SubscriptionId" key="SubscriptionId"/>
                     </pipelet-node>
                     <node-display x="0" y="1"/>
                     <branch basename="b2" source-connector="error">
@@ -387,8 +388,8 @@
                                   <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
                                   <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="SubscriptionId" key="From_7"/>
+                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.subscriptionId" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
@@ -491,8 +492,8 @@
                                   <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
                                   <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="SubscriptionId" key="From_7"/>
+                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.subscriptionId" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>

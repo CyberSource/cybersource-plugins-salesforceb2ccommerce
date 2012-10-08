@@ -440,6 +440,13 @@ var CybersourceHelper = {
 		
 		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
 		request.ccAuthService.run = true;	
+		request.paySubscriptionCreateService= new CybersourceHelper.csReference.PaySubscriptionCreateService();
+		request.paySubscriptionCreateService.run = true;
+		
+		request.subscription = new CybersourceHelper.csReference.Subscription();
+		request.subscription.paymentMethod = "credit card";
+		request.recurringSubscriptionInfo  = new CybersourceHelper.csReference.RecurringSubscriptionInfo ();
+		request.recurringSubscriptionInfo.frequency = "on-demand" ;
 	},
 
 	addBMLAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object,bml : BML_Object, promo : Boolean, refCode : String)
