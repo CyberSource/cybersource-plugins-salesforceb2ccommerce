@@ -390,8 +390,8 @@
                                   <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
                                   <key-binding alias="SubscriptionId" key="From_7"/>
                                   <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.subscriptionId" key="To_7"/>
-                                  <key-binding alias="null" key="From_8"/>
-                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="'Authorization Successful'" key="From_8"/>
+                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authorizationDescription" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
                                   <key-binding alias="null" key="To_9"/>
                                   <key-binding alias="AuthorizationAmount" key="From_4"/>

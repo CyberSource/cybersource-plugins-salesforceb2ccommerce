@@ -69,6 +69,12 @@
                 <mandatory-flag>false</mandatory-flag>
                 <searchable-flag>false</searchable-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="authorizationDescription">
+                <display-name xml:lang="x-default">Authorization Description</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <searchable-flag>false</searchable-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
     </type-extension>
 </metadata>
