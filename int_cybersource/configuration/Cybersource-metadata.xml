@@ -374,6 +374,39 @@ A mapping rule based redirection requires a mapping rule at static mappings Site
 					</value-definition>
 				</value-definitions>
 			</attribute-definition>
+			<attribute-definition attribute-id="CsTokenizationEnable">
+                <display-name xml:lang="x-default">Cybersource - Enable Tokenization</display-name>
+                <description xml:lang="x-default">This will enable Payment Tokenization.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">YES</display>
+                        <value>YES</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NO</display>
+                        <value>NO</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+			<attribute-definition attribute-id="CsPaEnableProofXML">
+                <display-name xml:lang="x-default">CyberSource Save Proof.xml (PA)</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="CsPaSaveParesStatus">
+                <display-name xml:lang="x-default">CyberSource Save ParesStatus (PA)</display-name>
+                <description xml:lang="x-default">Save ParesStatus received as response from Pa Authenticate request and send it as param in ccAuth request call.&#13;
+This field should be enabled after verifying cybersource merchant account settings.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
 		</custom-attribute-definitions>
 		<group-definitions>
 			<attribute-group group-id="Cybersource">
@@ -417,8 +450,42 @@ A mapping rule based redirection requires a mapping rule at static mappings Site
 				<attribute attribute-id="CsDeviceFingerprintOrgId"/>
 				<attribute attribute-id="CsDeviceFingerprintEnabled"/>
 				<attribute attribute-id="CsDeviceFingerprintRedirectionType"/>
-
+				<attribute attribute-id="CsTokenizationEnable"/>
+				<attribute attribute-id="CsPaEnableProofXML"/>
+				<attribute attribute-id="CsPaSaveParesStatus"/>
 			</attribute-group>
 		</group-definitions>
 	</type-extension>
+	<type-extension type-id="PaymentCard">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cardType">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="description"/>
+            <attribute-definition attribute-id="image"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="name">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="csEnablePayerAuthentication">
+                <display-name xml:lang="x-default">Enable Payer Authenticaton</display-name>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="PayerAuth">
+                <display-name xml:lang="x-default">Payer Authentication</display-name>
+                <attribute attribute-id="csEnablePayerAuthentication"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
 </metadata>

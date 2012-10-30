@@ -63,6 +63,30 @@
                 <mandatory-flag>false</mandatory-flag>
                 <searchable-flag>false</searchable-flag>
             </attribute-definition>
+			<attribute-definition attribute-id="subscriptionID">
+                <display-name xml:lang="x-default">SubscriptionID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="proofXML">
+                <display-name xml:lang="x-default">Payer Authentication Proof.xml</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
         </custom-attribute-definitions>
+		<group-definitions>
+            <attribute-group group-id="Custom">
+                <display-name xml:lang="x-default">Custom</display-name>
+                <attribute attribute-id="eFundsTransactionHistory"/>
+                <attribute attribute-id="subscriptionID"/>
+                <attribute attribute-id="proofXML"/>
+            </attribute-group>
+        </group-definitions>
     </type-extension>
 </metadata>

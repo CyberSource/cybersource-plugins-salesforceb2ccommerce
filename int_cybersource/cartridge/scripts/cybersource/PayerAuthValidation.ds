@@ -21,18 +21,21 @@
 * @output CommerceIndicator : String the return field
 * @output XID : String the return field
 * @output ECIRaw : String the return field
+* @output ParesStatus : String paresStatus as returned by Cybersource
 *
 */
 importPackage( dw.system );
 
-importScript('bc_sally:cybersource/libCybersource.ds');
+importScript('cybersource/libCybersource.ds');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var signedPaRes : String = pdict.PaRes;
 	var orderNo : String = pdict.OrderNo;
     var amount : dw.value.Money = pdict.Amount;
     var creditCardForm : dw.web.FormElement = pdict.CreditCardForm;
+    var signedPaRes : String = dw.util.StringUtils.trim(pdict.PaRes);
+	//var signedPaRes : String =pdict.PaRes;
+	signedPaRes = signedPaRes.replace(/[^a-zA-Z0-9/+=]/g,"");
 
 	var CybersourceHelper = getCybersourceHelper();
 	
@@ -47,7 +50,7 @@ function execute( pdict : PipelineDictionary ) : Number
 
 	var request = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPayerAuthValidateInfo(request,orderNo,signedPaRes,creditCardForm,amount.currencyCode);
+	CybersourceHelper.addPayerAuthValidateInfo(request,orderNo,signedPaRes,creditCardForm,amount);
 
 	var response = null;
 	// send request
@@ -76,6 +79,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.CommerceIndicator =  response.payerAuthValidateReply.commerceIndicator;
 		pdict.XID = response.payerAuthValidateReply.xid;
 		pdict.ECIRaw = response.payerAuthValidateReply.eciRaw;
+		pdict.ParesStatus = response.payerAuthValidateReply.paresStatus;
 	}
 
     return PIPELET_NEXT;

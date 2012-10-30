@@ -12,7 +12,8 @@
 * @input  billTo : Object 
 * @input  shipTo : Object
 * @input  card : Object
-* @input  purchaseTotals : Object 
+* @input  purchaseTotals : Object
+* @input ParesStatus : String paresStatus as returned by Cybersource
 *
 * optional payer auth input data 
 * if XID is provided (not null) the PA data is added to the request
@@ -36,6 +37,7 @@
 * @output MissingFieldsArray : Array Contains any missing (and required) fields to complete DAV processing
 * @output InvalidFieldsArray : Array Contains any invalid (and required) fields to complete DAV processing
 * @output StandardizedAddress : Object Contains any 'corrections' made to the address from standards point of view
+* @output SubscriptionIDToken :String Token
 *
 * @output Temp : Object;
 * Author: Danny Gehl
@@ -95,8 +97,15 @@ function execute( pdict : PipelineDictionary ) : Number
 	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,basket.UUID, CybersourceHelper.getDigitalFingerprintEnabled());		
 	if(pdict.XID != null)
 	{
-		CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID);
+		CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID, pdict.ParesStatus);
 	}
+	
+	/********************************/
+	/* TOKEN-related WebService setup */
+	/********************************/
+	var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+	if(enableTokenization=='YES')
+		CybersourceHelper.addPaySubscriptionCreateService(request,billToObject,purchaseObject,cardObject,pdict.OrderNo);
 	
 	/********************************/
 	/* DAV-related WebService setup */
@@ -167,6 +176,10 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.AuthorizationAmount = response.ccAuthReply.amount;
 		pdict.AuthorizationCode = response.ccAuthReply.authorizationCode;
 		pdict.AuthorizationReasonCode = response.ccAuthReply.reasonCode.get();
+	}
+	if ( null != response.paySubscriptionCreateReply )
+	{
+		pdict.SubscriptionIDToken = response.paySubscriptionCreateReply.subscriptionID;
 	}
 	
 	/**********************************************/

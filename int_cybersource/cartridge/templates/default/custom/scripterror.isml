@@ -1,4 +1,2 @@
-Here is the log
-<isprint value="${pdict.log}"><br>
-
-
+Here is the log<br/>
+<isprint value="${pdict.log}">

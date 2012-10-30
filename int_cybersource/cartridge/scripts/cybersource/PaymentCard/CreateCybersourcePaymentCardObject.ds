@@ -64,7 +64,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		case "Visa": 
 			cardType="001";
 			break;
-		case "Master": 
+		case "MasterCard": 
 			cardType="002";
 			break;
 		case "Amex": 
@@ -72,6 +72,9 @@ function execute( pdict : PipelineDictionary ) : Number
 			break;
 		case "Discover": 
 			cardType="004";
+			break;
+		case "Maestro": 
+			cardType="042";
 			break;
 		// Diners Club
 		// JCB

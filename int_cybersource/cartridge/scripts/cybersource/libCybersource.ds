@@ -138,7 +138,9 @@ var CybersourceHelper = {
 	getPAMerchantID : function (){
 		return Site.getCurrent().getCustomPreferenceValue("CsPaMerchantId");
 	},
-
+	getPASaveParesStatus : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaSaveParesStatus");
+	},
 	getPAMerchantName : function (){
 		return Site.getCurrent().getCustomPreferenceValue("CsPaMerchantName");
 	},
@@ -153,6 +155,12 @@ var CybersourceHelper = {
 	
 	getDigitalFingerprintEnabled : function (){
 		return Site.getCurrent().getCustomPreferenceValue("CsDeviceFingerprintEnabled");
+	},
+	getTokenizationEnabled : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable");
+	},
+	getProofXMLEnabled : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaEnableProofXML");
 	},
 
 	/*****************************************************************************
@@ -350,7 +358,7 @@ var CybersourceHelper = {
 			case "Visa": 
 				request.card.cardType="001";
 				break;
-			case "Master": 
+			case "MasterCard": 
 				request.card.cardType="002";
 				break;
 			case "Amex": 
@@ -358,6 +366,9 @@ var CybersourceHelper = {
 				break;
 			case "Discover": 
 				request.card.cardType="004";
+				break;
+			case "Maestro": 
+				request.card.cardType="042";
 				break;
 		}
 
@@ -441,6 +452,113 @@ var CybersourceHelper = {
 		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
 		request.ccAuthService.run = true;	
 	},
+	
+	/*****************************************************************************
+	 * Name: addPaySubscriptionCreateService
+	 * Description: Add Subscription Creation service to request.
+	 ****************************************************************************/
+	addPaySubscriptionCreateService : function(
+										request : Object,
+										billTo : BillTo_Object,
+										purchase : PurchaseTotals_Object,
+										card : Card_Object,
+										refCode : String)
+	{
+	request.merchantID = CybersourceHelper.getMerchantID();
+	__setClientData( request, refCode );
+	request.billTo = __copyBillTo( billTo );
+	request.purchaseTotals = __copyPurchaseTotals( purchase );
+	request.card = __copyCreditCard( card );
+	request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+	request.recurringSubscriptionInfo.frequency = 'on-demand';
+	request.paySubscriptionCreateService = new CybersourceHelper.csReference.PaySubscriptionCreateService();
+	request.paySubscriptionCreateService.disableAutoAuth = 'false';
+	request.paySubscriptionCreateService.run = true;
+	},
+
+	/*****************************************************************************
+	 * Name: addPaySubscriptionRetrieveService
+	 * Description: Add Subscription Retreival service to request.
+	 ****************************************************************************/	
+	addPaySubscriptionRetrieveService : function(
+										request : Object,
+										refCode : String,
+										subscriptionID : String)
+	{
+	request.merchantID = CybersourceHelper.getMerchantID();
+	__setClientData( request, refCode );
+	request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+	request.recurringSubscriptionInfo.subscriptionID = subscriptionID;
+	request.paySubscriptionRetrieveService = new CybersourceHelper.csReference.PaySubscriptionRetrieveService();
+	request.paySubscriptionRetrieveService.run = true;
+	},
+	
+	/*****************************************************************************
+	 * Name: addPaySubscriptionDeleteService
+	 * Description: Add Subscription Deletion service to request.
+	 ****************************************************************************/	
+	addPaySubscriptionDeleteService : function(
+										request : Object,
+										refCode : String,
+										subscriptionID : String)
+	{
+	request.merchantID = CybersourceHelper.getMerchantID();
+	__setClientData( request, refCode );
+	request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+	request.recurringSubscriptionInfo.subscriptionID = subscriptionID;
+	request.paySubscriptionDeleteService = new CybersourceHelper.csReference.PaySubscriptionDeleteService();
+	request.paySubscriptionDeleteService.run = true;
+	},
+
+	/*****************************************************************************
+	 * Name: addSubscriptionUpdateInfo
+	 * Description: Add Subscription Updation service to request.
+	 ****************************************************************************/		
+	addSubscriptionUpdateInfo : function(
+									request : Object, 
+									billTo : BillTo_Object, 
+									purchase : PurchaseTotals_Object, 
+									card : Card_Object,
+									subscriptionID : String)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		var merchantRefCode : String = "0000000" ;  //dummy value as it is not required for this call
+		__setClientData( request, merchantRefCode );
+		request.billTo = __copyBillTo( billTo );
+		
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+		request.card = __copyCreditCard( card );
+		
+		var request_recurringSubscriptionInfo : Object = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+		request_recurringSubscriptionInfo["subscriptionID"] = subscriptionID;
+		request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+		
+
+		request.paySubscriptionUpdateService = new CybersourceHelper.csReference.PaySubscriptionUpdateService();		
+		request.paySubscriptionUpdateService.run = true;
+	},
+
+	/*****************************************************************************
+	 * Name: addOnDemandSubscriptionInfo
+	 * Description: Add On Demand payment service to request.
+	 ****************************************************************************/		
+	addOnDemandSubscriptionInfo : function(
+										subscriptionID : String,
+										request : Object,
+										purchase : PurchaseTotals_Object,
+										refCode : String)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, refCode );
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+		
+		var request_recurringSubscriptionInfo : Object = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+		request_recurringSubscriptionInfo["subscriptionID"] = subscriptionID;
+		request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+		
+		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
+		request.ccAuthService.run = true;	
+	},
 
 	addBMLAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object,bml : BML_Object, promo : Boolean, refCode : String)
 	{			
@@ -508,10 +626,10 @@ var CybersourceHelper = {
 
 		// enroll specific stuff		
 		request.payerAuthEnrollService = new CybersourceHelper.csReference.PayerAuthEnrollService();
-		request.payerAuthEnrollService.countryCode = countryCode;
-		request.payerAuthEnrollService.merchantID = CybersourceHelper.getPAMerchantID(); // NOT the Cybersource merchant ID
-		request.payerAuthEnrollService.merchantName = CybersourceHelper.getPAMerchantName();
-		request.payerAuthEnrollService.merchantURL = CybersourceHelper.getMerchantURL();
+		//request.payerAuthEnrollService.countryCode = countryCode;
+		//request.payerAuthEnrollService.merchantID = CybersourceHelper.getPAMerchantID(); // NOT the Cybersource merchant ID
+		//request.payerAuthEnrollService.merchantName = CybersourceHelper.getPAMerchantName();
+		//request.payerAuthEnrollService.merchantURL = CybersourceHelper.getMerchantURL();
 
 		request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
 		request.purchaseTotals.currency=amount.currencyCode;
@@ -519,14 +637,40 @@ var CybersourceHelper = {
 		var items : Array = new Array();
 		var item = new CybersourceHelper.csReference.Item();
 		item.id = 0;
-		item.unitPrice = StringUtils.formatNumber(amount.value,"000000.00","en_US");;
+		item.unitPrice = StringUtils.formatNumber(amount.value,"000000.00","en_US");
 		items.push(item);
 		request.item = items;
 
 		request.payerAuthEnrollService.run=true;
 	},
 	
-	addPayerAuthValidateInfo : function(request : Object, orderNo : String, signedPARes : String, creditCardForm : dw.web.FormElement, currency : String){
+	addCardInfo : function(request : Object, creditCardForm : dw.web.FormElement) {
+     request.card = new CybersourceHelper.csReference.Card();
+     request.card.expirationMonth = StringUtils.formatNumber(creditCardForm.month.htmlValue, "00");
+     request.card.expirationYear = creditCardForm.year.value; 
+     request.card.accountNumber = creditCardForm.number.value;     
+     
+     switch(creditCardForm.type.htmlValue){
+		case "Visa": 
+			request.card.cardType="001";
+			break;
+		case "MasterCard": 
+			request.card.cardType="002";
+			break;
+		case "Amex": 
+			request.card.cardType="003";
+			break;
+		case "Discover": 
+			request.card.cardType="004";
+			break;
+		case "Maestro": 
+			request.card.cardType="042";
+			break;
+	}
+    return request;     
+	},
+	
+	addPayerAuthValidateInfo : function(request : Object, orderNo : String, signedPARes : String, creditCardForm : dw.web.FormElement, amount : dw.value.Money){
 		request.merchantID = CybersourceHelper.getMerchantID();
 		
 		__setClientData( request, orderNo );
@@ -538,12 +682,18 @@ var CybersourceHelper = {
 		request.payerAuthValidateService.signedPARes = signedPARes;
 
 		request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
-		request.purchaseTotals.currency=currency;
+		request.purchaseTotals.currency=amount.currencyCode;
+		var items : Array = new Array();
+		var item = new CybersourceHelper.csReference.Item();
+		item.id = 0;
+		item.unitPrice = StringUtils.formatNumber(amount.value,"000000.00","en_US");
+		items.push(item);
+		request.item = items;
 
 		request.payerAuthValidateService.run=true;
 	},
 	
-	addPayerAuthReplyInfo : function(request : Object, cavv : String, ucafAuthenticationData : String, ucafCollectionIndicator : String, eciRaw : String, commerceIndicator : String, xid : String){
+	addPayerAuthReplyInfo : function(request : Object, cavv : String, ucafAuthenticationData : String, ucafCollectionIndicator : String, eciRaw : String, commerceIndicator : String, xid : String, paresStatus : String){
 		if(request.ccAuthService == null){
 			request.ccAuthService=new CybersourceHelper.csReference.CCAuthService();
 		}
@@ -560,6 +710,8 @@ var CybersourceHelper = {
 			request.ucaf.authenticationData = ucafAuthenticationData;
 			request.ucaf.collectionIndicator = ucafCollectionIndicator;
 		}
+		if(CybersourceHelper.getPASaveParesStatus())
+			request.ccAuthService.paresStatus = paresStatus;
 	},
 
    addTaxRequest : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object, shipFrom : ShipFrom_Object, taxService : TaxService_Object, items : Array, refCode : String)
@@ -608,7 +760,7 @@ function getCybersourceHelper()
 function __setClientData( request : Object, refCode : String , fingerprint : String  )
 {
 	request.merchantReferenceCode = refCode; 
-	request.clientLibrary='Demandware';
+	request.clientLibrary='Demandware_1.1.0';
 	request.clientLibraryVersion='2.2';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {
