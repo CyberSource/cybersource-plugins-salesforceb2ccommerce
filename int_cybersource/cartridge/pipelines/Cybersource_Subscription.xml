@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline initiates the test suit for Subscription service of CyberSource</description>
+        </text-node>
+        <node-display x="1" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Start">
+    <segment>
+      <node>
+        <start-node name="Start" secure="false"/>
+        <node-display x="1" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/subscription"/>
+        </interaction-node>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create subscription with test data</description>
+        </text-node>
+        <node-display x="4" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_4">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to view saved subscription information from CyberSource</description>
+        </text-node>
+        <node-display x="7" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreateSubscription">
+    <segment>
+      <node>
+        <start-node name="CreateSubscription" secure="false"/>
+        <node-display x="4" y="3"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.subscription" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="false" start-name="CreateSubscriptionData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/createsubscription"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourceBillToObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourceBillTo" key="CyberSourceBillTo"/>
+                <key-binding alias="card" key="CyberSourceCard"/>
+                <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="shipTo" key="CyberSourceShipTo"/>
+                <key-binding alias="CurrentForms.subscription.ipAddress.htmlValue" key="ipAddress"/>
+                <key-binding alias="CurrentForms.subscription.city.htmlValue" key="city"/>
+                <key-binding alias="CurrentForms.subscription.country.htmlValue" key="country"/>
+                <key-binding alias="CurrentForms.subscription.dob.htmlValue" key="dob"/>
+                <key-binding alias="CurrentForms.subscription.email.htmlValue" key="email"/>
+                <key-binding alias="CurrentForms.subscription.firstName.htmlValue" key="firstName"/>
+                <key-binding alias="CurrentForms.subscription.lastName.htmlValue" key="lastName"/>
+                <key-binding alias="CurrentForms.subscription.phoneNumber.htmlValue" key="phonenumber"/>
+                <key-binding alias="CurrentForms.subscription.postalCode.htmlValue" key="postalCode"/>
+                <key-binding alias="CurrentForms.subscription.state.htmlValue" key="state"/>
+                <key-binding alias="CurrentForms.subscription.street1.htmlValue" key="street1"/>
+                <key-binding alias="CurrentForms.subscription.title.htmlValue" key="title"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="./b3.1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.subscription.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.subscription.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b4.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePaymentCardObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourcePaymentCard" key="CyberSourceCard"/>
+                <key-binding alias="CurrentForms.subscription.accountNumber.htmlValue" key="accountNumber"/>
+                <key-binding alias="CurrentForms.subscription.cardType.htmlValue" key="cardType"/>
+                <key-binding alias="CurrentForms.subscription.cvnNumber.htmlValue" key="cvnnumber"/>
+                <key-binding alias="CurrentForms.subscription.expiryMonth.htmlValue" key="expiryMonth"/>
+                <key-binding alias="CurrentForms.subscription.expiryYear.htmlValue" key="expiryYear"/>
+                <key-binding alias="CurrentForms.subscription.firstName.htmlValue" key="firstName"/>
+                <key-binding alias="CurrentForms.subscription.lastName.htmlValue" key="lastName"/>
+                <key-binding alias="CurrentForms.subscription.cvnNumber.htmlValue" key="cvnNumber"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b5.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateSubscription.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="reason" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="descision" key="Decision"/>
+                <key-binding alias="requestid" key="RequestID"/>
+                <key-binding alias="token" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+                <key-binding alias="decision" key="decision"/>
+                <key-binding alias="invalidField" key="invalidField"/>
+                <key-binding alias="reasonCode" key="reasonCode"/>
+                <key-binding alias="requestID" key="requestID"/>
+                <key-binding alias="requestToken" key="requestToken"/>
+                <key-binding alias="missingField" key="missingField"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b5" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="subscription/createsubscriptionresult"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="ViewSubscription">
+    <segment>
+      <node>
+        <start-node name="ViewSubscription" secure="false"/>
+        <node-display x="7" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.subscription" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="false" start-name="ViewSubscriptionData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/viewsubscriptionform"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/ViewSubscription.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="reason" key="ReasonCode"/>
+          <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+          <key-binding alias="authamount" key="AuthorizationAmount"/>
+          <key-binding alias="authcode" key="AuthorizationCode"/>
+          <key-binding alias="descision" key="Decision"/>
+          <key-binding alias="requestid" key="RequestID"/>
+          <key-binding alias="token" key="RequestToken"/>
+          <key-binding alias="CybersourceBillTo" key="billTo"/>
+          <key-binding alias="CybersourcePaymentCard" key="card"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="CybersourceShipTo" key="shipTo"/>
+          <key-binding alias="AVSCode" key="AVSCode"/>
+          <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+          <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+          <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+          <key-binding alias="decision" key="decision"/>
+          <key-binding alias="invalidField" key="invalidField"/>
+          <key-binding alias="reasonCode" key="reasonCode"/>
+          <key-binding alias="requestID" key="requestID"/>
+          <key-binding alias="requestToken" key="requestToken"/>
+          <key-binding alias="missingField" key="missingField"/>
+          <key-binding alias="CurrentForms.subscription.subscriptionID.htmlValue" key="subscriptionID"/>
+          <key-binding alias="response" key="viewSubscriptionResponse"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+              </interaction-node>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/viewsubscriptionresult"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_7">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to update the subscription profile saved on  CyberSource servers</description>
+        </text-node>
+        <node-display x="10" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="UpdateSubscription">
+    <segment>
+      <node>
+        <start-node call-mode="public" name="UpdateSubscription" secure="false">
+          <description>Updates a Subscription ID (Profile) on Cybersource End with specific data</description>
+        </start-node>
+        <node-display x="10" y="3"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.subscription" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="UpdateSubscriptionData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/updatesubscriptionform"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourceBillToObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CybersourceBillTo" key="CyberSourceBillTo"/>
+          <key-binding alias="card" key="CyberSourceCard"/>
+          <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
+          <key-binding alias="shipTo" key="CyberSourceShipTo"/>
+          <key-binding alias="CurrentForms.subscription.ipAddress.htmlValue" key="ipAddress"/>
+          <key-binding alias="CurrentForms.subscription.city.htmlValue" key="city"/>
+          <key-binding alias="CurrentForms.subscription.country.htmlValue" key="country"/>
+          <key-binding alias="CurrentForms.subscription.dob.htmlValue" key="dob"/>
+          <key-binding alias="CurrentForms.subscription.email.htmlValue" key="email"/>
+          <key-binding alias="CurrentForms.subscription.firstName.htmlValue" key="firstName"/>
+          <key-binding alias="CurrentForms.subscription.lastName.htmlValue" key="lastName"/>
+          <key-binding alias="CurrentForms.subscription.phoneNumber.htmlValue" key="phonenumber"/>
+          <key-binding alias="CurrentForms.subscription.postalCode.htmlValue" key="postalCode"/>
+          <key-binding alias="CurrentForms.subscription.state.htmlValue" key="state"/>
+          <key-binding alias="CurrentForms.subscription.street1.htmlValue" key="street1"/>
+          <key-binding alias="CurrentForms.subscription.title.htmlValue" key="title"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="./b3.1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+          <key-binding alias="CurrentForms.subscription.amount.htmlValue" key="amount"/>
+          <key-binding alias="CurrentForms.subscription.currency.htmlValue" key="currency"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../b4.1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePaymentCardObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CybersourcePaymentCard" key="CyberSourceCard"/>
+          <key-binding alias="CurrentForms.subscription.accountNumber.htmlValue" key="accountNumber"/>
+          <key-binding alias="CurrentForms.subscription.cardType.htmlValue" key="cardType"/>
+          <key-binding alias="CurrentForms.subscription.cvnNumber.htmlValue" key="cvnnumber"/>
+          <key-binding alias="CurrentForms.subscription.expiryMonth.htmlValue" key="expiryMonth"/>
+          <key-binding alias="CurrentForms.subscription.expiryYear.htmlValue" key="expiryYear"/>
+          <key-binding alias="CurrentForms.subscription.firstName.htmlValue" key="firstName"/>
+          <key-binding alias="CurrentForms.subscription.lastName.htmlValue" key="lastName"/>
+          <key-binding alias="CurrentForms.subscription.cvnNumber.htmlValue" key="cvnNumber"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../b5.1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/UpdateSubscription.ds"/>
+          <key-binding alias="reason" key="ReasonCode"/>
+          <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+          <key-binding alias="authamount" key="AuthorizationAmount"/>
+          <key-binding alias="authcode" key="AuthorizationCode"/>
+          <key-binding alias="descision" key="Decision"/>
+          <key-binding alias="requestid" key="RequestID"/>
+          <key-binding alias="token" key="RequestToken"/>
+          <key-binding alias="CybersourceBillTo" key="billTo"/>
+          <key-binding alias="CybersourcePaymentCard" key="card"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="CybersourceShipTo" key="shipTo"/>
+          <key-binding alias="AVSCode" key="AVSCode"/>
+          <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+          <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+          <key-binding alias="SubscriptionID" key="SubscriptionID"/>
+          <key-binding alias="UpdateSubscriptionReason" key="SubscriptionReasonCode"/>
+          <key-binding alias="CurrentForms.subscription.subscriptionID.htmlValue" key="storedSubscriptionID"/>
+          <key-binding alias="NewSubscriptionID" key="NewSubscriptionID"/>
+          <key-binding alias="CybersourceUnavailableFlag" key="CybersourceUnavailableFlag"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="decision" key="decision"/>
+          <key-binding alias="invalidField" key="invalidField"/>
+          <key-binding alias="missingField" key="missingField"/>
+          <key-binding alias="reasonCode" key="reasonCode"/>
+          <key-binding alias="requestID" key="requestID"/>
+          <key-binding alias="requestToken" key="requestToken"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b5" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/updatesubscriptionresult"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_9">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to delete subscription from CyberSource servers</description>
+        </text-node>
+        <node-display x="13" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="DeleteSubscription">
+    <segment>
+      <node>
+        <start-node name="DeleteSubscription" secure="false"/>
+        <node-display x="13" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.subscription" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="false" start-name="DeleteSubscriptionData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/viewsubscriptionform"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/DeleteSubscription.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="reason" key="ReasonCode"/>
+          <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+          <key-binding alias="authamount" key="AuthorizationAmount"/>
+          <key-binding alias="authcode" key="AuthorizationCode"/>
+          <key-binding alias="descision" key="Decision"/>
+          <key-binding alias="requestid" key="RequestID"/>
+          <key-binding alias="token" key="RequestToken"/>
+          <key-binding alias="CybersourceBillTo" key="billTo"/>
+          <key-binding alias="CybersourcePaymentCard" key="card"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="CybersourceShipTo" key="shipTo"/>
+          <key-binding alias="AVSCode" key="AVSCode"/>
+          <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+          <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+          <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+          <key-binding alias="decision" key="decision"/>
+          <key-binding alias="invalidField" key="invalidField"/>
+          <key-binding alias="reasonCode" key="reasonCode"/>
+          <key-binding alias="requestID" key="requestID"/>
+          <key-binding alias="requestToken" key="requestToken"/>
+          <key-binding alias="missingField" key="missingField"/>
+          <key-binding alias="CurrentForms.subscription.subscriptionID.htmlValue" key="subscriptionID"/>
+          <key-binding alias="response" key="viewSubscriptionResponse"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+              </interaction-node>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/deletesubscriptionresult"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_11">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to make on demand payment using the subscription</description>
+        </text-node>
+        <node-display x="16" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="OnDemandPayment">
+    <segment>
+      <node>
+        <start-node name="OnDemandPayment" secure="false"/>
+        <node-display x="16" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.subscription" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="false" start-name="OnDemandSubscriptionData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/ondemandsubscriptionform"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+          <key-binding alias="CurrentForms.subscription.amount.htmlValue" key="amount"/>
+          <key-binding alias="CurrentForms.subscription.currency.htmlValue" key="currency"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in2" target-path="./b3.1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Subscription/OnDemandSubscription.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="CurrentForms.subscription.subscriptionID.htmlValue" key="subscriptionID"/>
+          <key-binding alias="amount" key="amount"/>
+          <key-binding alias="authorizationCode" key="authorizationCode"/>
+          <key-binding alias="decision" key="decision"/>
+          <key-binding alias="processorResponse" key="processorResponse"/>
+          <key-binding alias="reasonCode" key="reasonCode"/>
+          <key-binding alias="reconciliationID" key="reconciliationID"/>
+          <key-binding alias="requestID" key="requestID"/>
+          <key-binding alias="requestToken" key="requestToken"/>
+          <key-binding alias="authorizedDateTime" key="authorizedDateTime"/>
+          <key-binding alias="invalidField" key="invalidField"/>
+          <key-binding alias="missingField" key="missingField"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="subscription/ondemandsubscriptionresult"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>
