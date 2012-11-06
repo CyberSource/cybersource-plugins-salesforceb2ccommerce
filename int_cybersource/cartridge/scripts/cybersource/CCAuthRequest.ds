@@ -160,7 +160,9 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	pdict.RequestID = response.requestID;
 	pdict.RequestToken = response.requestToken;
-	pdict.SubscriptionId = response.paySubscriptionCreateReply.subscriptionID;
+	if (null != response.paySubscriptionCreateReply) {
+		pdict.SubscriptionId = response.paySubscriptionCreateReply.subscriptionID;
+	}
 	pdict.ReasonCode = response.reasonCode.get();
 	pdict.Decision = response.decision;
 	
