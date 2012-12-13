@@ -11,6 +11,7 @@
 
 * @input  billTo : Object 
 * @input  shipTo : Object
+* @input  item : Array
 * @input  card : Object
 * @input  purchaseTotals : Object
 * @input ParesStatus : String paresStatus as returned by Cybersource
@@ -94,7 +95,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	// the request object holds the input parameter for the AUTH request
 	//**************************************************************************//	
 	var request = new csReference.RequestMessage();
-	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,basket.UUID, CybersourceHelper.getDigitalFingerprintEnabled());		
+	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,basket.UUID, CybersourceHelper.getDigitalFingerprintEnabled(), pdict.item);		
 	if(pdict.XID != null)
 	{
 		CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID, pdict.ParesStatus);
@@ -175,7 +176,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		pdict.AuthorizationAmount = response.ccAuthReply.amount;
 		pdict.AuthorizationCode = response.ccAuthReply.authorizationCode;
-		pdict.AuthorizationReasonCode = response.ccAuthReply.reasonCode.get();
+		//pdict.AuthorizationReasonCode = response.ccAuthReply.reasonCode.get();
+		pdict.AuthorizationReasonCode = response.reasonCode.get();
 	}
 	if ( null != response.paySubscriptionCreateReply )
 	{

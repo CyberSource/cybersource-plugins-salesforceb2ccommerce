@@ -434,7 +434,7 @@ var CybersourceHelper = {
 	 * card     : Card_Object,
 	 * refCode  : String   - Basket.UUID
 	 *****************************************************************************/	
-	addCCAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object , refCode : String , enableDeviceFingerprint : Boolean)
+	addCCAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object , refCode : String , enableDeviceFingerprint : Boolean, itemsCybersource: dw.util.List)
 	{
 		
 		request.merchantID = CybersourceHelper.getMerchantID();
@@ -448,10 +448,39 @@ var CybersourceHelper = {
 		request.shipTo = __copyShipTo( shipTo );
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
 		request.card = __copyCreditCard( card );
+		var items : Array = new Array();
+		var iter : dw.util.Iterator = itemsCybersource.iterator();
+		while(iter.hasNext())
+		{
+			items.push(__copyItemFrom(iter.next()));
+		}
+		
+		request.item = items;
 		
 		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
 		request.ccAuthService.run = true;	
 	},
+	
+	
+	/*****************************************************************************
+	 * Name: addReversalService
+	 * Description: Add Subscription Creation service to request.
+	 ****************************************************************************/
+	addReversalService : function(
+										request : Object,
+										purchase : PurchaseTotals_Object,
+										refCode : String,
+										authorizationID : String)
+	{
+	request.merchantID = CybersourceHelper.getMerchantID();
+	__setClientData( request, refCode );
+	request.purchaseTotals = __copyPurchaseTotals( purchase );
+	
+	request.ccAuthReversalService = new CybersourceHelper.csReference.CCAuthReversalService();
+	request.ccAuthReversalService.authRequestID = authorizationID;
+	request.ccAuthReversalService.run = true;
+	},
+	
 	
 	/*****************************************************************************
 	 * Name: addPaySubscriptionCreateService
@@ -894,6 +923,24 @@ function __copyShipFrom( shipFrom : ShipFrom_Object ) : Object
 		}
 	}
 	return request_shipFrom;
+}
+
+function __copyItemFrom( item : Item_Object ) : Object
+{
+	var request_item : Object = new CybersourceHelper.csReference.Item();
+	var value : String;
+	for ( var name : String in item)
+	{
+		if ( name.indexOf("set") == -1 && name.indexOf("get") == -1)
+		{
+			value = item[name];
+			if(value != "")
+			{
+				request_item[name] = value;
+			}
+		}
+	}
+	return request_item;
 }
 
 function __copyTaxAmounts( _taxReply : Object ) : Object

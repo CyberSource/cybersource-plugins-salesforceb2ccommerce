@@ -5,8 +5,8 @@ function Item_Object() {
 	this.getUnitPrice = getUnitPrice;
 	
 	this.quantity = "";
-	this.setQuanity = setQuanity;
-	this.getQuanity = getQuanity;
+	this.setQuantity = setQuantity;
+	this.getQuantity = getQuantity;
 	
 	this.productCode = "";
 	this.setProductCode = setProductCode;
@@ -18,7 +18,7 @@ function Item_Object() {
 	
 	this.productSKU = "";
 	this.setProductSKU = setProductSKU;
-	this.getProductCode = getProductSKU;
+	this.getProductSKU = getProductSKU;
 	
 	this.productRisk = "";
 	this.setProductRisk = setProductRisk;
@@ -42,7 +42,7 @@ function Item_Object() {
 	
 	this.countyOverrideRate = "";
 	this.setCountyOverrideRate = setCountyOverrideRate;
-	this.getCountyOverrideRate = getCountyOverride;
+	this.getCountyOverrideRate = getCountyOverrideRate;
 	
 	this.districtOverrideAmount = "";
 	this.setDistrictOverrideAmount = setDistrictOverrideAmount;
@@ -50,7 +50,7 @@ function Item_Object() {
 	
 	this.districtOverrideRate = "";
 	this.setDistrictOverrideRate = setDistrictOverrideRate;
-	this.getDistrictOverrideRate = getDistrictOverride;
+	this.getDistrictOverrideRate = getDistrictOverrideRate;
 	
 	this.stateOverrideAmount = "";
 	this.setStateOverrideAmount = setStateOverrideAmount;
@@ -58,33 +58,25 @@ function Item_Object() {
 	
 	this.stateOverrideRate = "";
 	this.setStateOverrideRate = setStateOverrideRate;
-	this.getStateOverrideRate = getStateOverride;
+	this.getStateOverrideRate = getStateOverrideRate;
 	
-	this.countryOverrideAmount = "";
-	this.setCountryOverrideAmount = setCountryOverrideAmount;
-	this.getCountryOverrideAmount = getCountryOverrideAmount;
-	
-	this.countryOverrideRate = "";
-	this.setCountryOverrideRate = setCountryOverrideRate;
-	this.getCountryOverrideRate = getCountryOverride;
-	
-	this.orderAcceptanceCity = "":
+	this.orderAcceptanceCity = "";
 	this.setOrderAcceptanceCity = setOrderAcceptanceCity;
 	this.getOrderAcceptanceCity = getOrderAcceptanceCity;
 	
-	this.orderAcceptanceCounty = "":
+	this.orderAcceptanceCounty = "";
 	this.setOrderAcceptanceCounty = setOrderAcceptanceCounty;
 	this.getOrderAcceptanceCounty = getOrderAcceptanceCounty;
 	
-	this.orderAcceptanceCountry = "":
+	this.orderAcceptanceCountry = "";
 	this.setOrderAcceptanceCountry = setOrderAcceptanceCountry;
 	this.getOrderAcceptanceCountry = getOrderAcceptanceCountry;
 	
-	this.orderAcceptanceState = "":
+	this.orderAcceptanceState = "";
 	this.setOrderAcceptanceState = setOrderAcceptanceState;
 	this.getOrderAcceptanceState = getOrderAcceptanceState;
 	
-	this.orderAcceptancePostalCode = "":
+	this.orderAcceptancePostalCode = "";
 	this.setOrderAcceptancePostalCode = setOrderAcceptancePostalCode;
 	this.getOrderAcceptancePostalCode = getOrderAcceptancePostalCode;
 	
@@ -131,10 +123,6 @@ function Item_Object() {
 	this.Export = "";
 	this.setExport = setExport;
 	this.getExport = getExport;
-	
-	this.noExport = "";
-	this.setNoExport = setNoExport;
-	this.getNoExport = getNoExport;
 	
 	this.nationalTax = "";
 	this.setNationalTax = setNationalTax;
@@ -204,10 +192,6 @@ function Item_Object() {
 	this.setDiscountAmount = setDiscountAmount;
 	this.getDiscountAmount = getDiscountAmount;
 	
-	this.discountRate = "";
-	this.setDiscountRate = setDiscountRate;
-	this.getDiscountRate = getDiscountRate;
-	
 	this.commodityCode = "";
 	this.setCommodityCode = setCommodityCode;
 	this.getCommodityCode = getCommodityCode;
@@ -233,7 +217,7 @@ function Item_Object() {
 	this.getAlternateTaxAmount = getAlternateTaxAmount;
 	
 	this.alternateTaxApplied = "";
-	this.setAlternateTaxApplied = setAlternateTaxpplied;
+	this.setAlternateTaxApplied = setAlternateTaxApplied;
 	this.getAlternateTaxApplied = getAlternateTaxApplied;
 	
 	this.alternateTaxRate = "";
@@ -264,11 +248,11 @@ function setUnitPrice(value){
 function getUnitPrice(){
 	return this.unitPrice;
 }
-function setQuanity(value){
-	this.quanity = value;
+function setQuantity(value){
+	this.quantity = value;
 }
-function getQuanity(){
-	return this.quanity;
+function getQuantity(){
+	return this.quantity;
 }
 function setProductCode(value){
 	this.productCode = value;

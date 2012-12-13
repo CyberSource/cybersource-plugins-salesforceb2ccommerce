@@ -30,6 +30,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		var basket : Basket = pdict.Basket;
 		var billingAddress : OrderAddress = basket.billingAddress;
+		var shippingAddress : OrderAddress = basket.defaultShipment.shippingAddress;
 
 		if( !empty(billingAddress)&&!empty(basket) ) {
 			billToObject.setFirstName  ( billingAddress.firstName );
@@ -42,6 +43,19 @@ function execute( pdict : PipelineDictionary ) : Number
 			billToObject.setCountry    ( billingAddress.countryCode );
 			billToObject.setPhoneNumber( billingAddress.phone );
 			billToObject.setEmail      ( basket.customerEmail );
+		}
+		else
+		{
+			billToObject.setFirstName  ( shippingAddress.firstName );
+			billToObject.setLastName   ( shippingAddress.lastName );
+			billToObject.setStreet1    ( shippingAddress.address1 );
+			billToObject.setStreet2    ( shippingAddress.address2 );
+			billToObject.setCity       ( shippingAddress.city );
+			billToObject.setState      ( shippingAddress.stateCode );
+			billToObject.setPostalCode ( shippingAddress.postalCode );
+			billToObject.setCountry    ( shippingAddress.countryCode );
+			billToObject.setPhoneNumber( shippingAddress.phone );
+			billToObject.setEmail      ( "test@test.com" );
 		}
 	}
 	else

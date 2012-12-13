@@ -66,8 +66,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	}
 
 	var request = new csReference.RequestMessage();
-
-	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject);
+	
+	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,"test",CybersourceHelper.getDigitalFingerprintEnabled(),null);
 	
 	/********************************/
 	/* DAV-related WebService setup */

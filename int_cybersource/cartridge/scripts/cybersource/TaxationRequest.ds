@@ -81,11 +81,34 @@ function execute( pdict : PipelineDictionary ) : Number
 	// in case of success update basket
 	if(taxationResponse.decision == "ACCEPT"){
 		var resItem;
-		for each(resItem in taxationResponse.taxReply.item){
+		for each(resItem in taxationResponse.taxReply.item)
+		{
 			var lineItem : ProductLineItem = itemMap.get(resItem.id.toString());
 			var itemTax : dw.value.Money = new dw.value.Money(new Number((lineItem.class.name == 'dw.order.PriceAdjustment'?"-":"")+resItem.totalTaxAmount),basket.currencyCode);
 			lineItem.setTax(itemTax);
-			lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+			
+			//lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+			
+			//*****************************************************************//
+			// An issue with this code incorrectly updates the line items and the order totals in the basket by ignoring the
+			// discount –  resulting in an order total higher than it should be. 
+			// This block of code fix is used to accumulate the gross price of line item's adjusted/discounted price and item tax in the basket.
+			// And update the basket after accumulating all line items gross price and taxes. 
+			//    
+			//*****************************************************************//
+			
+			if( lineItem instanceof dw.order.ProductLineItem ) 
+			{
+				lineItem.setGrossPrice(lineItem.proratedPrice.add(itemTax));
+			} 
+			else if( lineItem instanceof dw.order.ShippingLineItem )
+		 	{
+				lineItem.setGrossPrice(lineItem.adjustedNetPrice.add(itemTax));
+			} 
+			else 
+			{
+				lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+			}
 		}
 		pdict.totalTaxAmount = taxationResponse.taxReply.totalTaxAmount;
 		basket.updateTotals();
