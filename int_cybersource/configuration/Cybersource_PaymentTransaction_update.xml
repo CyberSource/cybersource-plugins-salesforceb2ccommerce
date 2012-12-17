@@ -1,92 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?><metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
-   
-<type-extension type-id="PaymentTransaction">
-        <system-attribute-definitions>
-            <attribute-definition attribute-id="UUID">
-                <mandatory-flag>true</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-                <field-length>28</field-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="creationDate">
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="lastModified">
-                <mandatory-flag>true</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="transactionID">
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-        </system-attribute-definitions>
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="AmountPaid">
-                <display-name xml:lang="x-default">Amount Paid</display-name>
-                <type>double</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>true</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="approvalStatus">
-                <display-name xml:lang="x-default">Approval Status</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="authAmount">
-                <display-name xml:lang="x-default">Auth Amount</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="authCode">
-                <display-name xml:lang="x-default">Authorization Code</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="cardType">
-                <display-name xml:lang="x-default">Card Type</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="requestId">
-                <display-name xml:lang="x-default">Request ID</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="requestToken">
-                <display-name xml:lang="x-default">Request Token</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <searchable-flag>false</searchable-flag>
-            </attribute-definition>
-			<attribute-definition attribute-id="subscriptionID">
-                <display-name xml:lang="x-default">SubscriptionID</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>0</field-length>
-            </attribute-definition>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+	<type-extension type-id="PaymentTransaction">
+		<system-attribute-definitions>
+			<attribute-definition attribute-id="UUID">
+				<min-length>0</min-length>
+				<field-length>28</field-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="creationDate"/>
+			<attribute-definition attribute-id="lastModified"/>
+			<attribute-definition attribute-id="transactionID">
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="type">
+				<value-definitions immutable="true">
+					<value-definition>
+						<display xml:lang="x-default">Authorization</display>
+						<value>TYPE_AUTH</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">Authorization Reversal</display>
+						<value>TYPE_AUTH_REVERSAL</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">Capture</display>
+						<value>TYPE_CAPTURE</value>
+					</value-definition>
+					<value-definition>
+						<display xml:lang="x-default">Credit</display>
+						<value>TYPE_CREDIT</value>
+					</value-definition>
+				</value-definitions>
+			</attribute-definition>
+		</system-attribute-definitions>
+		<custom-attribute-definitions>
+			<attribute-definition attribute-id="AmountPaid">
+				<display-name xml:lang="x-default">Amount Paid</display-name>
+				<type>double</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+			</attribute-definition>
+			<attribute-definition attribute-id="approvalStatus">
+				<display-name xml:lang="x-default">Approval Status</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="authAmount">
+				<display-name xml:lang="x-default">Auth Amount</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="authCode">
+				<display-name xml:lang="x-default">Authorization Code</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="cardType">
+				<display-name xml:lang="x-default">Card Type</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="eFundsTransactionHistory">
+				<display-name xml:lang="x-default">eFunds Transaction History</display-name>
+				<type>set-of-string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+			</attribute-definition>
 			<attribute-definition attribute-id="proofXML">
-                <display-name xml:lang="x-default">Payer Authentication Proof.xml</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>0</field-length>
-            </attribute-definition>
-        </custom-attribute-definitions>
+				<display-name xml:lang="x-default">Payer Authentication Proof.xml</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="requestId">
+				<display-name xml:lang="x-default">Request ID</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="requestToken">
+				<display-name xml:lang="x-default">Request Token</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+			</attribute-definition>
+			<attribute-definition attribute-id="subscriptionID">
+				<display-name xml:lang="x-default">SubscriptionID</display-name>
+				<type>string</type>
+				<mandatory-flag>false</mandatory-flag>
+				<externally-managed-flag>false</externally-managed-flag>
+				<min-length>0</min-length>
+				<field-length>0</field-length>
+			</attribute-definition>
+		</custom-attribute-definitions>
 		<group-definitions>
-            <attribute-group group-id="Custom">
-                <display-name xml:lang="x-default">Custom</display-name>
-                <attribute attribute-id="eFundsTransactionHistory"/>
-                <attribute attribute-id="subscriptionID"/>
-                <attribute attribute-id="proofXML"/>
-            </attribute-group>
-        </group-definitions>
-    </type-extension>
+			<attribute-group group-id="Custom">
+				<display-name xml:lang="x-default">Custom</display-name>
+				<attribute attribute-id="eFundsTransactionHistory"/>
+				<attribute attribute-id="subscriptionID"/>
+				<attribute attribute-id="proofXML"/>
+			</attribute-group>
+		</group-definitions>
+	</type-extension>
 </metadata>

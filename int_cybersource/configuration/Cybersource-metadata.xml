@@ -434,7 +434,6 @@ This field should be enabled after verifying cybersource merchant account settin
 				<attribute attribute-id="CsPaMerchantId"/>
 				<attribute attribute-id="CsPaMerchantPassword"/>
 				<attribute attribute-id="CsPaMerchantName"/>
-				<attribute attribute-id="CsProductTaxCode"/>
 				<attribute attribute-id="CsPoaCity"/>
 				<attribute attribute-id="CsPoaStateCode"/>
 				<attribute attribute-id="CsPoaZipCode"/>
