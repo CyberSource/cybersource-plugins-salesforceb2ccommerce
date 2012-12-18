@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline initiates the test suit for Different Cybersource services like Auth Reversal</description>
+        </text-node>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_2">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to make reversal request</description>
+        </text-node>
+        <node-display x="3" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Start">
+    <segment>
+      <node>
+        <start-node name="Start" secure="false"/>
+        <node-display x="1" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/services"/>
+        </interaction-node>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Reversal">
+    <segment>
+      <node>
+        <start-node name="Reversal" secure="false"/>
+        <node-display x="3" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.subscription" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-continue-node secure="false" start-name="ReversalData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/reversalform"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.subscription.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.subscription.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="./b3.1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Services/CreateReversal.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="reason" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="descision" key="Decision"/>
+                <key-binding alias="requestid" key="RequestID"/>
+                <key-binding alias="token" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CybersourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+                <key-binding alias="decision" key="decision"/>
+                <key-binding alias="invalidField" key="invalidField"/>
+                <key-binding alias="reasonCode" key="reasonCode"/>
+                <key-binding alias="requestID" key="requestID"/>
+                <key-binding alias="requestToken" key="requestToken"/>
+                <key-binding alias="missingField" key="missingField"/>
+                <key-binding alias="CurrentForms.subscription.authorizationID.htmlValue" key="authorizationID"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="services/reversalresult"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

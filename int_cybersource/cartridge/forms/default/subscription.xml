@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <form xmlns="http://www.demandware.com/xml/form/2008-04-19">
 	<field formid="subscriptionID" type="string" mandatory="false" label="Subscription ID:"/>
+	<field formid="authorizationID" type="string" mandatory="false" label="Authorization ID:"/>
 	<field formid="title" type="string" mandatory="false" label="Title:">
 		<options>
 			<option optionid="MR" 		label="Mr."	value="Mr."/>

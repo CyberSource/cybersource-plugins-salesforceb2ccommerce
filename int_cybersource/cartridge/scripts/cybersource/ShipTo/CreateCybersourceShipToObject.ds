@@ -52,11 +52,47 @@ function execute( pdict : PipelineDictionary ) : Number
 		shipToObject.setPostalCode(shippingAddress.postalCode);
 		shipToObject.setCountry(shippingAddress.countryCode);
 		shipToObject.setPhoneNumber(shippingAddress.phone);
-		shipToObject.setEmail(basket.customerEmail);
-		
-		if( !empty(shippingMethod) ) {
-			shipToObject.setShippingMethod(shippingMethod.displayName);
-		} else {
+		shipToObject.setEmail(basket.customerEmail);		
+		//*****************************************************//
+		// ShippingMethod custom attribute CybersourceShippingID is used to fetch Cybersource Shipping method i.e. oneday, sameday, twoday etc.
+		// if merchant does not specify Cybersource Shipping Id whilie creating shipping methods within Business Manager, the switch statement
+		// fetch default shipping method available in Demandware's Site Genesis.  
+		//*****************************************************//
+		if( !empty(shippingMethod) ) 
+		{
+			if ( !empty(shippingMethod.custom.CybersouceShippingID.value) ) 
+			{
+				shipToObject.setShippingMethod(shippingMethod.custom.CybersouceShippingID.value);
+			} 
+			else
+			{
+				switch (shippingMethod.displayName)
+					{									
+						case "Overnight":
+						shipToObject.setShippingMethod("oneday");						
+						break;
+						case "Next Day":
+						shipToObject.setShippingMethod("oneday");						
+						break;
+						case "2-Day Express":
+						shipToObject.setShippingMethod("twoday");						
+						break;	
+						case "Super Saver":
+						shipToObject.setShippingMethod("threeday");						
+						break;		
+						case "Ground":
+						shipToObject.setShippingMethod("other");						
+						break;			
+						case "None":
+						shipToObject.setShippingMethod("none");						
+						break;
+						default:
+						shipToObject.setShippingMethod("N/A");						
+						break;	
+					}				
+			}			
+		} 
+		else {
 			shipToObject.setShippingMethod("N/A");
 		}
 	}
