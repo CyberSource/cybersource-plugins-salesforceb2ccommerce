@@ -487,4 +487,74 @@ This field should be enabled after verifying cybersource merchant account settin
             </attribute-group>
         </group-definitions>
     </type-extension>
+	<type-extension type-id="ShippingMethod">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="ID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="description">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="displayName">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="taxClassID">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="CybersouceShippingID">
+                <display-name xml:lang="x-default">Cybersouce Shipping ID</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">sameday</display>
+                        <value>sameday</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">oneday</display>
+                        <value>oneday</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">twoday</display>
+                        <value>twoday</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">threeday</display>
+                        <value>threeday</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">lowcost</display>
+                        <value>lowcost</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">pickup</display>
+                        <value>pickup</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">other</display>
+                        <value>other</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">none</display>
+                        <value>none</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="CybersouceShippingId">
+                <display-name xml:lang="x-default">Cybersouce Shipping ID</display-name>
+                <attribute attribute-id="CybersouceShippingID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
 </metadata>
