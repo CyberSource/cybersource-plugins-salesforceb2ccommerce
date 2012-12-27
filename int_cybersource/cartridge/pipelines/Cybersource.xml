@@ -894,9 +894,28 @@
           </transition>
           <segment>
             <node>
+              <pipelet-node custom-name="Prevent unnessary tax calls to cybersource" pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/CreateCartStateString.ds"/>
+                <key-binding alias="CartStateStringLog" key="ScriptLog"/>
+                <key-binding alias="Basket" key="Basket"/>
+                <key-binding alias="CartStateString" key="CartStateString"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in2" target-path="../+1"/>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
               <decision-node condition-key="empty(CurrentSession.custom.SkipTaxCalculation)" condition-operator="expr"/>
               <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="yes">
+              <branch basename="b3" source-connector="yes">
                 <transition target-connector="in1" target-path="./+1"/>
               </branch>
             </node>
@@ -908,12 +927,8 @@
             <node>
               <decision-node condition-key="CurrentSession.custom.SkipTaxCalculation" condition-operator="expr"/>
               <node-display orientation="horizontal" x="1" y="0"/>
-              <branch basename="b3" source-connector="yes">
-                <transition target-connector="in2" target-path="./+1/b2.1">
-                  <transition-display>
-                    <bend-point relative-to="source" x="2" y="0"/>
-                  </transition-display>
-                </transition>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in1" target-path="../+2"/>
               </branch>
             </node>
             <transition target-connector="in3" target-path="./+1">
@@ -926,36 +941,6 @@
             <node>
               <join-node/>
               <node-display x="-1" y="1"/>
-            </node>
-            <simple-transition/>
-            <node>
-              <pipelet-node custom-name="Prevent unnessary tax calls to cybersource" pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="cybersource/CreateCartStateString.ds"/>
-                <key-binding alias="CartStateStringLog" key="ScriptLog"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="CartStateString" key="CartStateString"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="error">
-                <transition target-connector="in1"/>
-                <segment>
-                  <node>
-                    <join-node/>
-                    <node-display x="2" y="0"/>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
-                  <node>
-                    <end-node name="OK"/>
-                    <node-display x="0" y="1"/>
-                  </node>
-                </segment>
-              </branch>
             </node>
             <simple-transition>
               <transition-display>
@@ -1062,16 +1047,16 @@
                 <key-binding alias="Decision" key="Decision"/>
               </pipelet-node>
               <node-display x="0" y="1"/>
-              <branch basename="b3" source-connector="error">
+              <branch basename="b2" source-connector="error">
                 <transition target-connector="in">
                   <transition-display>
-                    <bend-point relative-to="target" x="-1" y="0"/>
+                    <bend-point relative-to="source" x="1" y="0"/>
                   </transition-display>
                 </transition>
                 <segment>
                   <node>
                     <end-node name="ERROR"/>
-                    <node-display orientation="horizontal" x="2" y="0"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
                   </node>
                 </segment>
               </branch>
@@ -1128,14 +1113,63 @@
           </segment>
         </branch>
       </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-2"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="1"/>
+      </node>
+      <transition target-connector="in2" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="false" key="From_0"/>
+          <key-binding alias="CurrentSession.custom.SkipTaxCalculation" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
         </transition-display>
       </simple-transition>
       <node>
         <end-node name="OK"/>
-        <node-display orientation="horizontal" x="1" y="0"/>
+        <node-display x="0" y="1"/>
       </node>
     </segment>
   </branch>

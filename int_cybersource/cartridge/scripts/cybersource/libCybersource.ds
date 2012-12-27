@@ -449,10 +449,13 @@ var CybersourceHelper = {
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
 		request.card = __copyCreditCard( card );
 		var items : Array = new Array();
-		var iter : dw.util.Iterator = itemsCybersource.iterator();
-		while(iter.hasNext())
+		if(null!=itemsCybersource)
 		{
-			items.push(__copyItemFrom(iter.next()));
+			var iter : dw.util.Iterator = itemsCybersource.iterator();
+			while(iter.hasNext())
+			{
+				items.push(__copyItemFrom(iter.next()));
+			}
 		}
 		
 		request.item = items;

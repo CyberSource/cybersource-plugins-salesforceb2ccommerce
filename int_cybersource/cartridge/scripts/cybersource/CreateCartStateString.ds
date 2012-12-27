@@ -18,11 +18,16 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 	var basket : Basket = pdict.Basket;
 	var cartStateString = "";
+	var surcharge : Boolean = false;
 	
 	var productLineItems : Iterator = basket.getAllProductLineItems().iterator();
 	while(productLineItems.hasNext())
 	{
 		var productLineItem : ProductLineItem = productLineItems.next();	
+		if(null !== productLineItem.shippingLineItem && productLineItem.shippingLineItem.surcharge && basket.adjustedShippingTotalTax.value==0)
+		{
+			surcharge = true;
+		}
 		cartStateString += productLineItem.productID +";"+ productLineItem.quantityValue +";"+ productLineItem.adjustedPrice + "|";
 	}	
 	
@@ -33,7 +38,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	// Check if the cartStateString in session is the same as the newly calculated cartStateString. 
 	// If the strings are the same, then the cart has not changed and tax calculation will be skipped
 	
-	if( !empty(session.custom.cartStateString) && session.custom.cartStateString == cartStateString){
+	if( !empty(session.custom.cartStateString) && session.custom.cartStateString == cartStateString && !surcharge){
 		return PIPELET_ERROR;
 	}
 

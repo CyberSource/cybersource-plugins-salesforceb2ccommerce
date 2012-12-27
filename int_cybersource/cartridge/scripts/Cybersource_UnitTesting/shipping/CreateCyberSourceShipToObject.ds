@@ -22,10 +22,10 @@ function execute( pdict : PipelineDictionary ) : Number
 	shipToObject.setTitle("This is the Title");
 	shipToObject.setFirstName("Donald");
 	shipToObject.setLastName("Rivard");
-	shipToObject.setStreet1("8 Bosworth Road");
-	shipToObject.setCity("New York");
-	shipToObject.setState("NY");
-	shipToObject.setPostalCode("11111");
+	shipToObject.setStreet1("131 Dartmouth Streetd");
+	shipToObject.setCity("Boston");
+	shipToObject.setState("MA");
+	shipToObject.setPostalCode("02116");
 	shipToObject.setCountry("US");
 	shipToObject.setPhoneNumber("777-777-7777");
 	shipToObject.setEmail("drivard@demandware.com");

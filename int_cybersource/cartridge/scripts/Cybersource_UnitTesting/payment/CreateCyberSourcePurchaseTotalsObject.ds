@@ -22,6 +22,10 @@ function execute( pdict : PipelineDictionary ) : Number
 	purchaseObject.setCurrency("USD");
 	var amount : Number = new Number("299.99");
 	// PEP: Added to let CCAuth succeed without listed items
+	
+	/*
+	Next line to be commented for Tax Service Unit testing
+	*/
 	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
     
     pdict.CyberSourcePurchaseTotals = purchaseObject;

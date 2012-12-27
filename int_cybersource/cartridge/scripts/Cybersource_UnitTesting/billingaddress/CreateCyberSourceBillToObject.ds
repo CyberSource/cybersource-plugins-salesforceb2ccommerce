@@ -28,10 +28,10 @@ function execute( pdict : PipelineDictionary ) : Number
 	billToObject.setTitle("This is the Title");
 	billToObject.setFirstName("Donald");
 	billToObject.setLastName("Rivard");
-	billToObject.setStreet1("8 Bosworthy Road");
+	billToObject.setStreet1("131 Dartmouth Street");
 	billToObject.setCity("Boston");
 	billToObject.setState("MA");
-	billToObject.setPostalCode("11111");
+	billToObject.setPostalCode("02116");
 	billToObject.setCountry("US");
 	billToObject.setPhoneNumber("777-777-7777");
 	billToObject.setEmail("drivard@demandware.com");

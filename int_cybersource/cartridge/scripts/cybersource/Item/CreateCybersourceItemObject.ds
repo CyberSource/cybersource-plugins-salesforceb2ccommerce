@@ -35,7 +35,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		{
 			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.proratedPrice.value,"000000.00","en_US"));
 			itemObject.setQuantity(lineItem.quantityValue);
-			itemObject.setProductCode(lineItem.productID);
+			itemObject.setProductCode("default");
 			itemObject.setProductName(lineItem.productName);
 			itemObject.setProductSKU(lineItem.productID);
 			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));

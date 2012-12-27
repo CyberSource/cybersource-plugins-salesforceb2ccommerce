@@ -27,8 +27,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	var shipToObject: ShipTo_Object = new ShipTo_Object();
 	var shippingAddress : OrderAddress = basket.defaultShipment.shippingAddress;
-	var shippingMethod : ShippingMethod = null;
-	
+	var shippingMethod : ShippingMethod = basket.defaultShipment.shippingMethod;
 	var it : Iterator = basket.getShipments().iterator();
 	// TODO: This code purposely does not handle the case of
 	// multiple shipments per order
