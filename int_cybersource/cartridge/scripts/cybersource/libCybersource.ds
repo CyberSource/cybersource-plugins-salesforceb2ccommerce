@@ -676,6 +676,41 @@ var CybersourceHelper = {
 		request.payerAuthEnrollService.run=true;
 	},
 	
+	addTestPayerAuthEnrollInfo : function(request : Object, card : Card_Object)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, "TestOrder" );
+		request.card = __copyCreditCard( card );
+		request.payerAuthEnrollService = new CybersourceHelper.csReference.PayerAuthEnrollService();
+		request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
+		request.purchaseTotals.currency="USD";
+		var items : Array = new Array();
+		var item = new CybersourceHelper.csReference.Item();
+		item.id = 0;
+		item.unitPrice = StringUtils.formatNumber("100","000000.00","en_US");
+		items.push(item);
+		request.item = items;
+		request.payerAuthEnrollService.run=true;
+	},
+	
+	addTestPayerAuthValidateInfo : function(request : Object, signedPARes : String, card : Card_Object)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, "TestOrder" );
+		request.card = __copyCreditCard( card );
+		request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
+		request.payerAuthValidateService.signedPARes = signedPARes;
+		request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
+		request.purchaseTotals.currency="USD";
+		var items : Array = new Array();
+		var item = new CybersourceHelper.csReference.Item();
+		item.id = 0;
+		item.unitPrice = StringUtils.formatNumber("100","000000.00","en_US");
+		items.push(item);
+		request.item = items;
+		request.payerAuthValidateService.run=true;
+	},
+	
 	addCardInfo : function(request : Object, creditCardForm : dw.web.FormElement) {
      request.card = new CybersourceHelper.csReference.Card();
      request.card.expirationMonth = StringUtils.formatNumber(creditCardForm.month.htmlValue, "00");
