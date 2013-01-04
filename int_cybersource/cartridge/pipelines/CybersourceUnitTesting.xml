@@ -375,13 +375,6 @@
           </segment>
         </branch>
       </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
       <simple-transition>
         <transition-display>
           <bend-point relative-to="source" x="0" y="1"/>
@@ -1168,7 +1161,26 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_9">
+  <branch basename="TestFingerprint">
+    <segment>
+      <node>
+        <start-node name="TestFingerprint" secure="false"/>
+        <node-display x="3" y="8"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="custom/FingerPrintRedirect"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_10">
     <segment>
       <node>
         <text-node>
@@ -1180,7 +1192,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_10">
+  <branch basename="_ANONYMOUS_BRANCH_11">
     <segment>
       <node>
         <text-node>
@@ -1190,7 +1202,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_11">
+  <branch basename="_ANONYMOUS_BRANCH_12">
     <segment>
       <node>
         <text-node>
@@ -1200,7 +1212,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_12">
+  <branch basename="_ANONYMOUS_BRANCH_13">
     <segment>
       <node>
         <text-node>
@@ -1210,7 +1222,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_13">
+  <branch basename="_ANONYMOUS_BRANCH_14">
     <segment>
       <node>
         <text-node>

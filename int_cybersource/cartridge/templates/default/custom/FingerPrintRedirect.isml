@@ -1,0 +1,2 @@
+<isinclude url="${URLUtils.url('Cybersource-IncludeDigitalFingerprint')}"/>
+<isredirect location="${URLUtils.url('CybersourceUnitTesting-TestCCAuth')}">
