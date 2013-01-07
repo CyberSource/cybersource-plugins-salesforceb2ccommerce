@@ -18,8 +18,8 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 
     var cardObject : Card_Object = new Card_Object();
-	cardObject.setAccountNumber('6759410000006404');
-	cardObject.setCardType('042');
+	cardObject.setAccountNumber('4000000000000002');
+	cardObject.setCardType('001');
 	cardObject.setFullName('Donald Rivard');
 	cardObject.setExpirationMonth("12");
 	cardObject.setExpirationYear("2021");
