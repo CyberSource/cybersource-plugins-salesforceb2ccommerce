@@ -25,7 +25,7 @@ function execute( pdict : PipelineDictionary ) : Number
   
     var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
     var amount : Money = new Money(0,dw.system.Site.current.currencyCode);
-    var ccPaymentInstruments = basket.getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+    var ccPaymentInstruments = basket.getPaymentInstruments();
     for each (var pi : PaymentInstrument in ccPaymentInstruments) {
     	amount = amount.add(pi.paymentTransaction.amount);	 
     }

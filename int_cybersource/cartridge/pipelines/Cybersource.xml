@@ -1208,7 +1208,7 @@
           </transition>
           <segment>
             <node>
-              <end-node name="ERROR"/>
+              <end-node name="error"/>
               <node-display orientation="horizontal" x="1" y="0"/>
             </node>
           </segment>
@@ -1228,8 +1228,8 @@
           <key-binding alias="BMLPaymentInstrument.paymentTransaction.paymentProcessor" key="To_1"/>
           <key-binding alias="&quot;US&quot;" key="From_2"/>
           <key-binding alias="Basket.billingAddress.countryCode" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="true" key="From_3"/>
+          <key-binding alias="ReadFromBasket" key="To_3"/>
           <key-binding alias="null" key="From_4"/>
           <key-binding alias="null" key="To_4"/>
           <key-binding alias="null" key="From_5"/>
@@ -1363,7 +1363,7 @@
             <node>
               <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
-                <key-binding alias="AuthorizationCode" key="From_0"/>
+                <key-binding alias="RequestID" key="From_0"/>
                 <key-binding alias="BMLPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                 <key-binding alias="null" key="From_1"/>
                 <key-binding alias="null" key="To_1"/>
