@@ -2,6 +2,16 @@
 <?demandware-pipeline version="2.0"?>
 
 <pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create BillTo data object</description>
+        </text-node>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CreateBillTo">
     <segment>
       <node>
@@ -78,6 +88,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create shipTo data object</description>
+        </text-node>
+        <node-display x="5" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CreateShipTo">
     <segment>
       <node>
@@ -146,6 +166,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_5">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create purchase totals data object</description>
+        </text-node>
+        <node-display x="8" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CreatePurchaseTotals">
     <segment>
       <node>
@@ -211,6 +241,26 @@
       <node>
         <end-node/>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_7">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create ship from data object</description>
+        </text-node>
+        <node-display x="12" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_8">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create payment card data object</description>
+        </text-node>
+        <node-display x="15" y="1"/>
       </node>
     </segment>
   </branch>
@@ -334,6 +384,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_11">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create tax service request data object</description>
+        </text-node>
+        <node-display x="18" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CreateTaxService">
     <segment>
       <node>
@@ -379,6 +439,16 @@
       <node>
         <end-node/>
         <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_13">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create tax items data object</description>
+        </text-node>
+        <node-display x="21" y="1"/>
       </node>
     </segment>
   </branch>
@@ -451,6 +521,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_15">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create tax purchase totals data object</description>
+        </text-node>
+        <node-display x="25" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CreateTaxPurchaseTotals">
     <segment>
       <node>
@@ -519,6 +599,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_17">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create BML data object</description>
+        </text-node>
+        <node-display x="29" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CreateBMLData">
     <segment>
       <node>
@@ -584,6 +674,26 @@
       <node>
         <end-node/>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_19">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create BML payment card data object</description>
+        </text-node>
+        <node-display x="32" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_20">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to create items data object</description>
+        </text-node>
+        <node-display x="35" y="1"/>
       </node>
     </segment>
   </branch>

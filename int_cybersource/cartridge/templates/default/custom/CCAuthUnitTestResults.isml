@@ -1,3 +1,6 @@
+<iscomment>
+	This template will populate the Unit Test result of CCAuth
+</iscomment>
 Here is the reason
 <isprint value="${pdict.reason}"><br>
 

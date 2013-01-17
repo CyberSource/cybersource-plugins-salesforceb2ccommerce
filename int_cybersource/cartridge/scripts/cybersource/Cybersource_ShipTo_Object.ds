@@ -1,3 +1,7 @@
+/**
+* Cybersource_ShipTo_Object.ds
+* This Object is used for the Cybersource ShipTo xsd
+*/
 function ShipTo_Object() {
 
 	this.title = "";

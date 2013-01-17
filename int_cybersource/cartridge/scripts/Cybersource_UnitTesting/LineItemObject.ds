@@ -1,3 +1,7 @@
+/**
+* LineItemObject.ds
+* This Mock Object is used for the Cybersource Line Item xsd
+*/
 function MockLineItem_Object() {
 
 	this.tax="";

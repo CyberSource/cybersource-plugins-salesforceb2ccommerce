@@ -1,3 +1,7 @@
+/**
+* Cybersource_Card_Object.ds
+* This Object is used for the Cybersource CreditCard xsd
+*/
 function Card_Object(){
 	
 	this.fullname = "";

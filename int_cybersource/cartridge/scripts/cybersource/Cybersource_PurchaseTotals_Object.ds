@@ -1,3 +1,7 @@
+/**
+* Cybersource_PurchaseTotals_Object.ds
+* This Object is used for the Cybersource PurchaseTotals xsd
+*/
 function PurchaseTotals_Object() {
 
 	this.grandTotalAmount = "";

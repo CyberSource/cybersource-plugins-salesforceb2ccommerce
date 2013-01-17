@@ -1,4 +1,7 @@
 <!--- TEMPLATENAME: TestDAVCheckResults.isml --->
+<iscomment>
+	This template will populate the Unit Test result of DAV
+</iscomment>
 <h1>Test DAVCheck Results</h1>
 <h2>Input Shipping Address:</h2>
 <p><isinclude template="custom/ShippingAddress" /></p>

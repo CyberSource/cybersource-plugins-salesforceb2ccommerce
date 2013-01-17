@@ -2,6 +2,16 @@
 <?demandware-pipeline version="2.0"?>
 
 <pipeline type="process">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used for cyber source credit card authorization</description>
+        </text-node>
+        <node-display x="0" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="AuthorizeCreditCard">
     <segment>
       <node>
@@ -187,13 +197,23 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_2">
+  <branch basename="_ANONYMOUS_BRANCH_3">
     <segment>
       <node>
         <text-node>
           <description>Assume that there is one and only one CREDIT_CARD payment instrument.</description>
         </text-node>
         <node-display x="3" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_4">
+    <segment>
+      <node>
+        <text-node>
+          <description>Capture Credit Card paid amount, authorize if decision ACCEPT</description>
+        </text-node>
+        <node-display x="4" y="0"/>
       </node>
     </segment>
   </branch>
@@ -317,6 +337,16 @@
       <node>
         <end-node name="declined"/>
         <node-display orientation="horizontal" x="2" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_6">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to refund credit card payment</description>
+        </text-node>
+        <node-display x="8" y="0"/>
       </node>
     </segment>
   </branch>

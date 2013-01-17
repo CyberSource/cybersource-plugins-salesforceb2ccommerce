@@ -1,6 +1,6 @@
 /**
-* Demandware Script File
 * PopulateBillingAddress.ds
+* This script is used to populate billing address.
 *
 * @input Basket : dw.order.Basket
 * @input billingAddress : dw.order.OrderAddress

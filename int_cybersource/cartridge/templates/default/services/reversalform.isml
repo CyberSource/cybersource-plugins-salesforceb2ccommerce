@@ -9,6 +9,9 @@ td {
 }
 </style>
 <isinclude template="util/modules"/>
+<iscomment>
+	This template will populate input fields of On Demand Subscription
+</iscomment>
 <h2><center><b><u>On Demand Subscription Payment Test Page</u></b></center></h2><br/><br/>
 <form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
 	<isinputfield formfield="${pdict.CurrentForms.subscription.authorizationID}" type="input"/>

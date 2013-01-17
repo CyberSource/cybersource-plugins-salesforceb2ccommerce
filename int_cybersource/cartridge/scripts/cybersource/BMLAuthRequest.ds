@@ -1,6 +1,6 @@
 /**
-* Performs the authorization of the credit card. If present payer authentication information is
-* sumbitted in the auth request.
+* Performs the authorization of the BML credit card. If present payer authentication information is
+* sumbitted in the auth BML request.
 *
 * @input Basket : dw.order.Basket The basket used for Authorization
 * @input Amount : dw.value.Money The amount to authorize

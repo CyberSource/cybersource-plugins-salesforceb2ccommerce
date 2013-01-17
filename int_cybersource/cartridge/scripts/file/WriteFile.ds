@@ -1,5 +1,4 @@
 /**
-* Demandware Script File
 * Writes the given content to a file whose name has to be provided as well.
 *
 * @input File        : dw.io.File the File to write to

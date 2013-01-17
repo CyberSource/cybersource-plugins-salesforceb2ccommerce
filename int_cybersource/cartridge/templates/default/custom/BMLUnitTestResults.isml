@@ -1,3 +1,6 @@
+<iscomment>
+	This template will populate the Unit Test result of BML
+</iscomment>
 Here is the id
 <isprint value="${pdict.id}"><br>
 

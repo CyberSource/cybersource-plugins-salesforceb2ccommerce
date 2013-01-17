@@ -1,14 +1,6 @@
 /**
 * CreateCyberSourceTaxRequestObject.ds
-* To define input and output parameters, create entries of the form:
-*
-* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
-*
-* where
-*   <paramUsageType> can be either 'input' or 'output'
-*   <paramName> can be any valid parameter name
-*   <paramDataType> identifies the type of the parameter
-*   <paramComment> is an optional comment
+* This script creates the Tax Request Object and set it to CybersourceTaxService output object.
 *
 * @output CybersourceTaxService : Object
 *

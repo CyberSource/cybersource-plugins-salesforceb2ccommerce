@@ -1,3 +1,6 @@
+<iscomment>
+	This template will redirect location based off the varaible that is set
+</iscomment>
 <iscontent type="text/html" charset="UTF-8" compact="true">
 
 <isset name="location" value="${pdict.DeviceFingerprintJetmetrixLocation}" scope="page" />

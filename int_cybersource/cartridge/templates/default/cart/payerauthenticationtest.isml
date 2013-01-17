@@ -1,4 +1,6 @@
-
+<iscomment>
+	This template will submit the form on page onload
+</iscomment>
 <iscontent type="text/html" charset="UTF-8" compact="true">
 
 <div class="payerauth">

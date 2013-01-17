@@ -1,3 +1,7 @@
+/**
+* Creditcardinfo.ds
+* This script has declaration of its variables and methods.  
+*/
 importPackage( dw.system );
 importPackage( dw.order );
 importPackage( dw.rpc );

@@ -1,3 +1,7 @@
+/**
+* Cybersource_PayerAuthEnrollService_Object.ds
+* This Object is used for the Cybersource PayerAuthEnrollService xsd
+*/
 function PayerAuthEnrollService_Object() {
 
 	this.httpAccept = "";

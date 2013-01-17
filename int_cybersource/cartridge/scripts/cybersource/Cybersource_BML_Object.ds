@@ -1,3 +1,7 @@
+/**
+* Cybersource_BML_Object.ds
+* This Object is used for the Cybersource BML xsd complex type
+*/
 function BML_Object() {
 	
 	this.customerBillingAddressChange = "";

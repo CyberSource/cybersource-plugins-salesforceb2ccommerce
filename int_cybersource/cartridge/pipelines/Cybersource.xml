@@ -1183,6 +1183,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_6">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipeline is used to authorize Bill Me Later service</description>
+        </text-node>
+        <node-display x="13" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="AuthorizeBML">
     <segment>
       <node>
@@ -1402,6 +1412,16 @@
       <node>
         <end-node name="declined"/>
         <node-display orientation="horizontal" x="2" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_8">
+    <segment>
+      <node>
+        <text-node>
+          <description>Handle delivery address response, authorize if reason code 100</description>
+        </text-node>
+        <node-display x="17" y="0"/>
       </node>
     </segment>
   </branch>
@@ -1678,6 +1698,17 @@
       <node>
         <end-node name="declined"/>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_10">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipeline is used to Authorize payer, authorize if PAReasonCode 
+100</description>
+        </text-node>
+        <node-display x="22" y="0"/>
       </node>
     </segment>
   </branch>
@@ -2106,6 +2137,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_12">
+    <segment>
+      <node>
+        <text-node>
+          <description>Capture Credit Card paid amount, authorize if decision ACCEPT</description>
+        </text-node>
+        <node-display x="29" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CaptureCard">
     <segment>
       <node>
@@ -2229,6 +2270,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_14">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipeline is used to debug tax request</description>
+        </text-node>
+        <node-display x="33" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="DebugTaxRequest">
     <segment>
       <node>
@@ -2284,6 +2335,16 @@
       <node>
         <end-node/>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_16">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipleline used to add new decision (ACCEPT, REJECT) on existing orders not exported</description>
+        </text-node>
+        <node-display x="36" y="0"/>
       </node>
     </segment>
   </branch>
@@ -2360,6 +2421,26 @@
           <template buffered="true" dynamic="false" name="common/http_200"/>
         </interaction-node>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_18">
+    <segment>
+      <node>
+        <text-node>
+          <description>Send affected order status to customer</description>
+        </text-node>
+        <node-display x="40" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_19">
+    <segment>
+      <node>
+        <text-node>
+          <description>Get detailed conversion report (order accepted, order rejected) from httClient</description>
+        </text-node>
+        <node-display x="43" y="0"/>
       </node>
     </segment>
   </branch>
@@ -2519,6 +2600,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_22">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to get Cybersource helper lib</description>
+        </text-node>
+        <node-display x="47" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="GetCybersourceHelper">
     <segment>
       <node>
@@ -2564,6 +2655,16 @@
       <node>
         <end-node/>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_24">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipleline checks DAV request, authorize if DAVReasonCode 100</description>
+        </text-node>
+        <node-display x="50" y="0"/>
       </node>
     </segment>
   </branch>
@@ -2868,6 +2969,26 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_26">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to include digital fingerpirnt into cart isml template</description>
+        </text-node>
+        <node-display x="52" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_27">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipleline redirects the finger print location based on static mapping configured in BM</description>
+        </text-node>
+        <node-display x="54" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="IncludeDigitalFingerprint">
     <segment>
       <node>
@@ -2969,7 +3090,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_18">
+  <branch basename="_ANONYMOUS_BRANCH_30">
     <segment>
       <node>
         <text-node>
@@ -2979,7 +3100,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_19">
+  <branch basename="_ANONYMOUS_BRANCH_31">
     <segment>
       <node>
         <text-node>
@@ -2989,7 +3110,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_20">
+  <branch basename="_ANONYMOUS_BRANCH_32">
     <segment>
       <node>
         <text-node>
@@ -3001,7 +3122,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_21">
+  <branch basename="_ANONYMOUS_BRANCH_33">
     <segment>
       <node>
         <text-node>
@@ -3011,7 +3132,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_22">
+  <branch basename="_ANONYMOUS_BRANCH_34">
     <segment>
       <node>
         <text-node>
@@ -3021,7 +3142,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_23">
+  <branch basename="_ANONYMOUS_BRANCH_35">
     <segment>
       <node>
         <text-node>
@@ -3031,7 +3152,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_24">
+  <branch basename="_ANONYMOUS_BRANCH_36">
     <segment>
       <node>
         <text-node>
@@ -3043,7 +3164,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_25">
+  <branch basename="_ANONYMOUS_BRANCH_37">
     <segment>
       <node>
         <text-node>
@@ -3053,7 +3174,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_26">
+  <branch basename="_ANONYMOUS_BRANCH_38">
     <segment>
       <node>
         <text-node>
@@ -3063,7 +3184,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_27">
+  <branch basename="_ANONYMOUS_BRANCH_39">
     <segment>
       <node>
         <text-node>
@@ -3073,7 +3194,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_28">
+  <branch basename="_ANONYMOUS_BRANCH_40">
     <segment>
       <node>
         <text-node>
@@ -3083,7 +3204,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_29">
+  <branch basename="_ANONYMOUS_BRANCH_41">
     <segment>
       <node>
         <text-node>
@@ -3093,7 +3214,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_30">
+  <branch basename="_ANONYMOUS_BRANCH_42">
     <segment>
       <node>
         <text-node>
@@ -3103,7 +3224,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_31">
+  <branch basename="_ANONYMOUS_BRANCH_43">
     <segment>
       <node>
         <text-node>
@@ -3113,7 +3234,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_32">
+  <branch basename="_ANONYMOUS_BRANCH_44">
     <segment>
       <node>
         <text-node>
@@ -3123,7 +3244,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_33">
+  <branch basename="_ANONYMOUS_BRANCH_45">
     <segment>
       <node>
         <text-node>
@@ -3133,7 +3254,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_34">
+  <branch basename="_ANONYMOUS_BRANCH_46">
     <segment>
       <node>
         <text-node>
@@ -3143,7 +3264,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_35">
+  <branch basename="_ANONYMOUS_BRANCH_47">
     <segment>
       <node>
         <text-node>

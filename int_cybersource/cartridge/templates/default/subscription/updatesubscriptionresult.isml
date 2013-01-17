@@ -8,6 +8,9 @@ td {
 	border-style: outset;
 }
 </style>
+<iscomment>
+	This template will populate the result of update subscription test
+</iscomment>
 <label><b>New Subscription ID :</b></label><isprint value="${pdict.NewSubscriptionID}"><br>
 <label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br>
 <label><b>CyberSource Response for Invalid Field :</b></label>

@@ -2,6 +2,16 @@
 <?demandware-pipeline version="2.0"?>
 
 <pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to test NullEndPoint</description>
+        </text-node>
+        <node-display x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="TestNullEndPoint">
     <segment>
       <node>

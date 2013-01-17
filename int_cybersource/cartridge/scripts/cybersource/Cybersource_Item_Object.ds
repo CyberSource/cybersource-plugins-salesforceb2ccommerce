@@ -1,3 +1,7 @@
+/**
+* Cybersource_Item_Object.ds
+* This Object is used for the Cybersource Item xsd
+*/
 function Item_Object() {
 	
 	this.unitPrice = "";

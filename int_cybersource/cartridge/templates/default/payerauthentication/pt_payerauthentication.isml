@@ -7,7 +7,9 @@
 <head>
 
 	<isinclude template="util/modules"/>
-	
+	<iscomment>
+	This template will render payeraunthntication.isml 
+	</iscomment>
 	<iscomment>Include all important information globally , e.g. meta-data, link information, and javascript.</iscomment>
 	<isscript>var pageContext={title:'Order Confirmation', type:'orderconfirmation', ns:'orderconfirmation'};</isscript>
 	<isinclude template="components/header/htmlhead"/>

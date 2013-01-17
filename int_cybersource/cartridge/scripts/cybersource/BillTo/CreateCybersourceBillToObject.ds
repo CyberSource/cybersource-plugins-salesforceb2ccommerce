@@ -1,21 +1,12 @@
 /**
-* Demandware Script File
-* To define input and output parameters, create entries of the form:
+*	CreateCybersourceBillToObject.ds
+*	This script creates the BillToObject data object and set it to CyberSourceBillTo output object.
 *
-* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
-*
-* where
-*   <paramUsageType> can be either 'input' or 'output'
-*   <paramName> can be any valid parameter name
-*   <paramDataType> identifies the type of the parameter
-*   <paramComment> is an optional comment
-*
-* For example:
-*	 @input BMLForm : dw.web.FormElement
-*	 @input ipAddress : String
-*    @input Basket : dw.order.Basket
-*    @input ReadFromBasket : Boolean
-*    @output CyberSourceBillTo : Object
+*	@input BMLForm : dw.web.FormElement
+*	@input ipAddress : String
+*	@input Basket : dw.order.Basket
+*	@input ReadFromBasket : Boolean
+*	@output CyberSourceBillTo : Object
 *
 */
 importPackage( dw.system );

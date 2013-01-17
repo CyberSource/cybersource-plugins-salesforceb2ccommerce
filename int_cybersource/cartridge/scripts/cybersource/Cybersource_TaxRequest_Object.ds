@@ -1,3 +1,7 @@
+/**
+* Cybersource_TaxRequest_Object.ds.ds
+* This Object is used for the Cybersource Tax Request Service xsd
+*/
 function TaxService_Object() {
 	
 		this.nexus = "";

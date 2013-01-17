@@ -1,4 +1,7 @@
 <!--- TEMPLATENAME: BillingAddress.isml --->
+<iscomment>
+	This template will populate the Unit Test result of Shipping Address 
+</iscomment>
 ${pdict.shipto.firstName} ${pdict.shipto.lastName}<br/>
 ${pdict.shipto.street1}<br/>
 <isif condition="${!empty(pdict.shipto.street2)}">

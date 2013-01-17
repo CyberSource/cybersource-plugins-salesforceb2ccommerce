@@ -1,3 +1,6 @@
+<iscomment>
+	This template will include finger print image or flash based off mapping set
+</iscomment>
 <!---
 Important       1- In all code segments, when substituting your values for the variables, make sure to omit the angle brackets (< >) around org ID,
 		   merchant id, and session ID.

@@ -1,3 +1,6 @@
+<iscomment>
+	This template will populate the test result of create subscription
+</iscomment>
 <label><b>Subscription ID :</b></label><isprint value="${pdict.subscriptionID}"><br>
 <label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br>
 <label><b>CyberSource Response for Invalid Field :</b></label>

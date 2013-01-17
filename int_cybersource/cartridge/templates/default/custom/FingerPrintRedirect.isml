@@ -1,2 +1,5 @@
+<iscomment>
+	This template is used to redirect the pipeline 
+</iscomment>
 <isinclude url="${URLUtils.url('Cybersource-IncludeDigitalFingerprint')}"/>
 <isredirect location="${URLUtils.url('CybersourceUnitTesting-TestCCAuth')}">

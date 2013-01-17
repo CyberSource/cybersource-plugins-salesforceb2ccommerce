@@ -1,5 +1,7 @@
-//This object is used for the Cybersource BillTo xsd complex type
-
+/**
+* Cybersource_BillTo_Object.ds
+* This Object is used for the Cybersource BillTo xsd complex type
+*/
 function BillTo_Object() {
 
 	this.title = "";

@@ -1,3 +1,6 @@
+<iscomment>
+	This template the template rendering the payer authentication page
+</iscomment>
 <isdecorate template="payerauthentication/pt_payerauthentication">
 	<iscontent type="text/html" charset="UTF-8" compact="true">
 	
