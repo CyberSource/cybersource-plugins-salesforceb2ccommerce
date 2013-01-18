@@ -2283,7 +2283,7 @@
   <branch basename="DebugTaxRequest">
     <segment>
       <node>
-        <start-node name="DebugTaxRequest" secure="false"/>
+        <start-node call-mode="private" name="DebugTaxRequest" secure="false"/>
         <node-display x="33" y="1"/>
       </node>
       <simple-transition>
@@ -2351,7 +2351,7 @@
   <branch basename="NewDecision">
     <segment>
       <node>
-        <start-node name="NewDecision" secure="false"/>
+        <start-node call-mode="private" name="NewDecision" secure="false"/>
         <node-display x="36" y="1"/>
       </node>
       <simple-transition/>
@@ -2518,7 +2518,7 @@
   <branch basename="CoversionDetailReport">
     <segment>
       <node>
-        <start-node name="CoversionDetailReport" secure="false"/>
+        <start-node call-mode="private" name="CoversionDetailReport" secure="false"/>
         <node-display x="43" y="1"/>
       </node>
       <simple-transition>
@@ -2589,14 +2589,14 @@
       </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="source" x="0" y="2"/>
+          <bend-point relative-to="source" x="0" y="1"/>
         </transition-display>
       </simple-transition>
       <node>
         <interaction-node transaction-required="false">
           <template buffered="true" dynamic="false" name="common/http_200"/>
         </interaction-node>
-        <node-display x="0" y="2"/>
+        <node-display x="0" y="1"/>
       </node>
     </segment>
   </branch>
@@ -3043,7 +3043,7 @@
   <branch basename="RedirectFpLocation">
     <segment>
       <node>
-        <start-node name="RedirectFpLocation" secure="false"/>
+        <start-node call-mode="private" name="RedirectFpLocation" secure="false"/>
         <node-display x="54" y="1"/>
       </node>
       <simple-transition>

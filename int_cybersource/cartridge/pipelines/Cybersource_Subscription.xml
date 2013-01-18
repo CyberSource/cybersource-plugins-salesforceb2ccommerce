@@ -12,10 +12,20 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_2">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="0" y="3"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="Start">
     <segment>
       <node>
-        <start-node name="Start" secure="false"/>
+        <start-node call-mode="private" name="Start" secure="false"/>
         <node-display x="1" y="3"/>
       </node>
       <simple-transition>
@@ -31,7 +41,17 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_3">
+  <branch basename="_ANONYMOUS_BRANCH_4">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="3" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_5">
     <segment>
       <node>
         <text-node>
@@ -41,7 +61,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_4">
+  <branch basename="_ANONYMOUS_BRANCH_6">
     <segment>
       <node>
         <text-node>
@@ -54,7 +74,7 @@
   <branch basename="CreateSubscription">
     <segment>
       <node>
-        <start-node name="CreateSubscription" secure="false"/>
+        <start-node call-mode="private" name="CreateSubscription" secure="false"/>
         <node-display x="4" y="3"/>
       </node>
       <simple-transition/>
@@ -244,10 +264,20 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_8">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="6" y="3"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="ViewSubscription">
     <segment>
       <node>
-        <start-node name="ViewSubscription" secure="false"/>
+        <start-node call-mode="private" name="ViewSubscription" secure="false"/>
         <node-display x="7" y="3"/>
       </node>
       <simple-transition>
@@ -338,7 +368,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_7">
+  <branch basename="_ANONYMOUS_BRANCH_10">
     <segment>
       <node>
         <text-node>
@@ -348,10 +378,20 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_11">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="9" y="3"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="UpdateSubscription">
     <segment>
       <node>
-        <start-node call-mode="public" name="UpdateSubscription" secure="false">
+        <start-node call-mode="private" name="UpdateSubscription" secure="false">
           <description>Updates a Subscription ID (Profile) on Cybersource End with specific data</description>
         </start-node>
         <node-display x="10" y="3"/>
@@ -539,7 +579,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_9">
+  <branch basename="_ANONYMOUS_BRANCH_13">
     <segment>
       <node>
         <text-node>
@@ -549,10 +589,20 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_14">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="12" y="3"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="DeleteSubscription">
     <segment>
       <node>
-        <start-node name="DeleteSubscription" secure="false"/>
+        <start-node call-mode="private" name="DeleteSubscription" secure="false"/>
         <node-display x="13" y="3"/>
       </node>
       <simple-transition>
@@ -643,7 +693,17 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_11">
+  <branch basename="_ANONYMOUS_BRANCH_16">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="15" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_17">
     <segment>
       <node>
         <text-node>
@@ -656,7 +716,7 @@
   <branch basename="OnDemandPayment">
     <segment>
       <node>
-        <start-node name="OnDemandPayment" secure="false"/>
+        <start-node call-mode="private" name="OnDemandPayment" secure="false"/>
         <node-display x="16" y="3"/>
       </node>
       <simple-transition>

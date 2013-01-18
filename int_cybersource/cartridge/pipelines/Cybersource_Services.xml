@@ -22,10 +22,20 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="Start">
     <segment>
       <node>
-        <start-node name="Start" secure="false"/>
+        <start-node call-mode="private" name="Start" secure="false"/>
         <node-display x="1" y="2"/>
       </node>
       <simple-transition>
@@ -44,7 +54,7 @@
   <branch basename="Reversal">
     <segment>
       <node>
-        <start-node name="Reversal" secure="false"/>
+        <start-node call-mode="private" name="Reversal" secure="false"/>
         <node-display x="3" y="2"/>
       </node>
       <simple-transition/>
@@ -159,6 +169,16 @@
             </node>
           </segment>
         </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_6">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="4" y="2"/>
       </node>
     </segment>
   </branch>
