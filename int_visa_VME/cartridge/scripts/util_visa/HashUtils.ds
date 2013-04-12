@@ -1,0 +1,21 @@
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.crypto );
+
+
+function HashUtils() {}
+
+HashUtils.getHashCodeForVisa = function( text : String )
+{
+	var myMAC : MessageDigest;
+  	try {
+            myMAC = new MessageDigest(MessageDigest.DIGEST_SHA_256);
+            var code: String = myMAC.digest(text); 
+            return code;
+        } 
+    catch (err) {
+    	return null;
+  	}
+};

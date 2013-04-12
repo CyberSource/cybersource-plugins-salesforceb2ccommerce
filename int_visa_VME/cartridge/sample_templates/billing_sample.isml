@@ -1,0 +1,249 @@
+<isdecorate template="checkout/pt_checkout"/>
+	<isinclude template="util/modules"/>
+	
+	<iscomment>
+		This template visualizes the billing step of both checkout scenarios.
+		It provides selecting a payment method, entering gift certificates and
+		specifying a separate billing address.
+		Depending on the checkout scenario (single or multi shipping) it is
+		either the second or third checkout step.
+	</iscomment>
+	
+	<iscomment>Report this checkout step</iscomment>
+	<isreportcheckout checkoutstep="4" checkoutname="${'Billing'}"/>
+
+	<h1>${Resource.msg('pt_checkout.breadcrumb','checkout',null)}</h1>
+
+
+	<iscomment> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		checkout progress indicator
+	 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+    
+    <isif condition="${!pdict.CurrentForms.multishipping.entered.value}">
+    	<ischeckoutprogressindicator step="2" multishipping="false" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+	<iselse/>
+		<ischeckoutprogressindicator step="3" multishipping="true" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+	</isif>
+
+	<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.billing.htmlName}" class="checkout-billing address">
+		
+	<iscomment> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		billing address
+	 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+	 <!-- BEGIN V.ME CHANGES -->
+	 <iscomment>block of code to display V.me logo with description</iscomment>	
+	 <isif condition="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value=='VISA_VME'}">	 
+		<div id="vme-legend">
+		  	<legend>
+				Billing Address Provided By V.me			
+			</legend>
+			<div>
+				<div class="details">
+					<img alt="Payment_mark_small" src="${dw.system.Site.current.getCustomPreferenceValue('VmeAcceptLogo')}">
+				</div>
+				<div></div>
+			</div>
+		</div>
+	</isif>		
+	<fieldset id="billing-form">
+	<!-- END V.ME CHANGES -->
+		<iscomment>billing address area</iscomment>
+
+		<iscomment>hidden input with action to trigger for the address form</iscomment>
+		<input type="hidden" name="${pdict.CurrentForms.billing.save.htmlName}" value="true" />
+
+		<legend>
+			${Resource.msg('billing.addressheader','checkout',null)}
+			<span>&#8226; <em>${Resource.msg('global.requiredfield','locale',null)} </em></span>
+		</legend>
+
+		<iscomment>display select box with stored addresses if customer is authenticated and there are saved addresses</iscomment>
+		<isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">			
+			<div class="select-address">		
+				<div class="form-row">				
+					<label for="${pdict.CurrentForms.billing.addressList.htmlName}">
+						Choose an Address
+					</label>
+					<isscript>
+						importScript("cart/CartUtils.ds");	
+						var customerAddresses = CartUtils.getAddressList(pdict.Basket, pdict.CurrentCustomer, false);		
+					</isscript>
+					<isaddressselectlist p_listId="${pdict.CurrentForms.billing.addressList.htmlName}" p_listaddresses="${customerAddresses}" />					
+				</div>
+	
+				<div class="form-row form-row-button">
+					<button id="address-select-go-button" name="${pdict.CurrentForms.billing.selectAddress.htmlName}" type="submit" value="Go" class="simple-submit">Select</button>
+				</div>
+
+			</div>
+		
+		</isif>
+	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.firstName}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.lastName}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.address1}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.address2}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.country}" type="select"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.states.state}" type="select"/>
+    	
+    	<iscomment>
+	    	States will be populated via javascript in rich ui.
+	    	Solution for simple ui is still required.
+	    <isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.states.stateUS}" type="select"/>
+	    
+	    <isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.states.stateCA}" type="select"/>
+	    
+	    <isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.states.stateDE}" type="select"/>
+	    </iscomment>
+	    
+		<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.city}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.zip}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addressFields.phone}" type="input"/>
+    	
+    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.email.emailAddress}" xhtmlclass="email" type="input"/>
+
+	    <iscomment>provide option to add address to address book if customer is authenticated</iscomment>
+	    <isif condition="${pdict.CurrentCustomer.authenticated}">
+	    	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addToAddressBook}" type="checkbox" rowclass="form-indent label-inline"/>
+	    </isif>
+	    
+   		<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addToEmailList}" type="checkbox" rowclass="form-indent label-inline"/>
+	    <div class="form-caption">
+	    	<a title="${Resource.msg('global.privacypolicy','locale',null)}" href="${URLUtils.url('Page-Show','cid','privacy-policy')}" data-dlg-options='{"height":600}'  class="dialogify" >${Resource.msg('global.privacypolicy','locale',null)}</a>
+	    </div>
+    	
+    </fieldset>
+
+	<iscomment> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		coupon / discount codes
+	 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+	 
+	<fieldset>
+
+		<input type="hidden" name="${pdict.CurrentForms.billing.secureKeyHtmlName}" value="${pdict.CurrentForms.billing.secureKeyValue}"/>
+	
+		<isset name="gcApplicable" value="${'false'}" scope="page"/>
+		<isif condition="${dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE).isActive() }">
+			<isset name="gcApplicable" value="${'true'}" scope="page"/>
+		</isif>
+
+		<legend>
+			<isif condition="${pdict.Basket.giftCertificateLineItems.size() == 0 && gcApplicable == 'true'}">
+				${Resource.msg('billing.giftcouponheader','checkout',null)}
+			<iselse/>
+				${Resource.msg('billing.couponheader','checkout',null)}
+			</isif>
+		</legend>
+
+		<div class="form-indent">
+		
+		<iscomment>coupon code / gift certificate area</iscomment>
+			<isif condition="${gcApplicable == 'true'}">
+				<iscontentasset aid="checkout-giftcertcoupon-help"/>
+			<iselse>
+				<iscontentasset aid="checkout-coupon-help"/>
+			</isif>
+					
+			<isinputfield formfield="${pdict.CurrentForms.billing.couponCode}" type="input" rowclass="label-above"/>
+				
+			<div class="form-row">
+			    <button class="apply cancel" id="add-coupon" type="submit" name="${pdict.CurrentForms.billing.applyCoupon.htmlName}" value="${Resource.msg('global.apply','locale',null)}"><span>${Resource.msg('global.apply','locale',null)}</span></button>
+			</div>
+			
+			<div class="redemption coupon"><!-- container for coupon applied success messages -->
+				<isif condition="${pdict.CouponStatusCode != null && pdict.CouponStatusCode.error}">
+					<div class="error">
+						<span class="coupon-code-error">${Resource.msgf('cart.' + pdict.CouponStatusCode.code,'checkout', null, pdict.CurrentForms.billing.couponCode.htmlValue)}</span>
+					</div>
+				</isif>
+			</div>
+
+			<isset name="gcPITotal" value="${0}" scope="pdict"/>
+			<isset name="OrderTotal" value="${pdict.Basket.totalGrossPrice.value}" scope="pdict"/>
+			<isif condition="${gcApplicable == 'true'}">
+	
+				<iscomment>only provide gift certificate redemption, if the basket doesn't contain any gift certificates</iscomment>
+				<isif condition="${pdict.Basket.giftCertificateLineItems.size() == 0}">
+
+					<iscontentasset aid="checkout-giftcert-help"/>
+							
+					<isinputfield formfield="${pdict.CurrentForms.billing.giftCertCode}" type="input" rowclass="label-above"/>
+						
+					<div class="form-row">
+				    	<button class="apply cancel" type="submit" name="${pdict.CurrentForms.billing.redeemGiftCert.htmlName}" value="${Resource.msg('global.apply','locale',null)}"><span>${Resource.msg('global.apply','locale',null)}</span></button>
+					</div>
+					<div class="form-row">
+				    	<button class="button-text cancel" type="submit" name="${pdict.CurrentForms.billing.checkBalance.htmlName}" id="gc-checkbalance" value="${Resource.msg('global.checkbalance','locale',null)}"><span>${Resource.msg('global.checkbalance','locale',null)}</span></button>
+				    </div>
+				    
+				    
+				    <div class="redemption">
+			    		<iscomment>render gift cert redeemed success message for each gift certificate payment instrument</iscomment>
+			    		<isset name="gcPITotal" value="${0}" scope="pdict"/>
+			    		<isif condition="${pdict.Basket.giftCertificatePaymentInstruments.size() > 0}">
+			    			<isloop items="${pdict.Basket.giftCertificatePaymentInstruments}" var="giftCertPI">
+			    				<isset name="gcPITotal" value="${pdict.gcPITotal + giftCertPI.paymentTransaction.amount}" scope="pdict"/>			    				
+			    				<div class="success giftcert-pi" id="gc-${giftCertPI.getGiftCertificateCode()}"><isprint value="${giftCertPI.paymentTransaction.amount}"/> ${Resource.msg('billing.giftcertredeemed','checkout',null)} <a id="rgc-${giftCertPI.getGiftCertificateCode()}" class="remove" href="${URLUtils.https('COBilling-RemoveGiftCertificate', "giftCertificateID", giftCertPI.getGiftCertificateCode(),'format','old')}"><img src="${URLUtils.staticURL('/images/interface/icon_remove.gif')}" alt="${Resource.msg('global.remove','locale',null)}"/><span>${Resource.msg('global.remove','locale',null)}</span></a></div>
+			    			</isloop>
+			    			
+			    			<isif condition="${pdict.Basket.totalGrossPrice!=null && pdict.Basket.totalGrossPrice.value-pdict.gcPITotal<=0}">			    				
+			    				<isset name="OrderTotal" value="${pdict.Basket.totalGrossPrice.value-pdict.gcPITotal}" scope="pdict"/>
+			    			</isif>
+			    			
+			    		</isif>
+			    		
+			    		<div class="balance"><!-- contains the balance information on a successful balance check -->
+							<isif condition="${!empty(pdict.giftCertError)}"><span class="error">${Resource.msg('billing.giftcertinvalid','checkout',null)}</span></isif>
+						</div>
+			    	</div>
+
+				</isif>
+			
+			</isif>
+			
+		</div>
+		
+    </fieldset>
+    
+ 	<iscomment> ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+		payment methods
+	 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+	 
+
+	<iscomment>payment method area</iscomment>
+	<isinclude template="checkout/billing/paymentmethods"/>
+	<input type="hidden" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" />
+	<isbonusdiscountlineitem p_alert_text="${Resource.msg('billing.bonusproductalert','checkout',null)}" p_discount_line_item="${pdict.BonusDiscountLineItem}"/>
+	
+	<!-- BEGIN V.ME CHANGES -->
+		<div class="form-row form-row-button" id="continue-button">
+	<!-- END V.ME CHANGES -->	
+			<button class="button-fancy-large" type="submit" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continuecheckoutbrief','locale',null)}"><span>${Resource.msg('global.continuecheckoutbrief','locale',null)}</span></button>
+		</div>
+		<!-- BEGIN V.ME CHANGES -->
+		<isif condition="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value=='VISA_VME'}">
+			<div class="form-row form-row-button" id="vme-continue-button">
+				<a class="button-fancy-large" title="${Resource.msg('global.continuecheckoutbrief','locale',null)}" href="${URLUtils.https('COSummary-Start')}"><span>${Resource.msg('global.continuecheckoutbrief','locale',null)}</span></a>
+			</div>
+		</isif>	
+		<!-- END V.ME CHANGES -->	
+</form>
+ <!-- BEGIN V.ME CHANGES -->		
+<isinclude template="visa_form.isml"/>
+<!-- END V.ME CHANGES -->
+<isscript>
+	importScript("util/ViewHelpers.ds");
+	var stateForm = pdict.CurrentForms.billing.billingAddress.addressFields.states;
+	var countryField = pdict.CurrentForms.billing.billingAddress.addressFields.country; 
+	var countries = ViewHelpers.getCountriesAndRegions(countryField, stateForm, "forms");	
+	var json = JSON.stringify(countries);	
+</isscript>
+<script>if (window.app) {app.countries = <isprint value="${json}" encoding="off"/>;}</script>	
+</isdecorate>

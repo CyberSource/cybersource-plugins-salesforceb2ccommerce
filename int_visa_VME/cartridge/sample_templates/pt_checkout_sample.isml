@@ -1,0 +1,54 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>--> <html class="ie8 oldie" lang="en"><!--<![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>var pageContext={title:'Checkout',type:'checkout',ns:'checkout'};</isscript>
+	<isinclude template="util/modules"/>
+	
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="checkout/pt_checkout_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>	
+	<!-- BEGIN V.ME CHANGES -->
+	<!-- Style as part of clickjacking mechanism -->
+	<isif condition="${!empty(pdict.clickjackingflag)}">
+		<style> body { display : none;} </style>
+	</isif>
+
+	<isinclude template="visa_callback.isml" />
+	<!-- END V.ME CHANGES -->
+</head>
+
+<body>
+<!-- BEGIN V.ME CHANGES -->
+	<isinclude template="visa_init.isml" />
+!-- END V.ME CHANGES -->
+	<div id="wrapper" class="pt_checkout">
+	
+		<isinclude url="${URLUtils.url('Home-IncludeHeader')}"/>
+			
+		<div id="main" role="main" class="primary-focus clearfix">
+		
+			<div id="primary" class="primary-content">
+				<isreplace/>
+			</div>
+			
+			<div id="secondary" class="nav summary">
+				<isinclude template="checkout/minisummary"/>
+			</div>
+			
+		</div>
+	
+	
+		<isinclude template="components/footer/footer"/>
+		<isinclude template="checkout/pt_checkout_VARS"/>
+	</div>
+<!-- BEGIN V.ME CHANGES -->
+	<isinclude template="visa_root.isml" />
+!-- END V.ME CHANGES -->
+</body>
+</html>

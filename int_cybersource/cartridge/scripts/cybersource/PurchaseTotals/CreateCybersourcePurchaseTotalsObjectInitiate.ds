@@ -1,0 +1,34 @@
+/**
+*	CreateCybersourcePurchaseTotalsObject.ds
+*	This script creates the PurchaseTotalsObject data object and set it to CybersourcePurchaseTotals output object.
+*	
+*	 @input Basket : dw.order.Basket	
+*    @output CyberSourcePurchaseTotals : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.order);
+importPackage( dw.value);
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : Basket = pdict.Basket;
+  
+    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
+    var amount : Money = new Money(0,dw.system.Site.current.currencyCode);
+    if(basket.getTotalGrossPrice().available)
+    {
+    	amount = basket.getTotalGrossPrice();
+    }
+    else
+    {
+    	amount = basket.getMerchandizeTotalPrice().add(basket.getGiftCertificateTotalPrice());	
+    }
+	purchaseObject.setCurrency(amount.currencyCode);
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));
+    
+    pdict.CyberSourcePurchaseTotals = purchaseObject;
+    
+    return PIPELET_NEXT;
+}

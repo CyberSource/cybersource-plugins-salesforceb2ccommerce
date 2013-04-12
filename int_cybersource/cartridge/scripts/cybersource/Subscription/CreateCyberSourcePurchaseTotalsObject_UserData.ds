@@ -12,7 +12,14 @@ importPackage( dw.util);
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {  
+	
+	/*
+	 * Mandatory for reversal & refund service. Set the currency for the refund to the same currency that was used for the capture
+	 */
 	var currency : String = pdict.currency;
+	/*
+	* Set the amount for the reversal to the amount that was authorized
+	*/
 	var amount : String = pdict.amount;
 	
     var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();

@@ -205,7 +205,11 @@
         <join-node/>
         <node-display x="0" y="1"/>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
@@ -214,6 +218,7 @@
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="purchaseTotals" key="CybersourcePurchaseTotals"/>
+          <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">

@@ -1,0 +1,19 @@
+<!-- Initialize Widgets -->
+<isset name="currentSite" value="${dw.system.Site.getCurrent()}" scope="page"/>
+<isif condition="${!empty(pdict.CurrentSession.custom.signature) && !empty(pdict.CurrentSession.custom.publicKey)}">
+	<v:init apikey="${pdict.CurrentSession.custom.publicKey}" logo-url="${dw.system.Site.current.preferences.custom.VmeMerchantLogo.getHttpsURL()}"></v:init>
+<iselse>
+	<v:init apikey="${currentSite.getCustomPreferenceValue('VmeAPIKey')}" logo-url="${dw.system.Site.current.preferences.custom.VmeMerchantLogo.getHttpsURL()}"></v:init>
+</isif>
+<iscomment> Javascript Code Used as a Mechanism to Block Clickjacking  </iscomment>
+<isif condition="${!empty(pdict.clickjackingflag) }">
+<script> 
+	if (self == top) {
+		var theBody = document.getElementsByTagName('body')[0];
+		theBody.style.display = 'block';
+	} else {
+		top.location = self.location ;
+ 		}
+</script>
+</isif>
+<iscomment> Clickjacking Prevention Code Ends Here </iscomment>

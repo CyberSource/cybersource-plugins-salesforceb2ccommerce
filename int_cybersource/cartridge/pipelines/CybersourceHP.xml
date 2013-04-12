@@ -77,7 +77,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="cybersource/CCAuthRequest.ds"/>
+          <config-property key="ScriptFile" value="CCAuthRequest.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
           <key-binding alias="CCPaymentInstrument.paymentTransaction.amount" key="Amount"/>
           <key-binding alias="Basket" key="Basket"/>

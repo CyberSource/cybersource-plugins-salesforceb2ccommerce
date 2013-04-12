@@ -1648,13 +1648,1325 @@
     <segment>
       <node>
         <text-node>
+          <description>This pipeline is used to test AP Authentication</description>
+        </text-node>
+        <node-display x="26" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_22">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="25" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeAuth">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeAuth" secure="false"/>
+        <node-display x="26" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="AP Auth" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APAuthForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/AP/CreateCybersourceAPObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourceAPObject" key="CybersourceAPObject"/>
+                <key-binding alias="CurrentForms.ap.orderID.htmlValue" key="orderID"/>
+                <key-binding alias="CyberSourceAPObject" key="CyberSourceAPObject"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/payment/CreateCyberSourcePurchaseTotalsObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.ap.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.ap.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b4.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeAuth.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="CyberSourceAPObject" key="apObject"/>
+                <key-binding alias="apReasonCode" key="apReasonCode"/>
+                <key-binding alias="apStatus" key="apStatus"/>
+                <key-binding alias="cardExpirationMonth" key="cardExpirationMonth"/>
+                <key-binding alias="cardExpirationYear" key="cardExpirationYear"/>
+                <key-binding alias="cardGroup" key="cardGroup"/>
+                <key-binding alias="cardNumberSuffix" key="cardNumberSuffix"/>
+                <key-binding alias="cardType" key="cardType"/>
+                <key-binding alias="dateTime" key="dateTime"/>
+                <key-binding alias="processorResponse" key="processorResponse"/>
+                <key-binding alias="purchaseTotalCurrency" key="purchaseTotalCurrency"/>
+                <key-binding alias="transactionID" key="transactionID"/>
+                <key-binding alias="riskIndicator" key="riskIndicator"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APAuthUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_24">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to test AP Checkout Details Info</description>
+        </text-node>
+        <node-display x="29" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_25">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="28" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeGetCheckoutDetails">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeGetCheckoutDetails" secure="false"/>
+        <node-display x="29" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="Get Checkout Details" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/ApCheckoutDetailsForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/AP/CreateCybersourceAPObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourceAPObject" key="CybersourceAPObject"/>
+                <key-binding alias="CurrentForms.ap.orderID.htmlValue" key="orderID"/>
+                <key-binding alias="CyberSourceAPObject" key="CyberSourceAPObject"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/payment/CreateCyberSourcePurchaseTotalsObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b4.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeGetCheckoutDetails.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="CyberSourceAPObject" key="apObject"/>
+                <key-binding alias="apAdditionalAmount" key="apAdditionalAmount"/>
+                <key-binding alias="apCheckoutReplyReasonCode" key="apCheckoutReplyReasonCode"/>
+                <key-binding alias="apCheckoutReplyStatus" key="apCheckoutReplySatatus"/>
+                <key-binding alias="apCheckoutReplyStatus" key="apCheckoutReplyStatus"/>
+                <key-binding alias="apDiscountAmt" key="apDiscountAmt"/>
+                <key-binding alias="apGiftWrapAmt" key="apGiftWrapAmt"/>
+                <key-binding alias="apHandlingAmount" key="apHandlingAmount"/>
+                <key-binding alias="apOrderID" key="apOrderID"/>
+                <key-binding alias="apProductDescription" key="apProductDescription"/>
+                <key-binding alias="apProductID" key="apProductID"/>
+                <key-binding alias="apPurchaseAmount" key="apPurchaseAmount"/>
+                <key-binding alias="apPurchaseID" key="apPurchaseID"/>
+                <key-binding alias="apShippingAmount" key="apShippingAmount"/>
+                <key-binding alias="apShippingHandlingAmount" key="apShippingHandlingAmount"/>
+                <key-binding alias="apSubtotalAmount" key="apSubtotalAmount"/>
+                <key-binding alias="apTaxAmount" key="apTaxAmount"/>
+                <key-binding alias="dateTime" key="dateTime"/>
+                <key-binding alias="processorResponse" key="processorResponse"/>
+                <key-binding alias="apReasonCode" key="apReasonCode"/>
+                <key-binding alias="apStatus" key="apStatus"/>
+                <key-binding alias="city" key="city"/>
+                <key-binding alias="country" key="country"/>
+                <key-binding alias="email" key="email"/>
+                <key-binding alias="name" key="name"/>
+                <key-binding alias="postalCode" key="postalCode"/>
+                <key-binding alias="state" key="state"/>
+                <key-binding alias="street1" key="street1"/>
+                <key-binding alias="street2" key="street2"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APGetCheckoutUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_27">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="31" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_28">
+    <segment>
+      <node>
+        <text-node>
+          <description>Performs get transaction details for V.me via Cybersource</description>
+        </text-node>
+        <node-display x="32" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_29">
+    <segment>
+      <node>
+        <text-node>
+          <description>Performs purchase confirm service for V.me via Cybersource</description>
+        </text-node>
+        <node-display x="35" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeGetTransactionDetails">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeGetTransactionDetails" secure="false"/>
+        <node-display x="32" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="Transaction Details" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APTransactionDetailsForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/AP/CreateCybersourceAPObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourceAPObject" key="CybersourceAPObject"/>
+                <key-binding alias="CyberSourceAPObject" key="CyberSourceAPObject"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/payment/CreateCyberSourcePurchaseTotalsObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b4.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeGetTransactionDetails.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="CyberSourceAPObject" key="apObject"/>
+                <key-binding alias="CurrentForms.ap.apTransactionID.htmlValue" key="transactionDetailID"/>
+                <key-binding alias="apReasonCode" key="apReasonCode"/>
+                <key-binding alias="apStatus" key="apStatus"/>
+                <key-binding alias="dateTime" key="dateTime"/>
+                <key-binding alias="processorResponse" key="processorResponse"/>
+                <key-binding alias="transactionID" key="transactionID"/>
+                <key-binding alias="cardExpirationMonth" key="cardExpirationMonth"/>
+                <key-binding alias="cardExpirationYear" key="cardExpirationYear"/>
+                <key-binding alias="cardGroup" key="cardGroup"/>
+                <key-binding alias="cardNumberSuffix" key="cardNumberSuffix"/>
+                <key-binding alias="cardType" key="cardType"/>
+                <key-binding alias="subtotalAmount" key="subtotalAmount"/>
+                <key-binding alias="apSubtotalAmount" key="apSubtotalAmount"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APTransactionDetailsUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_31">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="34" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeConfirmPurchase">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeConfirmPurchase" secure="false"/>
+        <node-display x="35" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="Confirm Purchase" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APConfirmPurchaseForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/AP/CreateCybersourceAPObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourceAPObject" key="CybersourceAPObject"/>
+                <key-binding alias="CurrentForms.ap.orderID.htmlValue" key="orderID"/>
+                <key-binding alias="CyberSourceAPObject" key="CyberSourceAPObject"/>
+                <key-binding alias="null" key="CheckoutDetailObject"/>
+              </pipelet-node>
+              <node-display x="0" y="2"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/payment/CreateCyberSourcePurchaseTotalsObject.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.ap.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.ap.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b4.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeConfirmPurchaseRequest.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="CyberSourceAPObject" key="apObject"/>
+                <key-binding alias="CurrentForms.ap.apCaptureID.htmlValue" key="transactionDetailsID"/>
+                <key-binding alias="apOrderID" key="apOrderID"/>
+                <key-binding alias="apReasonCode" key="apReasonCode"/>
+                <key-binding alias="dateTime" key="dateTime"/>
+                <key-binding alias="processorResponse" key="processorResponse"/>
+                <key-binding alias="purchaseTotalCurrency" key="purchaseTotalCurrency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APConfirmPurchaseUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_33">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline initiates the test suit for V.me via CyberSource</description>
+        </text-node>
+        <node-display x="39" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_34">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="38" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="StartVme">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="StartVme" secure="false"/>
+        <node-display x="39" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APServices"/>
+        </interaction-node>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_36">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to test AP Authentication of reversal info</description>
+        </text-node>
+        <node-display x="42" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_37">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="41" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeAuthReversalRequest">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeAuthReversalRequest" secure="false"/>
+        <node-display x="42" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="ReversalData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APAuthReversalForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.ap.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.ap.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeAuthReversalRequest.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+                <key-binding alias="decision" key="decision"/>
+                <key-binding alias="invalidField" key="invalidField"/>
+                <key-binding alias="reasonCode" key="reasonCode"/>
+                <key-binding alias="requestID" key="requestID"/>
+                <key-binding alias="requestToken" key="requestToken"/>
+                <key-binding alias="missingField" key="missingField"/>
+                <key-binding alias="CurrentForms.subscription.authorizationID.htmlValue" key="authorizationID"/>
+                <key-binding alias="CurrentForms.ap.apRequestID.htmlValue" key="authRequestID"/>
+                <key-binding alias="transactionID" key="transactionID"/>
+                <key-binding alias="captureAmount" key="CaptureAmount"/>
+                <key-binding alias="captureReasonCode" key="CaptureReasonCode"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APAuthReversalUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_39">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to Test AP capture request</description>
+        </text-node>
+        <node-display x="45" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_40">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="44" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeCaptureRequest">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeCaptureRequest" secure="false"/>
+        <node-display x="45" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="true" key="From_0"/>
+          <key-binding alias="captureID" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="CaptureRequest" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APAuthReversalForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.ap.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.ap.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeCaptureRequest.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+                <key-binding alias="decision" key="decision"/>
+                <key-binding alias="invalidField" key="invalidField"/>
+                <key-binding alias="reasonCode" key="reasonCode"/>
+                <key-binding alias="requestID" key="requestID"/>
+                <key-binding alias="requestToken" key="requestToken"/>
+                <key-binding alias="missingField" key="missingField"/>
+                <key-binding alias="CurrentForms.subscription.authorizationID.htmlValue" key="authorizationID"/>
+                <key-binding alias="CurrentForms.ap.apRequestID.htmlValue" key="authRequestID"/>
+                <key-binding alias="transactionID" key="transactionID"/>
+                <key-binding alias="captureAmount" key="CaptureAmount"/>
+                <key-binding alias="captureReasonCode" key="CaptureReasonCode"/>
+                <key-binding alias="dateTime" key="dateTime"/>
+                <key-binding alias="apReasonCode" key="apReasonCode"/>
+                <key-binding alias="apStatus" key="apStatus"/>
+                <key-binding alias="processorResponse" key="processorResponse"/>
+                <key-binding alias="purchaseTotalCurrency" key="purchaseTotalCurrency"/>
+                <key-binding alias="apOrderID" key="apOrderID"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APCaptureUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_42">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="47" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_43">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used to Test AP refund request</description>
+        </text-node>
+        <node-display x="48" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_44">
+    <segment>
+      <node>
+        <text-node>
+          <description>Performs the initiate ap service for v.me</description>
+        </text-node>
+        <node-display x="51" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeRefundRequest">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeRefundRequest" secure="false"/>
+        <node-display x="48" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="APRefund" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APRefundForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Subscription/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+                <key-binding alias="CurrentForms.ap.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.ap.currency.htmlValue" key="currency"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeRefundRequest.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="authreason" key="AuthorizationReasonCode"/>
+                <key-binding alias="authamount" key="AuthorizationAmount"/>
+                <key-binding alias="authcode" key="AuthorizationCode"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="CybersourceBillTo" key="billTo"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="CybersourceShipTo" key="shipTo"/>
+                <key-binding alias="AVSCode" key="AVSCode"/>
+                <key-binding alias="AVSCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
+                <key-binding alias="subscriptionID" key="SubscriptionIDToken"/>
+                <key-binding alias="decision" key="decision"/>
+                <key-binding alias="invalidField" key="invalidField"/>
+                <key-binding alias="reasonCode" key="reasonCode"/>
+                <key-binding alias="requestID" key="requestID"/>
+                <key-binding alias="requestToken" key="requestToken"/>
+                <key-binding alias="missingField" key="missingField"/>
+                <key-binding alias="CurrentForms.subscription.authorizationID.htmlValue" key="authorizationID"/>
+                <key-binding alias="CurrentForms.ap.apCaptureID.htmlValue" key="authRequestID"/>
+                <key-binding alias="transactionID" key="transactionID"/>
+                <key-binding alias="captureAmount" key="CaptureAmount"/>
+                <key-binding alias="captureReasonCode" key="CaptureReasonCode"/>
+                <key-binding alias="CurrentForms.ap.apCaptureID.htmlValue" key="apCaptureID"/>
+                <key-binding alias="CurrentForms.ap.note.htmlValue" key="note"/>
+                <key-binding alias="CurrentForms.ap.reason.htmlValue" key="reason"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/APRefundUnitTestResults"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_46">
+    <segment>
+      <node>
+        <text-node>
+          <description>Make the pipeline node as public before using</description>
+        </text-node>
+        <node-display x="50" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TestVmeInitiateService">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TestVmeInitiateService" secure="false"/>
+        <node-display x="51" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="true" key="From_0"/>
+          <key-binding alias="apInitiateService" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.ap" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="AP Initiate Service" transaction-required="false">
+          <template buffered="true" dynamic="false" name="services/APConfirmPurchaseForm"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/AP/CreateCybersourceAPObject.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CybersourceAPObject" key="CybersourceAPObject"/>
+          <key-binding alias="CurrentForms.ap.orderID.htmlValue" key="orderID"/>
+          <key-binding alias="CyberSourceAPObject" key="CyberSourceAPObject"/>
+          <key-binding alias="CheckoutDetailObject" key="CheckoutDetailObject"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../b3.1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/payment/CreateCyberSourcePurchaseTotalsObject.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CyberSourcePurchaseTotals" key="CyberSourcePurchaseTotals"/>
+          <key-binding alias="CurrentForms.ap.amount.htmlValue" key="amount"/>
+          <key-binding alias="CurrentForms.ap.currency.htmlValue" key="currency"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../b4.1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestVmeInitiateService.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="CyberSourceAPObject" key="apObject"/>
+          <key-binding alias="CyberSourcePurchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="apOrderID" key="apOrderID"/>
+          <key-binding alias="apProductDescription" key="apProductDescription"/>
+          <key-binding alias="apProductID" key="apProductID"/>
+          <key-binding alias="signature" key="signature"/>
+          <key-binding alias="publicKey" key="publicKey"/>
+          <key-binding alias="apStatus" key="apStatus"/>
+          <key-binding alias="apReasonCode" key="apReasonCode"/>
+          <key-binding alias="dateTime" key="dateTime"/>
+          <key-binding alias="apPurchaseID" key="apPurchaseID"/>
+          <key-binding alias="Decision" key="Decision"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="RequestID" key="RequestID"/>
+          <key-binding alias="RequestToken" key="RequestToken"/>
+          <key-binding alias="processorResponse" key="processorResponse"/>
+          <key-binding alias="purchaseTotalCurrency" key="purchaseTotalCurrency"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="custom/APInitiateServiceUnitTestResults"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_48">
+    <segment>
+      <node>
+        <text-node>
           <description>Missing or invalid fields</description>
         </text-node>
         <node-display x="14" y="7"/>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_22">
+  <branch basename="_ANONYMOUS_BRANCH_49">
     <segment>
       <node>
         <text-node>
@@ -1683,7 +2995,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_24">
+  <branch basename="_ANONYMOUS_BRANCH_51">
     <segment>
       <node>
         <text-node>
@@ -1693,7 +3005,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_25">
+  <branch basename="_ANONYMOUS_BRANCH_52">
     <segment>
       <node>
         <text-node>
@@ -1705,7 +3017,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_26">
+  <branch basename="_ANONYMOUS_BRANCH_53">
     <segment>
       <node>
         <text-node>
@@ -1715,7 +3027,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_27">
+  <branch basename="_ANONYMOUS_BRANCH_54">
     <segment>
       <node>
         <text-node>
@@ -1725,7 +3037,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_28">
+  <branch basename="_ANONYMOUS_BRANCH_55">
     <segment>
       <node>
         <text-node>
@@ -1735,7 +3047,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_29">
+  <branch basename="_ANONYMOUS_BRANCH_56">
     <segment>
       <node>
         <text-node>

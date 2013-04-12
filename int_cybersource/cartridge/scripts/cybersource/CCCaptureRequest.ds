@@ -16,7 +16,7 @@ importPackage( dw.order );
 importPackage( dw.rpc );
 importPackage( dw.util );
 
-importScript('libCybersource.ds');
+importScript('cybersource/libCybersource.ds');
 
 function execute( pdict : PipelineDictionary ) : Number
 {

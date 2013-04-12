@@ -1,0 +1,5 @@
+{
+	"tax":"${pdict.Basket.totalTax.value}",
+	"shippingHandling":"${pdict.Basket.adjustedShippingTotalPrice.value}",
+	"discount":"-${pdict.Basket.getAdjustedMerchandizeTotalPrice(false).subtract(pdict.Basket.getAdjustedMerchandizeTotalPrice(true)).value}"
+}

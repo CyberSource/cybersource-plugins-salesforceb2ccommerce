@@ -1,0 +1,4 @@
+<form action="${URLUtils.url('COShippingVisa-GetCheckoutDetails')}" method="post" id="${pdict.CurrentForms.vMeBilling.htmlName}" class="visaForm">
+	<input type="hidden" id="callId" name="${pdict.CurrentForms.vMeBilling.callId.htmlName}" value="" />
+	<input type="hidden" id="signature" name="${pdict.CurrentForms.vMeBilling.signature.htmlName}" value="" />
+</form>

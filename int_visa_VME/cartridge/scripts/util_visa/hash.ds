@@ -1,0 +1,21 @@
+/** 
+ * @input stringToEncode : String
+ * @output code : String
+ */
+
+importPackage( dw.system );
+importPackage( dw.crypto );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var myMAC : MessageDigest;
+  	var hash : String;
+	try {
+            myMAC = new MessageDigest(MessageDigest.DIGEST_SHA_256);
+            hash = myMAC.digest(pdict.stringToEncode);
+        } catch (err) {}
+
+	pdict.code = hash;
+	return PIPELET_NEXT;
+}
