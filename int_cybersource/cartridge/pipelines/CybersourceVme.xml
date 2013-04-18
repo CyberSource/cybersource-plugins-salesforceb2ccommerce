@@ -401,57 +401,11 @@
       </node>
       <simple-transition/>
       <node>
-        <decision-node condition-key="(dw.system.Site.current.getCustomPreferenceValue('VmeEnvironment').value  == 'Production')" condition-operator="expr"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b5" source-connector="yes">
-          <transition target-connector="in1" target-path="./+1"/>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="1" y="0"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="true"/>
-          <key-binding alias="response != null ? response : new dw.system.Status(dw.system.Status.ERROR, &quot;confirm.error.technical&quot;)" key="From_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="null" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-          <key-binding alias="PlaceOrderError" key="To_0"/>
-        </pipelet-node>
-        <node-display x="1" y="0"/>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="-1" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
         <decision-node condition-key="ReasonCode == 100" condition-operator="expr">
           <description>Successful transaction.</description>
         </decision-node>
         <node-display orientation="horizontal" x="0" y="1"/>
-        <branch basename="b2" source-connector="yes">
+        <branch basename="b5" source-connector="yes">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="target" x="-1" y="0"/>
@@ -500,7 +454,7 @@
       <node>
         <decision-node condition-key="ReasonCode == 203 || ReasonCode == 237 || ReasonCode == 242 || ReasonCode == 255" condition-operator="expr"/>
         <node-display orientation="horizontal" x="0" y="1"/>
-        <branch basename="b3" source-connector="yes">
+        <branch basename="b6" source-connector="yes">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="target" x="-1" y="0"/>
@@ -547,8 +501,8 @@
       <node>
         <decision-node condition-key="ReasonCode == 101 || ReasonCode == 102 || ReasonCode == 150 || ReasonCode == 233" condition-operator="expr"/>
         <node-display x="0" y="1"/>
-        <branch basename="b4" source-connector="yes">
-          <transition target-connector="in2" target-path="./b5.1"/>
+        <branch basename="b7" source-connector="yes">
+          <transition target-connector="in2" target-path="./b8.1"/>
         </branch>
       </node>
       <simple-transition/>
@@ -557,7 +511,7 @@
           <description>When cybersource request timesout</description>
         </decision-node>
         <node-display orientation="horizontal" x="0" y="1"/>
-        <branch basename="b5" source-connector="yes">
+        <branch basename="b8" source-connector="yes">
           <transition target-connector="in1"/>
           <segment>
             <node>
@@ -766,7 +720,7 @@ reversed or captured.
           <key-binding alias="PhoneNumber" key="PhoneNumber"/>
           <key-binding alias="TransactionID" key="TransactionID"/>
           <key-binding alias="FirstName" key="FirstName"/>
-          <key-binding alias="LastName" key="LastName"/>          
+          <key-binding alias="LastName" key="LastName"/>
           <key-binding alias="RiskIndicator" key="RiskIndicator"/>
         </pipelet-node>
         <node-display x="0" y="1"/>

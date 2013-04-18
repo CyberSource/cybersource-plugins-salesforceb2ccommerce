@@ -71,6 +71,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	pdict.RequestToken = response.requestToken;
 	pdict.ReasonCode = response.reasonCode.get();
 	pdict.Decision = response.decision;
+	pdict.riskIndicator = "UNAVAILABLE";
 	if(null != response.purchaseTotals)
 		pdict.purchaseTotalCurrency = response.purchaseTotals.currency;
 	
@@ -90,7 +91,9 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.cardNumberSuffix = response.apReply.cardNumberSuffix;
 		pdict.cardType = response.apReply.cardType;		
 		pdict.AVSCodeRaw = response.apReply.avsCodeRaw;
-		pdict.riskIndicator = response.apReply.riskIndicator;			
+		if(!empty(response.apReply.riskIndicator)){
+			pdict.riskIndicator = response.apReply.riskIndicator;
+		}			
 	}
 	
 

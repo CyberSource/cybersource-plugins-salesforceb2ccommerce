@@ -6,10 +6,10 @@
 //    https://github.com/Demandware/Site-Genesis
 
 // All java script logic for the application.
-// The code relies on the jQuery JS library to be also loaded. 
+// The code relies on the jQuery JS library to be also loaded.
 
 // semi-colon to assure functionality upon script concatenation and minification
-; 
+;
 
 // if jQuery has not been loaded, load from google cdn
 if (!window.jQuery) {
@@ -24,7 +24,7 @@ if (!window.jQuery) {
 var app = (function (app, $) {
 	document.cookie="dw=1";
 	/******** private functions & vars **********/
-	
+
 	// cache dom elements accessed multiple times
 	// app.ui holds globally available elements
 	function initUiCache() {
@@ -39,7 +39,7 @@ var app = (function (app, $) {
 			slots : {
 				subscribeEmail : $(".subscribe-email")
 			}
-		};		
+		};
 	}
 
 	function initializeEvents() {
@@ -51,25 +51,25 @@ var app = (function (app, $) {
 			var text = $.trim($(this).val()),
 				charsLimit = $(this).data("character-limit"),
 				charsUsed = text.length;
-							
-				if ((charsUsed >= charsLimit) && (controlKeys.indexOf(e.which.toString()) < 0)) {					
+
+				if ((charsUsed >= charsLimit) && (controlKeys.indexOf(e.which.toString()) < 0)) {
 					e.preventDefault();
-				}					
+				}
 		})
 		.on("change keyup mouseup", "textarea[data-character-limit]", function(e) {
 			var text = $.trim($(this).val()),
 				charsLimit = $(this).data("character-limit"),
 				charsUsed = text.length,
 				charsRemain = charsLimit - charsUsed;
-			
+
 			if(charsRemain < 0) {
 				$(this).val( text.slice(0, charsRemain) );
 				charsRemain = 0;
 			}
-			
+
 			$(this).next('div.char-count').find('.char-remain-count').html(charsRemain);
 		});
-		
+
 
 		//initialize search suggestions
 		app.searchsuggest.init(app.ui.searchContainer, app.resources.SIMPLE_SEARCH);
@@ -82,13 +82,13 @@ var app = (function (app, $) {
 		$('.secondary-navigation .toggle').click(function(){
 			$(this).toggleClass('expanded').next('ul').toggle();
 		});
-		
+
 		// add generic toggle functionality
 		$('.toggle').next('.toggle-content').hide();
 		$('.toggle').click(function(){
 			$(this).toggleClass('expanded').next('.toggle-content').toggle();
 		});
-		
+
 		// subscribe email box
 		if (app.ui.slots.subscribeEmail.length > 0)	{
 			app.ui.slots.subscribeEmail.focus(function () {
@@ -138,12 +138,12 @@ var app = (function (app, $) {
 		 * @description Master page initialization routine
 		 */
 		init: function () {
-			
+
 			if (document.cookie.length===0) {
 				$("<div/>").addClass("browser-compatibility-alert").append($("<p/>").addClass("browser-error").html(app.resources.COOKIES_DISABLED)).appendTo("#browser-check");
 			}
-			
-			
+
+
 			// init global cache
 			initUiCache();
 
@@ -183,8 +183,8 @@ var app = (function (app, $) {
 				slider : $('#homepage-slider'),
 				wrapper : $('#wrapper')
 			};
-			
-			
+
+
 			function slideCarousel_initCallback(carousel) {
 
 				// create navigation for slideshow
@@ -200,11 +200,11 @@ var app = (function (app, $) {
 			        carousel.scroll(jQuery.jcarousel.intval($(this).text()));
 			        return false;
 			    });
-			   
+
 			   $cache.slide.width($cache.wrapper.width());
-			   
+
 			}
-			
+
 			function slideCarousel_itemVisible(carousel, item, idx, state) {
 			    //alert('Item #' + idx + ' is visible');
 				$('.jcarousel-control a').removeClass('active');
@@ -233,9 +233,9 @@ var app = (function (app, $) {
 (function (app, $) {
 	var $cache = {};
 	app.tooltips = {
-			
+
 		init : function () {
-			
+
 			$('.tooltip').tooltip({
 				track: true,
 				showURL: false,
@@ -245,9 +245,9 @@ var app = (function (app, $) {
 					if( tooltipClass = $(this).find('.tooltip-content').data("layout") ) {
 						tooltipClass = " class='" + tooltipClass + "' ";
 					}
-		        	return "<div " + tooltipClass + ">" + $(this).find('.tooltip-content').html() + "</div>"; 
-				}, 
-				showURL: false 
+		        	return "<div " + tooltipClass + ">" + $(this).find('.tooltip-content').html() + "</div>";
+				},
+				showURL: false
 			});
 		}
 	};
@@ -355,17 +355,17 @@ var app = (function (app, $) {
 		}
 	}
 
-	function replaceImages() {		
+	function replaceImages() {
 		var newImages = $("#update-images");
 		var imageContainer = $cache.pdpMain.find("div.product-image-container");
-		
+
 		imageContainer.html(newImages.html());
 		newImages.remove();
 		setMainImageLink();
-		
+
 		loadZoom();
 	}
-	
+
 	function setMainImageLink() {
 		if (app.quickView.isActive() || app.isMobileUserAgent) {
 			$cache.pdpMain.find("a.main-image").removeAttr("href");
@@ -374,11 +374,11 @@ var app = (function (app, $) {
 			$cache.pdpMain.find("a.main-image").addClass("image-zoom");
 		}
 	}
-	
+
 	function removeImageZoom() {
 		$cache.pdpMain.find("a.main-image").removeClass("image-zoom");
 	}
-	
+
 	function initializeDom() {
 		$cache.pdpMain.find('div.product-detail .product-tabs').tabs();
 		if($('#pwrwritediv').length > 0) {
@@ -399,7 +399,7 @@ var app = (function (app, $) {
 
 		loadRecommendations($cache.container);
 		loadProductNavigation();
-		setMainImageLink();		
+		setMainImageLink();
 
 		if ($cache.productSetList.length>0) {
 			var unavailable = $cache.productSetList.find("form").find("button.add-to-cart[disabled]");
@@ -409,7 +409,7 @@ var app = (function (app, $) {
 
 			}
 		}
-		
+
 		app.tooltips.init();
 	}
 
@@ -433,9 +433,9 @@ var app = (function (app, $) {
 	}
 
 	function initializeEvents() {
-				
+
 		app.product.initAddThis();
-		
+
 		// add or update shopping cart line item
 		app.product.initAddToCart();
 		$cache.pdpMain.on("change keyup", "form.pdpForm input[name='Quantity']", function (e) {
@@ -452,7 +452,7 @@ var app = (function (app, $) {
 					}else{
 						var avMsg = null;
 						var avRoot = availabilityContainer.find(".availability-msg").html('');
-						
+
 						// Look through levels ... if msg is not empty, then create span el
 						if( data.levels.IN_STOCK> 0 ) {
 							avMsg = avRoot.find(".in-stock-msg");
@@ -518,7 +518,7 @@ var app = (function (app, $) {
 						avQtyMsg = $("<span/>").addClass("availability-qty-available").appendTo(availabilityContainer);
 					}
 					avQtyMsg.text(data.inStockMsg).show();
-					
+
 					var avQtyMsg = availabilityContainer.find(".availability-qty-available");
 					if (avQtyMsg.length===0) {
 						avQtyMsg = $("<span/>").addClass("availability-qty-available").appendTo(availabilityContainer);
@@ -527,11 +527,11 @@ var app = (function (app, $) {
 				});
 
 		});
-		
+
 		// Add to Wishlist and Add to Gift Registry links behaviors
 		$cache.pdpMain.on("click", "a.wl-action", function (e) {
 			e.preventDefault();
-			
+
 			var data = app.util.getQueryStringParams($("form.pdpForm").serialize());
 			if (data.cartAction) {
 				delete data.cartAction;
@@ -565,7 +565,7 @@ var app = (function (app, $) {
 		// dropdown variations
 		$cache.pdpMain.on("change", ".product-options select", function (e) {
 			var salesPrice = $cache.pdpMain.find("div.product-add-to-cart .price-sales");
-			
+
 			var selectedItem = $(this).children().filter(":selected").first();
 			var combinedPrice = selectedItem.data("combined");
 			salesPrice.text(combinedPrice);
@@ -574,7 +574,7 @@ var app = (function (app, $) {
 		// prevent default behavior of thumbnail link and add this Button
 		$cache.pdpMain.on("click", ".thumbnail-link, .addthis_toolbox a", false);
 		$cache.pdpMain.on("click", "li.unselectable a", false);
-		
+
 		// handle drop down variation attribute value selection event
 		$cache.pdpMain.on("change", ".variation-select", function(e){
 			if ($(this).val().length===0) {return;}
@@ -605,12 +605,12 @@ var app = (function (app, $) {
 		// swatch anchor onclick()
 		$cache.pdpMain.on("click", "div.product-detail a[href].swatchanchor", function (e) {
 			e.preventDefault();
-			
+
 			var el = $(this);
 			if( el.parents('li').hasClass('unselectable') ) return;
-			
+
 			var isColor = el.closest("ul.swatches").hasClass("Color");
-						
+
 			var anchor = el,
 				qty = $cache.pdpForm.find("input[name='Quantity']").first().val(),
 				listid = $cache.pdpForm.find("input[name='productlistid']").first().val(),
@@ -622,8 +622,8 @@ var app = (function (app, $) {
 
 			var target = (productSet.length > 0 && productSet.children.length > 0) ? productSet : $cache.productContent;
 			var url = app.util.appendParamsToUrl(this.href, params);
-			app.progress.show($cache.pdpMain);		
-						
+			app.progress.show($cache.pdpMain);
+
 			app.ajax.load({
 				url: url,
 				callback : function (data) {
@@ -662,7 +662,7 @@ var app = (function (app, $) {
 					$cache.addAllToCart.removeAttr("disabled");
 					$cache.addToCart.removeAttr("disabled"); // this may be a bundle
 				}
-				
+
 				app.product.initAddToCart(ic);
 				app.tooltips.init();
 			});
@@ -713,26 +713,26 @@ var app = (function (app, $) {
 			return false;
 		});
 		app.sendToFriend.initializeDialog($cache.pdpMain, "a.send-to-friend");
-		
+
 		$cache.pdpMain.find("button.add-to-cart[disabled]").attr('title', $cache.pdpMain.find(".availability-msg").html() );
 	}
-	
+
 	function setAddToCartHandler(e) {
-		e.preventDefault();		
+		e.preventDefault();
 		var form = $(this).closest("form");
 		var qty = form.find("input[name='Quantity']");
 		var isSubItem = $(this).hasClass("sub-product-item");
 		if(qty.length === 0 || isNaN(qty.val()) || parseInt(qty.val(), 10) === 0) {
 			qty.val("1");
 		}
-		
+
 		var data = form.serialize();
 		app.cart.update(data, function (response) {
 			var uuid = form.find("input[name='uuid']");
 			if (uuid.length > 0 && uuid.val().length > 0) {
 				app.cart.refresh();
 			}
-			else {				
+			else {
 				if (!isSubItem) {
 					app.quickView.close();
 				}
@@ -740,8 +740,8 @@ var app = (function (app, $) {
 			}
 		});
 	}
-	
-	
+
+
 
 	/*************** app.product public object ***************/
 	app.product = {
@@ -770,10 +770,10 @@ var app = (function (app, $) {
 			var productUrl = options.url || app.util.appendParamToURL(app.urls.getProductUrl, "pid", options.id);
 			if(source.length > 0) {
 				productUrl = app.util.appendParamToURL(productUrl, "source", source);
-			}			
+			}
 			if(productListID.length > 0) {
 				productUrl = app.util.appendParamToURL(productUrl, "productlistid", productListID);
-			}			
+			}
 
 			// show small loading image
 			//app.progress.show(app.ui.primary);
@@ -795,15 +795,15 @@ var app = (function (app, $) {
 			var addThisServices = ["compact","facebook","myspace","google","twitter"],
 				addThisToolbox = $(".addthis_toolbox"),
 				addThisLinks="";
-				
-			var i,len=addThisServices.length; 
+
+			var i,len=addThisServices.length;
 			for (i=0;i<len;i++) {
 				if (addThisToolbox.find(".addthis_button_"+addThisServices[i]).length==0) {
 					addThisLinks += '<a class="addthis_button_'+addThisServices[i]+'"></a>';
 				}
 			}
 			if (addThisLinks.length===0) { return; }
-			
+
 			addThisToolbox.html(addThisLinks);
 			addthis.toolbox(".addthis_toolbox");
 		},
@@ -846,15 +846,15 @@ var app = (function (app, $) {
 		$cache.container.on("click", ".swatch-list a.swatch", function (e) {
 			e.preventDefault();
 			if ($(this).hasClass("selected")) { return; }
-			
+
 			var tile = $(this).closest(".grid-tile");
 			$(this).closest(".swatch-list").find(".swatch.selected").removeClass("selected");
 			$(this).addClass("selected");
 			tile.find("a.thumb-link").attr("href", $(this).attr("href"));
 			tile.find("a.name-link").attr("href", $(this).attr("href"));
 
-			var swatchImg = $(this).children("img").filter(":first");			
-			var data = swatchImg.data("thumb");			
+			var swatchImg = $(this).children("img").filter(":first");
+			var data = swatchImg.data("thumb");
 			var thumb = tile.find(".product-image a.thumb-link img").filter(":first");
 			var currentAtts = {
 				src : data.src,
@@ -865,27 +865,27 @@ var app = (function (app, $) {
 			thumb.data("current", currentAtts);
 		}).on("mouseenter", ".swatch-list a.swatch", function (e) {
 			//if ($(this).hasClass("selected")) { return; }
-			
+
 			// get current thumb details
 			var tile = $(this).closest(".grid-tile");
 			var thumb = tile.find(".product-image a.thumb-link img").filter(":first");
-			var swatchImg = $(this).children("img").filter(":first");			
-			var data = swatchImg.data("thumb");			
+			var swatchImg = $(this).children("img").filter(":first");
+			var data = swatchImg.data("thumb");
 			var current = thumb.data('current');
-			
+
 			// If this is the first time, then record the current img
 			if(!current) {
-			    thumb.data('current',{src:thumb[0].src, alt:thumb[0].alt, title:thumb[0].title});    
-			}			
-			
+			    thumb.data('current',{src:thumb[0].src, alt:thumb[0].alt, title:thumb[0].title});
+			}
+
 			// Set the tile image to the values provided on the swatch data attributes
 			thumb.attr({
 				src : data.src,
 				alt : data.alt,
 				title : data.title
 			});
-			
-			//swatchImg.data("thumb", currentAtts);			
+
+			//swatchImg.data("thumb", currentAtts);
 		});
 	}
 
@@ -913,7 +913,7 @@ var app = (function (app, $) {
 	/************** private ****************/
 	function refreshContainer() {
 		if (_isClearing) { return; }
-		
+
 		var ac = $cache.compareContainer.find(".active").length;
 
 		if (ac < 2) {
@@ -922,16 +922,16 @@ var app = (function (app, $) {
 		else {
 			$cache.compareButton.removeAttr("disabled");
 		}
-		
+
 		// update list with sequential classes for ui targeting
 		var compareItems = $cache.compareContainer.find('.compare-item');
 		for( i=0; i < compareItems.length; i++ ){
 			compareItems.removeClass('compare-item-' + i);
 			$(compareItems[i]).addClass('compare-item-' + i);
 		}
-		
+
 		$cache.compareContainer.toggle(ac > 0);
-		
+
 	}
 
 	function addToList(data) {
@@ -1178,8 +1178,8 @@ var app = (function (app, $) {
 	var $cache = {},
 		initialized=false;
 	function initializeEvents() {
-		app.util.limitCharacters();		
-		if (initialized) {return; }			
+		app.util.limitCharacters();
+		if (initialized) {return; }
 		$cache.dialog.on("click", ".preview-button, .send-button, .edit-button", function (e) {
 			e.preventDefault();
 			$cache.form.validate();
@@ -1199,7 +1199,7 @@ var app = (function (app, $) {
 						app.validator.init();
 						app.util.limitCharacters();
 						$cache.form = $("#send-to-friend-form");
-						$(".ui-dialog-content").dialog("option", "position", "center");													
+						$(".ui-dialog-content").dialog("option", "position", "center");
 				   }
 			});
 		})
@@ -1217,7 +1217,7 @@ var app = (function (app, $) {
 				form: $("#send-to-friend-form"),
 				dialog: $("#send-to-friend-dialog"),
 				pdpForm: $("form.pdpForm")
-			};			
+			};
 			initializeEvents();
 		},
 		initializeDialog : function (eventDelegate, eventTarget) {
@@ -1306,19 +1306,30 @@ var app = (function (app, $) {
 		 	.toggleClass('expanded')
 		 	.siblings('ul').toggle();
 		});
-		
+
 		// handle events for updating grid
 		$cache.main.on("click", ".refinements a, .pagination a, .breadcrumb-refinement-value a", function (e) {
-			e.preventDefault();
-			if($(this).parent().hasClass("unselectable")) { return; }
-			var uri = app.util.getUri(this);
 
-			if( uri.query.length > 1 ) {
-				window.location.hash = encodeURI(uri.query.substring(1));
-			} else {
-				window.location.href = encodeURI(this.href);
+			if($(this).parent().hasClass("unselectable")) { return; }
+			var catparent = $(this).parents('.category-refinement');
+			var folderparent = $(this).parents('.folder-refinement');
+			
+			//if the anchor tag is uunderneath a div with the class names & , prevent the double encoding of the url		
+			//else handle the encoding for the url		
+			if(catparent.length > 0 || folderparent.length > 0 ){
+				
+				return true;
+			}else{ 
+				e.preventDefault();
+				var uri = app.util.getUri(this);
+	
+				if( uri.query.length > 1 ) {
+					window.location.hash = encodeURI(decodeURIComponent(uri.query.substring(1)));
+				} else {
+					window.location.href = encodeURI(this.href);
+				}
+				return false;
 			}
-			return false;
 		});
 
 		// handle events item click. append params.
@@ -1418,7 +1429,7 @@ var app = (function (app, $) {
 			for (i=0, len=selectedList.length;i<len;i++) {
 				var item = selectedList[i];
 				var li = itemTemplate.clone().removeClass("selected-item-template").addClass("selected-bonus-item");
-				li.data("uuid", item.uuid).data("pid", item.pid); 
+				li.data("uuid", item.uuid).data("pid", item.pid);
 				li.find(".item-name").html(item.name);
 				li.find(".item-qty").html(item.qty);
 				var ulAtts = li.find(".item-attributes");
@@ -1436,7 +1447,7 @@ var app = (function (app, $) {
 			}
 			ulList.children(".selected-bonus-item").show();
 		}
-		
+
 		// get remaining item count
 		var remain = maxItems - selectedList.length;
 		$cache.bonusProductList.find(".bonus-items-available").text(remain);
@@ -1523,16 +1534,16 @@ var app = (function (app, $) {
 
 			maxItems = bliData.maxItems;
 			bliUUID = bliData.uuid;
-			
+
 			if (bliData.itemCount>=maxItems) {
 				$cache.bonusProductList.find("button.button-select-bonus").attr("disabled", "disabled");
 			}
-			
+
 			var cartItems = $cache.bonusProductList.find(".selected-bonus-item");
-			
+
 			cartItems.each(function() {
 				var ci = $(this);
-				
+
 				var product = {
 					uuid : ci.data("uuid"),
 					pid : ci.data("pid"),
@@ -1551,7 +1562,7 @@ var app = (function (app, $) {
 				selectedList.push(product);
 			});
 
-	
+
 			$cache.bonusProductList.on("click", "div.bonus-product-item a[href].swatchanchor", function (e) {
 				e.preventDefault();
 
@@ -1615,7 +1626,7 @@ var app = (function (app, $) {
 				e.preventDefault();
 				var container = $(this).closest("li.selected-bonus-item");
 				if (!container.data("uuid")) { return; }
-				
+
 				var uuid = container.data("uuid");
 				var i, len = selectedList.length;
 				for(i=0;i<len;i++) {
@@ -1667,8 +1678,8 @@ var app = (function (app, $) {
 	function setAddToCartHandler(e) {
 		e.preventDefault();
 		var form = $(this).closest("form");
-		
-		var options = { 
+
+		var options = {
 			url : app.util.ajaxUrl(form.attr('action')),
 			method : 'POST',
 			cache: false,
@@ -1706,17 +1717,17 @@ var app = (function (app, $) {
 			}
 		});
 	}
-	
+
 	function initializeCache() {
 		$cache = {
-			addToCart : $("#AddToBasketButton")
+			addToCart : $("#AddToBasketButton"),
 		};
 	}
 
 	function initializeEvents() {
 		$cache.addToCart.on('click', setAddToCartHandler);
 	}
-		
+
 	app.giftcert = {
 		init : function(){
 			initializeCache();
@@ -1727,12 +1738,12 @@ var app = (function (app, $) {
 
 //app.giftcard
 (function (app, $) {
-	
+
 	app.giftcard = {
 		checkBalance : function (id, callback) {
 			// load gift certificate details
 			var url = app.util.appendParamToURL(app.urls.giftCardCheckBalance, "giftCertificateID", id);
-	
+
 			app.ajax.getJson({
 				url: url,
 				callback: callback
@@ -1752,7 +1763,7 @@ var app = (function (app, $) {
 	 * entered address information as URL request parameters.
 	 */
 	function getShippingMethodURL(url) {
-		var newUrl = app.util.appendParamsToUrl(url, 
+		var newUrl = app.util.appendParamsToUrl(url,
 												{
 													countryCode:$cache.countryCode.val(),
 												 	stateCode:$cache.stateCode.val(),
@@ -1890,7 +1901,7 @@ var app = (function (app, $) {
 		initGiftMessageBox();
 		updateShippingMethodList();
 		return null;
-	}	
+	}
 
 	function addressLoad() {
 		// select address from list
@@ -1925,30 +1936,28 @@ var app = (function (app, $) {
 	}
 
 	//changes the payment method form
-	function changePaymentMethod(paymentMethodID) {		
+	function changePaymentMethod(paymentMethodID) {
 		$cache.paymentMethods.removeClass("payment-method-expanded");
-		var pmc = $cache.paymentMethods.filter("#PaymentMethod_"+paymentMethodID);		
+		var pmc = $cache.paymentMethods.filter("#PaymentMethod_"+paymentMethodID);
 		if (pmc.length===0) {
 			pmc = $("#PaymentMethod_Custom");
 		}
-		pmc.addClass("payment-method-expanded");		
+		pmc.addClass("payment-method-expanded");
+		// BEGIN V.ME CHANGES
 		// ensure checkout form visible to customer
-		// BEGIN VME CHANGES
 		$cache.checkoutForm.find("#billing-form").show();
 		$cache.checkoutForm.find("#continue-button").show();
-		$cache.checkoutForm.find("#vme-continue-button").hide();
 		$cache.checkoutForm.find("#vme-legend").hide();
-		// END VME CHANGES
-		
+		// END V.ME CHANGES 
 		// ensure checkbox of payment method is checked
 		$("#is-" + paymentMethodID)[0].checked = true;
-		
+
 		var bmlForm = $cache.checkoutForm.find("#PaymentMethod_BML");
 		bmlForm.find("select[name$='_year']").removeClass("required");
 		bmlForm.find("select[name$='_month']").removeClass("required");
 		bmlForm.find("select[name$='_day']").removeClass("required");
 		bmlForm.find("input[name$='_ssn']").removeClass("required");
-		
+
 		if (paymentMethodID==="BML") {
 			var yr = bmlForm.find("select[name$='_year']");
 			bmlForm.find("select[name$='_year']").addClass("required");
@@ -1956,17 +1965,16 @@ var app = (function (app, $) {
 			bmlForm.find("select[name$='_day']").addClass("required");
 			bmlForm.find("input[name$='_ssn']").addClass("required");
 		}
+		// BEGIN V.ME CHANGES
 		// ensure checkout form not visible to customer if payment method selected V.me | required for V.me
-		// BEGIN VME CHANGES
 		if(paymentMethodID==="VISA_VME")
 		{			
 			$cache.checkoutForm.find("#billing-form").hide();
 			$cache.checkoutForm.find("#continue-button").hide();
-			$cache.checkoutForm.find("#vme-continue-button").show();
 			$cache.checkoutForm.find("#vme-legend").show();
 		}
-		// END VME CHANGES
-		app.validator.init();		
+		// END V.ME CHANGES 
+		app.validator.init();
 	}
 
 	function setCCFields(data) {
@@ -2006,10 +2014,10 @@ var app = (function (app, $) {
 	//loads billing address, Gift Certificates, Coupon and Payment methods
 	function billingLoad() {
 		if( !$cache.paymentMethodId ) return;
-		
+
 		$cache.paymentMethodId.on("click", function () {
 			changePaymentMethod($(this).val());
-			
+
 		});
 
 		// get selected payment method from payment method form
@@ -2045,13 +2053,13 @@ var app = (function (app, $) {
 									value:app.constants.PI_METHOD_GIFT_CERTIFICATE})
 							 .appendTo($cache.checkoutForm);
 			}
-			
+
 			var tc = $cache.checkoutForm.find("input[name$='bml_termsandconditions']");
 			if ($cache.paymentMethodId.filter(":checked").val()==="BML" && !$cache.checkoutForm.find("input[name$='bml_termsandconditions']")[0].checked) {
 				alert(app.resources.BML_AGREE_TO_TERMS);
 				return false;
 			}
-			
+
 		});
 
 		$cache.gcCheckBalance.on("click", function (e) {
@@ -2066,7 +2074,7 @@ var app = (function (app, $) {
 				error.html(app.resources.GIFT_CERT_MISSING);
 				return;
 			}
-			
+
 			app.giftcard.checkBalance($cache.gcCode.val(), function (data) {
 				if(!data || !data.giftCertificate) {
 					// error
@@ -2083,21 +2091,21 @@ var app = (function (app, $) {
 				$cache.balance.html(app.resources.GIFT_CERT_BALANCE+" "+balance);
 			});
 		});
-		
+
 		$cache.addCoupon.on("click", function(e){
 			e.preventDefault();
 			$cache.couponCode = $cache.couponCode || $cache.checkoutForm.find("input[name$='_couponCode']");
 			$cache.redemption = $cache.redemption || $cache.checkoutForm.find("div.redemption.coupon");
 			var val = $cache.couponCode.val();
-			if (val.length===0) { 
+			if (val.length===0) {
 				var error = $cache.redemption.find("span.error");
 				if (error.length===0) {
 					error = $("<span>").addClass("error").appendTo($cache.redemption);
 				}
-				error.html(app.resources.COUPON_CODE_MISSING);					
+				error.html(app.resources.COUPON_CODE_MISSING);
 				return;
 			}
-			
+
 			var url = app.util.appendParamsToUrl(app.urls.addCoupon, {couponCode:val,format:"ajax"});
 			$.getJSON(url, function(data) {
 				var fail = false;
@@ -2115,10 +2123,10 @@ var app = (function (app, $) {
 					if (error.length===0) {
 						$("<span>").addClass("error").appendTo($cache.redemption);
 					}
-					error.html(msg);					
+					error.html(msg);
 					return;
 				}
-				
+
 				$cache.redemption.html(data.message);
 			});
 		});
@@ -2166,7 +2174,7 @@ var app = (function (app, $) {
 			$cache.BMLContainer = $("#PaymentMethod_BML");
 			$cache.gcCheckBalance = $("#gc-checkbalance");
 			$cache.addCoupon = $("#add-coupon");
-			
+
 		}
 	}
 
@@ -2211,10 +2219,10 @@ var app = (function (app, $) {
 			// quick view button
 			$(container).on("mouseenter", target, function (e) {
 				if(!$cache.qvButton) {
-					$cache.qvButton = $("<a id='quickviewbutton'/>");					
+					$cache.qvButton = $("<a id='quickviewbutton'/>");
 				}
 				bindQvButton();
-				
+
 				var link = $(this).children("a:first");
 				$cache.qvButton.attr({
 					"href" : link.attr("href"),
@@ -2246,7 +2254,7 @@ var app = (function (app, $) {
 						title : 'Product Quickview',
 						resizable : false,
 						position : 'center',
-						open : function () {							
+						open : function () {
 							app.progress.hide();
 						}
 					}
@@ -2282,7 +2290,7 @@ var app = (function (app, $) {
 
 	// sub namespace app.util.* contains utility functions
 	app.util = {
-		
+
 		// trims a prefix from a given string, this can be used to trim
 		// a certain prefix from DOM element IDs for further processing on the ID
 		trimPrefix : function (str, prefix) {
@@ -2291,10 +2299,10 @@ var app = (function (app, $) {
 
 		setDialogify : function (e) {
 			e.preventDefault();
-			var actionSource = $(this),			
+			var actionSource = $(this),
 				dlgAction = $(actionSource).data("dlg-action") || {}, // url, target, isForm
 				dlgOptions = $.extend({}, app.dialog.settings, $(actionSource).data("dlg-options") || {});
-				
+
 			dlgOptions.title = dlgOptions.title || $(actionSource).attr("title") || "";
 
 			var url = dlgAction.url // url from data
@@ -2302,33 +2310,33 @@ var app = (function (app, $) {
 					  || $(actionSource).attr("href"); // or url from href
 
 			if (!url) { return; }
-			
+
 			var form = jQuery(this).parents('form');
 			var method = form.attr("method")||"POST";
-			
+
 			// if this is a content link, update url from Page-Show to Page-Include
 			if ($(this).hasClass("attributecontentlink")) {
 				var uri = app.util.getUri(url);
 				url = app.urls.pageInclude+uri.query;
 			}
-			if (method && method.toUpperCase() == "POST") 
+			if (method && method.toUpperCase() == "POST")
 			{
 		         var postData = form.serialize() + "&"+ jQuery(this).attr("name") + "=submit";
-		    } 
-			else 
+		    }
+			else
 			{
-		         if (url.indexOf('?') == -1 ) 
+		         if (url.indexOf('?') == -1 )
 		         {
 		          url+='?';
-		         } 
-		         else 
+		         }
+		         else
 		         {
 		          url += '&'
 		         }
 		         url += form.serialize();
 		         url = app.util.appendParamToURL(url, jQuery(this).attr('name'), "submit");
 			}
-			
+
 			var dlg = app.dialog.create({target:dlgAction.target, options : dlgOptions});
 
 			app.ajax.load({
@@ -2338,7 +2346,7 @@ var app = (function (app, $) {
 					app.validator.init(); // re-init validator
 				},
 				data : !$(actionSource).attr("href") ? postData : null
-				
+
 			});
 		},
 
@@ -2362,19 +2370,19 @@ var app = (function (app, $) {
 			return url + c + name + "=" + encodeURIComponent(value);
 		},
 
-		appendParamsToUrl : function (url, params) {			
+		appendParamsToUrl : function (url, params) {
 			var uri = app.util.getUri(url),
 				includeHash = arguments.length < 3 ? false : arguments[2];
-			
+
 			var qsParams = $.extend(uri.queryParams, params);
 			var result = uri.path+"?"+$.param(qsParams);
 			if (includeHash) {
 				result+=uri.hash;
 			}
 			if (result.indexOf("http")<0 && result.charAt(0)!=="/") {
-				result="/"+result;	
+				result="/"+result;
 			}
-			
+
 			return result;
 		},
 
@@ -2409,7 +2417,7 @@ var app = (function (app, $) {
 		ajaxUrl : function (path) {
 			return app.util.appendParamToURL(path, "format", "ajax");
 		},
-		
+
 		toAbsoluteUrl : function (url) {
 			if (url.indexOf("http")!==0 && url.charAt(0)!=="/") {
 				url = "/"+url;
@@ -2502,26 +2510,26 @@ var app = (function (app, $) {
 			var url = app.util.appendParamsToUrl(app.urls.appResources, params);
 			$.getJSON(url, callback);
 		},
-		
+
 		updateStateOptions : function(countrySelect) {
 			var country = $(countrySelect);
 			if (country.length===0 || !app.countries[country.val()]) {
-				 return; 
+				 return;
 			}
 			var form = country.closest("form");
 			var stateField = country.data("stateField") ? country.data("stateField") : form.find("select[name$='_state']");
 			if (stateField.length===0) {
 				return;
 			}
-			
-			var form = country.closest("form"),	
+
+			var form = country.closest("form"),
 				c = app.countries[country.val()],
 				arrHtml = [],
 				labelSpan = form.find("label[for='"+stateField[0].id+"'] span").not(".required-indicator");
-			
+
 			// set the label text
 			labelSpan.html(c.label);
-	
+
 			var s;
 			for (s in c.regions) {
 				arrHtml.push('<option value="'+s+'">'+c.regions[s]+'</option>');
@@ -2531,11 +2539,11 @@ var app = (function (app, $) {
 			stateField.html(arrHtml.join("")).removeAttr("disabled").children().first().before(o1);
 			stateField[0].selectedIndex=0;
 		},
-		
+
 		limitCharacters : function () {
-			$('form').find('textarea[data-character-limit]').each(function(){				
+			$('form').find('textarea[data-character-limit]').each(function(){
 				var characterLimit = $(this).data("character-limit");
-				var charCountHtml = String.format(app.resources.CHAR_LIMIT_MSG, 
+				var charCountHtml = String.format(app.resources.CHAR_LIMIT_MSG,
 										'<span class="char-remain-count">'+characterLimit+'</span>',
 										'<span class="char-allowed-count">'+characterLimit+'</span>');
 				var charCountContainer = $(this).next('div.char-count');
@@ -2547,13 +2555,13 @@ var app = (function (app, $) {
 				$(this).change();
 			});
 		},
-		
+
 		setDeleteConfirmation : function(container, message) {
 			$(container).on("click", ".delete", function(e){
 				return confirm(message);
 			});
 		},
-		
+
 		scrollBrowser : function (xLocation) {
 			$('html, body').animate({ scrollTop: xLocation }, 500);
 		}
@@ -2576,7 +2584,7 @@ var app = (function (app, $) {
 		},
 		refresh : function() {
 			var t=setTimeout("window.location.assign(window.location.href);",500);
-			
+
 		}
 	};
 }(window.app = window.app || {}, jQuery));
@@ -2670,8 +2678,8 @@ var app = (function (app, $) {
 
 	function initializeDom() {
 		$cache.addressBeforeFields.filter("[name$='_country']").data("stateField", $cache.addressBeforeFields.filter("[name$='_state']"));
-		$cache.addressAfterFields.filter("[name$='_country']").data("stateField", $cache.addressAfterFields.filter("[name$='_state']"));		
-		
+		$cache.addressAfterFields.filter("[name$='_country']").data("stateField", $cache.addressAfterFields.filter("[name$='_state']"));
+
 		if ($cache.copyAddress.length && $cache.copyAddress[0].checked) {
 			// fill the address after fields
 			copyBeforeAddress();
@@ -2682,7 +2690,7 @@ var app = (function (app, $) {
 	function initializeEvents() {
 		app.sendToFriend.initializeDialog("div.list-table-header", ".send-to-friend");
 		app.util.setDeleteConfirmation("table.item-list", String.format(app.resources.CONFIRM_DELETE, app.resources.TITLE_GIFTREGISTRY));
-		
+
 		$cache.copyAddress.on("click", function () {
 			if (this.checked) {
 				// fill the address after fields
@@ -2704,19 +2712,19 @@ var app = (function (app, $) {
 		})
 		.on("change", $cache.addressBeforeFields.filter(":not([name$='_country'])"), function (e) {
 			if (!$cache.copyAddress[0].checked) { return; }
-			copyBeforeAddress();			
+			copyBeforeAddress();
 		});
-		
-		
+
+
 		$("form").on("change", "select[name$='_country']", function(e) {
 			app.util.updateStateOptions(this);
-			
+
 			if ($cache.copyAddress.length > 0 && $cache.copyAddress[0].checked && this.id.indexOf("_addressBefore") > 0) {
 				copyBeforeAddress();
 				$cache.addressAfterFields.filter("[name$='_country']").trigger("change");
 			}
 		});
-		
+
 		$cache.registryItemsTable.on("click", ".item-details a", function (e) {
 			e.preventDefault();
 			var productListID = $('input[name=productListID]').val();
@@ -2730,12 +2738,12 @@ var app = (function (app, $) {
 
 
 	app.registry = {
-		init : function () {			
+		init : function () {
 			initializeCache();
 			initializeDom();
 			initializeEvents();
 			app.product.initAddToCart();
-			
+
 		}
 
 	};
@@ -2858,20 +2866,20 @@ var app = (function (app, $) {
 // app.account
 (function (app, $) {
 	var $cache = {};
-	
-	function initializeAddressForm(form) {			
+
+	function initializeAddressForm(form) {
 		var form = $("#edit-address-form");
-		
+
 		form.find("input[name='format']").remove();
 		app.tooltips.init();
 		//$("<input/>").attr({type:"hidden", name:"format", value:"ajax"}).appendTo(form);
-		
+
 		form.on("click", ".apply-button", function(e) {
 			e.preventDefault();
 			var addressId = form.find("input[name$='_addressid']");
 			addressId.val(addressId.val().replace(/[^\w+-]/g, "-"));
 			if (!form.valid()) {
-				return false; 
+				return false;
 			}
 			var url = app.util.appendParamsToUrl(form.attr('action'),{format:"ajax"});
 			var applyName = form.find('.apply-button').attr('name');
@@ -2924,15 +2932,15 @@ var app = (function (app, $) {
 				});
 			}
 		});
-		
+
 		$cache.countrySelect = form.find("select[id$='_country']");
-		$cache.countrySelect.on("change", function(){ 
-			app.util.updateStateOptions(this); 
+		$cache.countrySelect.on("change", function(){
+			app.util.updateStateOptions(this);
 		});
-		
+
 		app.validator.init();
 	}
-	
+
 	function toggleFullOrder () {
 		$('.order-items')
 			.find('li.hidden:first')
@@ -2944,11 +2952,11 @@ var app = (function (app, $) {
 							$(this).remove();
 						});
 	}
-	
+
 	function initAddressEvents() {
 		var addresses = $("#addresses");
 		if (addresses.length===0) { return; }
-		
+
 		addresses.on("click", "a.address-edit, a.address-create", function(e){
 			e.preventDefault();
 			var options = {open: initializeAddressForm};
@@ -2961,51 +2969,51 @@ var app = (function (app, $) {
 					dataType:"json"
 				}).done(function(data){
 					if (data.status.toLowerCase()==="ok") {
-						app.page.redirect(app.urls.addressesList);	
+						app.page.redirect(app.urls.addressesList);
 					}
 					else if (data.message.length>0) {
 						alert(data.message);
 					}
 					else {
-						app.page.refresh();	
+						app.page.refresh();
 					}
 				});
 			}
-		});		
+		});
 	}
 	function initPaymentEvents() {
 		var paymentList = $(".payment-list");
 		if (paymentList.length===0) { return; }
-		
+
 		app.util.setDeleteConfirmation(paymentList, String.format(app.resources.CONFIRM_DELETE, app.resources.TITLE_CREDITCARD));
-		
+
 		$("form[name='payment-remove']").on("submit", function(e){
 			e.preventDefault();
 			// override form submission in order to prevent refresh issues
 			var button = $(this).find("button.delete");
 			$("<input/>").attr({type:"hidden", name:button.attr("name"), value:button.attr("value")||"delete card"}).appendTo($(this));
-			var data = $(this).serialize(); 
+			var data = $(this).serialize();
 			$.ajax({
 				type: "POST",
 				url: $(this).attr("action"),
 				data: data
 			})
 			.done(function(response) {
-				app.page.redirect(app.urls.paymentsList);	
+				app.page.redirect(app.urls.paymentsList);
 			});
 		});
 	}
-	
+
 	function initializeEvents() {
 		toggleFullOrder();
 		initAddressEvents();
 		initPaymentEvents();
 	}
-		
+
 	app.account = {
-		init : function () {			
+		init : function () {
 			initializeEvents();
-			
+
 			app.giftcert.init();
 		}
 	};
@@ -3035,7 +3043,7 @@ var app = (function (app, $) {
 			$cache.wishlistTable = $('.pt_wish-list .item-list');
 			app.product.initAddToCart();
 			initializeEvents();
-			
+
 		}
 	};
 }(window.app = window.app || {}, jQuery));
@@ -3044,7 +3052,7 @@ var app = (function (app, $) {
 (function (app, $) {
 	// sub name space app.minicart.* provides functionality around the mini cart
 
-	var $cache = {}, 
+	var $cache = {},
 		initialized = false;
 
 	var timer = {
@@ -3159,11 +3167,11 @@ var app = (function (app, $) {
 			$cache.container.dialog($.extend(true, {}, app.dialog.settings, params.options || {}));
 			return $cache.container;
 		},
-		
+
 		// opens a dialog using the given url
 		open : function (params) {
 			if (!params.url || params.url.length===0) { return; }
-						
+
 			$cache.container = app.dialog.create(params);
 			params.url = app.util.appendParamsToUrl(params.url, {format:"ajax"});
 
@@ -3172,12 +3180,12 @@ var app = (function (app, $) {
 				target : $cache.container,
 				url : params.url,
 				callback : function () {
-					
+
 					if($cache.container.dialog("isOpen")) {	return;	}
 					$cache.container.dialog("open");
 				}
 			});
-			
+
 		},
 		// closes the dialog and triggers the "close" event for the dialog
 		close : function () {
@@ -3312,7 +3320,7 @@ var app = (function (app, $) {
 	 * Text fields must have 'email' css class to be validated as email
 	 */
 	$.validator.addMethod("email", validateEmail, app.resources.INVALID_EMAIL);
-	
+
 	/**
 	 * Add gift cert amount validation method to jQuery validation plugin.
 	 * Text fields must have 'gift-cert-amont' css class to be validated
@@ -3342,11 +3350,11 @@ var app = (function (app, $) {
 		regex : regex,
 		settings : settings,
 		init : function () {
-			
+
 			$("form:not(.suppress)").each(function () {
 				$(this).validate(app.validator.settings);
 			});
-			
+
 		},
 		initForm : function(f) {
 			$(f).validate(app.validator.settings);
@@ -3373,7 +3381,7 @@ var app = (function (app, $) {
 			if(!options.url || currentRequests[options.url]) {
 				return;
 			}
-			
+
 			currentRequests[options.url] = true;
 
 			// make the server call
@@ -3614,7 +3622,7 @@ var app = (function (app, $) {
 
 // app.searchplaceholder
 (function (app, $) {
-	
+
 	function initializeEvents() {
 		$('#q').focus(function () {
 			var input = $(this);
@@ -3630,7 +3638,7 @@ var app = (function (app, $) {
 		})
 		.blur();
 	}
-	
+
 	app.searchplaceholder = {
 		init : function () {
 			initializeEvents();
@@ -3675,8 +3683,8 @@ var app = (function (app, $) {
 	String.format = function() {
 		var s = arguments[0];
 		var i,len=arguments.length - 1;
-		for (i = 0; i < len; i++) {       
-			var reg = new RegExp("\\{" + i + "\\}", "gm");             
+		for (i = 0; i < len; i++) {
+			var reg = new RegExp("\\{" + i + "\\}", "gm");
 			s = s.replace(reg, arguments[i + 1]);
 		}
 		return s;

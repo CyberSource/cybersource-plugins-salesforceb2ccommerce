@@ -226,14 +226,7 @@
 		<div class="form-row form-row-button" id="continue-button">
 	<!-- END V.ME CHANGES -->	
 			<button class="button-fancy-large" type="submit" name="${pdict.CurrentForms.billing.save.htmlName}" value="${Resource.msg('global.continuecheckoutbrief','locale',null)}"><span>${Resource.msg('global.continuecheckoutbrief','locale',null)}</span></button>
-		</div>
-		<!-- BEGIN V.ME CHANGES -->
-		<isif condition="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value=='VISA_VME'}">
-			<div class="form-row form-row-button" id="vme-continue-button">
-				<a class="button-fancy-large" title="${Resource.msg('global.continuecheckoutbrief','locale',null)}" href="${URLUtils.https('COSummary-Start')}"><span>${Resource.msg('global.continuecheckoutbrief','locale',null)}</span></a>
-			</div>
-		</isif>	
-		<!-- END V.ME CHANGES -->	
+		</div>	
 </form>
  <!-- BEGIN V.ME CHANGES -->		
 <isinclude template="visa_form.isml"/>
