@@ -66,7 +66,25 @@
                 <min-length>0</min-length>
                 <field-length>0</field-length>
                 <default-value>https://sandbox-static.v.me//js/1/v-widgets.js</default-value>
-            </attribute-definition>            
+            </attribute-definition>  
+			<attribute-definition attribute-id="VmeDefaultFirstName">
+                <display-name xml:lang="x-default">V.me by Visa Default First Name</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <default-value>Valued</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="VmeDefaultLastName">
+                <display-name xml:lang="x-default">V.me by Visa Default Last Name</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <default-value>Customer</default-value>
+            </attribute-definition>	
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="CYBS_VME">
@@ -77,7 +95,9 @@
                 <attribute attribute-id="VmeCustomerRepresentativeID"/>
                 <attribute attribute-id="VmeMerchantLogo"/>
                 <attribute attribute-id="VmeAcceptLogo"/>
-                <attribute attribute-id="VmeEnableLearnMoreLink"/>				
+                <attribute attribute-id="VmeEnableLearnMoreLink"/>
+				<attribute attribute-id="VmeDefaultLastName"/>
+                <attribute attribute-id="VmeDefaultFirstName"/>				
             </attribute-group>
         </group-definitions>
     </type-extension>
