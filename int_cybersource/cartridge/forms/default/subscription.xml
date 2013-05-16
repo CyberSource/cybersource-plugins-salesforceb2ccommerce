@@ -43,10 +43,11 @@
 	<field formid="accountNumber" type="string" mandatory="false" label="Account No:"/>
 	<field formid="cardType" type="string" mandatory="false" label="Card Type:">
 		<options>	
-			<option optionid="VISA" label="VISA" value="001"/>
-			<option optionid="Master Card" label="Master Card" value="002"/>
-			<option optionid="AMEX" label="AMEX" value="003"/>
-			<option optionid="DISCOVER" label="DISCOVER" value="004"/>
+			<option optionid="VISA" label="VISA" value="Visa"/>
+			<option optionid="Master Card" label="Master Card" value="MasterCard"/>
+			<option optionid="AMEX" label="AMEX" value="Amex"/>
+			<option optionid="DISCOVER" label="DISCOVER" value="Discover"/>
+			<option optionid="Maestro" label="Maestro" value="Maestro"/>
 		</options>	
 	</field>
 	<field formid="expiryMonth" type="string" mandatory="false" label="Expiry Month:">

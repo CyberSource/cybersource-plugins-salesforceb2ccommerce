@@ -1,7 +1,7 @@
 /**
 * Performs the authorization of the credit card capture request. If order information is
 * sumbitted in the CCCapture request.
-* @input Order : dw.order.Order
+* @input Order : dw.order.LineItemCtnr
 *
 * @output Decision : String The decision of the complete request, one of ACCEPT, REJECT, or ERROR
 * @output ReasonCode : Number The global reason code returned by Cybersource (100 = Success)

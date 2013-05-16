@@ -16,7 +16,7 @@ importPackage( dw.util );
 function execute( pdict : PipelineDictionary ) : Number
 {
 	// fetch the basket and method type.
- 	var basket : Basket = pdict.Basket; 
+ 	var basket : LineItemCtnr = pdict.Basket; 
  	var paymentProcessor : PaymentProcessor = pdict.PaymentProcessor;
     var methodType : String = pdict.MethodType;
 

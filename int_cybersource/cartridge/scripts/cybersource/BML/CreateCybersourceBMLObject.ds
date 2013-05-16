@@ -2,7 +2,7 @@
 *	 CreateCybersourceBMLObject.ds
 *	 This script creates the BMLObject data object and set it to CybersourceBML output object.
 *
-*    @input Basket : dw.order.Basket
+*    @input Basket : dw.order.LineItemCtnr
 *    @output CybersourceBML : Object
 */
 importPackage( dw.system );
@@ -13,7 +13,7 @@ importScript('cybersource/Cybersource_BML_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 
-	var basket : dw.order.Basket = pdict.Basket;
+	var basket : dw.order.LineItemCtnr = pdict.Basket;
 	var cust : Customer = basket.getCustomer();
 	
 	var bmlObject: BML_Object = new BML_Object();

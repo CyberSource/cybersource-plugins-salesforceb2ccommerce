@@ -20,7 +20,7 @@
 importPackage( dw.system );
 importPackage( dw.util );
 importPackage( dw.util );
-importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('int_cybersource:cybersource/Cybersource_BillTo_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var title : String = pdict.title;

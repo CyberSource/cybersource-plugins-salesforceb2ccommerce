@@ -2,7 +2,7 @@
 *	CreateCyberSourceBillToObject.ds
 *	This script creates the BillTo object and set it to CybersourceBillTo output object.
 *
-*    @input Basket : dw.order.Basket
+*    @input Basket : dw.order.LineItemCtnr
 *    @input ipAddress : String
 *    @output CyberSourceBillTo : Object
 *

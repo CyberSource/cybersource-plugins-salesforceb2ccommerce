@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<payment-settings xmlns="http://www.demandware.com/xml/impex/paymentsettings/2009-09-15">
-    <payment-method method-id="VISA_VME">
-        <name xml:lang="x-default">V.me by Visa</name>
-        <description xml:lang="x-default">V.me Payment method provided by Visa</description>
-        <enabled-flag>true</enabled-flag>
-        <processor-id>VISA_VME</processor-id>
-    </payment-method>
-</payment-settings>

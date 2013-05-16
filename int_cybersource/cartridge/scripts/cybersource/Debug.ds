@@ -5,7 +5,7 @@
 *    @input OrderNo : String
 *    @input request : Object
 *    @input response : Object
-* 	 @input Basket : dw.order.Basket The basket whose tax is to be calculated
+* 	 @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated
 * 	 @input  billTo : Object
 * 	 @input  shipTo : Object
 * 	 @input  card : Object
@@ -38,7 +38,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	var itemMap : List = pdict.itemMap;
 	var shipFrom : ShipFrom_Object = pdict.shipFrom;
 	var taxService : TaxService_Object = pdict.taxService;
-	var basket : Basket = pdict.Basket;	
+	var basket : LineItemCtnr = pdict.Basket;	
 	var orderno : String = pdict.OrderNo;	
     var debug : Boolean = Site.getCurrent().getCustomPreferenceValue("CsDebugCybersource");
 	

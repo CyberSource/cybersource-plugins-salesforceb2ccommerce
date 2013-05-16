@@ -2,7 +2,7 @@
 *	 CreateCybersourceItemObject.ds
 *	 This script creates the ItemObject data object and set it to CyberSourceItem output object.
 *
-*	 @input Basket : dw.order.Basket
+*	 @input Basket : dw.order.LineItemCtnr
 *    @output CyberSourceItem : Array
 *
 */
@@ -14,7 +14,7 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 	
 	
-	var basket : Basket = pdict.Basket;
+	var basket : LineItemCtnr = pdict.Basket;
 	var lineItems : Iterator = basket.allLineItems.iterator();
 	var itemObjects : Array = new Array();
 	var count : Number = 1;

@@ -3,7 +3,7 @@
 * Performs the tax calculation on each items exist in Basket. If basket is null it returns
 * with PIPELET_ERROR if not null, Cybersource request will be processed.   
 *
-* @input Basket : dw.order.Basket The basket whose tax is to be calculated
+* @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated
 * @input  billTo : Object
 * @input  shipTo : Object
 * @input  card : Object
@@ -35,7 +35,7 @@ function execute( pdict : PipelineDictionary ) : Number
 {
     // read pipeline dictionary input parameter
     var reasonCode : Number;
-	var basket : Basket = pdict.Basket;
+	var basket : LineItemCtnr = pdict.Basket;
 		
 	if((basket == null)){
 		Logger.error("Please provide a Basket!");

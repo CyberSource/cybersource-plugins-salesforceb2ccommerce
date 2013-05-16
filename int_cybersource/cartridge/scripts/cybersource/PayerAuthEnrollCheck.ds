@@ -4,7 +4,7 @@
 * PIPLET_ERROR is only used in case of an technical problem 
 *
 *
-* @input Basket : dw.order.Basket The basket used for Authorization
+* @input Basket : dw.order.LineItemCtnr The basket used for Authorization
 * @input Amount : dw.value.Money The amount to authorize
 * @input OrderNo : String The order no
 * @input CreditCardForm : dw.web.FormElement The form containing the credit card data
@@ -31,7 +31,7 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 
     // read pipeline dictionary input parameter
-    var basket : Basket = pdict.Basket;
+    var basket : LineItemCtnr = pdict.Basket;
     var amount : dw.value.Money = pdict.Amount;
     var creditCardForm : dw.web.FormElement = pdict.CreditCardForm;
     var orderNo : String = pdict.OrderNo;

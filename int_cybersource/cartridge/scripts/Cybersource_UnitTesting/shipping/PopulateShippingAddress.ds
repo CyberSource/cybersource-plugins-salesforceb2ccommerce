@@ -2,7 +2,7 @@
 * PopulateShippingAddress.ds
 * This script is used to populate shipping address.
 *
-* @input Basket : dw.order.Basket
+* @input Basket : dw.order.LineItemCtnr
 * @input shippingAddress : dw.order.OrderAddress
 *
 */
@@ -11,7 +11,7 @@ importPackage( dw.order );
 function execute( pdict : PipelineDictionary ) : Number
 {
 
-	var basket: Basket = pdict.Basket
+	var basket: LineItemCtnr = pdict.Basket
 	var defaultShipment: Shipment = basket.defaultShipment;
 	var defaultAddress: OrderAddress = defaultShipment.createShippingAddress();
 	

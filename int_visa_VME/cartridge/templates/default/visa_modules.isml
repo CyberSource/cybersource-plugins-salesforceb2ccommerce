@@ -1,5 +1,0 @@
-<ismodule template="visa_buy"
-	name="visaBuy"
-	attribute="collect_shipping"
-	attribute="callback"
-/>

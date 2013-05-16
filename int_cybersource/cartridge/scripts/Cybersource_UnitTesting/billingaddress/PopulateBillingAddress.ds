@@ -2,7 +2,7 @@
 * PopulateBillingAddress.ds
 * This script is used to populate billing address.
 *
-* @input Basket : dw.order.Basket
+* @input Basket : dw.order.LineItemCtnr
 * @input billingAddress : dw.order.OrderAddress
 *
 */

@@ -3,13 +3,14 @@
 *	This script creates the PaymentCardObject data object and set it to CybersourceCard output object.
 *
 *    @input CreditCardForm : dw.web.FormElement The form containing the credit card data
-*    @input Basket : dw.order.Basket  Alternative to readnig from the Form the data can be gather from the basket.  The CvNumber needs to be set then! 
+*    @input Basket : dw.order.LineItemCtnr  Alternative to readnig from the Form the data can be gather from the basket.  The CvNumber needs to be set then! 
 *    @input CvNumber : String          This field needs to be filled only when reading from basket
 *    @input ReadFromBasket : Boolean   Flag indicating wether to read from Basket or from the Forms object
 *    @output CybersourceCard : Object
 */
 importPackage( dw.system );
 importPackage( dw.order);
+importPackage( dw.crypto );
 importClass( dw.util.List );
 importClass( dw.order.PaymentInstrument );
 
@@ -18,10 +19,13 @@ importScript('cybersource/Cybersource_Card_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var cardObject : Card_Object = new Card_Object();
+	var rsaKey = 'MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAM5DBABpssb61H2tP0qyzx73OaWq/IeZ2VwE83G+Dks1GKiOmb1Eb06uz5BtTLM6ouJ+Z/DLf7NgkL6jg25HeWx6pNTosUoyXyWfyu+eNiST+PMZL1s8PeMnUGY+b80lkt04v7ItpAEc4VJ1yBEPKOjJyC++WZhXPngBNKkp48xxAgMBAAECgYBniDv5+RRDzKPccZnTZO2SHYZSIgGgDxmLlvCbp0qFdaFq+ikxV6iHVjfZxwM487XO+qQxufPflhkRmAHg2P+ZDTnZQjrCF/WtyPe01wXekl1zfjlcnZ2HcJMNcjqxJ1NRka3lzHSufSlUk57R5uRJqtna2GHhqhMjSvhrsjDSAQJBAOqrm9tVOX6+1g6KWM8+J+kXqlcG2P1El2uNrYPMBZEQl8mpif5FhoSI8MyXSmMq6T8OeYPsduJZpT6YNtH/FfcCQQDhAmLrVg4Q05DStCegsNiedaiq5g8EP7swGWYCy1k+zwbjoqy2IsBu0kRMpoXhXEAr0ZL5NOWY10WTlA1nm/bXAkEAv4BFUsqMfcLr2bfKW2zEkvHN/vDGmH+l9Y4LX/dZP5VD2LxysL451OQPZVW8zYpSBzQfs6l/Jp2zPI5ohhvc5wJBAJbP2KlPtoHEq+7t3RmxLp+W0QQqyqnYZYhpnZwF271jWYS9hfFV/ZDJ0glmG5nfEQvNnir2L2Vv9CxkMU/ek2UCQHLCp12bvkMe0H/4EDfUT8TWCHx8Bcey+SvkOSTg0+1XWA1l2zhvLyAf2viE6h3zZt2f4jr7yxYNy+UYSlB7Y74=';
+	var pubKey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDOQwQAabLG+tR9rT9Kss8e9zmlqvyHmdlcBPNxvg5LNRiojpm9RG9Ors+QbUyzOqLifmfwy3+zYJC+o4NuR3lseqTU6LFKMl8ln8rvnjYkk/jzGS9bPD3jJ1BmPm/NJZLdOL+yLaQBHOFSdcgRDyjoycgvvlmYVz54ATSpKePMcQIDAQAB';
+	var cipher : Cipher = new Cipher();	
 	var cardType : String = "";
 	if ( pdict.ReadFromBasket )
 	{
-		var basket : Basket = pdict.Basket;
+		var basket : LineItemCtnr = pdict.Basket;
 		var l : List = basket.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_CREDIT_CARD );
 		if( !empty(basket) && !empty(l) && l.length>0 ) {
 			if ( l.length != 1 )
@@ -29,7 +33,9 @@ function execute( pdict : PipelineDictionary ) : Number
 				throw "Expected exactly one credit card.  Foun " + l.length + " cards!?";
 			}
 			var paymentInst : PaymentInstrument = l[0];
-			cardObject.setAccountNumber  ( paymentInst.getCreditCardNumber() );
+			
+			cardObject.setAccountNumber(cipher.decrypt(paymentInst.getEncryptedCreditCardNumber('RSA', pubKey), rsaKey, 'RSA', '', 0));
+			//cardObject.setAccountNumber  ( paymentInst.getCreditCardNumber() );
 			cardObject.setFullName       ( paymentInst.getCreditCardHolder() );
 			cardObject.setExpirationMonth( paymentInst.getCreditCardExpirationMonth() );
 			cardObject.setExpirationYear ( paymentInst.getCreditCardExpirationYear() );

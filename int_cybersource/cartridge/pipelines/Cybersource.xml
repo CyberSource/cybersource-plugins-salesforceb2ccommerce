@@ -40,52 +40,116 @@
       </node>
       <simple-transition/>
       <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="ScriptFile" value="cybersource/GetPaymentInstrument.ds"/>
-          <config-property key="Transactional" value="true"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <key-binding alias="ScriptLog" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
-          <key-binding alias="dw.order.PaymentInstrument.METHOD_CREDIT_CARD" key="MethodType"/>
-          <key-binding alias="TargetPaymentInstrument" key="TargetPaymentInstrument"/>
-          <key-binding alias="PaymentProcessor" key="PaymentProcessor"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b3" source-connector="error">
+        <decision-node condition-key="PaymentInstrument!=null" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b3" source-connector="yes">
           <transition target-connector="in"/>
           <segment>
             <node>
-              <end-node name="error"/>
-              <node-display orientation="horizontal" x="3" y="0"/>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="true" key="From_0"/>
+                <key-binding alias="ReadFromBasket" key="To_0"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
             </node>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition/>
-      <node>
-        <decision-node condition-key="TargetPaymentInstrument!=null" condition-operator="expr"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b4" source-connector="yes">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="source" x="0" y="1"/>
-            </transition-display>
-          </transition>
-          <segment>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="CybersourceData-CreateBillTo"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-ref="CybersourceData-CreateShipTo"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="!empty(PaymentInstrument.custom.isSubscription) &amp;&amp; (PaymentInstrument.custom.isSubscription == true)" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                    <bend-point relative-to="source" x="1" y="-1"/>
+                    <bend-point relative-to="target" x="0" y="-1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <call-node start-name-ref="Cybersource_Subscription-OnDemandPaymentAccount"/>
+                    <node-display x="1" y="0"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in1" target-path="../b3.1">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="target" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                    </branch>
+                    <branch basename="b3" source-connector="authorized">
+                      <transition target-connector="in3" target-path="../b5.2">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="5" y="1"/>
+                          <bend-point relative-to="target" x="7" y="0"/>
+                        </transition-display>
+                      </transition>
+                    </branch>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
             <node>
               <call-node start-name-ref="Cybersource-AuthorizePayer"/>
               <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="error">
-                <transition target-connector="in1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                    <bend-point relative-to="target" x="0" y="3"/>
+                    <bend-point relative-to="target" x="0" y="2"/>
+                  </transition-display>
+                </transition>
                 <segment>
                   <node>
                     <join-node/>
-                    <node-display x="2" y="1"/>
+                    <node-display x="2" y="-1"/>
                   </node>
                   <transition target-connector="in1" target-path="../../+1"/>
                 </segment>
               </branch>
-              <branch basename="b3" source-connector="failed">
+              <branch basename="b4" source-connector="failed">
                 <transition target-connector="in">
                   <transition-display>
                     <bend-point relative-to="target" x="0" y="-1"/>
@@ -94,57 +158,17 @@
                 <segment>
                   <node>
                     <end-node name="declined"/>
-                    <node-display x="-1" y="2"/>
+                    <node-display x="-1" y="1"/>
                   </node>
                 </segment>
               </branch>
-              <branch basename="b4" source-connector="OK">
-                <transition target-connector="in"/>
+              <branch basename="b5" source-connector="OK">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
                 <segment>
-                  <node>
-                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="false"/>
-                      <key-binding alias="true" key="From_0"/>
-                      <key-binding alias="ReadFromBasket" key="To_0"/>
-                      <key-binding alias="null" key="To_1"/>
-                      <key-binding alias="null" key="From_2"/>
-                      <key-binding alias="null" key="To_2"/>
-                      <key-binding alias="null" key="From_3"/>
-                      <key-binding alias="null" key="To_3"/>
-                      <key-binding alias="null" key="From_4"/>
-                      <key-binding alias="null" key="To_4"/>
-                      <key-binding alias="null" key="From_5"/>
-                      <key-binding alias="null" key="To_5"/>
-                      <key-binding alias="null" key="From_6"/>
-                      <key-binding alias="null" key="To_6"/>
-                      <key-binding alias="null" key="From_7"/>
-                      <key-binding alias="null" key="To_7"/>
-                      <key-binding alias="null" key="From_8"/>
-                      <key-binding alias="null" key="To_8"/>
-                      <key-binding alias="null" key="From_9"/>
-                      <key-binding alias="null" key="To_9"/>
-                    </pipelet-node>
-                    <node-display x="0" y="2"/>
-                  </node>
-                  <simple-transition/>
-                  <node>
-                    <call-node start-name-ref="CybersourceData-CreateBillTo"/>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
-                  <node>
-                    <call-node start-name-ref="CybersourceData-CreateShipTo"/>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
                   <node>
                     <call-node start-name-ref="CybersourceData-CreatePaymentCard"/>
                     <node-display x="0" y="1"/>
@@ -167,11 +191,7 @@
                     <call-node start-name-ref="CybersourceData-CreateItem"/>
                     <node-display x="0" y="1"/>
                   </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
+                  <simple-transition/>
                   <node>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="ScriptFile" value="cybersource/CCAuthRequest.ds"/>
@@ -187,7 +207,7 @@
                       <key-binding alias="AuthorizationAmount" key="AuthorizationAmount"/>
                       <key-binding alias="AuthorizationCode" key="AuthorizationCode"/>
                       <key-binding alias="PayerAuthRequired" key="PayerAuthRequired"/>
-                      <key-binding alias="OrderNo" key="OrderNo"/>
+                      <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
                       <key-binding alias="DAVReasonCode" key="DAVReasonCode"/>
                       <key-binding alias="AuthorizationReasonCode" key="AuthorizationReasonCode"/>
                       <key-binding alias="AuthorizationDecision" key="AuthorizationDecision"/>
@@ -210,12 +230,13 @@
                       <key-binding alias="SubscriptionID" key="SubscriptionIDToken"/>
                       <key-binding alias="ParesStatus" key="ParesStatus"/>
                       <key-binding alias="item" key="item"/>
+                      <key-binding alias="StandardizedAddress" key="StandardizedAddress"/>
                     </pipelet-node>
                     <node-display x="0" y="1"/>
                     <branch basename="b2" source-connector="error">
                       <transition target-connector="in">
                         <transition-display>
-                          <bend-point relative-to="target" x="-1" y="0"/>
+                          <bend-point relative-to="source" x="1" y="0"/>
                         </transition-display>
                       </transition>
                       <segment>
@@ -242,16 +263,22 @@
                             <key-binding alias="null" key="From_9"/>
                             <key-binding alias="null" key="To_9"/>
                           </pipelet-node>
-                          <node-display orientation="horizontal" x="2" y="0"/>
+                          <node-display orientation="horizontal" x="1" y="0"/>
                         </node>
-                        <transition target-connector="in1" target-path="../../b2.1">
+                        <transition target-connector="in1" target-path="../../b3.1">
                           <transition-display>
-                            <bend-point relative-to="source" x="1" y="0"/>
-                            <bend-point relative-to="target" x="1" y="0"/>
+                            <bend-point relative-to="source" x="2" y="0"/>
                           </transition-display>
                         </transition>
                       </segment>
                     </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="1"/>
                   </node>
                   <simple-transition>
                     <transition-display>
@@ -264,40 +291,36 @@
                   </node>
                   <simple-transition>
                     <transition-display>
-                      <bend-point relative-to="target" x="-1" y="0"/>
+                      <bend-point relative-to="source" x="1" y="0"/>
                     </transition-display>
                   </simple-transition>
                   <node>
                     <decision-node condition-key="CybersourceHelper.getDavEnable()&amp;&amp;CybersourceHelper.getDavOnAddressVerificationFailure()=='REJECT'&amp;&amp;ReasonCode!=100&amp;&amp;!empty(DAVReasonCode)&amp;&amp;DAVReasonCode!=100" condition-operator="expr"/>
-                    <node-display orientation="horizontal" x="0" y="1"/>
-                    <branch basename="b3" source-connector="yes">
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                    <branch basename="b2" source-connector="yes">
                       <transition target-connector="in">
                         <transition-display>
-                          <bend-point relative-to="target" x="-1" y="-2"/>
+                          <bend-point relative-to="source" x="1" y="0"/>
                         </transition-display>
                       </transition>
                       <segment>
                         <node>
                           <jump-node start-name-ref="Cybersource-HandleDAVResponse"/>
-                          <node-display x="2" y="1"/>
+                          <node-display x="1" y="1"/>
                         </node>
                       </segment>
                     </branch>
                   </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
+                  <simple-transition/>
                   <node>
                     <call-node start-name-ref="Cybersource-HandleDAVResponse"/>
-                    <node-display x="0" y="1"/>
+                    <node-display x="-1" y="1"/>
                   </node>
                   <simple-transition/>
                   <node>
                     <decision-node condition-key="CybersourceHelper.getAvsIgnoreResult()==true" condition-operator="expr"/>
                     <node-display x="0" y="1"/>
-                    <branch basename="b4" source-connector="yes">
+                    <branch basename="b3" source-connector="yes">
                       <transition target-connector="in">
                         <transition-display>
                           <bend-point relative-to="source" x="0" y="1"/>
@@ -308,7 +331,7 @@
                           <decision-node condition-key="AVSCode!='N'" condition-operator="expr"/>
                           <node-display x="0" y="1"/>
                           <branch basename="b2" source-connector="yes">
-                            <transition target-connector="in1" target-path="../b5.1"/>
+                            <transition target-connector="in1" target-path="../b4.1"/>
                           </branch>
                         </node>
                         <simple-transition>
@@ -320,18 +343,18 @@
                           <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                             <config-property key="Transactional" value="true"/>
                             <key-binding alias="RequestID" key="From_0"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                             <key-binding alias="&quot;001&quot;" key="From_1"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                             <key-binding alias="RequestID" key="From_2"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                             <key-binding alias="RequestToken" key="From_3"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                             <key-binding alias="AuthorizationCode" key="From_5"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                             <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                            <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                            <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
                             <key-binding alias="null" key="From_7"/>
                             <key-binding alias="null" key="To_7"/>
                             <key-binding alias="null" key="From_8"/>
@@ -362,7 +385,7 @@
                   <node>
                     <decision-node condition-key="AVSCode!='N'" condition-operator="expr"/>
                     <node-display x="3" y="1"/>
-                    <branch basename="b5" source-connector="yes">
+                    <branch basename="b4" source-connector="yes">
                       <transition target-connector="in1">
                         <transition-display>
                           <bend-point relative-to="source" x="0" y="2"/>
@@ -396,22 +419,22 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
                                   <key-binding alias="SubscriptionID" key="From_7"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.subscriptionID" key="To_7"/>
-                                  <key-binding alias="null" key="From_8"/>
-                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.subscriptionID" key="To_7"/>
+                                  <key-binding alias="PaymentProcessor" key="From_8"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
                                   <key-binding alias="null" key="To_9"/>
                                   <key-binding alias="AuthorizationAmount" key="From_4"/>
@@ -434,7 +457,7 @@
                                         <key-binding alias="null" key="To_8"/>
                                         <key-binding alias="null" key="From_9"/>
                                         <key-binding alias="null" key="To_9"/>
-                                        <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.proofXML" key="To_0"/>
+                                        <key-binding alias="PaymentInstrument.paymentTransaction.custom.proofXML" key="To_0"/>
                                         <key-binding alias="ProofXML" key="From_0"/>
                                       </pipelet-node>
                                       <node-display orientation="horizontal" x="1" y="0"/>
@@ -447,6 +470,50 @@
                                 <transition-display>
                                   <bend-point relative-to="source" x="0" y="2"/>
                                   <bend-point relative-to="target" x="0" y="2"/>
+                                </transition-display>
+                              </transition>
+                            </segment>
+                            <segment>
+                              <node>
+                                <join-node/>
+                                <node-display x="2" y="0"/>
+                              </node>
+                              <simple-transition/>
+                              <node>
+                                <decision-node condition-key="!empty(StandardizedAddress)" condition-operator="expr"/>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                                <branch basename="b2" source-connector="yes">
+                                  <transition target-connector="in"/>
+                                  <segment>
+                                    <node>
+                                      <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                                        <config-property key="Transactional" value="true"/>
+                                        <config-property key="OnError" value="PIPELET_ERROR"/>
+                                        <config-property key="ScriptFile" value="cybersource/UpdateOrderShippingAddress.ds"/>
+                                        <key-binding alias="log" key="ScriptLog"/>
+                                        <key-binding alias="StandardizedAddress" key="StandardizedAddress"/>
+                                        <key-binding alias="Basket" key="Basket"/>
+                                        <key-binding alias="CurrentForms.singleshipping.shippingAddress.useAsBillingAddress" key="useSameAsBillingAddress"/>
+                                        <key-binding alias="CurrentForms.singleshipping.shippingAddress.useAsBillingAddress.value" key="useAsBillingAddress"/>
+                                      </pipelet-node>
+                                      <node-display orientation="horizontal" x="1" y="0"/>
+                                      <branch basename="b2" source-connector="error">
+                                        <transition target-connector="in1" target-path="../+1">
+                                          <transition-display>
+                                            <bend-point relative-to="source" x="0" y="1"/>
+                                            <bend-point relative-to="target" x="0" y="1"/>
+                                          </transition-display>
+                                        </transition>
+                                      </branch>
+                                    </node>
+                                    <transition target-connector="in1" target-path="../+1"/>
+                                  </segment>
+                                </branch>
+                              </node>
+                              <transition target-connector="in2" target-path="./+1">
+                                <transition-display>
+                                  <bend-point relative-to="source" x="0" y="3"/>
+                                  <bend-point relative-to="target" x="0" y="3"/>
                                 </transition-display>
                               </transition>
                             </segment>
@@ -485,20 +552,20 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentProcessor" key="From_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
@@ -538,20 +605,20 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentProcessor" key="From_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
@@ -586,22 +653,21 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentProcessor" key="From_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
-                                  <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
                                   <key-binding alias="null" key="To_9"/>
                                   <key-binding alias="AuthorizationAmount" key="From_4"/>
@@ -634,20 +700,20 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentProcessor" key="From_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
@@ -693,20 +759,20 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentProcessor" key="From_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
@@ -749,20 +815,20 @@
                                 <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                                   <key-binding alias="&quot;001&quot;" key="From_1"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                                   <key-binding alias="RequestToken" key="From_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                                   <key-binding alias="AuthorizationCode" key="From_5"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                                   <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                                  <key-binding alias="null" key="From_7"/>
-                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                                  <key-binding alias="PaymentProcessor" key="From_7"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                                   <key-binding alias="null" key="From_8"/>
                                   <key-binding alias="null" key="To_8"/>
                                   <key-binding alias="null" key="From_9"/>
@@ -811,20 +877,20 @@
                     <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <key-binding alias="RequestID" key="From_0"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                       <key-binding alias="&quot;001&quot;" key="From_1"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                       <key-binding alias="RequestID" key="From_2"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
                       <key-binding alias="RequestToken" key="From_3"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_3"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_4"/>
                       <key-binding alias="AuthorizationCode" key="From_5"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.authCode" key="To_5"/>
                       <key-binding alias="AuthorizationReasonCode" key="From_6"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
-                      <key-binding alias="null" key="From_7"/>
-                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_6"/>
+                      <key-binding alias="PaymentProcessor" key="From_7"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_7"/>
                       <key-binding alias="null" key="From_8"/>
                       <key-binding alias="null" key="To_8"/>
                       <key-binding alias="null" key="From_9"/>
@@ -1307,7 +1373,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/BMLAuthRequest.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="OrderNo" key="OrderNo"/>
+          <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
           <key-binding alias="billto" key="billTo"/>
           <key-binding alias="bml" key="bml"/>
           <key-binding alias="purchaseTotals" key="purchaseTotals"/>
@@ -1806,9 +1872,9 @@
                       <config-property key="OnError" value="PIPELET_ERROR"/>
                       <key-binding alias="null" key="ScriptLog"/>
                       <key-binding alias="Basket" key="Basket"/>
-                      <key-binding alias="TargetPaymentInstrument.paymentTransaction.amount" key="Amount"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.amount" key="Amount"/>
                       <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardForm"/>
-                      <key-binding alias="OrderNo" key="OrderNo"/>
+                      <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
                       <key-binding alias="CurrentRequest" key="Request"/>
                       <key-binding alias="PADecission" key="Decision"/>
                       <key-binding alias="PARequired" key="PayerAuthRequired"/>
@@ -1898,7 +1964,7 @@
                     <decision-node condition-key="!empty(AcsURL)" condition-operator="expr"/>
                     <node-display x="1" y="1"/>
                     <branch basename="b4" source-connector="yes">
-                      <transition target-connector="in" transaction-control="commit"/>
+                      <transition target-connector="in"/>
                       <segment>
                         <node>
                           <pipelet-node custom-name="Remove reason code from PD" pipelet-name="Assign" pipelet-set-identifier="bc_api">
@@ -1977,8 +2043,8 @@
                                   <config-property key="ScriptFile" value="cybersource/PayerAuthValidation.ds"/>
                                   <config-property key="Transactional" value="false"/>
                                   <key-binding alias="CurrentHttpParameterMap.PaRes.stringValue" key="PAReq"/>
-                                  <key-binding alias="OrderNo" key="OrderNo"/>
-                                  <key-binding alias="TargetPaymentInstrument.paymentTransaction.amount" key="Amount"/>
+                                  <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
+                                  <key-binding alias="PaymentInstrument.paymentTransaction.amount" key="Amount"/>
                                   <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardForm"/>
                                   <key-binding alias="PAVResult" key="AuthenticationResult"/>
                                   <key-binding alias="PAVStatusMessage" key="AuthenticationStatusMessage"/>
@@ -2228,8 +2294,8 @@
                 <key-binding alias="Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD)[0].paymentTransaction.transactionID" key="To_0"/>
                 <key-binding alias="RequestToken" key="From_1"/>
                 <key-binding alias="Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD)[0].paymentTransaction.custom.requestToken" key="To_1"/>
-                <key-binding alias="true" key="From_2"/>
-                <key-binding alias="Order.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD)[0].paymentTransaction.custom.paid" key="To_2"/>
+                <key-binding alias="2" key="From_2"/>
+                <key-binding alias="Order.paymentStatus" key="To_2"/>
                 <key-binding alias="null" key="From_3"/>
                 <key-binding alias="null" key="To_3"/>
                 <key-binding alias="null" key="From_4"/>

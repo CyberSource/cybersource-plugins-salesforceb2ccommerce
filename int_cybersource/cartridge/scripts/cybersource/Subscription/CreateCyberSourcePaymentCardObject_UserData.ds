@@ -12,7 +12,7 @@
 *	@output CyberSourceCard : Object
 */
 importPackage( dw.system );
-importScript('cybersource/Cybersource_Card_Object.ds');
+importScript('int_cybersource:cybersource/Cybersource_Card_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var fullName : String = pdict.firstName +" " + pdict.lastName;
@@ -23,8 +23,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	var cvnNumber : String = pdict.cvnNumber;
 
     var cardObject : Card_Object = new Card_Object();
-	cardObject.setAccountNumber(accounNumber);
-	cardObject.setCardType(cardType);
+	cardObject.setAccountNumber(accounNumber);	
+	cardObject.setCardType(returnCardType(cardType));
 	cardObject.setFullName(fullName);
 	cardObject.setExpirationMonth(expiryMonth);
 	cardObject.setExpirationYear(expiryYear);
@@ -34,4 +34,26 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 
     return PIPELET_NEXT;
+}
+
+function returnCardType (cardType : String) : String {
+		var cardTypeNew = "";
+	switch(cardType){
+				case "Visa": 
+					cardTypeNew="001";
+					break;
+				case "MasterCard": 
+					cardTypeNew="002";
+					break;
+				case "Amex": 
+					cardTypeNew="003";
+					break;
+				case "Discover": 
+					cardTypeNew="004";
+					break;
+				case "Maestro": 
+					cardTypeNew="042";
+					break;
+			}
+			return cardTypeNew;
 }

@@ -2,7 +2,7 @@
 *	 CreateBasketShipment.ds
 *	 This script creates the mock shipment data object and set it to Shipment output object.
 *
-*    @input Basket : dw.order.Basket
+*    @input Basket : dw.order.LineItemCtnr
 *    @output Shipment : dw.order.Shipment
 *
 */
@@ -13,7 +13,7 @@ importPackage(dw.util);
 function execute( pdict : PipelineDictionary ) : Number
 {
 	
-	var basket : Basket = pdict.Basket;
+	var basket : LineItemCtnr = pdict.Basket;
 	
 	//create a new shipment for the basket
 	var ns :  Shipment = basket.createShipment("Fixed_" + UUIDUtils.createUUID());

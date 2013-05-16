@@ -1,7 +1,7 @@
 /**
 * Performs the authorization of the credit issue request. If order information & payment instrument is
 * sumbitted in the CCCredit request.
-* @input Order : dw.order.Order
+* @input Order : dw.order.LineItemCtnr
 *
 */
 importPackage( dw.system );

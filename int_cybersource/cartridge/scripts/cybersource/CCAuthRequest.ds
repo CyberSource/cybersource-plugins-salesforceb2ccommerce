@@ -2,7 +2,7 @@
 * Performs the authorization of the credit card. If present payer authentication information is
 * sumbitted in the auth request.
 *
-* @input Basket : dw.order.Basket The basket used for Authorization
+* @input Basket : dw.order.LineItemCtnr The basket used for Authorization
 * @input Amount : dw.value.Money The amount to authorize
 * @input OrderNo : String The order no
 * @input CreditCardForm : dw.web.FormElement The form containing the credit card data
@@ -61,7 +61,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	// read pipeline dictionary input parameter	
 	//**************************************************************************//    
 	var ccdata : CreditCardInfoHelper = pdict.CreditCardData;
-    var basket : Basket = pdict.Basket;
+    var basket : LineItemCtnr = pdict.Basket;
     var orderNo : String = pdict.OrderNo;
    	var billToObject: BillTo_Object = pdict.billTo;
 	var shipToObject: ShipTo_Object = pdict.shipTo;
@@ -129,9 +129,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	CybersourceHelper.addAVSRequestInfo(request,ignoreAVSResult,declineAVSFlags);
 	/* End of AVS Service setup */
-	
 	writeOutDebugLog(request,orderNo);
-
 	//**************************************************************************//
 	// Execute Request
 	//**************************************************************************//	
@@ -311,33 +309,31 @@ function protocolResponse( response ) : HashMap
 
 function writeOutDebugLog(request : Object, orderNo : String)
 {
+	// Do not allow debug logging on production.
+	if (!dw.system.Logger.isDebugEnabled() || dw.system.System.getInstanceType() != dw.system.System.DEVELOPMENT_SYSTEM) return;
+
 	var debug : Boolean = Site.getCurrent().getCustomPreferenceValue("CsDebugCybersource");
 	if( debug )
 	{
-		var dir : dw.io.File = new dw.io.File(dw.io.File.IMPEX + dw.io.File.SEPARATOR + "cybersourcelogs").mkdir();
-		var file :  dw.io.File = new dw.io.File(dw.io.File.IMPEX + dw.io.File.SEPARATOR + "cybersourcelogs" + dw.io.File.SEPARATOR + orderNo + ".txt");
-		var fw : dw.io.FileWriter = new  dw.io.FileWriter(file);
-		fw.writeLine("REQUEST DATA SENT TO CYBERSOURCE");
-		fw.writeLine("billTo.firstName " + request.billTo.firstName);
-		fw.writeLine("billTo.lastName " + request.billTo.lastName);
-		fw.writeLine("billTo.street1 " + request.billTo.street1);
-		fw.writeLine("billTo.city " + request.billTo.city);
-		fw.writeLine("billTo.state " + request.billTo.state);
-		fw.writeLine("billTo.postalCode " + request.billTo.postalCode);
-		fw.writeLine("billTo.country " + request.billTo.country);
-		fw.writeLine("shipTo.firstName " + request.shipTo.firstName);
-		fw.writeLine("shipTo.lastName " + request.shipTo.lastName);
-		fw.writeLine("shipTo.street1 " + request.shipTo.street1);
-		fw.writeLine("shipTo.city " + request.shipTo.city);
-		fw.writeLine("shipTo.state " + request.shipTo.state);
-		fw.writeLine("shipTo.postalCode " + request.shipTo.postalCode);
-		fw.writeLine("shipTo.country " + request.shipTo.country);
-		fw.writeLine("Currency " + request.purchaseTotals.currency);
-		fw.writeLine("grandTotalAmount " + request.purchaseTotals.grandTotalAmount);
-		fw.writeLine("taxAmount " + request.purchaseTotals.taxAmount);
-		fw.writeLine("card fullname " + request.card.fullName);
-		
-		fw.flush();
-		fw.close();
+		var log : dw.system.Log = dw.system.Logger.getLogger("CsDebugCybersource");
+		log.debug("REQUEST DATA SENT TO CYBERSOURCE");
+		log.debug("billTo.firstName {0}", request.billTo.firstName);
+		log.debug("billTo.lastName {0}", request.billTo.lastName);
+		log.debug("billTo.street1 {0}", request.billTo.street1);
+		log.debug("billTo.city {0}", request.billTo.city);
+		log.debug("billTo.state {0}", request.billTo.state);
+		log.debug("billTo.postalCode {0}", request.billTo.postalCode);
+		log.debug("billTo.country {0}", request.billTo.country);
+		log.debug("shipTo.firstName {0}", request.shipTo.firstName);
+		log.debug("shipTo.lastName {0}", request.shipTo.lastName);
+		log.debug("shipTo.street1 {0}", request.shipTo.street1);
+		log.debug("shipTo.city {0}", request.shipTo.city);
+		log.debug("shipTo.state {0}", request.shipTo.state);
+		log.debug("shipTo.postalCode {0}", request.shipTo.postalCode);
+		log.debug("shipTo.country {0}", request.shipTo.country);
+		log.debug("Currency {0}", request.purchaseTotals.currency);
+		log.debug("grandTotalAmount {0}", request.purchaseTotals.grandTotalAmount);
+		//log.debug("taxAmount {0}", request.purchaseTotals.taxAmount);
+		log.debug("card fullname {0}", request.card.fullName);
 	}
 }

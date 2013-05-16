@@ -6,7 +6,7 @@
  * If the cart was updated or if tax has not been previously been calculated on the session then a tax call will be made to cybersource.
  * This logic is in place to prevent un-needed tax calls to avoid unnessary service charges by cybersource. 
  *
- * @input Basket : dw.order.Basket;
+ * @input Basket : dw.order.LineItemCtnr;
  * @output CartStateString : String
  */
  importPackage( dw.customer );
@@ -16,7 +16,7 @@
  
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var basket : Basket = pdict.Basket;
+	var basket : LineItemCtnr = pdict.Basket;
 	var cartStateString = "";
 	var surcharge : Boolean = false;
 	

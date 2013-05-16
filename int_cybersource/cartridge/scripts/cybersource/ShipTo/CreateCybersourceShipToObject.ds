@@ -2,7 +2,7 @@
 *	CreateCybersourceShipToObject.ds
 *	This script creates the ShipTo data object and set it to CybersourceBillTo output object.
 *
-*    @input Basket : dw.order.Basket
+*    @input Basket : dw.order.LineItemCtnr
 *    @output CybersourceBillTo : Object
 *
 */
@@ -13,7 +13,7 @@ importScript('cybersource/Cybersource_ShipTo_Object.ds');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var basket : Basket = pdict.Basket;
+	var basket : LineItemCtnr = pdict.Basket;
 	
 	var shipToObject: ShipTo_Object = new ShipTo_Object();
 	var shippingAddress : OrderAddress = basket.defaultShipment.shippingAddress;

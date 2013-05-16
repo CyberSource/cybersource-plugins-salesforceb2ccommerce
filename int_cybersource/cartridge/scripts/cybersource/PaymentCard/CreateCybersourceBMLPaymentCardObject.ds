@@ -2,7 +2,7 @@
 *	 CreateCybersourceBMLPaymentCardObject.ds
 *	 This script creates the BMLPaymentCardObject data object and set it to CybersourceBMLCard output object.
 *
-*    @input  Basket : dw.order.Basket
+*    @input  Basket : dw.order.LineItemCtnr
 *    @output CybersourceBMLCard : Object
 */
 importPackage( dw.system );
@@ -11,7 +11,7 @@ importPackage( dw.customer );
 importScript('cybersource/Cybersource_Card_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var basket : Basket = pdict.Basket; 
+	var basket : LineItemCtnr = pdict.Basket; 
 	var cust : Customer = basket.getCustomer();
     var cardObject : Card_Object = new Card_Object();
 	

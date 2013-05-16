@@ -2,7 +2,7 @@
 * Performs the authorization of the BML credit card. If present payer authentication information is
 * sumbitted in the auth BML request.
 *
-* @input Basket : dw.order.Basket The basket used for Authorization
+* @input Basket : dw.order.LineItemCtnr The basket used for Authorization
 * @input Amount : dw.value.Money The amount to authorize
 * @input OrderNo : String The order no
 * @input BMLForm : dw.web.FormElement The form containing the credit card data
@@ -42,7 +42,7 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 
     // read pipeline dictionary input parameter
-    var basket : Basket = pdict.Basket;
+    var basket : LineItemCtnr = pdict.Basket;
     var orderNo : String = pdict.OrderNo;
 	var billToObject: BillTo_Object = pdict.billTo;
 	var shipToObject: ShipTo_Object = pdict.shipTo;
