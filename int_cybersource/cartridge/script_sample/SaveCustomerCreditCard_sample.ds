@@ -1,0 +1,44 @@
+/**
+ * This script attempts to add the credit card contained in the given
+ * credit card form group to the customer payment instrument.
+ *
+ * @input PaymentInstrument : dw.customer.CustomerPaymentInstrument
+ * @input CreditCardFormFields : dw.web.FormGroup
+ */
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.web ); 
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var paymentInstr : CustomerPaymentInstrument = pdict.PaymentInstrument;
+	var creditCardFields : FormGroup = pdict.CreditCardFormFields;
+
+	if( paymentInstr == null )
+	{
+		// no payment instrument given
+		Logger.debug("No customer payment instrument given to store credit card data");
+		return PIPELET_ERROR;
+	}
+
+	if( !PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstr.paymentMethod) )
+	{
+		// given payment instrument not a credit card
+		Logger.debug("Customer payment instrument is of type {0}, type {1} required.", paymentInstr.paymentMethod, PaymentInstrument.METHOD_CREDIT_CARD);
+		return PIPELET_ERROR;
+	}
+
+	// coy the credit card details to the payment instrument
+	paymentInstr.setCreditCardHolder( creditCardFields.owner.value );
+	paymentInstr.setCreditCardNumber( creditCardFields.number.value );
+	paymentInstr.setCreditCardExpirationMonth( creditCardFields.month.value );
+	paymentInstr.setCreditCardExpirationYear( creditCardFields.year.value );
+	paymentInstr.setCreditCardType( creditCardFields.type.value );
+	if(!empty(creditCardFields.isSubscription.value))
+		paymentInstr.custom.isSubscription = creditCardFields.isSubscription.value;		
+	if(!empty(creditCardFields.maskedFourDigit.value))
+		paymentInstr.custom.maskedFourDigit = "************"+creditCardFields.maskedFourDigit.value.slice(creditCardFields.maskedFourDigit.value.length-4,creditCardFields.maskedFourDigit.value.length);
+	
+    return PIPELET_NEXT;
+}

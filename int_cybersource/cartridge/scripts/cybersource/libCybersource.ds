@@ -506,6 +506,8 @@ var CybersourceHelper = {
 	request.paySubscriptionCreateService = new CybersourceHelper.csReference.PaySubscriptionCreateService();
 	request.paySubscriptionCreateService.disableAutoAuth = 'false';
 	request.paySubscriptionCreateService.run = true;
+	request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+	request.decisionManager.enabled = false;
 	},
 
 	/*****************************************************************************
