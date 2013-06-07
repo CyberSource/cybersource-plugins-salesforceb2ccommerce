@@ -101,11 +101,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	if(null != response.ccAuthReply){
 		pdict.AuthorizationAmount = response.ccAuthReply.amount;
 		pdict.AuthorizationCode = response.ccAuthReply.authorizationCode;
-		pdict.AuthorizationReasonCode = response.ccAuthReply.reasonCode.get();
-		if(cust.profile != null){
-		if(!empty(response.ccAuthReply.bmlAccountNumber) && response.decision == 'ACCEPT')
-			cust.profile.custom.BMLAcctNo = response.ccAuthReply.bmlAccountNumber;
-		}	 
+		pdict.AuthorizationReasonCode = response.ccAuthReply.reasonCode.get();		
 	}
 	
     return PIPELET_NEXT;

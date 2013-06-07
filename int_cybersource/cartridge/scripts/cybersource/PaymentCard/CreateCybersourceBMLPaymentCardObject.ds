@@ -13,20 +13,8 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 	var basket : LineItemCtnr = pdict.Basket; 
 	var cust : Customer = basket.getCustomer();
-    var cardObject : Card_Object = new Card_Object();
-	
-	if(cust.profile != null) {	
-		if(!empty(cust.profile.custom.BMLAcctNo)){
-			cardObject.setAccountNumber(cust.profile.custom.BMLAcctNo);	
-		}
-		else {
-			cardObject.setAccountNumber(Site.getCurrent().getCustomPreferenceValue("CsBmlNewAcctNo"));
-		}
-	}
-	else {
-		cardObject.setAccountNumber(Site.getCurrent().getCustomPreferenceValue("CsBmlNewAcctNo"));
-	}
-	
+    var cardObject : Card_Object = new Card_Object();	
+	cardObject.setAccountNumber(Site.getCurrent().getCustomPreferenceValue("CsBmlNewAcctNo"));
 	cardObject.setExpirationMonth("12");
 	cardObject.setExpirationYear("2120");
 	var cardType : String = "028";

@@ -1203,6 +1203,36 @@
         </transition-display>
       </simple-transition>
       <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/UpdateTaxForGiftCertificate.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="Basket" key="Basket"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in2" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
         <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <key-binding alias="false" key="From_0"/>
@@ -1255,7 +1285,7 @@
         <text-node>
           <description>Pipeline is used to authorize Bill Me Later service</description>
         </text-node>
-        <node-display x="13" y="0"/>
+        <node-display x="15" y="0"/>
       </node>
     </segment>
   </branch>
@@ -1263,7 +1293,7 @@
     <segment>
       <node>
         <start-node call-mode="private" name="AuthorizeBML" secure="false"/>
-        <node-display x="13" y="1"/>
+        <node-display x="15" y="1"/>
       </node>
       <simple-transition>
         <transition-display>
