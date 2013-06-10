@@ -20,15 +20,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	bmlObject.setItemCategory(Site.getCurrent().getCustomPreferenceValue("CsBmlItemCategory"));
 	bmlObject.setProductDeliveryTypeIndicator("shipping_and_handling");
 	bmlObject.setTcVersion(Site.getCurrent().getCustomPreferenceValue("CsBmlTCVersion"));
-	if(cust.profile != null){
-		bmlObject.setCustomerRegistrationDate(StringUtils.formatDate(cust.profile.getCreationDate(), "yyyyMMdd"));
-		bmlObject.setCustomerTypeFlag(cust.profile.custom.BMLAcctNo != "" ? "E" : "N");
-	}else{
-		bmlObject.setCustomerRegistrationDate(StringUtils.formatDate(DateUtils.nowForInstance(), "yyyyMMdd"));
-		bmlObject.setCustomerTypeFlag("N");
-	}	
-	
-	pdict.CybersourceBML = bmlObject;
-	
+	bmlObject.setCustomerRegistrationDate(StringUtils.formatDate(DateUtils.nowForInstance(), "yyyyMMdd"));
+	bmlObject.setCustomerTypeFlag("N");	
+	pdict.CybersourceBML = bmlObject;	
     return PIPELET_NEXT;
 }
