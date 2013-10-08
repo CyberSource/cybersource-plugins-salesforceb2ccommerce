@@ -1,0 +1,11 @@
+<iscomment>
+	This template will populate hidden fields callID & signature received by Vme Restful API  
+</iscomment>
+<form action="${URLUtils.url('COShippingVisa-GetCheckoutDetailsSecured')}" method="post" id="${pdict.CurrentForms.vMeBilling.htmlName}" class="visaFormSecured">
+	<input type="hidden" id="callIdSecured" name="${pdict.CurrentForms.vMeBilling.callId.htmlName}" value="" />
+	<input type="hidden" id="signatureSecured" name="${pdict.CurrentForms.vMeBilling.signature.htmlName}" value="" />
+</form>
+<form action="${URLUtils.url('COShippingVisa-GetCheckoutDetails')}" method="post" id="${pdict.CurrentForms.vMeBilling.htmlName}" class="visaForm">
+	<input type="hidden" id="callId" name="${pdict.CurrentForms.vMeBilling.callId.htmlName}" value="" />
+	<input type="hidden" id="signature" name="${pdict.CurrentForms.vMeBilling.signature.htmlName}" value="" />
+</form>

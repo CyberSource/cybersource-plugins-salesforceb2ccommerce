@@ -2,7 +2,7 @@
 *	 CreateCybersourceAPObject.ds
 *	 This script creates the APObject data object and set it to CybersourceAP output object.
 *	 @input orderID : String
-*	 @input Basket : dw.order.Basket
+*	 @input Basket : dw.order.LineItemCtnr
 *    @output CybersourceAPObject : Object
 *
 */
@@ -15,7 +15,7 @@ importScript('cybersource/Cybersource_AP_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var apObject : AP_Object= new AP_Object();
-	var basket : dw.order.Basket = pdict.Basket;	
+	var basket : LineItemCtnr = pdict.Basket;	
 	apObject.setCustomerRepresentativeID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
 	apObject.setOrderID(pdict.orderID);
 	var amount : Money = new Money(0,dw.system.Site.current.currencyCode);

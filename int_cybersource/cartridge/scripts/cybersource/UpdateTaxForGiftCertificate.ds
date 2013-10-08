@@ -1,6 +1,6 @@
 /**
-* CalculateTaxForGiftCertificate.ds
-* Performs the tax updatation for giftcertificate lineitems in Basket. If basket is null it returns
+* UpdateTaxForGiftCertificate.ds
+* Performs the tax updation for giftcertificate lineitems in Basket. If basket is null it returns
 * with PIPELET_ERROR if not null, giftcertificate tax(0) will be updated into basket.   
 *
 * @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated

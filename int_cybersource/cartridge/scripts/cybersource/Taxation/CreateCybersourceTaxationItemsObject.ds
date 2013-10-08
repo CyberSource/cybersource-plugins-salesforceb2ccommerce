@@ -109,8 +109,9 @@ function execute( pdict : PipelineDictionary ) : Number
 			item.productName = lineItem.lineItemText;
 			item.productSKU = "PriceAdjustment";
 			item.productCode = lineItem.taxClassID || CybersourceHelper.getDefaultCouponTaxCode();
-			lineItem.setTax(new dw.value.Money(new Number(0),basket.currencyCode));
-			lineItem.setGrossPrice(lineItem.netPrice.add(new dw.value.Money(new Number(0),basket.currencyCode)));
+		//	lineItem.setTax(new dw.value.Money(new Number(0),basket.currencyCode));
+		//	lineItem.setGrossPrice(lineItem.netPrice.add(new dw.value.Money(new Number(0),basket.currencyCode)));
+		 	lineItem.updateTax(0);
 		}				
 	}
 	

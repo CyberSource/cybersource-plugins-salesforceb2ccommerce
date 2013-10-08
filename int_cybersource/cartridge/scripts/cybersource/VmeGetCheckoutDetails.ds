@@ -3,7 +3,7 @@
 * Performs the get checkout details of the Visa VMe.
 *
 * @input  apObject : Object
-* @input Basket : dw.order.Basket	
+* @input Basket : dw.order.LineItemCtnr	
 * @input  purchaseTotals : Object
 * @output CheckoutDetailObject : Object Checkout Detail Object containing response recieved via API call
 * @output ReasonCode : Number The global reason code returned by Cybersource (100 = Success)
@@ -27,7 +27,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	var purchaseObject : PurchaseTotals_Object = pdict.purchaseTotals;
 	var apObject : AP_Object = pdict.apObject;
 	var checkoutDetailObject : CheckoutDetail_Object = new CheckoutDetail_Object();
-	var basket : Basket = pdict.Basket;
+	var basket : LineItemCtnr = pdict.Basket;
 	
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
@@ -83,6 +83,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		checkoutDetailObject.setCountry(response.shipTo.country);
 		checkoutDetailObject.setCity(response.shipTo.city);
 		checkoutDetailObject.setState(response.shipTo.state);
+		checkoutDetailObject.setPhone(response.shipTo.phoneNumber);
 	}
 	if(null != response.billTo) {
 		checkoutDetailObject.setEmail(response.billTo.email);

@@ -1261,7 +1261,7 @@ var app = (function (app, $) {
 	 *  replaces breadcrumbs, lefthand nav and product listing with ajax and puts a loading indicator over the product listing
 	 */
 	function updateProductListing(isHashChange) {
-		var hash = encodeURI(decodeURI(window.location.hash));
+		var hash = window.location.hash;
 		if(hash==='#results-content' || hash==='#results-products') { return; }
 
 		var refineUrl = null;
@@ -1324,9 +1324,9 @@ var app = (function (app, $) {
 				var uri = app.util.getUri(this);
 	
 				if( uri.query.length > 1 ) {
-					window.location.hash = encodeURI(decodeURI(uri.query.substring(1)));
+					window.location.hash = encodeURI(decodeURIComponent(uri.query.substring(1)));
 				} else {
-					window.location.href = this.href;
+					window.location.href = encodeURI(this.href);
 				}
 				return false;
 			}
@@ -1969,12 +1969,12 @@ var app = (function (app, $) {
 		$cache.ccType.val(data.type);
 		$cache.ccNum.val(data.maskedNumber);
 		$cache.ccMonth.val(data.expirationMonth);
-		$cache.ccYear.val(data.expirationYear);		
+		$cache.ccYear.val(data.expirationYear);
 		$cache.ccSubscription.val(data.isSubscription);		
 		$cache.ccMaskedFourDigit.val(data.maskedFourDigit);		
-		$cache.ccMaskedFourDigit.show();
-		$cache.ccNum.hide();
-		$cache.ccCcv.val("");		
+		$cache.ccMaskedFourDigit.parent().show();
+		$cache.ccNum.parent().hide();
+		$cache.ccCcv.val("");
 
 		// remove error messages
 		$cache.ccContainer.find(".errormessage")
@@ -2127,7 +2127,7 @@ var app = (function (app, $) {
 
 	}
 
-	function initializeCache() {		
+	function initializeCache() {
 		$cache.checkoutForm = $("form.address");
 		$cache.addressList = $cache.checkoutForm.find(".select-address select[id$='_addressList']");
 		$cache.firstName = $cache.checkoutForm.find("input[name$='_firstName']");
@@ -2147,7 +2147,7 @@ var app = (function (app, $) {
 			$cache.shippingMethodList = $("#shipping-method-list");
 		}
 
-		if ($cache.checkoutForm.hasClass("checkout-billing")) {			
+		if ($cache.checkoutForm.hasClass("checkout-billing")) {
 			// billing only
 			$cache.email = $cache.checkoutForm.find("input[name$='_emailAddress']");
 			$cache.save = $cache.checkoutForm.find("button[name$='_billing_save']");
@@ -2159,15 +2159,28 @@ var app = (function (app, $) {
 			$cache.ccType = $cache.ccContainer.find("select[name$='_type']");
 			$cache.ccNum = $cache.ccContainer.find("input[name$='_number']");
 			$cache.ccMonth = $cache.ccContainer.find("[name$='_month']");
-			$cache.ccYear = $cache.ccContainer.find("[name$='_year']");					
+			$cache.ccYear = $cache.ccContainer.find("[name$='_year']");
 			$cache.ccCcv = $cache.ccContainer.find("input[name$='_cvn']");
 			$cache.BMLContainer = $("#PaymentMethod_BML");
 			$cache.gcCheckBalance = $("#gc-checkbalance");
 			$cache.addCoupon = $("#add-coupon");
+			//Code begin- Subscription 
 			$cache.ccSubscription = $cache.ccContainer.find("input[name$='creditCard_isSubscription']");
 			$cache.ccSubscription.val(false);
-			$cache.ccMaskedFourDigit = $cache.ccContainer.find("input[name$='creditCard_maskedFourDigit']");			
-			$cache.ccMaskedFourDigit.hide();
+			$cache.ccMaskedFourDigit = $cache.ccContainer.find("input[name$='creditCard_maskedFourDigit']");
+			$cache.ccMaskedFourDigit.parent().hide();	
+			if($cache.ccMaskedFourDigit.val()== undefined || $cache.ccMaskedFourDigit.val()=="") 
+			{
+				$cache.ccMaskedFourDigit.parent().hide();
+			}
+			else
+			{
+				$cache.ccMaskedFourDigit.parent().show();
+				$cache.ccNum.parent().hide();
+				$cache.ccSubscription.val(true);
+			}
+			// Code end- Subscription	
+
 		}
 	}
 

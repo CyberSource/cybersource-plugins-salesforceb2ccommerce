@@ -1,0 +1,79 @@
+<isinclude template="util/modules" />
+<iscomment>
+	This template will display the V.me button on checkout page/payment page based on data provided. 
+</iscomment>
+<isset name="currentSite" value="${dw.system.Site.getCurrent()}" scope="page"/>
+
+<isscript>
+		importScript("int_visa_VME:util_visa/HashUtils.ds");
+		var vmeSecretKey = currentSite.getCustomPreferenceValue('VmeSecretKey');
+		var vmeAPIKey = currentSite.getCustomPreferenceValue('VmeAPIKey');
+		var vmeMerchantRepresentativeID = currentSite.getCustomPreferenceValue('VmeCustomerRepresentativeID');
+		var code = "";		
+		if((currentSite.getCustomPreferenceValue('VmeEnvironment').value == "Sandbox") && (!empty(currentSite.getCustomPreferenceValue('VmeAmount')))) 
+		{
+				var amount = currentSite.getCustomPreferenceValue('VmeAmount').toFixed(2);				
+		}
+		else
+		{ 
+			if(pdict.Basket.getTotalGrossPrice().available)
+			{
+				var amount = pdict.Basket.getTotalGrossPrice().getValue().toFixed(2);
+			}
+			else
+			{
+				var amount = (pdict.Basket.getMerchandizeTotalPrice().add(pdict.Basket.giftCertificateTotalPrice)).getValue().toFixed(2);	
+			}
+		}
+		if(empty(pdict.CurrentSession.custom.signature) && empty(pdict.CurrentSession.custom.publicKey))
+		{
+			if(!empty(vmeSecretKey) && !empty(vmeMerchantRepresentativeID))
+			{
+				code = HashUtils.getHashCodeForVisa(vmeSecretKey+"&"+amount+"&"+pdict.Basket.getCurrencyCode()+"&"+vmeMerchantRepresentativeID+"&"+pdict.Basket.getUUID());
+			}
+		}			
+		var logo = "";
+		if(pdict.collect_shipping=="true")
+		{
+			logo = currentSite.getCustomPreferenceValue('VmeCheckoutButtonStyle');
+		}
+		else
+		{
+			logo = currentSite.getCustomPreferenceValue('VmePaymentButtonStyle');
+		} 
+</isscript>	 
+<isif condition="${!empty(pdict.CurrentSession.custom.signature) && !empty(pdict.CurrentSession.custom.publicKey)}">
+	<isif condition="${!empty(vmeMerchantRepresentativeID)}">
+		<v:buy
+			  apikey = "${pdict.CurrentSession.custom.publicKey}"
+			  token = "${pdict.CurrentSession.custom.signature}"
+			  amount = "${pdict.CurrentSession.custom.amount}"
+			  currency = "${pdict.Basket.getCurrencyCode()}"
+			  product-id = "${pdict.CurrentSession.custom.productId}"
+			  merch-trans = "${pdict.CurrentSession.custom.purchaseId}"
+			  collect-shipping = "${pdict.collect_shipping}"
+			  process = "validate"	
+			  callback = "${pdict.callback}"	  
+			  button-style = "${logo}"
+			  merchantid = "${pdict.CurrentSession.custom.merchantId}" 
+			  siteid = "${pdict.CurrentSession.custom.siteId}"
+			  >
+		</v:buy>
+	</isif>
+<iselse>
+	<isif condition="${!empty(vmeSecretKey) && !empty(vmeAPIKey) && !empty(vmeMerchantRepresentativeID)}" >
+		<v:buy
+			  apikey = "${currentSite.getCustomPreferenceValue('VmeAPIKey')}"
+			  token = "${code}"
+			  amount = "${amount}"
+			  currency = "${pdict.Basket.getCurrencyCode()}"
+			  product-id = "${pdict.Basket.getUUID()}"
+			  merch-trans = "${currentSite.getCustomPreferenceValue('VmeCustomerRepresentativeID')}" 
+			  collect-shipping = "${pdict.collect_shipping}"
+			  process = "validate"	
+			  callback = "${pdict.callback}"	  
+			  button-style = "${logo}"
+			  >
+		</v:buy>
+	</isif>	
+</isif>

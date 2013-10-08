@@ -161,6 +161,7 @@
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="CybersourceAPObject" key="CybersourceAPObject"/>
           <key-binding alias="CurrentForms.vMeBilling.callId.htmlValue" key="orderID"/>
+          <key-binding alias="Basket" key="Basket"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
@@ -374,6 +375,7 @@
           <key-binding alias="RequestID" key="RequestID"/>
           <key-binding alias="RequestToken" key="RequestToken"/>
           <key-binding alias="response" key="response"/>
+          <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b4" source-connector="error">
@@ -722,6 +724,7 @@ reversed or captured.
           <key-binding alias="FirstName" key="FirstName"/>
           <key-binding alias="LastName" key="LastName"/>
           <key-binding alias="RiskIndicator" key="RiskIndicator"/>
+          <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b4" source-connector="error">
@@ -1004,6 +1007,11 @@ reversed or captured.
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="CurrentSession.custom.publicKey" key="publicKey"/>
           <key-binding alias="CurrentSession.custom.signature" key="signature"/>
+          <key-binding alias="CurrentSession.custom.merchantId" key="merchantId"/>
+          <key-binding alias="CurrentSession.custom.productId" key="productId"/>
+          <key-binding alias="CurrentSession.custom.purchaseId" key="purchaseId"/>
+          <key-binding alias="CurrentSession.custom.siteId" key="siteId"/>
+          <key-binding alias="CurrentSession.custom.amount" key="amount"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b4" source-connector="error">

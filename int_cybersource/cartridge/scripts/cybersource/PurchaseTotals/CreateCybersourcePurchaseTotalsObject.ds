@@ -19,7 +19,10 @@ function execute( pdict : PipelineDictionary ) : Number
     var amount : Money = new Money(0,dw.system.Site.current.currencyCode);
     var ccPaymentInstruments = basket.getPaymentInstruments();
     for each (var pi : PaymentInstrument in ccPaymentInstruments) {
-    	amount = amount.add(pi.paymentTransaction.amount);	 
+    	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
+	    	{
+	    		amount = amount.add(pi.paymentTransaction.amount);
+	    	}
     }
 	purchaseObject.setCurrency(amount.currencyCode);
 	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));

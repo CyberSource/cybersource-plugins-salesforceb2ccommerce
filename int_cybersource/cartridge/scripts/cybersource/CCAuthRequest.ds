@@ -95,7 +95,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	// the request object holds the input parameter for the AUTH request
 	//**************************************************************************//	
 	var request = new csReference.RequestMessage();
-	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,basket.UUID, CybersourceHelper.getDigitalFingerprintEnabled(), pdict.item);		
+	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), pdict.item);		
 	if(pdict.XID != null)
 	{
 		CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID, pdict.ParesStatus);

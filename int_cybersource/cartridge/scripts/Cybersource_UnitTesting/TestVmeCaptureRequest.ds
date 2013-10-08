@@ -15,10 +15,11 @@
 * @output missingField : Array
 * @output purchaseTotalCurrency : String The Currency Code for requested transaction id
 * @output dateTime : String The date time of transaction creation
-* @output processorResponse : String Process response code for transaction
+* @output providerResponse : String Process response code for transaction
 * @output apReasonCode : Number the Checkout Reply ReasonCode
 * @output apStatus : String the status of order
 * @output apOrderID : String the order ID
+* @output reconciliationID : String
 */
 importPackage( dw.system );
 importPackage( dw.system );
@@ -54,7 +55,7 @@ function execute( pdict : PipelineDictionary ) : Number
 
 	var request = new csReference.RequestMessage();
 
-	CybersourceHelper.addAPCaptureServiceInfo(request, purchaseObject, "test123", authRequestID);
+	CybersourceHelper.addAPCaptureServiceInfo(request, purchaseObject, "test", authRequestID);
 	
 	var response = null;
 	// send request
@@ -76,9 +77,10 @@ function execute( pdict : PipelineDictionary ) : Number
 			pdict.transactionID = response.apCaptureReply.transactionID;			
 			pdict.CaptureAmount = response.apCaptureReply.amount;
 			pdict.dateTime = response.apCaptureReply.dateTime;
-			pdict.processorResponse = response.apCaptureReply.processorResponse;
+			pdict.providerResponse = response.apCaptureReply.providerResponse;
 			pdict.apReasonCode = response.apCaptureReply.reasonCode.get();
 			pdict.apStatus = response.apCaptureReply.status;		
+			pdict.reconciliationID = response.apCaptureReply.reconciliationID;
 		}
 		if(null != response.apReply) 
 		pdict.apOrderID = response.apReply.orderID;

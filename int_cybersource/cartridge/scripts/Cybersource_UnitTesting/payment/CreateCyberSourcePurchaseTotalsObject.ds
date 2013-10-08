@@ -2,7 +2,9 @@
 *	 CreateCyberSourcePurchaseTotalsObject.ds
 *	 This script creates the mock purchase totals data object and set it to CyberSourcePurchaseTotals output object.
 *
-*    @output CyberSourcePurchaseTotals : Object
+*	@input currency : String
+*	@input amount : String
+*   @output CyberSourcePurchaseTotals : Object
 *
 */
 importPackage( dw.system );
@@ -11,13 +13,25 @@ importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {  
     var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
-	purchaseObject.setCurrency("USD");
-	var amount : Number = new Number("299.99");
-	// PEP: Added to let CCAuth succeed without listed items
-	
-	/*
-	Next line to be commented for Tax Service Unit testing
-	*/
+			
+	/**
+	* It is mandatory for all Vme services.
+	* 
+	**/ 
+	if(pdict.currency != null) {
+		purchaseObject.setCurrency(pdict.currency);
+	} else {
+		purchaseObject.setCurrency("USD");
+	}
+	/***
+	 * It is mandatory for Vme confirm purchase (The actual total amount of an order required here), Vme Transaction Details, optional for all services
+	 * 
+	 **/
+	if(pdict.amount != null){ 
+		var amount : Number = new Number(pdict.amount);
+	} else {
+		var amount : Number = new Number("200.00");
+	}	
 	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
     
     pdict.CyberSourcePurchaseTotals = purchaseObject;

@@ -87,7 +87,7 @@ function execute( pdict : PipelineDictionary ) : Number
 			var lineItem : ProductLineItem = itemMap.get(resItem.id.toString());
 			var itemTax : dw.value.Money = new dw.value.Money(new Number((lineItem.class.name == 'dw.order.PriceAdjustment'?"-":"")+resItem.totalTaxAmount),basket.currencyCode);
 			lineItem.setTax(itemTax);
-			
+			var taxRate : Number = 0.00;
 			//lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
 			
 			//*****************************************************************//
@@ -98,18 +98,37 @@ function execute( pdict : PipelineDictionary ) : Number
 			//    
 			//*****************************************************************//
 			
-			if( lineItem instanceof dw.order.ProductLineItem ) 
+			if( lineItem instanceof dw.order.ProductLineItem) 
 			{
-				lineItem.setGrossPrice(lineItem.proratedPrice.add(itemTax));
+				if(!lineItem.bonusProductLineItem)
+				{
+					if(!empty(lineItem.proratedPrice) && lineItem.proratedPrice.value != 0)
+					{
+						taxRate = itemTax.value/lineItem.proratedPrice.value;
+					}
+					lineItem.updateTax(taxRate,lineItem.proratedPrice);
+					//	lineItem.setGrossPrice(lineItem.proratedPrice.add(itemTax));
+				}
 			} 
 			else if( lineItem instanceof dw.order.ShippingLineItem )
 		 	{
-				lineItem.setGrossPrice(lineItem.adjustedNetPrice.add(itemTax));
+		 		if(!empty(lineItem.adjustedNetPrice) && lineItem.adjustedNetPrice.value != 0)
+				{
+					taxRate = itemTax.value/lineItem.adjustedNetPrice.value;
+				}
+				lineItem.updateTax(taxRate,lineItem.adjustedNetPrice);
+				//	lineItem.setGrossPrice(lineItem.adjustedNetPrice.add(itemTax));
 			} 
 			else 
 			{
-				lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+				if(!empty(lineItem.netPrice) && lineItem.netPrice.value != 0)
+				{
+					taxRate = itemTax.value/lineItem.netPrice.value;
+				}
+				lineItem.updateTax(taxRate,lineItem.netPrice);
+				//	lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
 			}
+
 		}
 		pdict.totalTaxAmount = taxationResponse.taxReply.totalTaxAmount;
 		basket.updateTotals();

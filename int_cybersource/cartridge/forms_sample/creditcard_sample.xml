@@ -51,7 +51,7 @@
 	<!-- field for credit card subscription -->
 	<field formid="isSubscription" type="boolean" mandatory="false" default-value="false"/>
 	
-	<field formid="maskedFourDigit" type="string" masked="4" max-length="16"/>
+	<field formid="maskedFourDigit" label="creditcard.number" type="string" masked="4" max-length="16"/>
 	<!-- field for credit card owner -->
     <field formid="owner" label="creditcard.ownerlabel" type="string" mandatory="true" max-length="40" binding="creditCardHolder"
      	missing-error="creditcard.ownermissingerror"/>

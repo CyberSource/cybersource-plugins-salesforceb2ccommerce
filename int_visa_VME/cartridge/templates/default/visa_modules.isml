@@ -1,0 +1,8 @@
+<iscomment>
+	This template will populate attribute provided by visa_buy template 
+</iscomment>
+<ismodule template="visa_buy"
+	name="visaBuy"
+	attribute="collect_shipping"
+	attribute="callback"
+/>

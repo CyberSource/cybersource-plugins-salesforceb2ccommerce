@@ -162,6 +162,14 @@ Here is the authreason
 	Here is the AVSCodeRaw
 	<isprint value="${pdict.AVSCodeRaw}"><br>
 </isif>
+<isif condition="${!empty(pdict.merchantId)}">	
+	Here is the Merchant UUID
+	<isprint value="${pdict.merchantId}"><br>
+</isif>
+<isif condition="${!empty(pdict.siteId)}">	
+	Here is the Merchant Site ID
+	<isprint value="${pdict.siteId}"><br>
+</isif>
 <isif condition="${!empty(pdict.invalidField)}">
 <b>CyberSource Response for Invalid Field :</b>
 <isloop items="${pdict.invalidField}" alias="invalidField">									

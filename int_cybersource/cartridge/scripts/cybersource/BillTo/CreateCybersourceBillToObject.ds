@@ -17,23 +17,39 @@ function execute( pdict : PipelineDictionary ) : Number
 {
 	var billToObject: BillTo_Object = new BillTo_Object();
 	
-	if ( pdict.ReadFromBasket )
+	if( pdict.ReadFromBasket)
 	{
 		var basket : LineItemCtnr = pdict.Basket;
 		var billingAddress : OrderAddress = basket.billingAddress;
 		var shippingAddress : OrderAddress = basket.defaultShipment.shippingAddress;
 
-		if( !empty(billingAddress)&&!empty(basket) ) {
-			billToObject.setFirstName  ( billingAddress.firstName );
-			billToObject.setLastName   ( billingAddress.lastName );
-			billToObject.setStreet1    ( billingAddress.address1 );
-			billToObject.setStreet2    ( billingAddress.address2 );
-			billToObject.setCity       ( billingAddress.city );
-			billToObject.setState      ( billingAddress.stateCode );
-			billToObject.setPostalCode ( billingAddress.postalCode );
-			billToObject.setCountry    ( billingAddress.countryCode );
-			billToObject.setPhoneNumber( billingAddress.phone );
-			billToObject.setEmail      ( basket.customerEmail );
+		if( !empty(billingAddress)&&!empty(basket) ) {			
+			/*This if condition checks if billingAddress.address1 is present only for V.Me
+			* create the billToObject using billingAddress else it will create billToObject using shippingAddress 
+			*/			  
+			if(!empty(billingAddress.address1)){
+				billToObject.setFirstName  ( billingAddress.firstName );
+				billToObject.setLastName   ( billingAddress.lastName );
+				billToObject.setStreet1    ( billingAddress.address1 );
+				billToObject.setStreet2    ( billingAddress.address2 );
+				billToObject.setCity       ( billingAddress.city );
+				billToObject.setState      ( billingAddress.stateCode );
+				billToObject.setPostalCode ( billingAddress.postalCode );
+				billToObject.setCountry    ( billingAddress.countryCode );
+				billToObject.setPhoneNumber( billingAddress.phone );
+				billToObject.setEmail      ( basket.customerEmail );
+			} else {
+				billToObject.setFirstName  ( shippingAddress.firstName );
+				billToObject.setLastName   ( shippingAddress.lastName );
+				billToObject.setStreet1    ( shippingAddress.address1 );
+				billToObject.setStreet2    ( shippingAddress.address2 );
+				billToObject.setCity       ( shippingAddress.city );
+				billToObject.setState      ( shippingAddress.stateCode );
+				billToObject.setPostalCode ( shippingAddress.postalCode );
+				billToObject.setCountry    ( shippingAddress.countryCode );
+				billToObject.setPhoneNumber( shippingAddress.phone );
+				billToObject.setEmail      ( "test@test.com" );			
+			}
 		}
 		else
 		{

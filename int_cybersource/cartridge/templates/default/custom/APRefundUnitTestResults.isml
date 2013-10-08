@@ -22,9 +22,9 @@
 	Here is the Request ID
 	<isprint value="${pdict.RequestID}"/><br>
 </isif>
-<isif condition="${!empty(pdict.processorResponse)}">
-	Here is the Processor Response
-	<isprint value="${pdict.processorResponse}"/><br>
+<isif condition="${!empty(pdict.providerResponse)}">
+	Here is the Provider Response
+	<isprint value="${pdict.providerResponse}"/><br>
 </isif>
 <isif condition="${!empty(pdict.apStatus)}">
 	Here is the status
@@ -161,6 +161,10 @@ Here is the authreason
 <isif condition="${!empty(pdict.AVSCodeRaw)}">	
 	Here is the AVSCodeRaw
 	<isprint value="${pdict.AVSCodeRaw}"><br>
+</isif>
+<isif condition="${!empty(pdict.reconciliationID)}">
+	Here is the Reconciliation ID
+	<isprint value="${pdict.reconciliationID}"/><br>
 </isif>
 <isif condition="${!empty(pdict.invalidField)}">
 <b>CyberSource Response for Invalid Field :</b>

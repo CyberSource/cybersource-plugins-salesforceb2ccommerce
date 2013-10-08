@@ -221,11 +221,7 @@
               <call-node start-name-ref="Cybersource_Subscription-CreateSubscriptionMyAccount"/>
               <node-display x="0" y="1"/>
               <branch basename="b3" source-connector="error">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="target" x="-1" y="0"/>
-                  </transition-display>
-                </transition>
+                <transition target-connector="in"/>
                 <segment>
                   <node>
                     <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">

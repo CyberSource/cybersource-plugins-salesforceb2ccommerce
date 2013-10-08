@@ -15,6 +15,8 @@
 * @output transactionID : String
 * @output invalidField : Array
 * @output missingField : Array
+* @output providerResponse : String
+* @output reconciliationID : String
 *
 */
 importPackage( dw.system );
@@ -74,6 +76,8 @@ function execute( pdict : PipelineDictionary ) : Number
 		if ( null != response.apRefundReply)
 		{
 			pdict.transactionID = response.apRefundReply.transactionID;
+			pdict.providerResponse = response.apRefundReply.providerResponse;
+			pdict.reconciliationID = response.apRefundReply.reconciliationID;
 		}
 		pdict.Decision = response.decision;
 		pdict.invalidField = response.invalidField;

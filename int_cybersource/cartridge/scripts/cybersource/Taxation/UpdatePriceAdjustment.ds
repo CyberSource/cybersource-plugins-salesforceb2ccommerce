@@ -1,0 +1,43 @@
+/**
+* 
+* UpdatePriceAdjustment.ds
+*
+* Updates the basket price adjustments as tax has already been calculated on 
+* prorated price of Productlineitems
+*
+* 
+* @input Basket : dw.order.LineItemCtnr  The basket whose adjustments are to be updated
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var basket : LineItemCtnr = pdict.Basket;	
+	if(basket == null) {	
+		return PIPELET_ERROR;
+	}
+	try{
+		
+		if(!basket.getPriceAdjustments().empty)
+	    {
+	        var basketPriceAdjustments : Iterator = basket.getPriceAdjustments().iterator();
+		    while(basketPriceAdjustments.hasNext())
+		    {
+				var basketPriceAdjustment : PriceAdjustment = basketPriceAdjustments.next();
+				basketPriceAdjustment.updateTax(0);        	
+		    }
+	
+		}	
+				
+		basket.updateTotals();
+	}catch(e){			
+		Logger.error("Error in [UpdateLineItems.ds] ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}   
+
+    return PIPELET_NEXT;
+}

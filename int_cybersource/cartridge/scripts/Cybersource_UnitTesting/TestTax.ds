@@ -97,6 +97,7 @@ function execute( pdict : PipelineDictionary ) : Number
 			lineItem.setTax(itemTax);
 			//lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
 			lineItem.setGrossPrice(lineItem.netPrice+=itemTax);
+		   
 		}
 		pdict.totalTaxAmount = taxationResponse.taxReply.totalTaxAmount;
 		//basket.updateTotals();

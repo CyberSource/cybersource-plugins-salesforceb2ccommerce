@@ -1,0 +1,23 @@
+<iscomment>
+	This template is used to perform the Ajax Call based on data provided by visa_buy template. 
+</iscomment>
+<isset name="currentSite" value="${dw.system.Site.getCurrent()}" scope="page"/>
+<isset name="VmeSecretKey" value="${!empty(currentSite.getCustomPreferenceValue('VmeSecretKey'))?currentSite.getCustomPreferenceValue('VmeSecretKey'):''}" scope="page"/>
+	<script type="text/javascript">		
+		function vmeWidgetUIEventHandler(VmeEventType, eventData)
+		{			
+			if (VmeEventType == "purchase.success"){				
+				$("#callId").val(eventData["callId"]);
+				$("#signature").val(eventData["signature"]);
+				$("#callIdSecured").val(eventData["callId"]);
+				$("#signatureSecured").val(eventData["signature"]);				
+				if(window.location.protocol == 'https:'){				
+					$(".visaFormSecured").submit();
+				} else {				
+					$(".visaForm").submit();
+				}
+			}
+			
+		}
+	</script>
+	<!-- v:buy callback methods end -->

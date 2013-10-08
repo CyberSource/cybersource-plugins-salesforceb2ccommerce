@@ -1,0 +1,84 @@
+<iscomment>
+	This template renders the billing address and a list of all payment
+	methods (more precessively payment instruments) used for the payment
+	of the basket. It is displayed in the order summary at the right hand
+	side in the checkout process.
+</iscomment>
+<isset name="billingAddress" value="${pdict.Basket.billingAddress}" scope="page"/>
+<isset name="paymentInstruments" value="${pdict.Basket.paymentInstruments}" scope="page"/>
+<!-- BEGIN V.ME CHANGES -->
+<isset name="currentSite" value="${dw.system.Site.getCurrent()}" scope="page"/>
+<isif condition="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value=='VISA_VME'}">
+	<div class="mini-billing-address  order-component-block">
+		<h3 class="section-header">
+			<a href="${URLUtils.https('COBilling-Start')}" class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>
+			${Resource.msg('minibillinginfo.billingaddress','checkout',null)}
+		</h3>
+		<div class="details">
+			<img alt="Payment_mark_small" src="${currentSite.getCustomPreferenceValue('VmeAcceptLogo')}">
+		</div>
+	</div>
+<iselse>
+<!--END V.ME CHANGES -->
+	<isif condition="${!empty(billingAddress)}">
+		<div class="mini-billing-address  order-component-block">
+	
+			<h3 class="section-header">
+				<a href="${URLUtils.https('COBilling-Start')}" class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>
+				${Resource.msg('minibillinginfo.billingaddress','checkout',null)}
+			</h3>
+	
+			<div class="details">
+				<div><isprint value="${billingAddress.firstName}"/> <isprint value="${billingAddress.lastName}"/></div>
+				<div><isprint value="${billingAddress.address1}"/></div>
+				<isif condition="${!empty(billingAddress.address2)}">
+					<div><isprint value="${billingAddress.address2}"/></div>
+				</isif>
+				<div><isprint value="${billingAddress.city}"/>, <isprint value="${billingAddress.stateCode}"/> <isprint value="${billingAddress.postalCode}"/></div>
+				<div><isprint value="${billingAddress.countryCode}"/></div>
+			</div>
+		</div>
+	</isif>
+</iselse>
+<!-- BEGIN V.ME CHANGES -->
+</isif>
+<!-- END V.ME CHANGES -->
+
+<isif condition="${!empty(paymentInstruments)}">
+	<iscomment>render a box per payment instrument</iscomment>
+	<isloop items="${paymentInstruments}" var="paymentInstr" status="loopstate">
+	<!-- BEGIN V.ME CHANGES -->
+		<div class="mini-payment-instrument  order-component-block"">
+	<!-- END V.ME CHANGES -->	
+		 	<h3 class="section-header">
+				<a href="${URLUtils.https('COBilling-Start')}"  class="section-header-note">${Resource.msg('global.edit','locale',null)}</a>			
+				<span>${Resource.msg('minibillinginfo.paymentmethod','checkout',null)}</span>			
+			</h3>
+			<!-- BEGIN V.ME CHANGES -->
+			<isif condition="${paymentInstr.paymentMethod!='VISA_VME'}">
+			<!-- END V.ME CHANGES -->
+				<div class="details">
+					<iscomment>
+						dynamically render the detail section depending on the type of the payment instrument
+					</iscomment>
+										
+					<isif condition="${dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstr.paymentMethod)}">						
+						<div>${dw.order.PaymentMgr.getPaymentMethod(paymentInstr.paymentMethod).name}: <isprint value="${paymentInstr.maskedGiftCertificateCode}"/></div>
+					<iselse>	
+						<div><isprint value="${dw.order.PaymentMgr.getPaymentMethod(paymentInstr.paymentMethod).name}" /></div>
+						<isminicreditcard p_card="${paymentInstr}" p_show_expiration="${true}"/>						
+						<div>
+							${Resource.msg('minibillinginfo.amount','checkout',null)}: <isprint value="${paymentInstr.paymentTransaction.amount}"/>
+						</div><!-- END: payment-amount -->
+					</isif>
+				</div>
+			<!-- BEGIN V.ME CHANGES -->
+			<iselse>			
+				<div class="details">
+					<img alt="Payment_mark_small" src="${currentSite.getCustomPreferenceValue('VmeAcceptLogo')}">
+				</div>
+			</isif>
+			<!-- END V.ME CHANGES -->	
+		</div>
+	</isloop>
+</isif>

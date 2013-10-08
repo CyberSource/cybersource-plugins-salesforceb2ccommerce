@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This is where additional Visa.me integration would go. The current implementation simply creates a payment method and returns 'success'.</description>
+        </text-node>
+        <node-display width="2" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Handle">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Handle" secure="false"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="checkout/CreatePaymentInstrument.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="&quot;VISA_VME&quot;" key="PaymentType"/>
+          <key-binding alias="true" key="RemoveExisting"/>
+          <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display x="1" y="2"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Copy the relevant credit card details to the payment instrument" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="CurrentForms.vMeBilling.callId.value" key="From_0"/>
+          <key-binding alias="PaymentInstrument.creditCardNumber" key="To_0"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="CurrentForms.vMeBilling.callId.value" key="From_1"/>
+          <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_1"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="success"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>Authorizes a payment using a Visa.me. The payment is authorized by using the Visa.me processor only and setting the order no as the transaction ID. Customizations may use other processors and custom logic to authorize credit card payment.</description>
+        </text-node>
+        <node-display width="2" x="4" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Authorize">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Authorize" secure="false"/>
+        <node-display x="4" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="GetPaymentProcessor" pipelet-set-identifier="bc_api">
+          <key-binding alias="PaymentProcessor" key="PaymentProcessor"/>
+          <key-binding alias="&quot;VISA_VME&quot;" key="ID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Just set transaction ID and processor" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="PaymentProcessor" key="From_0"/>
+          <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_0"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="VisaMeAPI-Data"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display x="-1" y="2"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b4" source-connector="authorized">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="authorized"/>
+              <node-display x="1" y="2"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b5" source-connector="declined">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="declined"/>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b6" source-connector="review">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="review"/>
+              <node-display x="-1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

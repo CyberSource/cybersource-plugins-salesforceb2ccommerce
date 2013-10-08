@@ -12,6 +12,7 @@
 * @output transactionID : String
 * @output invalidField : Array
 * @output missingField : Array
+* @output providerResponse : String
 */
 importPackage( dw.system );
 importPackage( dw.system );
@@ -66,6 +67,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		if ( null != response.apAuthReversalReply)
 		{
 			pdict.transactionID = response.apAuthReversalReply.transactionID;
+			pdict.providerResponse = response.apAuthReversalReply.providerResponse;
 		}
 		pdict.Decision = response.decision;
 		pdict.invalidField = response.invalidField;

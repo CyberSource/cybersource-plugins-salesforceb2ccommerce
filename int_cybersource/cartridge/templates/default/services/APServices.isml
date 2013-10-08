@@ -6,7 +6,6 @@
 <a href="${URLUtils.http('CybersourceUnitTesting-TestVmeAuth')}" >Test Vme Authorize</a><br/>
 (If the purchase has not been confirmed the authorization will be declined)
 <br>
-<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeGetTransactionDetails')}">Test Vme Get Transaction Details API Request</a><br/>
 <a href="${URLUtils.http('CybersourceUnitTesting-TestVmeGetCheckoutDetails')}">Test Vme Get Checkout Details API</a><br/>
 <a href="${URLUtils.http('CybersourceUnitTesting-TestVmeAuthReversalRequest')}" >Test Vme Authorization Reversal API</a><br/>
 <a href="${URLUtils.http('CybersourceUnitTesting-TestVmeCaptureRequest')}">Test Vme Capture API Request</a><br/>

@@ -1,0 +1,13 @@
+/**
+* SetResponseHeader.ds
+* Demandware Script used to set the response header (X-FRAME-OPTIONS) for click jacking
+*
+*/
+importPackage( dw.system );
+function execute( args : PipelineDictionary ) : Number
+{	
+	if(!empty(dw.system.Site.getCurrent().getCustomPreferenceValue("VmeServersideClickjackingEnabled")) && dw.system.Site.getCurrent().getCustomPreferenceValue("VmeServersideClickjackingEnabled")) {
+    	response.addHttpHeader("X-FRAME-OPTIONS","SAMEORIGIN");
+	}
+    return PIPELET_NEXT;
+}

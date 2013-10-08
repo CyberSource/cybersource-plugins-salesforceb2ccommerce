@@ -8,7 +8,11 @@
 * @output ReasonCode : Number The global reason code returned by Cybersource (100 = Success)
 * @output signature : String signature
 * @output publicKey : String public key
-*
+* @output productId : String 
+* @output merchantId : String 
+* @output purchaseId : String 
+* @output siteId : String
+* @output amount : String
 */
 importPackage( dw.system );
 importPackage( dw.system );
@@ -40,8 +44,14 @@ function execute( pdict : PipelineDictionary ) : Number
 	}
 
 	var request = new csReference.RequestMessage();
-	
+	try
+	{
 	CybersourceHelper.addAPInitiateServiceInfo(request, purchaseObject, apObject, basket.UUID);
+	}
+	catch(e){
+			Logger.error("Error occured in VmeInitiateService.ds ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}
 	
 	var response = null;
 	// send request
@@ -59,7 +69,16 @@ function execute( pdict : PipelineDictionary ) : Number
 	if(null != response.apInitiateReply){
 		pdict.ReasonCode = response.apInitiateReply.reasonCode.get();	
 		pdict.signature = response.apInitiateReply.signature;
-		pdict.publicKey = response.apInitiateReply.publicKey;					
-	}	
+		pdict.publicKey = response.apInitiateReply.publicKey;
+		pdict.amount = response.apInitiateReply.amount;
+	}
+	
+	if(null != response.apReply){
+		pdict.productId = response.apReply.productID;	
+		pdict.merchantId = response.apReply.merchantUUID;
+		pdict.purchaseId = response.apReply.purchaseID;
+		pdict.siteId = response.apReply.merchantSiteID;
+	}
+		
    return PIPELET_NEXT;
 }

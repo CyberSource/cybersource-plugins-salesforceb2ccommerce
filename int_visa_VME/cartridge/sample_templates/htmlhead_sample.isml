@@ -1,0 +1,61 @@
+<iscomment>
+The <!—BEGIN/END… comments are control statements for the build cartridge which can be found in xChange https://xchange.demandware.com/docs/DOC-5728 or checked out from SVN at https://svn2.hosted-projects.com/cs_europe/DWTechRepository/cartridges/build_cs
+If you are not using the build cartridge the comments can be safely removed.
+</iscomment>
+
+<meta charset=UTF-8>
+
+<iscomment>the page title calculated by the app </iscomment>
+
+<isif condition="${dw.system.System.getInstanceType() != dw.system.System.PRODUCTION_SYSTEM}">
+	<title>${pdict.CurrentPageMetaData.title} ${Resource.msg('revisioninfo.revisionnumber','revisioninfo',null)}</title>
+<iselse>
+  <title><isprint value="${pdict.CurrentPageMetaData.title}" encoding="off" /></title>
+</isif>
+
+<iscomment>FAVICON ICON: (website icon, a page icon or an urlicon) 16x16 pixel image icon for website</iscomment>
+<link href="${URLUtils.staticURL('/images/favicon.ico')}" rel="shortcut icon" />
+
+<iscomment>include all meta tags</iscomment>
+<iscomment>
+	This Content-Type setting is optional as long as the webserver transfers
+	the Content-Type in the http header correctly. But because some browsers or
+	proxies might not deal with this setting in the http header correctly, a
+	second setting can help to keep everything just fine.
+</iscomment>
+
+<iscomment>Automatic generation for meta tags.</iscomment>
+<meta name="description" content=" <isif condition="${!empty(pdict.CurrentPageMetaData.description)}">${pdict.CurrentPageMetaData.description}</isif> ${Resource.msg('global.storename','locale',null)}"/>
+<meta name="keywords" content=" <isif condition="${!empty(pdict.CurrentPageMetaData.keywords)}">${pdict.CurrentPageMetaData.keywords}</isif> ${Resource.msg('global.storename','locale',null)}"/>
+
+<iscomment>
+	Add your own meta information here, e.g. Dublin-Core information
+</iscomment>
+
+<iscomment>STYLE SHEETS ARE PLACED HERE SO THAT jQuery, Power Review and other RichUI styles do not overwrite the definitions below.</iscomment>
+
+<iscomment>DEFAULT STYLESHEETS INCLUDED ON ALL PAGES</iscomment>
+
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/normalize.css')}" />
+<link rel="stylesheet" media="print" href="${URLUtils.staticURL('/css/print.css')}" />
+
+
+<isinclude template="components/header/htmlhead_UI"/>
+
+<!--  UI -->
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/style.css')}" />
+
+<iscomment>Insert meta tag for the "Google-Verification" feature to verify that you are the owner of this site.</iscomment>
+<isif condition="${'GoogleVerificationTag' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.GoogleVerificationTag!=''}">
+    <meta name="google-site-verification" content="<isprint value="${dw.system.Site.current.preferences.custom.GoogleVerificationTag}"/>" />
+</isif>
+
+
+<iscomment>Gather device-aware scripts</iscomment>    
+<isinclude url="${URLUtils.url('Home-SetLayout')}"/>
+
+<iscomment>Style as part of clickjacking mechanism</iscomment>
+<isif condition="${!empty(pdict.clickjackingflag)}">
+	<style> body { display : none;} </style>
+</isif>
+<isinclude template="visa_callback.isml"/>

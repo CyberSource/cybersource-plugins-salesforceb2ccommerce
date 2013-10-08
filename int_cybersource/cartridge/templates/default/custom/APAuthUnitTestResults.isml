@@ -22,9 +22,9 @@
 	Here is the Request ID
 	<isprint value="${pdict.RequestID}"/><br>
 </isif>
-<isif condition="${!empty(pdict.processorResponse)}">
-	Here is the Processor Response
-	<isprint value="${pdict.processorResponse}"/><br>
+<isif condition="${!empty(pdict.providerResponse)}">
+	Here is the Provider Response
+	<isprint value="${pdict.providerResponse}"/><br>
 </isif>
 <isif condition="${!empty(pdict.apStatus)}">
 	Here is the status

@@ -25,6 +25,12 @@ function execute( pdict : PipelineDictionary ) : Number
     {
     	amount = basket.getMerchandizeTotalPrice().add(basket.getGiftCertificateTotalPrice());	
     }
+        
+    var gcPaymentInstruments = basket.getGiftCertificatePaymentInstruments();    
+    for each (var pi : PaymentInstrument in gcPaymentInstruments) {
+    	amount = amount.subtract(pi.paymentTransaction.amount);	 
+    }
+    
 	purchaseObject.setCurrency(amount.currencyCode);
 	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));
     

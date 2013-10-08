@@ -13,7 +13,7 @@
 * @output apDiscountAmt : String the amount on order
 * @output apGiftWrapAmt : String the girft wrap amount on order
 * @output dateTime : String
-* @output processorResponse : String
+* @output providerResponse : String
 * @output apReasonCode : Number the Checkout Reply ReasonCode
 * @output apStatus : String the status of order
 * @output apHandlingAmount : String  the handling amount on order
@@ -34,7 +34,7 @@
 * @output street1 : String  Shipping Address Line 1
 * @output street2 : String  Shipping Address Line 2
 * @output email : String  Email Address of Customer
-*
+* @output phoneNumber : String Phone Number
 */
 importPackage( dw.system );
 importPackage( dw.system );
@@ -65,7 +65,7 @@ function execute( pdict : PipelineDictionary ) : Number
 
 	var request = new csReference.RequestMessage();
 	
-	CybersourceHelper.addAPCheckoutDetailsRequestInfo(request, purchaseObject, apObject, "test123");
+	CybersourceHelper.addAPCheckoutDetailsRequestInfo(request, purchaseObject, apObject, "test");
 	
 	var response = null;
 	// send request
@@ -86,7 +86,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	pdict.Decision = response.decision;	
 	if (null != response.apCheckoutDetailsReply) {
 		pdict.dateTime = response.apCheckoutDetailsReply.dateTime;
-		pdict.processorResponse = response.apCheckoutDetailsReply.processorResponse;
+		pdict.providerResponse = response.apCheckoutDetailsReply.providerResponse;
 		pdict.apReasonCode = response.apCheckoutDetailsReply.reasonCode.get();
 		pdict.apStatus = response.apCheckoutDetailsReply.status;
 	}	
@@ -115,6 +115,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.state = response.shipTo.state;
 		pdict.street1 = response.shipTo.street1;
 		pdict.street2 = response.shipTo.street2;
+		pdict.phoneNumber = response.shipTo.phoneNumber;
 	}
 	if(null != response.billTo) {
 		pdict.email = response.billTo.email;
