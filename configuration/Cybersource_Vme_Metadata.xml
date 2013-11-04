@@ -142,8 +142,7 @@
                 <attribute attribute-id="VmeCheckoutButtonStyle"/>
                 <attribute attribute-id="VmePaymentButtonStyle"/>
 				<attribute attribute-id="VmeEnableVmeOnMiniCart"/>
-				<attribute attribute-id="VmeServersideClickjackingEnabled"/>
-				
+				<attribute attribute-id="VmeServersideClickjackingEnabled"/>				
             </attribute-group>
         </group-definitions>
     </type-extension>
