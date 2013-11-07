@@ -14,7 +14,13 @@ importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var basket : LineItemCtnr = pdict.Basket;
-  
+  	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}
     var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
     var amount : Money = new Money(0,dw.system.Site.current.currencyCode);
     var ccPaymentInstruments = basket.getPaymentInstruments();

@@ -33,6 +33,13 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	var CybersourceHelper = getCybersourceHelper();
 	var basket : LineItemCtnr = pdict.Basket;
+	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}
 	var apObject : AP_Object = pdict.apObject;
 	var orderNo : String = pdict.OrderNo;
 	var purchaseObject : PurchaseTotals_Object = pdict.purchaseTotals;	

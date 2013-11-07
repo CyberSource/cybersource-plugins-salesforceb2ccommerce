@@ -14,7 +14,14 @@ importScript('cybersource/Cybersource_AP_Object.ds');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var apObject : AP_Object= new AP_Object();
-	var basket : dw.order.Basket = pdict.Basket;	
+	var basket : dw.order.Basket = pdict.Basket;
+	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}	
 	apObject.setPurchaseID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
 	apObject.setProductID(basket.getUUID());
 	pdict.CybersourceAPObject = apObject;
