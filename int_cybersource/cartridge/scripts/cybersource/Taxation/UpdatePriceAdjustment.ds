@@ -31,11 +31,38 @@ function execute( pdict : PipelineDictionary ) : Number
 				basketPriceAdjustment.updateTax(0);        	
 		    }
 	
+		}
+		var shipments : Iterator = basket.getShipments().iterator();
+		while(shipments.hasNext())
+		{
+			var shipment : Shipment = shipments.next();
+	
+			var shipmentLineItems : Iterator = shipment.getAllLineItems().iterator();
+			while(shipmentLineItems.hasNext())
+			{
+				var lineItem : LineItem = shipmentLineItems.next();
+								
+				if( lineItem instanceof dw.order.ProductLineItem) 
+				{
+					if(!lineItem.bonusProductLineItem)
+					{
+						lineItem.updateTax(lineItem.taxRate,lineItem.proratedPrice);
+					}
+				} 
+				else if( lineItem instanceof dw.order.ShippingLineItem )
+			 	{
+					lineItem.updateTax(lineItem.taxRate,lineItem.adjustedNetPrice);
+				} 
+				else 
+				{
+					lineItem.updateTax(lineItem.taxRate,lineItem.netPrice);
+				}
+		   }
 		}	
 				
 		basket.updateTotals();
 	}catch(e){			
-		Logger.error("Error in [UpdateLineItems.ds] ( {0} )",e.message);
+		Logger.error("Error in [UpdatePriceAdjustment.ds] ( {0} )",e.message);
 		return PIPELET_ERROR;
 	}   
 
