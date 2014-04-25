@@ -318,65 +318,7 @@ var CybersourceHelper = {
 		}
 	},
 	
-	 /*****************************************************************************
-	 * Name: addCCCreditRequestInfo
-	 * Description: create CC request info.
-	 *****************************************************************************/		
-	addCCCreditRequestInfo : function(request : Object, order : dw.order.LineItemCtnr, pi : OrderPaymentInstrument)
-	{
-		request.merchantID = CybersourceHelper.getMerchantID();
-
-		__setClientData( request, order.orderNo );
-		
-		var billingAddress : OrderAddress = order.billingAddress;
-		request.billTo = new CybersourceHelper.csReference.BillTo();
-		request.billTo.firstName=billingAddress.firstName;
-		request.billTo.lastName=billingAddress.lastName;
-		request.billTo.street1=billingAddress.address1;
-		request.billTo.city=billingAddress.city;
-		request.billTo.state=billingAddress.stateCode;
-		request.billTo.postalCode=billingAddress.postalCode;
-		request.billTo.country=billingAddress.countryCode;
-		request.billTo.phoneNumber=billingAddress.phone.replace(numbersOnlyRegExp,"");
-		request.billTo.email=order.customerEmail;
-
-		var pt : PaymentTransaction = pi.paymentTransaction;		
-		request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
-		request.purchaseTotals.currency=pt.amount.currencyCode;
-		request.purchaseTotals.grandTotalAmount=StringUtils.formatNumber(pt.amount.value * -1,"000000.00","en_US");
-
-		var rsaKey = 'MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAM5DBABpssb61H2tP0qyzx73OaWq/IeZ2VwE83G+Dks1GKiOmb1Eb06uz5BtTLM6ouJ+Z/DLf7NgkL6jg25HeWx6pNTosUoyXyWfyu+eNiST+PMZL1s8PeMnUGY+b80lkt04v7ItpAEc4VJ1yBEPKOjJyC++WZhXPngBNKkp48xxAgMBAAECgYBniDv5+RRDzKPccZnTZO2SHYZSIgGgDxmLlvCbp0qFdaFq+ikxV6iHVjfZxwM487XO+qQxufPflhkRmAHg2P+ZDTnZQjrCF/WtyPe01wXekl1zfjlcnZ2HcJMNcjqxJ1NRka3lzHSufSlUk57R5uRJqtna2GHhqhMjSvhrsjDSAQJBAOqrm9tVOX6+1g6KWM8+J+kXqlcG2P1El2uNrYPMBZEQl8mpif5FhoSI8MyXSmMq6T8OeYPsduJZpT6YNtH/FfcCQQDhAmLrVg4Q05DStCegsNiedaiq5g8EP7swGWYCy1k+zwbjoqy2IsBu0kRMpoXhXEAr0ZL5NOWY10WTlA1nm/bXAkEAv4BFUsqMfcLr2bfKW2zEkvHN/vDGmH+l9Y4LX/dZP5VD2LxysL451OQPZVW8zYpSBzQfs6l/Jp2zPI5ohhvc5wJBAJbP2KlPtoHEq+7t3RmxLp+W0QQqyqnYZYhpnZwF271jWYS9hfFV/ZDJ0glmG5nfEQvNnir2L2Vv9CxkMU/ek2UCQHLCp12bvkMe0H/4EDfUT8TWCHx8Bcey+SvkOSTg0+1XWA1l2zhvLyAf2viE6h3zZt2f4jr7yxYNy+UYSlB7Y74=';
-		var pubKey = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDOQwQAabLG+tR9rT9Kss8e9zmlqvyHmdlcBPNxvg5LNRiojpm9RG9Ors+QbUyzOqLifmfwy3+zYJC+o4NuR3lseqTU6LFKMl8ln8rvnjYkk/jzGS9bPD3jJ1BmPm/NJZLdOL+yLaQBHOFSdcgRDyjoycgvvlmYVz54ATSpKePMcQIDAQAB';
-		var cipher : Cipher = new Cipher();
-		var ccNum : String = cipher.decrypt(pi.getEncryptedCreditCardNumber('RSA', pubKey), rsaKey, 'RSA', '', 0).replace(numbersOnlyRegExp,"");				
-			
-		request.card = new CybersourceHelper.csReference.Card();
-		request.card.accountNumber=ccNum;
-		request.card.expirationMonth=pi.creditCardExpirationMonth;
-		request.card.expirationYear=pi.creditCardExpirationYear;
-		switch(pi.creditCardType){
-			case "Visa": 
-				request.card.cardType="001";
-				break;
-			case "MasterCard": 
-				request.card.cardType="002";
-				break;
-			case "Amex": 
-				request.card.cardType="003";
-				break;
-			case "Discover": 
-				request.card.cardType="004";
-				break;
-			case "Maestro": 
-				request.card.cardType="042";
-				break;
-		}
-
-		request.ccCreditService=new CybersourceHelper.csReference.CCCreditService();	
-		request.ccCreditService.run=true;
-	},
-
-	 /*****************************************************************************
+	/*****************************************************************************
 	 * Name: addCCCaptureRequestInfo
 	 * Description: add CC capture request info.
 	 *****************************************************************************/		
@@ -981,7 +923,7 @@ function getCybersourceHelper()
 function __setClientData( request : Object, refCode : String , fingerprint : String  )
 {
 	request.merchantReferenceCode = refCode; 
-	request.clientLibrary='Demandware_2.1.0';
+	request.clientLibrary='Demandware_2.1.2';
 	request.clientLibraryVersion='2.2';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {

@@ -48,11 +48,21 @@ function execute( pdict : PipelineDictionary ) : Number
 					{
 						lineItem.updateTax(lineItem.taxRate,lineItem.proratedPrice);
 					}
+					 else
+					 {
+						// tax is not getting calculated for bonus product which is updating bonus line item's tax as /NA. it has the direct impact on basket totals
+						// Resolution - update line item tax with 0 which will resolve the tax calculation N/A for bonus line items.
+						lineItem.updateTax(0);
+					}
 				} 
 				else if( lineItem instanceof dw.order.ShippingLineItem )
 			 	{
 					lineItem.updateTax(lineItem.taxRate,lineItem.adjustedNetPrice);
 				} 
+				else if( !lineItem instanceof dw.order.PriceAdjustment )
+				{
+					lineItem.updateTax(lineItem.taxRate,lineItem.netPrice);
+				}
 				else 
 				{
 					lineItem.updateTax(lineItem.taxRate,lineItem.netPrice);

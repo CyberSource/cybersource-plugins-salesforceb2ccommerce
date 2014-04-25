@@ -115,8 +115,8 @@
                     <branch basename="b3" source-connector="authorized">
                       <transition target-connector="in3" target-path="../b5.2">
                         <transition-display>
-                          <bend-point relative-to="source" x="0" y="1"/>
-                          <bend-point relative-to="source" x="5" y="1"/>
+                          <bend-point relative-to="source" x="0" y="3"/>
+                          <bend-point relative-to="source" x="5" y="3"/>
                           <bend-point relative-to="target" x="7" y="0"/>
                         </transition-display>
                       </transition>
@@ -278,7 +278,7 @@
                 <segment>
                   <node>
                     <join-node/>
-                    <node-display x="0" y="1"/>
+                    <node-display x="0" y="2"/>
                   </node>
                   <simple-transition>
                     <transition-display>
@@ -291,16 +291,17 @@
                   </node>
                   <simple-transition>
                     <transition-display>
-                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="target" x="-1" y="0"/>
                     </transition-display>
                   </simple-transition>
                   <node>
                     <decision-node condition-key="CybersourceHelper.getDavEnable()&amp;&amp;CybersourceHelper.getDavOnAddressVerificationFailure()=='REJECT'&amp;&amp;ReasonCode!=100&amp;&amp;!empty(DAVReasonCode)&amp;&amp;DAVReasonCode!=100" condition-operator="expr"/>
-                    <node-display orientation="horizontal" x="1" y="0"/>
+                    <node-display orientation="horizontal" x="2" y="0"/>
                     <branch basename="b2" source-connector="yes">
                       <transition target-connector="in">
                         <transition-display>
-                          <bend-point relative-to="source" x="1" y="0"/>
+                          <bend-point relative-to="source" x="2" y="0"/>
+                          <bend-point relative-to="target" x="0" y="-1"/>
                         </transition-display>
                       </transition>
                       <segment>
@@ -311,10 +312,15 @@
                       </segment>
                     </branch>
                   </node>
-                  <simple-transition/>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                      <bend-point relative-to="target" x="0" y="-1"/>
+                    </transition-display>
+                  </simple-transition>
                   <node>
                     <call-node start-name-ref="Cybersource-HandleDAVResponse"/>
-                    <node-display x="-1" y="1"/>
+                    <node-display x="-2" y="1"/>
                   </node>
                   <simple-transition/>
                   <node>
@@ -344,7 +350,7 @@
                             <config-property key="Transactional" value="true"/>
                             <key-binding alias="RequestID" key="From_0"/>
                             <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                            <key-binding alias="&quot;001&quot;" key="From_1"/>
+                            <key-binding alias="card.getCardType()" key="From_1"/>
                             <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                             <key-binding alias="RequestID" key="From_2"/>
                             <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -365,11 +371,34 @@
                           </pipelet-node>
                           <node-display orientation="horizontal" x="1" y="0"/>
                         </node>
-                        <simple-transition>
-                          <transition-display>
-                            <bend-point relative-to="source" x="1" y="0"/>
-                          </transition-display>
-                        </simple-transition>
+                        <simple-transition/>
+                        <node>
+                          <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <key-binding alias="null" key="From_0"/>
+                            <key-binding alias="card" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="0"/>
+                        </node>
+                        <simple-transition/>
                         <node>
                           <end-node name="review"/>
                           <node-display orientation="horizontal" x="1" y="0"/>
@@ -380,11 +409,12 @@
                   <simple-transition>
                     <transition-display>
                       <bend-point relative-to="target" x="0" y="-2"/>
+                      <bend-point relative-to="target" x="0" y="-1"/>
                     </transition-display>
                   </simple-transition>
                   <node>
                     <decision-node condition-key="AVSCode!='N'" condition-operator="expr"/>
-                    <node-display x="3" y="1"/>
+                    <node-display x="4" y="1"/>
                     <branch basename="b4" source-connector="yes">
                       <transition target-connector="in1">
                         <transition-display>
@@ -394,12 +424,12 @@
                       <segment>
                         <node>
                           <join-node/>
-                          <node-display x="-3" y="1"/>
+                          <node-display x="-4" y="1"/>
                         </node>
                         <simple-transition>
                           <transition-display>
-                            <bend-point relative-to="source" x="0" y="1"/>
-                            <bend-point relative-to="source" x="-1" y="1"/>
+                            <bend-point relative-to="source" x="0" y="-1"/>
+                            <bend-point relative-to="source" x="-1" y="-1"/>
                             <bend-point relative-to="target" x="-1" y="0"/>
                           </transition-display>
                         </simple-transition>
@@ -407,7 +437,7 @@
                           <decision-node condition-key="ReasonCode == 100" condition-operator="expr">
                             <description>Successful transaction.</description>
                           </decision-node>
-                          <node-display orientation="horizontal" x="0" y="2"/>
+                          <node-display orientation="horizontal" x="0" y="1"/>
                           <branch basename="b2" source-connector="yes">
                             <transition target-connector="in">
                               <transition-display>
@@ -420,7 +450,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -524,6 +554,33 @@
                               </node>
                               <simple-transition/>
                               <node>
+                                <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                                  <config-property key="Transactional" value="false"/>
+                                  <key-binding alias="null" key="From_0"/>
+                                  <key-binding alias="card" key="To_0"/>
+                                  <key-binding alias="null" key="From_1"/>
+                                  <key-binding alias="null" key="To_1"/>
+                                  <key-binding alias="null" key="From_2"/>
+                                  <key-binding alias="null" key="To_2"/>
+                                  <key-binding alias="null" key="From_3"/>
+                                  <key-binding alias="null" key="To_3"/>
+                                  <key-binding alias="null" key="From_4"/>
+                                  <key-binding alias="null" key="To_4"/>
+                                  <key-binding alias="null" key="From_5"/>
+                                  <key-binding alias="null" key="To_5"/>
+                                  <key-binding alias="null" key="From_6"/>
+                                  <key-binding alias="null" key="To_6"/>
+                                  <key-binding alias="null" key="From_7"/>
+                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="null" key="From_8"/>
+                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="null" key="From_9"/>
+                                  <key-binding alias="null" key="To_9"/>
+                                </pipelet-node>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                              </node>
+                              <simple-transition/>
+                              <node>
                                 <end-node name="authorized"/>
                                 <node-display orientation="horizontal" x="1" y="0"/>
                               </node>
@@ -553,7 +610,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -576,8 +633,35 @@
                               </node>
                               <simple-transition/>
                               <node>
+                                <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                                  <config-property key="Transactional" value="false"/>
+                                  <key-binding alias="null" key="From_0"/>
+                                  <key-binding alias="card" key="To_0"/>
+                                  <key-binding alias="null" key="From_1"/>
+                                  <key-binding alias="null" key="To_1"/>
+                                  <key-binding alias="null" key="From_2"/>
+                                  <key-binding alias="null" key="To_2"/>
+                                  <key-binding alias="null" key="From_3"/>
+                                  <key-binding alias="null" key="To_3"/>
+                                  <key-binding alias="null" key="From_4"/>
+                                  <key-binding alias="null" key="To_4"/>
+                                  <key-binding alias="null" key="From_5"/>
+                                  <key-binding alias="null" key="To_5"/>
+                                  <key-binding alias="null" key="From_6"/>
+                                  <key-binding alias="null" key="To_6"/>
+                                  <key-binding alias="null" key="From_7"/>
+                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="null" key="From_8"/>
+                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="null" key="From_9"/>
+                                  <key-binding alias="null" key="To_9"/>
+                                </pipelet-node>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                              </node>
+                              <simple-transition/>
+                              <node>
                                 <end-node name="declined"/>
-                                <node-display orientation="horizontal" x="2" y="0"/>
+                                <node-display orientation="horizontal" x="1" y="0"/>
                               </node>
                             </segment>
                           </branch>
@@ -606,7 +690,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -654,7 +738,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -701,7 +785,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -760,7 +844,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -781,11 +865,34 @@
                                 </pipelet-node>
                                 <node-display orientation="horizontal" x="4" y="1"/>
                               </node>
-                              <simple-transition>
-                                <transition-display>
-                                  <bend-point relative-to="source" x="1" y="0"/>
-                                </transition-display>
-                              </simple-transition>
+                              <simple-transition/>
+                              <node>
+                                <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                                  <config-property key="Transactional" value="false"/>
+                                  <key-binding alias="null" key="From_0"/>
+                                  <key-binding alias="card" key="To_0"/>
+                                  <key-binding alias="null" key="From_1"/>
+                                  <key-binding alias="null" key="To_1"/>
+                                  <key-binding alias="null" key="From_2"/>
+                                  <key-binding alias="null" key="To_2"/>
+                                  <key-binding alias="null" key="From_3"/>
+                                  <key-binding alias="null" key="To_3"/>
+                                  <key-binding alias="null" key="From_4"/>
+                                  <key-binding alias="null" key="To_4"/>
+                                  <key-binding alias="null" key="From_5"/>
+                                  <key-binding alias="null" key="To_5"/>
+                                  <key-binding alias="null" key="From_6"/>
+                                  <key-binding alias="null" key="To_6"/>
+                                  <key-binding alias="null" key="From_7"/>
+                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="null" key="From_8"/>
+                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="null" key="From_9"/>
+                                  <key-binding alias="null" key="To_9"/>
+                                </pipelet-node>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                              </node>
+                              <simple-transition/>
                               <node>
                                 <end-node name="review"/>
                                 <node-display orientation="horizontal" x="1" y="0"/>
@@ -816,7 +923,7 @@
                                   <config-property key="Transactional" value="true"/>
                                   <key-binding alias="RequestID" key="From_0"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                                  <key-binding alias="&quot;001&quot;" key="From_1"/>
+                                  <key-binding alias="card.getCardType()" key="From_1"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                                   <key-binding alias="RequestID" key="From_2"/>
                                   <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -839,20 +946,43 @@
                               </node>
                               <transition target-connector="in2" target-path="./+1">
                                 <transition-display>
-                                  <bend-point relative-to="source" x="4" y="0"/>
+                                  <bend-point relative-to="source" x="6" y="0"/>
                                 </transition-display>
                               </transition>
                             </segment>
                             <segment>
                               <node>
                                 <join-node/>
-                                <node-display x="2" y="-3"/>
+                                <node-display x="3" y="-3"/>
                               </node>
-                              <simple-transition>
-                                <transition-display>
-                                  <bend-point relative-to="source" x="1" y="0"/>
-                                </transition-display>
-                              </simple-transition>
+                              <simple-transition/>
+                              <node>
+                                <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                                  <config-property key="Transactional" value="false"/>
+                                  <key-binding alias="null" key="From_0"/>
+                                  <key-binding alias="card" key="To_0"/>
+                                  <key-binding alias="null" key="From_1"/>
+                                  <key-binding alias="null" key="To_1"/>
+                                  <key-binding alias="null" key="From_2"/>
+                                  <key-binding alias="null" key="To_2"/>
+                                  <key-binding alias="null" key="From_3"/>
+                                  <key-binding alias="null" key="To_3"/>
+                                  <key-binding alias="null" key="From_4"/>
+                                  <key-binding alias="null" key="To_4"/>
+                                  <key-binding alias="null" key="From_5"/>
+                                  <key-binding alias="null" key="To_5"/>
+                                  <key-binding alias="null" key="From_6"/>
+                                  <key-binding alias="null" key="To_6"/>
+                                  <key-binding alias="null" key="From_7"/>
+                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="null" key="From_8"/>
+                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="null" key="From_9"/>
+                                  <key-binding alias="null" key="To_9"/>
+                                </pipelet-node>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                              </node>
+                              <simple-transition/>
                               <node>
                                 <end-node name="error"/>
                                 <node-display orientation="horizontal" x="1" y="0"/>
@@ -872,13 +1002,18 @@
                       </segment>
                     </branch>
                   </node>
-                  <simple-transition/>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="target" x="-1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
                   <node>
                     <pipelet-node custom-name="Update PaymentTransaction with CS response" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <key-binding alias="RequestID" key="From_0"/>
                       <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                      <key-binding alias="&quot;001&quot;" key="From_1"/>
+                      <key-binding alias="card.getCardType()" key="From_1"/>
                       <key-binding alias="PaymentInstrument.paymentTransaction.custom.cardType" key="To_1"/>
                       <key-binding alias="RequestID" key="From_2"/>
                       <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_2"/>
@@ -897,7 +1032,34 @@
                       <key-binding alias="null" key="To_9"/>
                       <key-binding alias="AuthorizationAmount" key="From_4"/>
                     </pipelet-node>
-                    <node-display orientation="horizontal" x="2" y="0"/>
+                    <node-display orientation="horizontal" x="1" y="-1"/>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="null" key="From_0"/>
+                      <key-binding alias="card" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
                   </node>
                   <simple-transition/>
                   <node>
@@ -1184,11 +1346,34 @@
               </pipelet-node>
               <node-display x="0" y="1"/>
             </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="null" key="From_0"/>
+                <key-binding alias="card" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
             <node>
               <end-node name="OK"/>
               <node-display x="0" y="1"/>
@@ -1489,7 +1674,7 @@
                 <key-binding alias="RequestID" key="From_0"/>
                 <key-binding alias="BMLPaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
                 <key-binding alias="null" key="From_1"/>
-                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="bmlcard" key="To_1"/>
                 <key-binding alias="null" key="From_2"/>
                 <key-binding alias="null" key="To_2"/>
                 <key-binding alias="null" key="From_3"/>
