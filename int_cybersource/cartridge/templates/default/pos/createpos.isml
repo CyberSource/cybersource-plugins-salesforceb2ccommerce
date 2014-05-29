@@ -1,0 +1,102 @@
+<style type="text/css">
+label {
+	width:150px;    /*Or however much space you need for the forms labels*/
+    float:left;
+}
+td {
+	border-width: medium; 
+	border-style: outset;
+}
+.header{font-weight:bold;}
+.error, .required-indicator{color:red;}
+</style>
+<iscomment>
+	This template will populate input fields of create POS order test
+</iscomment>
+<isinclude template="util/modules"/>
+<h2><center><b><u>POS Transaction Test Page</u></b></center></h2><br/><br/>
+<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+	<div id="entry-mode">
+		<isinputfield formfield="${pdict.CurrentForms.pos.entryMode}" type="select"/>
+		<isinputfield formfield="${pdict.CurrentForms.pos.storeLocation}" type="input"/>
+	</div>
+	
+	<table>
+		<tr>
+			<td>
+				<div id="sample-card-section">
+					<u>Sample Test Data Credit Card.</u><br/><br/>
+					<label><b>Account number:</b></label>	4111111111111111<br/>
+					<label><b>Card Type:</b></label>	VISA<br/>
+					<label><b>Expiry Month:</b></label>	03<br/> 
+					<label><b>Expiry Year:</b></label>	2017<br/>
+					<label><b>CVN Number:</b></label>	111<br/>
+				</div>
+			</td>
+			<td>
+				<u>Sample Test Data for Order Details.</u><br/><br/>
+				<label><b>Currency:</b></label>	USD<br/>
+				<label><b>Amount:</b></label>	100<br/>
+			</td>
+			<td>
+				<u>Sample Test Data for POS details.</u><br/><br/>
+				<label><b>Card Present:</b></label>	Yes<br/>
+				<label><b>Cat Level:</b></label>	1: Automated dispensing machine<br/>
+				<label><b>Terminal Capability:</b></label>	2: Terminal has a magnetic stripe reader and manual entry capability<br/> 
+				<label><b>Terminal ID:</b></label>	Terminal 2<br/>
+				<label><b>Track Data:</b></label>	%B4111111111111111^SMITH/JOHN^1612101976110000868000000?;4111111111111111=16121019761186800000?<br/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="card-section">
+					<div class="header">Credit Card details</div>
+					<isinputfield formfield="${pdict.CurrentForms.pos.accountNumber}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.cardType}" type="select"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.expiryMonth}" type="select"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.expiryYear}" type="select"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.cvnNumber}" type="input"/>
+				</div>
+			</td>
+			<td>
+				<div class="header">Order Amount details</div>
+				<isinputfield formfield="${pdict.CurrentForms.pos.currency}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.pos.amount}" type="input"/>
+			</td>
+			<td>
+				<div id="pos">
+					<div class="header">POS details</div>
+					<isinputfield formfield="${pdict.CurrentForms.pos.cardPresent}" type="select"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.catLevel}" type="select"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.terminalCapability}" type="select"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.terminalID}" type="input"/>
+					<isinputfield formfield="${pdict.CurrentForms.pos.trackData}" type="input"/>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+	
+	<div class="form-row form-row-button">
+		<button type="submit" name="${pdict.CurrentForms.pos.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+			${Resource.msg('global.submit','locale',null)}
+		</button>
+	</div>
+	
+	
+</form>
+
+
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		$("#entry-mode select.input-select").change( function(){
+			if(this.value == "swiped")
+				$("#card-section, #sample-card-section").css("display","none");
+			else if(this.value == "keyed")
+				$("#card-section, #sample-card-section").css("display","block");
+		});
+	});
+</script>

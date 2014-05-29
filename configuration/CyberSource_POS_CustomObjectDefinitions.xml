@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+
+    <custom-type type-id="POS_MerchantIDs">
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="ID">
+            <display-name xml:lang="x-default">POS Location</display-name>
+            <description xml:lang="x-default">State Code or Zip code or city name</description>
+            <type>string</type>
+            <min-length>0</min-length>
+            <field-length>0</field-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="MerchantID">
+                <display-name xml:lang="x-default">POS Merchant ID</display-name>
+                <description xml:lang="x-default">POS Merchant ID configured to use at a store</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="MerchantKey">
+                <display-name xml:lang="x-default">POS Merchant Security Key</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="POS">
+                <display-name xml:lang="x-default">POS</display-name>
+                <attribute attribute-id="ID"/>
+                <attribute attribute-id="MerchantID"/>
+                <attribute attribute-id="MerchantKey"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
+    <custom-type type-id="POS_TerminalMapping">
+        <display-name xml:lang="x-default">Serial ID</display-name>
+        <description xml:lang="x-default">Mapping of POS device's serial number to Terminal ID</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="serialID">
+            <display-name xml:lang="x-default">Serial Number</display-name>
+            <description xml:lang="x-default">Serial number of POS device</description>
+            <type>string</type>
+            <min-length>0</min-length>
+            <field-length>0</field-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="terminalID">
+                <display-name xml:lang="x-default">Terminal ID</display-name>
+                <description xml:lang="x-default">Terminal ID configured for POS device</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="POS">
+                <display-name xml:lang="x-default">POS</display-name>
+                <attribute attribute-id="serialID"/>
+                <attribute attribute-id="terminalID"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
+</metadata>

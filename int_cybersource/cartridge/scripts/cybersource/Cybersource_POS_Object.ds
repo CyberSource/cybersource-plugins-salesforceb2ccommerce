@@ -1,0 +1,177 @@
+/**
+* Cybersource_Pos_Object.ds
+* This Object is used for the Cybersource Point of Sale xsd
+*/
+function Pos_Object() {
+
+	this.cardPresent = "";
+	this.setCardPresent = setCardPresent;
+	this.getCardPresent = getCardPresent;
+	
+	this.catLevel = "";
+	this.setCatLevel = setCatLevel;
+	this.getCatLevel = getCatLevel;
+	
+	this.deviceReaderData = "";
+	this.setDeviceReaderData = setDeviceReaderData;
+	this.getDeviceReaderData = getDeviceReaderData;
+	
+	this.encodingMethod = "";
+	this.setEncodingMethod = setEncodingMethod;
+	this.getEncodingMethod = getEncodingMethod;
+	
+	this.encryptionAlgorithm = "";
+	this.setEncryptionAlgorithm = setEncryptionAlgorithm;
+	this.getEncryptionAlgorithm = getEncryptionAlgorithm;
+	
+	this.entryMode = "";
+	this.setEntryMode = setEntryMode;
+	this.getEntryMode = getEntryMode;
+	
+	this.paymentData = "";
+	this.setPaymentData = setPaymentData;
+	this.getPaymentData = getPaymentData;
+	
+	this.serviceCode = "";
+	this.setServiceCode = setServiceCode;
+	this.getServiceCode = getServiceCode;
+	
+	this.terminalCapability = "";
+	this.setTerminalCapability = setTerminalCapability;
+	this.getTerminalCapability = getTerminalCapability;
+	
+	this.terminalID = "";
+	this.setTerminalID = setTerminalID;
+	this.getTerminalID = getTerminalID;
+	
+	this.trackData = "";
+	this.setTrackData = setTrackData;
+	this.getTrackData = getTrackData;
+	
+	this.terminalType = "";
+	this.setTerminalType = setTerminalType;
+	this.getTerminalType = getTerminalType;
+	
+	this.terminalLocation = "";
+	this.setTerminalLocation = setTerminalLocation;
+	this.getTerminalLocation = getTerminalLocation;
+	
+	this.transactionSecurity = "";
+	this.setTransactionSecurity = setTransactionSecurity;
+	this.getTransactionSecurity = getTransactionSecurity;
+	
+	this.conditionCode = "";
+	this.setConditionCode = setConditionCode;
+	this.getConditionCode = getConditionCode;
+	
+	this.environment = "";
+	this.setEnvironment = setEnvironment;
+	this.getEnvironment = getEnvironment;
+	
+	this.deviceId = "";
+	this.setDeviceId = setDeviceId;
+	this.getDeviceId = getDeviceId;
+}
+
+function setCardPresent(value){
+	this.cardPresent = value;
+}
+function getCardPresent(){
+	return this.cardPresent;
+}
+function setCatLevel(value){
+	this.catLevel = value;
+}
+function getCatLevel(){
+	return this.catLevel;
+}
+function setDeviceReaderData(value){
+	this.deviceReaderData = value;
+}
+function getDeviceReaderData(){
+	return this.deviceReaderData;
+}
+function setEncodingMethod(value){
+	this.encodingMethod = value;
+}
+function getEncodingMethod(){
+	return this.encodingMethod;
+}
+function setEncryptionAlgorithm(value){
+	this.encryptionAlgorithm = value;
+}
+function getEncryptionAlgorithm(){
+	return this.encryptionAlgorithm;
+}
+function setEntryMode(value){
+	this.entryMode = value;
+}
+function getEntryMode(){
+	return this.entryMode;
+}
+function setPaymentData(value){
+	this.paymentData = value;
+}
+function getPaymentData(){
+	return this.paymentData;
+}
+function setServiceCode(value){
+	this.serviceCode = value;
+}
+function getServiceCode(){
+	return this.serviceCode;
+}																		
+function setTerminalCapability(value){
+	this.terminalCapability = value;
+}
+function getTerminalCapability(){
+	return this.terminalCapability;
+}
+function setTerminalID(value){
+	this.terminalID = value;
+}
+function getTerminalID(){
+	return this.terminalID;
+}
+function setTrackData(value){
+	this.trackData = value;
+}
+function getTrackData(){
+	return this.trackData;
+}
+function setTerminalType(value){
+	this.terminalType = value;
+}
+function getTerminalType(){
+	return this.terminalType;
+}
+function setTerminalLocation(value){
+	this.terminalLocation = value;
+}
+function getTerminalLocation(){
+	return this.terminalLocation;
+}
+function setTransactionSecurity(value){
+	this.transactionSecurity = value;
+}
+function getTransactionSecurity(){
+	return this.transactionSecurity;
+}
+function setConditionCode(value){
+	this.conditionCode = value;
+}
+function getConditionCode(){
+	return this.conditionCode;
+}
+function setEnvironment(value){
+	this.environment = value;
+}
+function getEnvironment(){
+	return this.environment;
+}
+function setDeviceId(value){
+	this.deviceId = value;
+}
+function getDeviceId(){
+	return this.deviceId;
+}

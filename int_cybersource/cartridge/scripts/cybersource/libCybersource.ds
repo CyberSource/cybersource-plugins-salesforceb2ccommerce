@@ -13,8 +13,8 @@ importPackage( dw.system );
 importPackage( dw.order );
 importPackage( dw.rpc );
 importPackage( dw.util );
-importPackage( dw.value);
-
+importPackage( dw.value );
+importPackage( dw.object );
 var numbersOnlyRegExp : RegExp = /\D/g;
 var CybersourceHelper = {
 	csReference : webreferences.CyberSourceTransaction,
@@ -239,6 +239,42 @@ var CybersourceHelper = {
 	},
 	
 	/*****************************************************************************
+	 * Name: createPosHeader
+	 * Description: create header for POS orders using POS MID & Key.
+	 *****************************************************************************/		
+	createPosHeader : function (service : Stub, location : String){
+		var merchantID : String = CybersourceHelper.getPosMerchantID(location);
+		var merchantPassword : String = null;
+		
+		var customObject : CustomObject = null;
+		var merchantKey : String = null;
+		
+		customObject = CustomObjectMgr.getCustomObject("POS_MerchantIDs", location);
+		if(customObject != null)
+			merchantPassword = customObject.custom.MerchantKey;
+		
+		if(empty(merchantID) || empty(merchantPassword)){
+			Logger.error("POS MerchantID and/or POS Merchant Key are missing.");	
+			return false;
+		}
+		
+		// create Security Header
+		var usernameToken : XML = 
+			<wsse:UsernameToken xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd">
+				<wsse:Username>{merchantID}</wsse:Username>
+				<wsse:Password Type="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText">
+					{merchantPassword}
+				</wsse:Password>
+			</wsse:UsernameToken>;
+
+		SOAPUtil.setHeader( service, "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd","Security", usernameToken, true, null );
+		
+		trace(usernameToken);		
+
+		return true;
+	},
+	
+	/*****************************************************************************
 	 * Name: createBMLHeader
 	 * Description: create BML header.
 	 *****************************************************************************/		
@@ -407,6 +443,42 @@ var CybersourceHelper = {
 	},
 	
 	
+	/*****************************************************************************	
+	 * request  : Object, 
+	 * purchase : PurchaseTotals_Object, 
+	 * card     : Card_Object,
+	 * pos		: Pos_Object
+	 * refCode  : String   
+	 *****************************************************************************/	
+	addPOSAuthRequestInfo : function(request : Object, location : String, purchase : PurchaseTotals_Object, card : Card_Object , refCode : String , enableDeviceFingerprint : Boolean, pos : Pos_Object)
+	{
+		
+		request.merchantID = CybersourceHelper.getPosMerchantID(location);
+		
+		var fingerprint : String  = null;
+		if (enableDeviceFingerprint) {
+		  fingerprint =  session.sessionID;
+		}
+		
+		__setClientData( request, refCode , fingerprint );
+		
+		if(!empty(pos) && !empty(pos.getEntryMode()) && pos.getEntryMode().equals("keyed")){
+			request.card	= __copyCreditCard( card );
+		}
+		
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+
+		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
+				
+		if( !empty(pos) && !empty(pos.getEntryMode()) && !empty(pos.getCardPresent()) && !empty(pos.getTerminalCapability()) ){
+			request.pos = __copyPos( pos );
+			request.ccAuthService.commerceIndicator = "retail";
+		}
+		
+		request.ccAuthService.run = true;
+	},
+
+		
 	/*****************************************************************************
 	 * Name: addReversalService
 	 * Description: Add Subscription Creation service to request.
@@ -912,6 +984,22 @@ var CybersourceHelper = {
 	request.apInitiateService= new CybersourceHelper.csReference.APInitiateService();	
 	request.apInitiateService.run = true;
 	},
+	
+	/*****************************************************************************
+	 * Name: getPosMerchantID
+	 * Description: Returns Merchant ID.
+	 ****************************************************************************/
+	getPosMerchantID: function(location: String) : String
+	{
+		var customObject : CustomObject = null;
+		var merchantID : String = null;
+		
+		customObject = CustomObjectMgr.getCustomObject("POS_MerchantIDs", location);
+		if(customObject != null)
+			merchantID = customObject.custom.MerchantID;
+		
+		return merchantID;
+	},
 }
 
 // Helper method to export the helper
@@ -923,7 +1011,7 @@ function getCybersourceHelper()
 function __setClientData( request : Object, refCode : String , fingerprint : String  )
 {
 	request.merchantReferenceCode = refCode; 
-	request.clientLibrary='Demandware_2.1.2';
+	request.clientLibrary='Demandware_2.1.3';
 	request.clientLibraryVersion='2.2';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {
@@ -1112,5 +1200,24 @@ function __copyAp( ap : AP_Object ) : Object
 function getPaymentType() : String 
 {
 	return "vme";
+}
+
+function __copyPos( pos : Pos_Object ) : Object
+{
+	var request_pos : Object = new CybersourceHelper.csReference.Pos();		
+	var value : String;
+	for ( var name : String in pos)
+	{
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1)
+		{
+			value = pos[name];
+			if(value != "")
+			{
+				// trace( "setting card attirb " + name + " to " + value );
+				request_pos[name] = value;
+			}
+		}
+	}
+	return request_pos;
 }
 

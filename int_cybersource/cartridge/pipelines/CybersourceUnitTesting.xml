@@ -2817,13 +2817,66 @@
     <segment>
       <node>
         <text-node>
+          <description>Testing pipeline for POS transactions</description>
+        </text-node>
+        <node-display x="55" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="StartPOS">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="StartPOS" secure="false"/>
+        <node-display x="55" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource_POS-CreateRetailPOS"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <interaction-node transaction-required="false">
+                <template buffered="true" dynamic="false" name="custom/pos_scripterror"/>
+              </interaction-node>
+              <node-display x="2" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="pos/postransactionresult"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_47">
+    <segment>
+      <node>
+        <text-node>
           <description>Missing or invalid fields</description>
         </text-node>
         <node-display x="14" y="7"/>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_46">
+  <branch basename="_ANONYMOUS_BRANCH_48">
     <segment>
       <node>
         <text-node>
@@ -2852,7 +2905,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_48">
+  <branch basename="_ANONYMOUS_BRANCH_50">
     <segment>
       <node>
         <text-node>
@@ -2862,7 +2915,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_49">
+  <branch basename="_ANONYMOUS_BRANCH_51">
     <segment>
       <node>
         <text-node>
@@ -2874,7 +2927,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_50">
+  <branch basename="_ANONYMOUS_BRANCH_52">
     <segment>
       <node>
         <text-node>
@@ -2884,7 +2937,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_51">
+  <branch basename="_ANONYMOUS_BRANCH_53">
     <segment>
       <node>
         <text-node>
@@ -2894,7 +2947,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_52">
+  <branch basename="_ANONYMOUS_BRANCH_54">
     <segment>
       <node>
         <text-node>
@@ -2904,7 +2957,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_53">
+  <branch basename="_ANONYMOUS_BRANCH_55">
     <segment>
       <node>
         <text-node>

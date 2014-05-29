@@ -1,0 +1,45 @@
+<iscomment>
+	This template will populate the test result of a POS transaction
+</iscomment>
+<label><b>POS Transaction result</b></label><br>
+<label><b>MerchantReferenceCode:</b></label><isprint value="${pdict.merchantRefCode}"><br/>
+<label><b>Decision:</b></label><isprint value="${pdict.decision}"><br/>
+<label><b>Reason Code:</b></label><isprint value="${pdict.reasonCode}"><br/>
+<label><b>Request Id:</b></label><isprint value="${pdict.requestID}"><br/><br/>
+<label><b>Receipt Number:</b></label><isprint value="${pdict.receiptNumber}"><br/><br/>
+
+<label><b>Auth Reason Code:</b></label><isprint value="${pdict.authReasonCode}"><br/>
+<label><b>Purchase Total Currency:</b></label><isprint value="${pdict.purchaseTotalCurrency}"><br/>
+<label><b>Auth Amount:</b></label><isprint value="${pdict.authAmount}"><br/>
+<label><b>Auth Code:</b></label><isprint value="${pdict.authCode}"><br/>
+<label><b>AVS Code:</b></label><isprint value="${pdict.avsCode}"><br/>
+<label><b>AVS Code Raw:</b></label><isprint value="${pdict.avsCodeRaw}"><br/>
+<label><b>Auth Card Group:</b></label><isprint value="${pdict.authCardGroup}"><br/>
+<label><b>Auth Card Category:</b></label><isprint value="${pdict.authCardCategory}"><br/>
+<label><b>Auth Payment NetworkTransaction ID:</b></label><isprint value="${pdict.authPaymentTransID}"><br/>
+<label><b>Auth Reconciliation ID:</b></label><isprint value="${pdict.authReconciliationID}"><br/>
+<label><b>Auth Processor Response:</b></label><isprint value="${pdict.authProcessorResponse}"><br/><br/>
+
+<label><b>Capture Reconciliation ID:</b></label><isprint value="${pdict.captureReconciliationID}"><br/>
+<label><b>Capture Amount:</b></label><isprint value="${pdict.captureAmount}"><br/>
+<label><b>Capture ReasonCode:</b></label><isprint value="${pdict.captureReasonCode}"><br/>
+
+
+<isif condition="${!empty(pdict.invalidField)}">
+	<label><b>Response for Invalid Field :</b></label>
+	<isloop items="${pdict.invalidField}" alias="invalidField">									
+		<isprint value="${invalidField}">,
+	</isloop>
+	<br>
+</isif>
+
+<isif condition="${!empty(pdict.missingField)}">
+	<label><b>Response for Missing Field :</b></label>
+	<isloop items="${pdict.missingField}" alias="missingField">									
+		<isprint value="${missingField}">,
+	</isloop>
+	<br>
+</isif>
+
+<br/>
+<a href="${dw.web.URLUtils.http('CybersourceUnitTesting-StartPOS')}">Back to Test Page</a>
