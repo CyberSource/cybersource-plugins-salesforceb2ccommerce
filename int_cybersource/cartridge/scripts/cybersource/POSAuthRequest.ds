@@ -165,6 +165,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		case 100:	
 			Logger.info("[PosAuthRequest] [Cybersource Reson Code: 100] [INFO] " + logTransactionData + ", Successful transaction.");
+			return PIPELET_NEXT;
 			break;	
 		case 101:	
 			Logger.getRootLogger().fatal("[PosAuthRequest] [Cybersource Reson Code: 101] [FATAL] " + logTransactionData + " Error Message = The request is missing one or more required fields in the request to CyberSource. The could be due to coding error since all required fields should be set by the COSubmit pipeline.");
@@ -198,5 +199,5 @@ function execute( pdict : PipelineDictionary ) : Number
 			break;
 	}
 	
-    return PIPELET_NEXT;
+    return PIPELET_ERROR;
 }
