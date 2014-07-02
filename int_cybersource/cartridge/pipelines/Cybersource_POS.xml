@@ -36,13 +36,13 @@
             </node>
             <simple-transition>
               <transition-display>
-                <bend-point relative-to="target" x="0" y="-2"/>
+                <bend-point relative-to="source" x="2" y="0"/>
                 <bend-point relative-to="target" x="0" y="-1"/>
               </transition-display>
             </simple-transition>
             <node>
               <call-node start-name-ref="Cybersource_POS-CreatePOSPaymentCard"/>
-              <node-display x="2" y="1"/>
+              <node-display x="1" y="1"/>
               <branch basename="b3" source-connector="error">
                 <transition target-connector="in1" target-path="../+1"/>
               </branch>
@@ -51,7 +51,7 @@
                 <segment>
                   <node>
                     <join-node/>
-                    <node-display x="-2" y="0"/>
+                    <node-display x="-1" y="0"/>
                   </node>
                   <simple-transition>
                     <transition-display>
@@ -113,6 +113,7 @@
                                   <key-binding alias="purchaseTotalCurrency" key="PurchaseTotalsCurrency"/>
                                   <key-binding alias="storeLocation" key="location"/>
                                   <key-binding alias="receiptNumber" key="ReceiptNumber"/>
+                                  <key-binding alias="CreditCardStatus" key="Status"/>
                                 </pipelet-node>
                                 <node-display x="0" y="1"/>
                                 <branch basename="b2" source-connector="error">
