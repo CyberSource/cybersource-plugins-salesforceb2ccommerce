@@ -1011,7 +1011,7 @@ function getCybersourceHelper()
 function __setClientData( request : Object, refCode : String , fingerprint : String  )
 {
 	request.merchantReferenceCode = refCode; 
-	request.clientLibrary='Demandware_2.1.3';
+	request.clientLibrary='Demandware_14.2.1';
 	request.clientLibraryVersion='2.2';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {
