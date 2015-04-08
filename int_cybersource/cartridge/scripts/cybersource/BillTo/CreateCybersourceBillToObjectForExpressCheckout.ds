@@ -36,7 +36,7 @@ function execute( pdict : PipelineDictionary ) : Number
 				}
 			}
 		}
-		if( !empty(billingAddress) && (order.paymentTransaction.custom.isPaypalBillingAddressPresent)) {			
+		if( !empty(billingAddress) && (order.getPaymentInstruments("PayPal")[0].paymentTransaction.custom.isPaypalBillingAddressPresent)) {			
 			/*
 			* create the billToObject using billingAddress else it will create billToObject using shippingAddress 
 			*/			  

@@ -20,7 +20,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	bmlObject.setItemCategory(Site.getCurrent().getCustomPreferenceValue("CsBmlItemCategory"));
 	bmlObject.setProductDeliveryTypeIndicator("shipping_and_handling");
 	bmlObject.setTcVersion(Site.getCurrent().getCustomPreferenceValue("CsBmlTCVersion"));
-	bmlObject.setCustomerRegistrationDate(StringUtils.formatDate(DateUtils.nowForInstance(), "yyyyMMdd"));
+	bmlObject.setCustomerRegistrationDate(StringUtils.formatCalendar(System.getCalendar(), "yyyyMMdd"));
 	bmlObject.setCustomerTypeFlag("N");	
 	pdict.CybersourceBML = bmlObject;	
     return PIPELET_NEXT;
