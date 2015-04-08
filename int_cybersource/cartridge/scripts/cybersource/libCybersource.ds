@@ -162,7 +162,51 @@ var CybersourceHelper = {
 	getProofXMLEnabled : function (){
 		return Site.getCurrent().getCustomPreferenceValue("CsPaEnableProofXML");
 	},
-
+	getAlipayPaymentType : function (){
+		return Site.getCurrent().getCustomPreferenceValue("apPaymentType");
+	},
+	getTestAlipayReconciliationID : function (){
+		return Site.getCurrent().getCustomPreferenceValue("apTestReconciliationID");
+	},
+	getPaypalSandboxUrl : function(){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaypalSandboxURL");
+	},
+	getPaypalLocale : function(){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaypalLc");
+	},
+	getPaypalPayFlowColor :function(){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaypalPayflowcolor");
+	},
+	IsPaypalConfirmShipping :function(){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaypalReqconfirmshipping");
+	},
+	getPaypalHeaderBrdrColor :function(){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaypalHdrbordercolor");
+	},
+	getPaypalPageStyle :function(){
+		return Site.getCurrent().getCustomPreferenceValue("CsPaypalPagestyle");
+	},
+	getPaypalHeaderBckGroundColor :function(){
+	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalHdrbackcolor");
+	},
+	IsPaypalAddressOverride :function(){
+	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalAddressOverride");
+	},
+	IsPaypalNoShipping :function(){
+	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalNoshipping");
+	},
+	getPaypalLogoImage :function(){
+	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalLogoimg");
+	},
+	getPaypalHeaderImage :function(){
+	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalHdrimg");
+	},
+	IsPaypalRequestBillingAddress :function(){
+	 return Site.getCurrent().getCustomPreferenceValue("CsRequestBillingAddress");
+	},
+	getPaypalPaymentOption :function (){
+	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalPaymentOption");
+	},
 	/*****************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.
@@ -1000,6 +1044,231 @@ var CybersourceHelper = {
 		
 		return merchantID;
 	},
+	
+	/*****************************************************************************
+	 * Name: apInitiateService
+	 * Description: Returns Alipay token, Set Request id and Request Token.
+	 * param : request, returnUrl , PurchaseTotals_Object, productName, productDescription, orderNo, alipayPaymentType
+	 ****************************************************************************/
+	apInitiateService : function (request:Object,returnUrl:String,purchase:PurchaseTotals_Object,productName:Object,productDescription:Object,orderNo:String,alipayPaymentType:String)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, orderNo  );
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+		request.apPaymentType = alipayPaymentType;
+		var endpoint = CybersourceHelper.getEndpoint();
+		var testReconciliationID : String = CybersourceHelper.getTestAlipayReconciliationID();
+		var apInitiateService = new CybersourceHelper.csReference.APInitiateService();
+		
+		 apInitiateService.returnURL=returnUrl;
+		 apInitiateService.productName = productName;
+		 apInitiateService.productDescription = productDescription;
+		 if(endpoint.equals("Test")){
+		 	apInitiateService.reconciliationID = testReconciliationID;
+		 }
+		 request.apInitiateService=apInitiateService;
+		 request.apInitiateService.run=true;		
+	},
+	
+	/*****************************************************************************
+	 * Name: apCheckStatusService
+	 * Description: Returns Alipay token, Payment Status, Set Request id and Request Token.
+	 * param : request, orderNo , requestID, alipayPaymentType 
+	 ****************************************************************************/
+	apCheckStatusService : function (request:Object,orderNo : String,requestID:String,alipayPaymentType:String)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, orderNo  );
+		request.apPaymentType = alipayPaymentType;
+		
+		var apCheckStatusService = new CybersourceHelper.csReference.APCheckStatusService();
+		
+		 apCheckStatusService.apInitiateRequestID = requestID;
+		 request.apCheckStatusService=apCheckStatusService;
+		 request.apCheckStatusService.run=true;		
+	},
+	/*****************************************************************************
+	 * Name: payPalEcSetService
+	 * Description: Returns Paypal token, Set Request id and Request Token.
+	 * param : cancel_Url, return_Url , PurchaseTotals_Object, ItemsList, refCode-Basket.UUID 
+	 ****************************************************************************/
+	
+	payPalEcSetService : function (request:Object,cancelUrl:String,returnUrl:String,purchase:PurchaseTotals_Object,itemsCybersource: dw.util.List,refCode:String,billTo : BillTo_Object, shipTo : ShipTo_Object)
+	{
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, refCode  );
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+		
+		var items : Array = new Array();
+		if(null!=itemsCybersource)
+		{
+			var iter : dw.util.Iterator = itemsCybersource.iterator();
+			while(iter.hasNext())
+			{
+				items.push(__copyItemFrom(iter.next()));
+			}
+		}
+		request.item = items;
+		var payPalEcSetService = new CybersourceHelper.csReference.PayPalEcSetService();
+		
+		  if(billTo != null && shipTo !=null)
+	      {
+	    	request.billTo  = __copyBillTo( billTo );
+	    	request.shipTo     = __copyShipTo( shipTo );
+			payPalEcSetService.paypalAddressOverride="1";
+	    	if(CybersourceHelper.IsPaypalNoShipping()==true){
+			payPalEcSetService.paypalNoshipping="1";
+			}
+	     }
+	    
+		 payPalEcSetService.paypalReturn=returnUrl;
+		 payPalEcSetService.paypalCancelReturn=cancelUrl;
+		
+		// Setting flag for Requesting Billing address
+		if(CybersourceHelper.IsPaypalRequestBillingAddress() == true && empty(billTo))
+		{
+		  payPalEcSetService.requestBillingAddress="1"; 
+		}
+		
+		if(!empty(CybersourceHelper.getPaypalLocale())){
+			payPalEcSetService.paypalLc=CybersourceHelper.getPaypalLocale();
+		}
+		if(!empty(CybersourceHelper.getPaypalPayFlowColor())){
+			payPalEcSetService.paypalPayflowcolor=CybersourceHelper.getPaypalPayFlowColor();
+		}
+		if(CybersourceHelper.IsPaypalConfirmShipping()==true){
+			payPalEcSetService.paypalReqconfirmshipping="1";
+		}
+		if(!empty(CybersourceHelper.getPaypalHeaderBrdrColor())){
+			payPalEcSetService.paypalHdrbordercolor=CybersourceHelper.getPaypalHeaderBrdrColor();
+		}
+		if(!empty(CybersourceHelper.getPaypalPageStyle())){
+			payPalEcSetService.paypalPagestyle=CybersourceHelper.getPaypalPageStyle();
+		}
+		if(!empty(CybersourceHelper.getPaypalHeaderBckGroundColor())){
+		   	payPalEcSetService.paypalHdrbackcolor=CybersourceHelper.getPaypalHeaderBckGroundColor();
+		}
+		
+		if(!empty(CybersourceHelper.getPaypalLogoImage())){
+			payPalEcSetService.paypalLogoimg=CybersourceHelper.getPaypalLogoImage();
+		}
+		if(!empty(CybersourceHelper.getPaypalHeaderImage())){
+			payPalEcSetService.paypalHdrimg=CybersourceHelper.getPaypalHeaderImage();
+		}
+		
+		
+		 request.payPalEcSetService=payPalEcSetService;
+		 request.payPalEcSetService.run=true;		
+	},
+	/*****************************************************************************
+	 * Name: payPalEcGetDetailsService
+	 * Description: Return paypal customer  shipping and billing details.
+	 * param : paypal token,set requestid , set request token refCode-Basket.UUID 
+	 ****************************************************************************/
+	payPalEcGetDetailsService : function(request:Object, paypalToken:String, requestID :String, requestToken:String, refCode:String){
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, refCode);
+		var payPalEcGetDetails = new CybersourceHelper.csReference.PayPalEcGetDetailsService();
+		payPalEcGetDetails.paypalToken=paypalToken;
+		payPalEcGetDetails.paypalEcSetRequestID=requestID;
+		payPalEcGetDetails.paypalEcSetRequestToken=requestToken;
+		
+		
+		request.payPalEcGetDetailsService=payPalEcGetDetails;
+		request.payPalEcGetDetailsService.run=true;
+	},
+	/*****************************************************************************
+	 * Name: payPalEcOrderSetupService
+	 * Description: Initiate the Order at Cybersource.
+	 * param : paypal token,set requestid , set request token , Customer email, purchase total , refCode-Basket.UUID 
+	 ****************************************************************************/
+	payPalEcOrderSetupService : function(request: Object, purchase:PurchaseTotals_Object, payPalToken : String, setRequestId:String, setRequestToken:String, payerId:String,customerEmail:String, refCode:String){
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, refCode);
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+		var payPalEcOrderSetup = new CybersourceHelper.csReference.PayPalEcOrderSetupService();
+		payPalEcOrderSetup.paypalToken=payPalToken;
+		payPalEcOrderSetup.paypalPayerId=payerId;
+		payPalEcOrderSetup.paypalCustomerEmail=customerEmail;
+		payPalEcOrderSetup.paypalEcSetRequestID=setRequestId;
+		payPalEcOrderSetup.paypalEcSetRequestToken=setRequestToken;
+		payPalEcOrderSetup.invoiceNumber=refCode;
+		request.payPalEcOrderSetupService=payPalEcOrderSetup;
+		request.payPalEcOrderSetupService.run=true;
+	},
+	/*****************************************************************************
+	 * Name: payPalAuthorizationService
+	 * Description: Initiate the Authorization for orderSetupRequestId and orderSetupRequestToken.
+	 * param : paypal order id ,order setup requestid , order setup request token , purchase total , refCode-Order number 
+	 ****************************************************************************/
+	payPalAuthorizationService :function(request :Object, paypalOrderId : String, purchase:PurchaseTotals_Object, customerEmail:String,orderSetupRequestId:String,orderSetupRequestToken:String, refCode :String, billTo : BillTo_Object, shipTo : ShipTo_Object, enableDeviceFingerprint : Boolean, itemsCybersource: dw.util.List,isDMEnabledFromBM : Boolean){
+	 	request.merchantID = CybersourceHelper.getMerchantID();
+	 	var fingerprint : String  = null;
+		if (enableDeviceFingerprint) {
+		  fingerprint =  session.sessionID;
+		}
+		
+		__setClientData( request, refCode , fingerprint );
+		
+		request.purchaseTotals = __copyPurchaseTotals( purchase );
+		if(!empty(billTo) && !empty(shipTo)) {
+	    	request.billTo  = __copyBillTo( billTo );
+	    	request.shipTo     = __copyShipTo( shipTo );
+		}
+		var items : Array = new Array();
+		if(null!=itemsCybersource)
+		{
+			var iter : dw.util.Iterator = itemsCybersource.iterator();
+			while(iter.hasNext())
+			{
+				items.push(__copyItemFrom(iter.next()));
+			}
+		}
+		request.item = items;
+		request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+		request.decisionManager.enabled=isDMEnabledFromBM;
+		var payPalAuthorizeService = new CybersourceHelper.csReference.PayPalAuthorizationService();
+		payPalAuthorizeService.paypalOrderId=paypalOrderId;
+		payPalAuthorizeService.paypalEcOrderSetupRequestID=orderSetupRequestId;
+		payPalAuthorizeService.paypalEcOrderSetupRequestToken=orderSetupRequestToken;
+		payPalAuthorizeService.paypalCustomerEmail=customerEmail;
+		request.payPalAuthorizationService=payPalAuthorizeService;
+		request.payPalAuthorizationService.run=true;
+	},
+	/*****************************************************************************
+	 * Name: payPalCaptureService
+	 * Description: Initiate the Capture for transactionId .
+	 * 
+	 ****************************************************************************/
+	payPalCaptureService : function(request :Object,paypalAuthorizationRequestToken:String,paypalAuthorizationRequestId:String, transactionType : String, transactionId:String, refCode:String){
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, refCode);
+		
+		var paypalCaptureService = new CybersourceHelper.csReference.PayPalDoCaptureService();
+		paypalCaptureService.paypalAuthorizationId=transactionId;
+		paypalCaptureService.completeType=transactionType;
+		paypalCaptureService.paypalAuthorizationRequestID=paypalAuthorizationRequestId;
+		paypalCaptureService.paypalAuthorizationRequestToken=paypalAuthorizationRequestToken;
+		request.payPalDoCaptureService=paypalCaptureService;
+		request.payPalDoCaptureService.run=true;
+	},
+	/*****************************************************************************
+	 * Name: payPalReversalService
+	 * Description: Initiate the Reversal for transactionId .
+	 * 
+	 ****************************************************************************/
+	payPalReversalService : function(request: Object, transactionId:String,requestId:String,requestToken:String,refCode:String){
+		request.merchantID = CybersourceHelper.getMerchantID();
+		__setClientData( request, refCode);
+		var  payPalAuthReversalService = new CybersourceHelper.csReference.PayPalAuthReversalService();
+		payPalAuthReversalService.paypalAuthorizationId=transactionId;
+		payPalAuthReversalService.paypalAuthorizationRequestID=requestId;
+		payPalAuthReversalService.paypalAuthorizationRequestToken=requestToken;
+		request.payPalAuthReversalService=payPalAuthReversalService;
+		request.payPalAuthReversalService.run=true;
+		
+	}
+	
 }
 
 // Helper method to export the helper
@@ -1011,8 +1280,8 @@ function getCybersourceHelper()
 function __setClientData( request : Object, refCode : String , fingerprint : String  )
 {
 	request.merchantReferenceCode = refCode; 
-	request.clientLibrary='Demandware_14.2.1';
-	request.clientLibraryVersion='2.2';
+	request.clientLibrary='Demandware';
+	request.clientLibraryVersion='15.1.0';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {
 	  request.deviceFingerprintID = fingerprint;

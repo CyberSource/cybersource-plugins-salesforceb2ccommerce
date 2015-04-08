@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schedules xmlns="http://www.demandware.com/xml/impex/schedules/2007-03-31">
+    <schedule schedule-id="AlipayCheckStatusService">
+        <description>Job Scheduler to check the status of Ali Pay Initiate Payment request status.</description>
+        <enabled-flag>true</enabled-flag>
+        <execution-scope>site</execution-scope>
+        <pipeline>
+            <name>Cybersource</name>
+            <startnode>AlipayCheckPaymentStatusWorkflow</startnode>
+        </pipeline>
+        <sites>
+            <site site-id="SiteGenesis"/>
+        </sites>
+        <run-once>2015-02-24T11:32:00.000Z</run-once>
+        <notification>
+            <enabled-flag>true</enabled-flag>
+            <email-from>chugh.pawankumar@gmail.com</email-from>
+            <email-to>pchugh4@sapient.com</email-to>
+            <threshold>
+                <success/>
+                <exception/>
+                <error/>
+                <hang/>
+                <retry/>
+            </threshold>
+            <max-execution-time>60</max-execution-time>
+            <hang-detection-enabled-flag>false</hang-detection-enabled-flag>
+            <failure-rule>continue</failure-rule>
+        </notification>
+    </schedule>
+
+</schedules>

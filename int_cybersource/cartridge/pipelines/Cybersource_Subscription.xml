@@ -1157,7 +1157,7 @@
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.firstName.value" key="firstName"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.lastName.value" key="lastName"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.phone.value" key="phonenumber"/>
-          <key-binding alias="CurrentForms.billing.billingAddress.addressFields.zip.value" key="postalCode"/>
+          <key-binding alias="CurrentForms.billing.billingAddress.addressFields.postal.value" key="postalCode"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.states.state.value" key="state"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.address1.value" key="street1"/>
           <key-binding alias="&quot;&quot;" key="title"/>
@@ -1284,7 +1284,7 @@
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.firstname.value" key="firstName"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.lastname.value" key="lastName"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.phone.value" key="phonenumber"/>
-          <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.zip.value" key="postalCode"/>
+          <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.postal.value" key="postalCode"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.states.state.value" key="state"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.address1.value" key="street1"/>
           <key-binding alias="&quot;&quot;" key="title"/>

@@ -1,0 +1,50 @@
+/**
+*	CreateCSPurchaseTotalForAlipay.ds
+*	This script creates the PurchaseTotalsObject data object and set it to CybersourcePurchaseTotals output object.
+*	This scripts also set the currency code based on alipay domestic and international payment type.
+*
+*	@input Order : dw.order.Order
+*  	@output CyberSourcePurchaseTotals : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.order);
+importPackage( dw.value);
+importPackage( dw.web);
+
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//get the order from pipeline dictionary
+	var order : Order = pdict.Order;
+    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
+    var amount : Money = new Money(0,order.currencyCode);
+    
+    //get the payment instrument from order object and set the amount value
+    var apPaymentInstruments = order.getPaymentInstruments();
+    for each (var pi : PaymentInstrument in apPaymentInstruments) {
+    	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
+	    	{
+	    		amount = amount.add(pi.paymentTransaction.amount);
+	    	}
+    }
+    
+    //get the value of alipay payment type from site preference
+    var alipayPaymentType : String = Site.getCurrent().getCustomPreferenceValue('apPaymentType');
+    
+    //set the currency code on basis of international and domestic payment type
+    if(!empty(alipayPaymentType) && alipayPaymentType.value.equals(Resource.msg('alipaycheckout.domesticpaymenttype', 'checkout', null)) 
+    	&& !(amount.currencyCode.equals(Resource.msg('alipaycheckout.currency', 'checkout', null)))) {
+		purchaseObject.setCurrency(Resource.msg('alipaycheckout.currency', 'checkout', null));
+    } else {
+    	purchaseObject.setCurrency(amount.currencyCode);
+    }
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));
+    
+    //set the value of purchase total object in pipeline dictionary
+    pdict.CyberSourcePurchaseTotals = purchaseObject;
+    
+    return PIPELET_NEXT;
+}

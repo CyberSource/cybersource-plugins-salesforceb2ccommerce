@@ -103,6 +103,354 @@
 				<min-length>0</min-length>
 				<field-length>0</field-length>
 			</attribute-definition>
+			<attribute-definition attribute-id="apCheckStatusReconciliationID">
+                <display-name xml:lang="x-default">Ali Pay Check Status Reconciliation ID</display-name>
+                <description xml:lang="x-default">Ali Pay Check Status Reconciliation ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apCheckStatusRequestToken">
+                <display-name xml:lang="x-default">Ali Pay Check Status Request Token</display-name>
+                <description xml:lang="x-default">Ali Pay Check Status Request Token</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apCheckStatusServiceApprovalStatus">
+                <display-name xml:lang="x-default">Ali Pay Check Status Service Approval Status</display-name>
+                <description xml:lang="x-default">Ali Pay Check Status Service Approval Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apInitiatePaymentReconciliationID">
+                <display-name xml:lang="x-default">Ali Pay Initiate Payment Reconciliation ID</display-name>
+                <description xml:lang="x-default">Ali Pay Reconciliation ID for InitiatePayment Service</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apInitiatePaymentRequestID">
+                <display-name xml:lang="x-default">Ali Pay Initiate Payment Request ID</display-name>
+                <description xml:lang="x-default">Ali Pay Initiate Payment Request ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apMerchantURL">
+                <display-name xml:lang="x-default">Alipay Merchant URL</display-name>
+                <description xml:lang="x-default">Alipay Merchant URL</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apPaymentStatus">
+                <display-name xml:lang="x-default">Ali Pay Payment Status</display-name>
+                <description xml:lang="x-default">Ali Pay Payment Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="apInitiatePaymentType">
+                <display-name xml:lang="x-default">Alipay Initiate Payment Type</display-name>
+                <description xml:lang="x-default">Alipay Initiate Payment Type</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="orderSetupRequestId">
+                <display-name xml:lang="x-default">orderSetupRequestId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="orderSetupRequestToken">
+                <display-name xml:lang="x-default">orderSetupRequestToken</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="orderSetupTransactionId">
+                <display-name xml:lang="x-default">orderSetupTransactionId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="payPalPayerId">
+                <display-name xml:lang="x-default">payPalPayerId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalAuthTransactionID">
+                <display-name xml:lang="x-default">paypalAuthTransactionID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalCaptureTransactionID">
+                <display-name xml:lang="x-default">paypalCaptureTransactionID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalEcSetRequestID">
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalEcSetRequestToken">
+                <display-name xml:lang="x-default">paypalEcSetRequestToken</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalPaymentStatus">
+                <display-name xml:lang="x-default">paypalPaymentStatus</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalToken">
+                <display-name xml:lang="x-default">paypalToken</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="apCheckStatusProcessTransactionID">
+                <display-name xml:lang="x-default">Ali Pay Check Status Process Transaction ID</display-name>
+                <description xml:lang="x-default">Ali Pay Check Status Process Transaction ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="isPaypalBillingAddressPresent">
+                <display-name xml:lang="x-default">Is Billing Address Present in Paypal</display-name>
+                <description xml:lang="x-default">Is Billing Address Present in Paypal</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalParentTransactionId">
+                <display-name xml:lang="x-default">Paypal Parent Transaction Id</display-name>
+                <description xml:lang="x-default">Paypal Parent Transaction Id</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalGetDetailsPayerStatus">
+                <display-name xml:lang="x-default">Paypal Get Details Service Payer Status</display-name>
+                <description xml:lang="x-default">Paypal Get Details Service Payer Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalGetDetailsAddressStatus">
+                <display-name xml:lang="x-default">Paypal Get Details Service Address Status</display-name>
+                <description xml:lang="x-default">Paypal Get Details Service Address Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalGetDetailsCorrelationId">
+                <display-name xml:lang="x-default">Paypal Get Details Service Correlation Id</display-name>
+                <description xml:lang="x-default">Paypal Get Details Service Correlation Id</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalGetDetailsTaxAmount">
+                <display-name xml:lang="x-default">Paypal Get Details Service Tax Amount</display-name>
+                <description xml:lang="x-default">Paypal Get Details Service Tax Amount</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalSetRequestCorrelationID">
+                <display-name xml:lang="x-default">Paypal Set Up Request Correlation ID</display-name>
+                <description xml:lang="x-default">Paypal Set Up Request Correlation ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalPayerFirstName">
+                <display-name xml:lang="x-default">Paypal Payer First Name From Get Details</display-name>
+                <description xml:lang="x-default">Paypal Payer First Name From Get Details</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalPayerLastName">
+                <display-name xml:lang="x-default">Paypal Payer Last Name From Get Details</display-name>
+                <description xml:lang="x-default">Paypal Payer Last Name From Get Details</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalPayerCountry">
+                <display-name xml:lang="x-default">Paypal Payer Country From Get Details</display-name>
+                <description xml:lang="x-default">Paypal Payer Country From Get Details</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalBillingAgreementAcceptedStatus">
+                <display-name xml:lang="x-default">Paypal Billing Agreement Accepted Status</display-name>
+                <description xml:lang="x-default">Paypal Billing Agreement Accepted Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalOrderSetupTransactionType">
+                <display-name xml:lang="x-default">Paypal Order Setup Transaction Type</display-name>
+                <description xml:lang="x-default">Paypal Order Setup Transaction Type</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalOrderSetupCorrelationID">
+                <display-name xml:lang="x-default">Paypal Order Setup Correlation ID</display-name>
+                <description xml:lang="x-default">Paypal Order Setup Correlation ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalOrderSetupPendingReason">
+                <display-name xml:lang="x-default">Paypal Order Setup Pending Reason</display-name>
+                <description xml:lang="x-default">Paypal Order Setup Pending Reason</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalAuthorizedAmount">
+                <display-name xml:lang="x-default">Paypal Authorized Amount by Authorization Service</display-name>
+                <description xml:lang="x-default">Paypal Authorized Amount by Authorization Service</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalAvsCode">
+                <display-name xml:lang="x-default">Paypal Get Service Avs Code</display-name>
+                <description xml:lang="x-default">Paypal Get Service Avs Code</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalOrderSetupPaymentStatus">
+                <display-name xml:lang="x-default">Paypal Order Setup Payment Status</display-name>
+                <description xml:lang="x-default">Paypal Order Setup Payment Status</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalProtectionEligibility">
+                <display-name xml:lang="x-default">Paypal Protection Eligibility</display-name>
+                <description xml:lang="x-default">Paypal Protection Eligibility</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalProtectionEligibilityType">
+                <display-name xml:lang="x-default">Paypal Protection Eligibility Type</display-name>
+                <description xml:lang="x-default">Paypal Protection Eligibility Type</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalCorrelationId">
+                <display-name xml:lang="x-default">Paypal Authorization Service Correlation Id</display-name>
+                <description xml:lang="x-default">Paypal Authorization Service Correlation Id</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalAutorizationId">
+                <display-name xml:lang="x-default">Paypal Authorization Id</display-name>
+                <description xml:lang="x-default">Paypal Authorization Id</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalReceiptId">
+                <display-name xml:lang="x-default">Paypal Receipt Id</display-name>
+                <description xml:lang="x-default">Paypal Receipt Id</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalCaptureRequestId">
+                <display-name xml:lang="x-default">Paypal Capture Request ID</display-name>
+                <description xml:lang="x-default">Paypal Capture Request ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalCaptureRequestToken">
+                <display-name xml:lang="x-default">Paypal Capture Request Token</display-name>
+                <description xml:lang="x-default">Paypal Capture Request Token</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalCaptureFeeAmount">
+                <display-name xml:lang="x-default">Paypal Capture Fee Amount</display-name>
+                <description xml:lang="x-default">Paypal Capture Fee Amount</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="paypalCaptureCorrelationID">
+                <display-name xml:lang="x-default">Paypal Capture Correlation ID</display-name>
+                <description xml:lang="x-default">Paypal Capture Correlation ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
 		</custom-attribute-definitions>
 		<group-definitions>
 			<attribute-group group-id="Custom">

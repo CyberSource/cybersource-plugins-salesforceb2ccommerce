@@ -25,7 +25,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	}
 	apObject.setCustomerRepresentativeID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
 	apObject.setOrderID(pdict.orderID);
-	var amount : Money = new Money(0,dw.system.Site.current.currencyCode);
+	var amount : Money = new Money(0,basket.currencyCode);
     if(null != basket) {
     	var ccPaymentInstruments = basket.getPaymentInstruments();						
 		/**

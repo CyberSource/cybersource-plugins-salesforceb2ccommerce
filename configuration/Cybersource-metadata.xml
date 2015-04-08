@@ -407,6 +407,183 @@ This field should be enabled after verifying cybersource merchant account settin
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="apPaymentType">
+                <display-name xml:lang="x-default">Alipay Payment Type</display-name>
+                <description xml:lang="x-default">Alipay Payment Type for Domestic as well as International Payment</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Domestic</display>
+                        <value>APD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International</display>
+                        <value>APY</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="apTestReconciliationID">
+                <display-name xml:lang="x-default">Test Reconciliation ID for Alipay</display-name>
+                <description xml:lang="x-default">Test Reconciliation ID for Alipay</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Domestic COMPLETE</display>
+                        <value>666666666701</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Domestic PENDING</display>
+                        <value>666666666702</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Domestic ABANDONED</display>
+                        <value>666666666703</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Domestic Reject</display>
+                        <value>666666666725</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International PENDING</display>
+                        <value>333333333402</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International COMPLETED</display>
+                        <value>110115230002</value>
+                    </value-definition>
+					<value-definition>
+                        <display xml:lang="x-default">International ABANDONED</display>
+                        <value>333333333403</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+			<attribute-definition attribute-id="CsEnableExpressPaypal">
+                <display-name xml:lang="x-default">CsEnableExpressPaypal</display-name>
+                <description xml:lang="x-default">Cyber Source Flag for Enable paypal expess in cart and Minicart page</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalAddressOverride">
+                <display-name xml:lang="x-default">Paypal Address Override</display-name>
+                <description xml:lang="x-default">If this set to true , then address of buyer will be override by the shipping address provided in shipping page.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalHdrbackcolor">
+                <display-name xml:lang="x-default">Paypal Header background color</display-name>
+                <description xml:lang="x-default">Set the background color of header in paypal.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalHdrbordercolor">
+                <display-name xml:lang="x-default">Paypal Header border color</display-name>
+                <description xml:lang="x-default">Set the header Border Color</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalHdrimg">
+                <display-name xml:lang="x-default">Paypal Header Image</display-name>
+                <description xml:lang="x-default">Set the paypal Header Image</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalLc">
+                <display-name xml:lang="x-default">paypal locale</display-name>
+                <description xml:lang="x-default">Set the paypal Locale</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalLogoimg">
+                <display-name xml:lang="x-default">Paypal Logo Image</display-name>
+                <description xml:lang="x-default">Set the logo Image</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalNoshipping">
+                <display-name xml:lang="x-default">Paypal No Shipping</display-name>
+                <description xml:lang="x-default">if this set to true , buyer's shipping address will be suppress on Express Checkout pages in paypal.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalPagestyle">
+                <display-name xml:lang="x-default">Paypal page style</display-name>
+                <description xml:lang="x-default">Set the paypal page Style</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalPayflowcolor">
+                <display-name xml:lang="x-default">Paypal flow Color</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalPaymentOption">
+                <display-name xml:lang="x-default">Paypal Payment option</display-name>
+                <description xml:lang="x-default">This allows merchant to select payment option authorize or authorize + capture for Cybersource paypal payment methods</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Authorize</display>
+                        <value>Authorize</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Authorize and Capture</display>
+                        <value>AuthorizeAndCapture</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalReqconfirmshipping">
+                <display-name xml:lang="x-default">Request Confirm Shipping</display-name>
+                <description xml:lang="x-default">If this set to true, value of paypalReqconfirmshipping in Set Request will be set as 1 for confirm address in Paypal</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalSandboxURL">
+                <display-name xml:lang="x-default">CsPaypalSandboxURL</display-name>
+                <description xml:lang="x-default">Sandbox url to redirect the customer to paypal for authentication</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsRequestBillingAddress">
+                <display-name xml:lang="x-default">Request Billing address</display-name>
+                <description xml:lang="x-default">If this set to true, value of requestBillingAddress will set as 1 for requesting billing address from paypal.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+			<attribute-definition attribute-id="isDecisionManagerEnable">
+                <display-name xml:lang="x-default">Decision Manager Enable for Paypal</display-name>
+                <description xml:lang="x-default">Decision Manager Enable for Paypal</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
 		</custom-attribute-definitions>
 		<group-definitions>
 			<attribute-group group-id="Cybersource">
@@ -452,7 +629,27 @@ This field should be enabled after verifying cybersource merchant account settin
 				<attribute attribute-id="CsTokenizationEnable"/>
 				<attribute attribute-id="CsPaEnableProofXML"/>
 				<attribute attribute-id="CsPaSaveParesStatus"/>
+				<attribute attribute-id="apPaymentType"/>
+                <attribute attribute-id="apTestReconciliationID"/>
 			</attribute-group>
+			<attribute-group group-id="Cybersource_paypal">
+                <display-name xml:lang="x-default">Cybersource_paypal</display-name>
+                <attribute attribute-id="CsEnableExpressPaypal"/>
+                <attribute attribute-id="CsPaypalSandboxURL"/>
+                <attribute attribute-id="CsPaypalLc"/>
+                <attribute attribute-id="CsPaypalPayflowcolor"/>
+                <attribute attribute-id="CsPaypalReqconfirmshipping"/>
+                <attribute attribute-id="CsPaypalHdrbordercolor"/>
+                <attribute attribute-id="CsPaypalPagestyle"/>
+                <attribute attribute-id="CsPaypalHdrbackcolor"/>
+                <attribute attribute-id="CsPaypalAddressOverride"/>
+                <attribute attribute-id="CsPaypalNoshipping"/>
+                <attribute attribute-id="CsPaypalLogoimg"/>
+                <attribute attribute-id="CsPaypalHdrimg"/>
+                <attribute attribute-id="CsRequestBillingAddress"/>
+                <attribute attribute-id="CsPaypalPaymentOption"/>
+				<attribute attribute-id="isDecisionManagerEnable"/>
+            </attribute-group>
 		</group-definitions>
 	</type-extension>
 	<type-extension type-id="PaymentCard">

@@ -22,7 +22,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		return PIPELET_ERROR;
 	}
     var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
-    var amount : Money = new Money(0,dw.system.Site.current.currencyCode);
+    var amount : Money = new Money(0,basket.currencyCode);
     var ccPaymentInstruments = basket.getPaymentInstruments();
     for each (var pi : PaymentInstrument in ccPaymentInstruments) {
     	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))

@@ -1,0 +1,60 @@
+/**
+ * Creates a payment instrument from the given Bill Me Later form
+ * for the given basket. If any error occurs the pipelet returns PIPELET_ERROR with
+ * no payment instrument being created. If the creation succeeded the script returns 
+ * the newly created payment instrument.
+ *
+ * Only single Bill Me Later payments are allowed. Therefore any existing Bill Me Later 
+ * payment instruments are removed from the basket once the new BML payment is successfully 
+ * created. 
+ *
+ * @input Basket : dw.order.Basket The basket.
+ * @input PaymentType : String the type of the payment instrument.
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value );
+importPackage( dw.web );
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    var basket : Basket = pdict.Basket;
+	
+
+
+	// verify that we have a basket and a valid credit card form
+	if( basket == null )
+	{
+		return PIPELET_ERROR;
+	}
+
+	// remove existing credit cards from the basket
+	removeExistingPaymentInstruments( basket );
+	
+    return PIPELET_NEXT;
+}
+
+/** 
+ * Determines if the basket already contains a credit card payment 
+ * instrument and removes it from the basket.
+ */
+function removeExistingPaymentInstruments( basket : Basket)
+{	
+	
+	
+		var ccPaymentInstrs : Collection = basket.getPaymentInstruments();
+	
+	// get all credit card payment instruments
+	
+	var iter : Iterator = ccPaymentInstrs.iterator();
+	var existingPI : OrderPaymentInstrument = null;
+
+	// remove them
+	while( iter.hasNext() )
+	{
+		existingPI = iter.next();
+		basket.removePaymentInstrument( existingPI );
+	}
+}

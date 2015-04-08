@@ -2451,20 +2451,24 @@
         <start-node call-mode="private" name="CaptureCard" secure="false"/>
         <node-display x="29" y="1"/>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/CCCaptureRequest.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
+          <key-binding alias="Order" key="Order"/>
+          <key-binding alias="CaptureAmount" key="CaptureAmount"/>
+          <key-binding alias="CaptureReasonCode" key="CaptureReasonCode"/>
           <key-binding alias="Decision" key="Decision"/>
           <key-binding alias="ReasonCode" key="ReasonCode"/>
           <key-binding alias="RequestID" key="RequestID"/>
           <key-binding alias="RequestToken" key="RequestToken"/>
-          <key-binding alias="Order" key="Order"/>
-          <key-binding alias="CaptureAmount" key="CaptureAmount"/>
-          <key-binding alias="CaptureReasonCode" key="CaptureReasonCode"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
@@ -3287,6 +3291,16 @@
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_28">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline initiate the Paypal Set Service for payment through paypal</description>
+        </text-node>
+        <node-display x="55" y="0"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="IncludeDigitalFingerprint">
     <segment>
       <node>
@@ -3388,7 +3402,1986 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_30">
+  <branch basename="PaypalSetService">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="PaypalSetService" secure="false"/>
+        <node-display x="55" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource-GetCybersourceHelper"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="CybersourceData-CreateItemForPaypal"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="paypalOrigin==&quot;billing&quot;" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <call-node start-name-ref="CybersourceData-CreateShipTo"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="true" key="From_0"/>
+                <key-binding alias="ReadFromBasket" key="To_0"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-ref="CybersourceData-CreateBillTo"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="4"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/paypal/PaypalSetEcSetRequest.ds"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="paypalCancelUrl" key="cancelUrl"/>
+          <key-binding alias="item" key="item"/>
+          <key-binding alias="paypalReturnUrl" key="returnUrl"/>
+          <key-binding alias="SetServiceDecision" key="Decision"/>
+          <key-binding alias="PayPalToken" key="PayPalToken"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="RedirectURL" key="RedirectURL"/>
+          <key-binding alias="SetServiceRequestID" key="RequestID"/>
+          <key-binding alias="SetServiceRequestToken" key="RequestToken"/>
+          <key-binding alias="purchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="billto" key="billTo"/>
+          <key-binding alias="shipto" key="shipTo"/>
+          <key-binding alias="SetReasonCode" key="SetReasonCode"/>
+          <key-binding alias="SetRequestID" key="SetRequestID"/>
+          <key-binding alias="SetRequestToken" key="SetRequestToken"/>
+          <key-binding alias="CorrelationID" key="CorrelationID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="ReasonCode==100" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CorrelationID" key="From_0"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalSetRequestCorrelationID" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==480 || ReasonCode==481" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in1" target-path="./+1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="error"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_32">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline will used for Get Service of paypal. This require paypal token, set request id and set request token as pipeline param</description>
+        </text-node>
+        <node-display x="57" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="PaypalGetService">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="PaypalGetService" secure="false"/>
+        <node-display x="57" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="GetPaymentProcessor" pipelet-set-identifier="bc_api">
+          <key-binding alias="&quot;PAYPAL_EXPRESS&quot;" key="ID"/>
+          <key-binding alias="PaymentProcessor" key="PaymentProcessor"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="./b3.1"/>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource-GetCybersourceHelper"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/paypal/PaypalGetEcRequest.ds"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="PaymentProcessor" key="PaymentProcessor"/>
+          <key-binding alias="PayPalToken" key="PayPalToken"/>
+          <key-binding alias="SetRequestID" key="RequestID"/>
+          <key-binding alias="SetRequestToken" key="RequestToken"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="Response" key="Response"/>
+          <key-binding alias="GetReasonCode" key="GetReasonCode"/>
+          <key-binding alias="GetRequestID" key="GetRequestID"/>
+          <key-binding alias="GetRequestToken" key="GetRequestToken"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="-2"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==100" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/paypal/AddAddressToBasket.ds"/>
+                <key-binding alias="scriptLog" key="ScriptLog"/>
+                <key-binding alias="Basket" key="Basket"/>
+                <key-binding alias="Response" key="Response"/>
+                <key-binding alias="PaymentProcessor" key="PaymentProcessor"/>
+                <key-binding alias="paypalOrigin" key="paypalOrigin"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="../+1"/>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==480 || ReasonCode==481" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b5" source-connector="yes">
+          <transition target-connector="in1" target-path="./+1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="error"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_34">
+    <segment>
+      <node>
+        <text-node>
+          <description>This Pipeline initiate the Order at Cybersource, This require Set Request Id, Set Request Token as pipeline input param.</description>
+        </text-node>
+        <node-display x="61" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="PaypalOrderSetup">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="PaypalOrderSetup" secure="false"/>
+        <node-display x="61" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource-GetCybersourceHelper"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/paypal/PaypalOrderSetupEcRequest.ds"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="Order" key="Order"/>
+          <key-binding alias="orderSetupReplyDecision" key="orderSetupReplyDecision"/>
+          <key-binding alias="orderSetupReplyReason" key="orderSetupReplyReasonCode"/>
+          <key-binding alias="orderSetupRequestId" key="orderSetupRequestId"/>
+          <key-binding alias="orderSetupRequestToken" key="orderSetupRequestToken"/>
+          <key-binding alias="orderSetupTransactionId" key="orderSetupTransactionId"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="orderSetupPaymentStatus" key="orderSetupPaymentStatus"/>
+          <key-binding alias="orderSetupCorrelationID" key="orderSetupCorrelationID"/>
+          <key-binding alias="orderSetupPendingReason" key="orderSetupPendingReason"/>
+          <key-binding alias="orderSetupTransactionType" key="orderSetupTransactionType"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="3" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==100 || ReasonCode==480" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="orderSetupRequestId" key="From_0"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.orderSetupRequestId" key="To_0"/>
+                <key-binding alias="orderSetupRequestToken" key="From_1"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.orderSetupRequestToken" key="To_1"/>
+                <key-binding alias="orderSetupTransactionId" key="From_2"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.orderSetupTransactionId" key="To_2"/>
+                <key-binding alias="orderSetupPaymentStatus" key="From_3"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalOrderSetupPaymentStatus" key="To_3"/>
+                <key-binding alias="orderSetupCorrelationID" key="From_4"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalOrderSetupCorrelationID" key="To_4"/>
+                <key-binding alias="orderSetupPendingReason" key="From_5"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalOrderSetupPendingReason" key="To_5"/>
+                <key-binding alias="orderSetupTransactionType" key="From_6"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalOrderSetupTransactionType" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==481" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in1" target-path="./+1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="error"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_36">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline Authorize the Order for paypal. This require order setup transactionID, OrderSetupRequestId, orderSetupRequestToken as pipeline param.</description>
+        </text-node>
+        <node-display x="66" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AuthorizePaypal">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AuthorizePaypal" secure="false"/>
+        <node-display x="66" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue('isDecisionManagerEnable')" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/BillTo/CreateCybersourceBillToObjectForExpressCheckout.ds"/>
+                <key-binding alias="scriptlog" key="ScriptLog"/>
+                <key-binding alias="Order" key="Order"/>
+                <key-binding alias="billto" key="CyberSourceBillTo"/>
+                <key-binding alias="shipto" key="CyberSourceShipTo"/>
+                <key-binding alias="CurrentRequest.httpHeaders[&quot;x-is-remote_addr&quot;]" key="ipAddress"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource-GetCybersourceHelper"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/paypal/PaypalAuthorizationRequest.ds"/>
+          <key-binding alias="scriptLog" key="ScriptLog"/>
+          <key-binding alias="Order" key="Order"/>
+          <key-binding alias="orderSetupRequestId" key="orderSetupRequestId"/>
+          <key-binding alias="orderSetupRequestToken" key="orderSetupRequestToken"/>
+          <key-binding alias="orderSetupTransactionId" key="orderSetupTransactionId"/>
+          <key-binding alias="AuthorizationAmount" key="authAmount"/>
+          <key-binding alias="AuthorizationDecision" key="authDecision"/>
+          <key-binding alias="AuthorizationReasonCode" key="authReasonCode"/>
+          <key-binding alias="AuthorizationTransactionId" key="authTransactionId"/>
+          <key-binding alias="RequestId" key="requestId"/>
+          <key-binding alias="RequestToken" key="requestToken"/>
+          <key-binding alias="purchaseTotals" key="purchaseTotals"/>
+          <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
+          <key-binding alias="Response" key="Response"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="paypalProtectionEligibility" key="paypalProtectionEligibility"/>
+          <key-binding alias="paypalProtectionEligibilityType" key="paypalProtectionEligibilityType"/>
+          <key-binding alias="paypalCorrelationId" key="paypalCorrelationId"/>
+          <key-binding alias="billto" key="billTo"/>
+          <key-binding alias="item" key="item"/>
+          <key-binding alias="shipto" key="shipTo"/>
+          <key-binding alias="paypalAuthorizedAmount" key="paypalAuthorizedAmount"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in2" target-path="./b7.1">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-4"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+          <bend-point relative-to="source" x="-1" y="1"/>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==100" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="AuthorizationTransactionId" key="From_0"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAuthTransactionID" key="To_0"/>
+                <key-binding alias="RequestId" key="From_1"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_1"/>
+                <key-binding alias="RequestToken" key="From_2"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_2"/>
+                <key-binding alias="AuthorizationAmount" key="From_3"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_3"/>
+                <key-binding alias="PaymentProcessor" key="From_4"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_4"/>
+                <key-binding alias="ReasonCode" key="From_5"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_5"/>
+                <key-binding alias="paypalCorrelationId" key="From_6"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCorrelationId" key="To_6"/>
+                <key-binding alias="paypalProtectionEligibility" key="From_7"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalProtectionEligibility" key="To_7"/>
+                <key-binding alias="paypalProtectionEligibilityType" key="From_8"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalProtectionEligibilityType" key="To_8"/>
+                <key-binding alias="paypalAuthorizedAmount" key="From_9"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAuthorizedAmount" key="To_9"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="authorized"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode == 223 || ReasonCode == 233 || ReasonCode ==234" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="declined"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==480" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b5" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="AuthorizationTransactionId" key="From_0"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAuthTransactionID" key="To_0"/>
+                <key-binding alias="RequestId" key="From_1"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_1"/>
+                <key-binding alias="RequestToken" key="From_2"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_2"/>
+                <key-binding alias="AuthorizationAmount" key="From_3"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_3"/>
+                <key-binding alias="PaymentProcessor" key="From_4"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_4"/>
+                <key-binding alias="ReasonCode" key="From_5"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_5"/>
+                <key-binding alias="paypalCorrelationId" key="From_6"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCorrelationId" key="To_6"/>
+                <key-binding alias="paypalProtectionEligibility" key="From_7"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalProtectionEligibility" key="To_7"/>
+                <key-binding alias="paypalProtectionEligibilityType" key="From_8"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalProtectionEligibilityType" key="To_8"/>
+                <key-binding alias="paypalAuthorizedAmount" key="From_9"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAuthorizedAmount" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <jump-node start-name-ref="Cybersource-ProcessPendingOrders"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==481" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b6" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="AuthorizationTransactionId" key="From_0"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAuthTransactionID" key="To_0"/>
+                <key-binding alias="RequestId" key="From_1"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestId" key="To_1"/>
+                <key-binding alias="RequestToken" key="From_2"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_2"/>
+                <key-binding alias="AuthorizationAmount" key="From_3"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.authAmount" key="To_3"/>
+                <key-binding alias="PaymentProcessor" key="From_4"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_4"/>
+                <key-binding alias="ReasonCode" key="From_5"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_5"/>
+                <key-binding alias="paypalCorrelationId" key="From_6"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCorrelationId" key="To_6"/>
+                <key-binding alias="paypalProtectionEligibility" key="From_7"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalProtectionEligibility" key="To_7"/>
+                <key-binding alias="paypalProtectionEligibilityType" key="From_8"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalProtectionEligibilityType" key="To_8"/>
+                <key-binding alias="paypalAuthorizedAmount" key="From_9"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAuthorizedAmount" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../b8.1">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==150 || ReasonCode ==151 || ReasonCode==152" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b7" source-connector="yes">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="ReasonCode ==101 || ReasonCode ==102" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b8" source-connector="yes">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="declined"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_38">
+    <segment>
+      <node>
+        <text-node>
+          <description>Capture paypal order amount, If reason code return 100</description>
+        </text-node>
+        <node-display x="72" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CapturePaypal">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CapturePaypal" secure="false"/>
+        <node-display x="72" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource-GetCybersourceHelper"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/paypal/PaypalCaptureRequest.ds"/>
+          <key-binding alias="ScriptLog" key="ScriptLog"/>
+          <key-binding alias="Order" key="Order"/>
+          <key-binding alias="CaptureAmount" key="CaptureAmount"/>
+          <key-binding alias="CaptureReasonCode" key="CaptureReasonCode"/>
+          <key-binding alias="Decision" key="Decision"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="RequestID" key="RequestID"/>
+          <key-binding alias="RequestToken" key="RequestToken"/>
+          <key-binding alias="Response" key="Response"/>
+          <key-binding alias="PaymentStatus" key="PaymentStatus"/>
+          <key-binding alias="CaptureTransactionID" key="CaptureTransactionID"/>
+          <key-binding alias="paypalReceiptId" key="paypalReceiptId"/>
+          <key-binding alias="ParentTransactionId" key="ParentTransactionId"/>
+          <key-binding alias="AuthorizationId" key="AuthorizationId"/>
+          <key-binding alias="CaptureCorrelationID" key="paypalCorrelationId"/>
+          <key-binding alias="CaptureFeeAmount" key="paypalFeeAmount"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in2" target-path="./b6.1">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-2"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==100" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="2" key="From_0"/>
+                <key-binding alias="Order.paymentStatus" key="To_0"/>
+                <key-binding alias="CaptureTransactionID" key="From_1"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureTransactionID" key="To_1"/>
+                <key-binding alias="PaymentStatus" key="From_2"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalPaymentStatus" key="To_2"/>
+                <key-binding alias="paypalReceiptId" key="From_3"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalReceiptId" key="To_3"/>
+                <key-binding alias="ParentTransactionId" key="From_4"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalParentTransactionId" key="To_4"/>
+                <key-binding alias="AuthorizationId" key="From_5"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAutorizationId" key="To_5"/>
+                <key-binding alias="RequestID" key="From_6"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureRequestId" key="To_6"/>
+                <key-binding alias="RequestToken" key="From_7"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureRequestToken" key="To_7"/>
+                <key-binding alias="CaptureCorrelationID" key="From_8"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureCorrelationID" key="To_8"/>
+                <key-binding alias="CaptureFeeAmount" key="From_9"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureFeeAmount" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../b4.2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==480" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CaptureTransactionID" key="From_1"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureTransactionID" key="To_1"/>
+                <key-binding alias="PaymentStatus" key="From_2"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalPaymentStatus" key="To_2"/>
+                <key-binding alias="paypalReceiptId" key="From_3"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalReceiptId" key="To_3"/>
+                <key-binding alias="ParentTransactionId" key="From_4"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalParentTransactionId" key="To_4"/>
+                <key-binding alias="AuthorizationId" key="From_5"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalAutorizationId" key="To_5"/>
+                <key-binding alias="RequestID" key="From_6"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureRequestId" key="To_6"/>
+                <key-binding alias="RequestToken" key="From_7"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureRequestToken" key="To_7"/>
+                <key-binding alias="CaptureCorrelationID" key="From_8"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureCorrelationID" key="To_8"/>
+                <key-binding alias="CaptureFeeAmount" key="From_9"/>
+                <key-binding alias="PaymentInstrument.paymentTransaction.custom.paypalCaptureFeeAmount" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-1" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="authorized"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ReasonCode==481" condition-operator="expr"/>
+        <node-display x="1" y="0"/>
+        <branch basename="b5" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display x="0" y="2"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision==&quot;ERROR&quot;" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b6" source-connector="yes">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="declined"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_40">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline authorize Alipay Initiate payment request and generates requestID, requestToken, reconciliationID and redirect URL which will redirect user to Alipay site and chage the payment status as per the request.</description>
+        </text-node>
+        <node-display x="79" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AuthorizeAlipay">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AuthorizeAlipay" secure="false"/>
+        <node-display x="79" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="dw.web.URLUtils.https('Cybersource-CheckAlipayPaymentStatus')" key="From_0"/>
+          <key-binding alias="alipayReturnUrl" key="To_0"/>
+          <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue(&quot;apPaymentType&quot;)" key="From_1"/>
+          <key-binding alias="alipayPaymentType" key="To_1"/>
+          <key-binding alias="alipayReturnUrl+&quot;?orderNo=&quot;+Order.orderNo" key="From_2"/>
+          <key-binding alias="alipayReturnUrl" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cybersource-GetCybersourceHelper"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="CybersourceData-CreatePurchaseOrderForAlipay"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="OK">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Alipay/AlipaySetProductParameters.ds"/>
+                <key-binding alias="scriptlog" key="ScriptLog"/>
+                <key-binding alias="Basket" key="Basket"/>
+                <key-binding alias="productObject" key="productObject"/>
+                <key-binding alias="Order" key="Order"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="./b3.1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/Alipay/AlipayInitiatePaymentRequest.ds"/>
+                <key-binding alias="scriptlog" key="ScriptLog"/>
+                <key-binding alias="Basket" key="Basket"/>
+                <key-binding alias="item" key="item"/>
+                <key-binding alias="purchaseTotals" key="purchaseTotals"/>
+                <key-binding alias="alipayReturnUrl" key="returnUrl"/>
+                <key-binding alias="Decision" key="Decision"/>
+                <key-binding alias="ReasonCode" key="ReasonCode"/>
+                <key-binding alias="RequestToken" key="RequestToken"/>
+                <key-binding alias="RequestID" key="RequestID"/>
+                <key-binding alias="RedirectURL" key="RedirectURL"/>
+                <key-binding alias="ReconciliationID" key="ReconciliationID"/>
+                <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
+                <key-binding alias="productObject" key="productObject"/>
+                <key-binding alias="InitiatePaymentType" key="InitiatePaymentType"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="Decision == 'ACCEPT' &amp;&amp; ReasonCode == 100" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="RedirectURL" key="From_0"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.apMerchantURL" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.approvalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.apInitiatePaymentRequestID" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_4"/>
+                      <key-binding alias="PaymentProcessor" key="From_5"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.paymentProcessor" key="To_5"/>
+                      <key-binding alias="InitiatePaymentType" key="From_6"/>
+                      <key-binding alias="PaymentInstrument.paymentTransaction.custom.apInitiatePaymentType" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value.equals('Test')" condition-operator="expr"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <interaction-continue-node secure="false" start-name="Alipay Simulator" transaction-required="false">
+                            <template buffered="true" dynamic="false" name="custom/alipayintermediate"/>
+                          </interaction-continue-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <interaction-node transaction-required="false">
+                            <template buffered="true" dynamic="false" name="custom/alipayRedirection"/>
+                          </interaction-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-continue-node secure="false" start-name="Alipay Redirection" transaction-required="false">
+                      <template buffered="true" dynamic="false" name="custom/alipayRedirection"/>
+                    </interaction-continue-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="target" x="0" y="-1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <jump-node start-name-ref="Cybersource-CheckAlipayPaymentStatus"/>
+                    <node-display x="1" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="source" x="1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="Decision == 'REJECT' &amp;&amp; (ReasonCode == 102 || ReasonCode == 233)" condition-operator="expr"/>
+              <node-display x="1" y="0"/>
+              <branch basename="b5" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node name="declined"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="source" x="1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="Decision == 'ERROR' &amp;&amp; ReasonCode == 150" condition-operator="expr"/>
+              <node-display x="1" y="0"/>
+              <branch basename="b6" source-connector="yes">
+                <transition target-connector="in1" target-path="./+1"/>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="target" x="1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_42">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline node will be called from AlipayCheckPaymentStatusWorkflow pipeline node 
+to change the order status.</description>
+        </text-node>
+        <node-display x="84" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="ProcessOrderPaymentStatus">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="ProcessOrderPaymentStatus" secure="false"/>
+        <node-display x="84" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="RequestID" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apInitiatePaymentRequestID" key="From_0"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Alipay/AlipayCheckPaymentStatusRequest.ds"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="RequestID" key="RequestID"/>
+          <key-binding alias="Decision" key="Decision"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="ReconciliationID" key="ReconciliationID"/>
+          <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
+          <key-binding alias="PaymentStatus" key="PaymentStatus"/>
+          <key-binding alias="RequestToken" key="RequestToken"/>
+          <key-binding alias="ProcessorTransactionID" key="ProcessorTransactionID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-2"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision == 'ACCEPT' &amp;&amp; ReasonCode == 100" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="PaymentStatus =='COMPLETED'" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="PlaceOrder" pipelet-set-identifier="bc_api">
+                      <key-binding alias="Order" key="Order"/>
+                    </pipelet-node>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="1" y="0"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Log error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <key-binding alias="dw.system.Logger.error('An error occured during AlipayCheckPaymentStatus Workflow while changing the status for COMPLETED Payment check. (ReasonCode: {0} , RequestID: {1}',ReasonCode,RequestID)" key="From_0"/>
+                            <key-binding alias="null" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="0"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2">
+                          <transition-display>
+                            <bend-point relative-to="source" x="2" y="0"/>
+                            <bend-point relative-to="target" x="0" y="-2"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                      <key-binding alias="2" key="From_6"/>
+                      <key-binding alias="Order.paymentStatus" key="To_6"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                      <bend-point relative-to="source" x="-1" y="1"/>
+                      <bend-point relative-to="target" x="-1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="app_storefront_core:checkout/SetOrderStatus.ds"/>
+                      <key-binding alias="test" key="ScriptLog"/>
+                      <key-binding alias="Order" key="Order"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="0" y="1"/>
+                    <branch basename="b3" source-connector="error">
+                      <transition target-connector="in1" target-path="../../+2">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="target" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2">
+                    <transition-display>
+                      <bend-point relative-to="source" x="2" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="-1" y="0"/>
+                <bend-point relative-to="target" x="-1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="PaymentStatus =='PENDING'" condition-operator="expr"/>
+              <node-display x="2" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="source" x="1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="PaymentStatus =='ABANDONED' || PaymentStatus =='TRADE_NOT_EXIST'" condition-operator="expr"/>
+              <node-display x="1" y="0"/>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="FailOrder" pipelet-set-identifier="bc_api">
+                      <key-binding alias="Order" key="Order"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in1" target-path="../+1"/>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2">
+                    <transition-display>
+                      <bend-point relative-to="target" x="2" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="2"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Log error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <key-binding alias="dw.system.Logger.error('An error occured during AlipayCheckPaymentStatus Workflow for ABANDONED and TRADE_NOT_EXIST Payment check. (ReasonCode: {0} , RequestID: {1}',ReasonCode,RequestID)" key="From_0"/>
+                <key-binding alias="null" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2">
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="source" x="1" y="4"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="-3" y="0"/>
+          <bend-point relative-to="target" x="-3" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision == 'REJECT'" condition-operator="expr"/>
+        <node-display x="6" y="0"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="PaymentStatus" key="From_0"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                <key-binding alias="ReasonCode" key="From_1"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                <key-binding alias="ReconciliationID" key="From_2"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                <key-binding alias="RequestID" key="From_3"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                <key-binding alias="RequestToken" key="From_4"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+                <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="FailOrder" pipelet-set-identifier="bc_api">
+                <key-binding alias="Order" key="Order"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node custom-name="Log error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <key-binding alias="dw.system.Logger.error('An error occured during AlipayCheckPaymentStatus Workflow for REJECT Payment check. (ReasonCode: {0} , RequestID: {1}',ReasonCode,RequestID)" key="From_0"/>
+                      <key-binding alias="null" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2">
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="source" x="1" y="6"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="../+2">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="6"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="source" x="1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision == 'ERROR' &amp;&amp; ReasonCode == 150" condition-operator="expr"/>
+        <node-display x="2" y="0"/>
+        <branch basename="b5" source-connector="yes">
+          <transition target-connector="in1" target-path="./+2">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="10"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Log error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <key-binding alias="dw.system.Logger.error('An error occured during AlipayCheckPaymentStatus Workflow. (ReasonCode: {0} , RequestID: {1}',ReasonCode,RequestID)" key="From_0"/>
+          <key-binding alias="null" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="8"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="-7" y="4"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_44">
     <segment>
       <node>
         <text-node>
@@ -3398,7 +5391,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_31">
+  <branch basename="_ANONYMOUS_BRANCH_45">
     <segment>
       <node>
         <text-node>
@@ -3408,7 +5401,17 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_32">
+  <branch basename="_ANONYMOUS_BRANCH_46">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline check the payment status of initiated payment request through alipay and change the status in demandware for placed order to NEW, CREATED, FAILED after getting from service call response in relation to Alipay payment status such as COMPLETED, PENDING, ABANDONED and TRADE_NOT_EXIST.</description>
+        </text-node>
+        <node-display x="71" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_47">
     <segment>
       <node>
         <text-node>
@@ -3420,7 +5423,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_33">
+  <branch basename="_ANONYMOUS_BRANCH_48">
     <segment>
       <node>
         <text-node>
@@ -3430,7 +5433,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_34">
+  <branch basename="_ANONYMOUS_BRANCH_49">
     <segment>
       <node>
         <text-node>
@@ -3440,7 +5443,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_35">
+  <branch basename="_ANONYMOUS_BRANCH_50">
     <segment>
       <node>
         <text-node>
@@ -3450,7 +5453,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_36">
+  <branch basename="_ANONYMOUS_BRANCH_51">
     <segment>
       <node>
         <text-node>
@@ -3462,7 +5465,564 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_37">
+  <branch basename="CheckAlipayPaymentStatus">
+    <segment>
+      <node>
+        <start-node name="CheckAlipayPaymentStatus" secure="false"/>
+        <node-display x="72" y="8"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value.equals('Test')" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="GetOrder" pipelet-set-identifier="bc_api">
+                <key-binding alias="CurrentHttpParameterMap.orderNo.value" key="OrderNo"/>
+                <key-binding alias="Order" key="Order"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="../+1/b2.1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apInitiatePaymentRequestID" key="From_0"/>
+                <key-binding alias="RequestID" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Alipay/AlipayCheckPaymentStatusRequest.ds"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="RequestID" key="RequestID"/>
+          <key-binding alias="Decision" key="Decision"/>
+          <key-binding alias="ReasonCode" key="ReasonCode"/>
+          <key-binding alias="ReconciliationID" key="ReconciliationID"/>
+          <key-binding alias="!empty(OrderNo)?OrderNo:Order.orderNo" key="OrderNo"/>
+          <key-binding alias="PaymentStatus" key="PaymentStatus"/>
+          <key-binding alias="RequestToken" key="RequestToken"/>
+          <key-binding alias="ProcessorTransactionID" key="ProcessorTransactionID"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision == 'ACCEPT' &amp;&amp; ReasonCode == 100" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="PaymentStatus =='COMPLETED'" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <jump-node start-name-ref="COPlaceOrder-Submit"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="-1" y="0"/>
+                <bend-point relative-to="target" x="-1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="PaymentStatus =='PENDING'" condition-operator="expr"/>
+              <node-display x="2" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <jump-node start-name-ref="Cybersource-ProcessPendingOrders"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="-1" y="0"/>
+                <bend-point relative-to="target" x="-1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="PaymentStatus =='ABANDONED' || PaymentStatus =='TRADE_NOT_EXIST'" condition-operator="expr"/>
+              <node-display x="2" y="0"/>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="target" x="1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <jump-node start-name-ref="COPlaceOrder-Fail"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="-1" y="0"/>
+          <bend-point relative-to="target" x="-1" y="-1"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision == 'REJECT'" condition-operator="expr"/>
+        <node-display x="6" y="0"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="ReasonCode == 102" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in1" target-path="./+1">
+                  <transition-display>
+                    <bend-point relative-to="target" x="-2" y="0"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="source" x="1" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="ReasonCode == 233" condition-operator="expr"/>
+              <node-display x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="PaymentStatus" key="From_0"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apPaymentStatus" key="To_0"/>
+                      <key-binding alias="ReasonCode" key="From_1"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusServiceApprovalStatus" key="To_1"/>
+                      <key-binding alias="ReconciliationID" key="From_2"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusReconciliationID" key="To_2"/>
+                      <key-binding alias="RequestID" key="From_3"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.requestId" key="To_3"/>
+                      <key-binding alias="RequestToken" key="From_4"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusRequestToken" key="To_4"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="ProcessorTransactionID" key="From_5"/>
+                      <key-binding alias="Order.getPaymentInstruments(&quot;ALIPAY&quot;)[0].paymentTransaction.custom.apCheckStatusProcessTransactionID" key="To_5"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="target" x="1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <jump-node start-name-ref="COPlaceOrder-Fail"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-2"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Decision == 'ERROR' &amp;&amp; ReasonCode == 150" condition-operator="expr"/>
+        <node-display x="2" y="1"/>
+        <branch basename="b5" source-connector="yes">
+          <transition target-connector="in1" target-path="./+1"/>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <jump-node start-name-ref="COPlaceOrder-Fail"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="ProcessPendingOrders">
+    <segment>
+      <node>
+        <start-node name="ProcessPendingOrders" secure="false"/>
+        <node-display x="75" y="8"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="!empty(Order.orderNo)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="GetOrder" pipelet-set-identifier="bc_api">
+                <key-binding alias="Order.orderNo" key="OrderNo"/>
+                <key-binding alias="Order" key="Order"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Send order confirmation email" pipelet-name="SendMail" pipelet-set-identifier="bc_api">
+                <key-binding alias="dw.system.Site.getCurrent().getCustomPreferenceValue('customerServiceEmail')" key="MailFrom"/>
+                <key-binding alias="&quot;mail/orderconfirmation&quot;" key="MailTemplate"/>
+                <key-binding alias="Order.customerEmail" key="MailTo"/>
+                <key-binding alias="&quot;Your order with Demandware online store&quot;" key="MailSubject"/>
+                <key-binding alias="null" key="LocaleID"/>
+                <key-binding alias="null" key="MailCC"/>
+                <key-binding alias="null" key="MailBCC"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-ref="COPlaceOrder-ClearForms"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <jump-node start-name-ref="COSummary-ShowConfirmation"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new dw.system.Status(dw.system.Status.ERROR, &quot;confirm.error.declined&quot;)" key="From_0"/>
+          <key-binding alias="PlaceOrderError" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="COSummary-Start"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_54">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline will call from job scheduler to change the status of demandware placed orders through Alipay after getting response from check status service call response. If paymentStatus from  service call is COMPLETED demandware order status will be New, Created for PENDING paymentStatus and Failed for ABANDONED and TRADE_NOT_EXIST paymentStatus of service call response.</description>
+        </text-node>
+        <node-display x="84" y="11"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_55">
     <segment>
       <node>
         <text-node>
@@ -3472,7 +6032,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_38">
+  <branch basename="_ANONYMOUS_BRANCH_56">
     <segment>
       <node>
         <text-node>
@@ -3482,7 +6042,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_39">
+  <branch basename="_ANONYMOUS_BRANCH_57">
     <segment>
       <node>
         <text-node>
@@ -3492,7 +6052,91 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_40">
+  <branch basename="AlipayCheckPaymentStatusWorkflow">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AlipayCheckPaymentStatusWorkflow" secure="false"/>
+        <node-display x="84" y="12"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Alipay/AlipayGetOrderForCheckStatusWorkflow.ds"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="orderList" key="orderList"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="Order" iterator-key="orderList"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <call-node start-name-ref="Cybersource-ProcessOrderPaymentStatus"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="OK">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="loop" target-path="../..">
+                    <transition-display>
+                      <bend-point relative-to="source" x="-1" y="0"/>
+                      <bend-point relative-to="target" x="-1" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_59">
     <segment>
       <node>
         <text-node>
@@ -3502,7 +6146,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_41">
+  <branch basename="_ANONYMOUS_BRANCH_60">
     <segment>
       <node>
         <text-node>
@@ -3512,7 +6156,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_42">
+  <branch basename="_ANONYMOUS_BRANCH_61">
     <segment>
       <node>
         <text-node>
@@ -3522,7 +6166,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_43">
+  <branch basename="_ANONYMOUS_BRANCH_62">
     <segment>
       <node>
         <text-node>
@@ -3532,7 +6176,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_44">
+  <branch basename="_ANONYMOUS_BRANCH_63">
     <segment>
       <node>
         <text-node>
@@ -3542,7 +6186,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_45">
+  <branch basename="_ANONYMOUS_BRANCH_64">
     <segment>
       <node>
         <text-node>
@@ -3552,7 +6196,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_46">
+  <branch basename="_ANONYMOUS_BRANCH_65">
     <segment>
       <node>
         <text-node>
@@ -3562,7 +6206,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_47">
+  <branch basename="_ANONYMOUS_BRANCH_66">
     <segment>
       <node>
         <text-node>

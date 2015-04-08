@@ -1,0 +1,42 @@
+/**
+* 	AlipayGetOrderForCheckStatusWorkflow.ds
+*	This script get the order list for already placed orders having payment methods as ALIPAY using OrderMgr 
+*	and by passing different order status such as NEW, CREATED, OPEN and NOT EXPORTED
+*
+*   @output orderList : dw.util.ArrayList
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//get query variable by passing different order status
+    var query : String = "exportStatus =" + Order.EXPORT_STATUS_NOTEXPORTED + "d";
+		query += " and (status =" + Order.ORDER_STATUS_NEW + "d";
+		query += " or status =" + Order.ORDER_STATUS_CREATED + "d";
+		query += " or status =" + Order.ORDER_STATUS_OPEN + "d)";
+		
+	//get order iterator list from OrderMgr by passing query variable
+	var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
+	var orderList : ArrayList = new ArrayList();
+	if (!empty(orderIterator))
+	{
+		while (orderIterator.hasNext())
+		{
+			var order : Order = orderIterator.next();
+		 	var pIs: Collection=	order.getPaymentInstruments();
+		 	//add orders in order list for ALIPAY payment method and with non empty Initiate Request ID
+			for each(var pi : PaymentInstrument in pIs ){
+			   if(pi.paymentMethod.equals("ALIPAY") && !empty(order.getPaymentInstruments("ALIPAY")[0].paymentTransaction.custom.apInitiatePaymentRequestID)){
+			   		orderList.add(order);
+			   		break;
+			  	}
+			}
+		}
+		//set the order list in pipeline dictionary variable
+		pdict.orderList = orderList;
+	}
+    return PIPELET_NEXT;
+}
