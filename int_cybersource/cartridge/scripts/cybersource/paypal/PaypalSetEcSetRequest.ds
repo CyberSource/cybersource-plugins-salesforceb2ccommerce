@@ -55,8 +55,9 @@ function execute( pdict : PipelineDictionary ) : Number
 	totalAmount=totalAmount.add(shippingTotal);
 	totalAmount=totalAmount.add(shippingTax);
 	}
-	totalAmount=totalAmount.add(totalTax);
-	
+	if(totalTax.value !=0){
+   		totalAmount=totalAmount.add(totalTax);
+	}
 	//setting amount and currency in purchase object
 	var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
 	purchaseObject.setCurrency(totalAmount.currencyCode);
@@ -66,6 +67,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	var CybersourceHelper = getCybersourceHelper();	
    	var csReference : WebReference = webreferences.CyberSourceTransaction;
    	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+   	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
    	CybersourceHelper.setEndpoint(service);
 
 	if(!CybersourceHelper.createHeader(service))

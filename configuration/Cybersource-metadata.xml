@@ -461,6 +461,14 @@ This field should be enabled after verifying cybersource merchant account settin
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+	    <attribute-definition attribute-id="csServiceRequestTimeout">
+                <display-name xml:lang="x-default">Cybersource Service Request Time Out in Milliseconds</display-name>
+                <description xml:lang="x-default">Cybersource Service Request Time Out in Milliseconds</description>
+                <type>double</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>3000.0</default-value>
+            </attribute-definition>
 			<attribute-definition attribute-id="CsEnableExpressPaypal">
                 <display-name xml:lang="x-default">CsEnableExpressPaypal</display-name>
                 <description xml:lang="x-default">Cyber Source Flag for Enable paypal expess in cart and Minicart page</description>
@@ -631,6 +639,7 @@ This field should be enabled after verifying cybersource merchant account settin
 				<attribute attribute-id="CsPaSaveParesStatus"/>
 				<attribute attribute-id="apPaymentType"/>
                 <attribute attribute-id="apTestReconciliationID"/>
+				<attribute attribute-id="csServiceRequestTimeout"/>
 			</attribute-group>
 			<attribute-group group-id="Cybersource_paypal">
                 <display-name xml:lang="x-default">Cybersource_paypal</display-name>

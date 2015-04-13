@@ -41,6 +41,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
 	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	
 	CybersourceHelper.setEndpoint(service);
 	

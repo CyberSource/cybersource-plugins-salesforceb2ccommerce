@@ -83,6 +83,15 @@ function execute( pdict : PipelineDictionary ) : Number
 			} else if(!empty(pdict.paypalOrigin) && pdict.paypalOrigin.equals("billing")) {
 				paymentTransaction.custom.isPaypalBillingAddressPresent=true;
 			} else {
+				billingAddress.setFirstName ( payPalEcGetDetails.payerFirstname );
+				billingAddress.setLastName   ( payPalEcGetDetails.payerLastname );
+				billingAddress.setAddress1   ( "1295 Charleston Rd" );
+				billingAddress.setAddress2    ( "" );
+				billingAddress.setCity       ( "Mountain View" );
+				billingAddress.setStateCode      ( "CA" );
+				billingAddress.setPostalCode ( "94043" );
+				billingAddress.setCountryCode    ( "US" );
+				billingAddress.setPhone( "" );
 				paymentTransaction.custom.isPaypalBillingAddressPresent=false;
 			}
 			

@@ -207,6 +207,9 @@ var CybersourceHelper = {
 	getPaypalPaymentOption :function (){
 	 return Site.getCurrent().getCustomPreferenceValue("CsPaypalPaymentOption");
 	},
+	getCsServiceRequestTimeout : function (){
+		return Site.getCurrent().getCustomPreferenceValue("csServiceRequestTimeout");
+	},
 	/*****************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.

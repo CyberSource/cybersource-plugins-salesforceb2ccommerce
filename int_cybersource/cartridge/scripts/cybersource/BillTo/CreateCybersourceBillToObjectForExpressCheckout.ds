@@ -66,8 +66,8 @@ function execute( pdict : PipelineDictionary ) : Number
 		}
 		else
 		{
-			billToObject.setFirstName  ( "noreal" );
-			billToObject.setLastName   ( "name" );
+			billToObject.setFirstName  ( billingAddress.firstName );
+			billToObject.setLastName   ( billingAddress.lastName );
 			billToObject.setStreet1    ( "1295 Charleston Rd" );
 			billToObject.setStreet2    ( "" );
 			billToObject.setCity       ( "Mountain View" );
