@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
-
-	<field formid="callId" label="Call ID" type="string" mandatory="true"/>
-	<field formid="signature" label="Signature" type="string" mandatory="true"/>
-	<action formid="submit" valid-form="false"/>
-</form>
