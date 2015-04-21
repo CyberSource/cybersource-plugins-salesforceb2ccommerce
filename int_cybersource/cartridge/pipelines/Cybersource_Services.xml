@@ -176,6 +176,16 @@
     <segment>
       <node>
         <text-node>
+          <description>This pipeline is used in case of express checkout where call to  set service is made and after redirection to and from paypal get service call is made and user is redirected to order summary page.</description>
+        </text-node>
+        <node-display width="2" x="7" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_7">
+    <segment>
+      <node>
+        <text-node>
           <description>Make the pipeline node as public before using</description>
         </text-node>
         <node-display x="4" y="2"/>
@@ -340,6 +350,26 @@
             </node>
           </segment>
         </branch>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_9">
+    <segment>
+      <node>
+        <text-node>
+          <description>Call is made to Paypal set service</description>
+        </text-node>
+        <node-display x="9" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_10">
+    <segment>
+      <node>
+        <text-node>
+          <description>Call is made to Paypal get service</description>
+        </text-node>
+        <node-display x="9" y="8"/>
       </node>
     </segment>
   </branch>

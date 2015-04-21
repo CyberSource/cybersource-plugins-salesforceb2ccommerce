@@ -37,7 +37,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	// Check if the cartStateString in session is the same as the newly calculated cartStateString. 
 	// If the strings are the same, then the cart has not changed and tax calculation will be skipped
-	Logger.error("CartStateStrings: ( {0}----{1} )",session.custom.cartStateString,cartStateString);
+	Logger.debug("CartStateStrings: ( {0}----{1} )",session.custom.cartStateString,cartStateString);
 	if( !empty(session.custom.cartStateString) && session.custom.cartStateString == cartStateString && !surcharge){
 		return PIPELET_ERROR;
 	}

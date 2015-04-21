@@ -4769,7 +4769,7 @@
                   </simple-transition>
                   <node>
                     <jump-node start-name-ref="Cybersource-CheckAlipayPaymentStatus"/>
-                    <node-display x="1" y="1"/>
+                    <node-display x="1" y="2"/>
                   </node>
                 </segment>
               </branch>
@@ -4815,6 +4815,7 @@
             <transition target-connector="in1" target-path="./+1">
               <transition-display>
                 <bend-point relative-to="source" x="1" y="0"/>
+                <bend-point relative-to="source" x="1" y="2"/>
                 <bend-point relative-to="target" x="1" y="0"/>
               </transition-display>
             </transition>
@@ -4822,13 +4823,9 @@
           <segment>
             <node>
               <join-node/>
-              <node-display x="0" y="1"/>
+              <node-display x="0" y="2"/>
             </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
+            <simple-transition/>
             <node>
               <end-node name="error"/>
               <node-display x="0" y="1"/>
@@ -5405,16 +5402,6 @@ to change the order status.</description>
     <segment>
       <node>
         <text-node>
-          <description>This pipeline check the payment status of initiated payment request through alipay and change the status in demandware for placed order to NEW, CREATED, FAILED after getting from service call response in relation to Alipay payment status such as COMPLETED, PENDING, ABANDONED and TRADE_NOT_EXIST.</description>
-        </text-node>
-        <node-display x="71" y="7"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_47">
-    <segment>
-      <node>
-        <text-node>
           <description>Service Time-out,
 Server Time-out or
 General Error</description>
@@ -5423,7 +5410,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_48">
+  <branch basename="_ANONYMOUS_BRANCH_47">
     <segment>
       <node>
         <text-node>
@@ -5433,7 +5420,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_49">
+  <branch basename="_ANONYMOUS_BRANCH_48">
     <segment>
       <node>
         <text-node>
@@ -5443,7 +5430,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_50">
+  <branch basename="_ANONYMOUS_BRANCH_49">
     <segment>
       <node>
         <text-node>
@@ -5453,7 +5440,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_51">
+  <branch basename="_ANONYMOUS_BRANCH_50">
     <segment>
       <node>
         <text-node>
@@ -5465,11 +5452,31 @@ General Error</description>
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_51">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline check the payment status of initiated payment request through alipay and change the status in demandware for placed order to NEW, CREATED, FAILED after getting from service call response in relation to Alipay payment status such as COMPLETED, PENDING, ABANDONED and TRADE_NOT_EXIST.</description>
+        </text-node>
+        <node-display x="72" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_52">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline is used when Alipay check status service returns PENDING as payment status, in that case demandware order status should remains on created state, payment status should be not paid and export status should be not exported</description>
+        </text-node>
+        <node-display x="75" y="8"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="CheckAlipayPaymentStatus">
     <segment>
       <node>
         <start-node name="CheckAlipayPaymentStatus" secure="false"/>
-        <node-display x="72" y="8"/>
+        <node-display x="72" y="9"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -5895,7 +5902,7 @@ General Error</description>
     <segment>
       <node>
         <start-node name="ProcessPendingOrders" secure="false"/>
-        <node-display x="75" y="8"/>
+        <node-display x="75" y="9"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -6012,7 +6019,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_54">
+  <branch basename="_ANONYMOUS_BRANCH_55">
     <segment>
       <node>
         <text-node>
@@ -6022,7 +6029,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_55">
+  <branch basename="_ANONYMOUS_BRANCH_56">
     <segment>
       <node>
         <text-node>
@@ -6032,7 +6039,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_56">
+  <branch basename="_ANONYMOUS_BRANCH_57">
     <segment>
       <node>
         <text-node>
@@ -6042,7 +6049,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_57">
+  <branch basename="_ANONYMOUS_BRANCH_58">
     <segment>
       <node>
         <text-node>
@@ -6136,7 +6143,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_59">
+  <branch basename="_ANONYMOUS_BRANCH_60">
     <segment>
       <node>
         <text-node>
@@ -6146,7 +6153,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_60">
+  <branch basename="_ANONYMOUS_BRANCH_61">
     <segment>
       <node>
         <text-node>
@@ -6156,7 +6163,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_61">
+  <branch basename="_ANONYMOUS_BRANCH_62">
     <segment>
       <node>
         <text-node>
@@ -6166,7 +6173,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_62">
+  <branch basename="_ANONYMOUS_BRANCH_63">
     <segment>
       <node>
         <text-node>
@@ -6176,7 +6183,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_63">
+  <branch basename="_ANONYMOUS_BRANCH_64">
     <segment>
       <node>
         <text-node>
@@ -6186,7 +6193,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_64">
+  <branch basename="_ANONYMOUS_BRANCH_65">
     <segment>
       <node>
         <text-node>
@@ -6196,7 +6203,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_65">
+  <branch basename="_ANONYMOUS_BRANCH_66">
     <segment>
       <node>
         <text-node>
@@ -6206,13 +6213,13 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_66">
+  <branch basename="_ANONYMOUS_BRANCH_67">
     <segment>
       <node>
         <text-node>
           <description>ReasonCode = 999 is set when cybersource request timesout.</description>
         </text-node>
-        <node-display x="1" y="26"/>
+        <node-display x="1" y="27"/>
       </node>
     </segment>
   </branch>
