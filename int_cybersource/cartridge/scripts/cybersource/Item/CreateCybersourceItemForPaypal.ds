@@ -90,7 +90,7 @@ function execute( pdict : PipelineDictionary ) : Number
 			itemObject.setProductCode("GIFT_CERTIFICATE");
 			itemObject.setProductName("GIFT_CERTIFICATE");
 			itemObject.setProductSKU("GIFT_CERTIFICATE");
-			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00","en_US"));
 			itemObject.setId(count);
 		}
 		else if(lineItem instanceof dw.order.ShippingLineItem)
