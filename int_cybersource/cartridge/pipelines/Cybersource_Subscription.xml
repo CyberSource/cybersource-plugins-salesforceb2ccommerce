@@ -1124,8 +1124,8 @@
           <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="accountNumber"/>
           <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.type.value" key="cardType"/>
           <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.cvn.value" key="cvnNumber"/>
-          <key-binding alias="&quot;&quot;+CurrentForms.billing.paymentMethods.creditCard.month.value" key="expiryMonth"/>
-          <key-binding alias="&quot;&quot;+CurrentForms.billing.paymentMethods.creditCard.year.value" key="expiryYear"/>
+          <key-binding alias="&quot;&quot;+CurrentForms.billing.paymentMethods.creditCard.expiration.month.value" key="expiryMonth"/>
+          <key-binding alias="&quot;&quot;+CurrentForms.billing.paymentMethods.creditCard.expiration.year.value" key="expiryYear"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.firstName.value" key="firstName"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.lastName.value" key="lastName"/>
         </pipelet-node>

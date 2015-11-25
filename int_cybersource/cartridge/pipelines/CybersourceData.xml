@@ -31,7 +31,18 @@
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
-          <transition target-connector="in2" target-path="./+1"/>
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1">
+              <transition-display>
+                <bend-point relative-to="target" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
         </branch>
       </node>
       <transition target-connector="in1" target-path="./+1"/>
@@ -39,7 +50,7 @@
     <segment>
       <node>
         <join-node/>
-        <node-display x="0" y="1"/>
+        <node-display x="0" y="2"/>
       </node>
       <simple-transition/>
       <node>
@@ -57,7 +68,7 @@
           <key-binding alias="ReadFromForm" key="ReadFromForm"/>
           <key-binding alias="ReadFromBasket" key="ReadFromBasket"/>
         </pipelet-node>
-        <node-display x="0" y="2"/>
+        <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
           <transition target-connector="in">
             <transition-display>

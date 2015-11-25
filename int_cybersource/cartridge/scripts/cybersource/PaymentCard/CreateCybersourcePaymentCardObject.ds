@@ -46,8 +46,8 @@ function execute( pdict : PipelineDictionary ) : Number
 
 		cardObject.setAccountNumber  ( creditCardForm.number.value );
 		cardObject.setFullName       ( creditCardForm.owner.value );
-		cardObject.setExpirationMonth( creditCardForm.month.value );
-		cardObject.setExpirationYear ( creditCardForm.year.value );
+		cardObject.setExpirationMonth( creditCardForm.expiration.month.value );
+		cardObject.setExpirationYear ( creditCardForm.expiration.year.value );
 		cardObject.setCvNumber       ( creditCardForm.cvn.value );
 		
 		cardType = creditCardForm.type.value;
