@@ -101,7 +101,7 @@ function execute( pdict : PipelineDictionary ) : Number
 			pdict.authorizationCode = response.ccAuthReply.authorizationCode;
 			pdict.authorizedDateTime = response.ccAuthReply.authorizedDateTime;
 			pdict.processorResponse = response.ccAuthReply.processorResponse;
-			pdict.reasonCode = response.ccAuthReply.reasonCode;
+			pdict.reasonCode = response.reasonCode;
 			pdict.reconciliationID = response.ccAuthReply.reconciliationID;
 			pdict.decision = response.decision;
 			pdict.requestID = response.requestID;
