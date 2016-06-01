@@ -81,7 +81,11 @@ var CybersourceHelper = {
 	
 	getDavEnable : function () {
 		return Site.getCurrent().getCustomPreferenceValue("CsDavEnable");
-	},	
+	},
+	
+	getCardDecisionManagerEnable : function () {
+		return Site.getCurrent().getCustomPreferenceValue("csCardDecisionManagerEnable");
+	},
 
 	getDavOnAddressVerificationFailure : function () {
 		return Site.getCurrent().getCustomPreferenceValue("CsDavOnAddressVerificationFailure");
@@ -210,6 +214,9 @@ var CybersourceHelper = {
 	getCsServiceRequestTimeout : function (){
 		return Site.getCurrent().getCustomPreferenceValue("csServiceRequestTimeout");
 	},
+	getMasterCardAuthIndicator : function (){
+		return Site.getCurrent().getCustomPreferenceValue("csMasterCardAuthIndicator");
+	},
 	/*****************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.
@@ -260,7 +267,7 @@ var CybersourceHelper = {
 	 * Name: createHeader
 	 * Description: create header.
 	 *****************************************************************************/		
-	createHeader : function (service : Stub){
+	/*createHeader : function (service : Stub){
 		var merchantID : String = CybersourceHelper.getMerchantID();
 		var merchantPassword : String = CybersourceHelper.getSoapSecurityKey();
 		
@@ -283,13 +290,13 @@ var CybersourceHelper = {
 		trace(usernameToken);		
 
 		return true;
-	},
+	},*/
 	
 	/*****************************************************************************
 	 * Name: createPosHeader
 	 * Description: create header for POS orders using POS MID & Key.
 	 *****************************************************************************/		
-	createPosHeader : function (service : Stub, location : String){
+	/*createPosHeader : function (service : Stub, location : String){
 		var merchantID : String = CybersourceHelper.getPosMerchantID(location);
 		var merchantPassword : String = null;
 		
@@ -319,13 +326,13 @@ var CybersourceHelper = {
 		trace(usernameToken);		
 
 		return true;
-	},
+	},*/
 	
 	/*****************************************************************************
 	 * Name: createBMLHeader
 	 * Description: create BML header.
 	 *****************************************************************************/		
-	createBMLHeader : function (service : Stub){
+	/*createBMLHeader : function (service : Stub){
 		var merchantID : String = CybersourceHelper.getBMLMerchantID();
 		var merchantPassword : String = CybersourceHelper.getBMLMerchantPassword();
 		
@@ -345,13 +352,13 @@ var CybersourceHelper = {
 	
 		SOAPUtil.setHeader( service, "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd","Security", usernameToken, true, null );
 		return true;
-	},
+	},*/
 	
 	/*****************************************************************************
 	 * Name: createBMLPromoHeader
 	 * Description: create BML promo header.
 	 *****************************************************************************/			
-	createBMLPromoHeader : function (service : Stub){
+	/*createBMLPromoHeader : function (service : Stub){
 		var merchantID : String = Site.getCurrent().getCustomPreferenceValue("CsBmlPromoMerchantId");
 		var merchantPassword : String = Site.getCurrent().getCustomPreferenceValue("CsBmlPromoMerchantPassword");
 		
@@ -371,7 +378,7 @@ var CybersourceHelper = {
 	
 		SOAPUtil.setHeader( service, "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd","Security", usernameToken, true, null );
 		return true;
-	},
+	},*/
 	 
 	/*****************************************************************************
 	 * Name: createBMLPromoHeader
@@ -385,13 +392,13 @@ var CybersourceHelper = {
 		switch ( endpoint )
 		{
 			case "Production":
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor');
+				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor');
 				break;
 			case "Test" :
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor');
+				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor');
 				break;
 			case "Development":
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor');
+				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor');
 				break;
 			case "Missing":
 				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,dw.web.URLUtils.https('CyberSourceUtil-TestNullEndPoint').toString() );			
@@ -472,7 +479,37 @@ var CybersourceHelper = {
 		request.billTo = __copyBillTo( billTo );
 		request.shipTo = __copyShipTo( shipTo );
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
-		request.card = __copyCreditCard( card );
+
+		if (empty(card.getCreditCardToken())){
+			request.card = __copyCreditCard( card );
+		} else {
+			var request_card : Object = new CybersourceHelper.csReference.Card();		
+			var value : String;
+			for ( var name : String in card)
+			{
+				if(name.indexOf("set") == -1 && name.indexOf("get") == -1 && name.indexOf("CardToken") == -1 && name.indexOf("accountNumber") == -1)
+				{
+					value = card[name];
+					if(value != "")
+					{
+						// trace( "setting card attirb " + name + " to " + value );
+						request_card[name] = value;
+					}
+				}
+			}
+			request.card = request_card;
+		}
+		
+		if (request.card.cardType.equals("002")) {
+			var mastercardAuthIndicator : String = CybersourceHelper.getMasterCardAuthIndicator();
+			if(!empty(mastercardAuthIndicator) && mastercardAuthIndicator=='0')
+			{
+				request.authIndicator=0;
+			} else if (!empty(mastercardAuthIndicator) && mastercardAuthIndicator=='1') {
+				request.authIndicator=1;
+			}
+		}
+
 		var items : Array = new Array();
 		if(null!=itemsCybersource)
 		{
@@ -485,6 +522,12 @@ var CybersourceHelper = {
 		
 		request.item = items;
 		
+		request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+		if (CybersourceHelper.getCardDecisionManagerEnable()) {
+			request.decisionManager.enabled=true;
+		} else {
+			request.decisionManager.enabled=false;
+		}
 		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
 		request.ccAuthService.run = true;	
 	},
@@ -521,7 +564,8 @@ var CybersourceHelper = {
 			request.pos = __copyPos( pos );
 			request.ccAuthService.commerceIndicator = "retail";
 		}
-		
+		request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+		request.decisionManager.enabled=false;
 		request.ccAuthService.run = true;
 	},
 
@@ -644,15 +688,20 @@ var CybersourceHelper = {
 										refCode : String)
 	{
 		request.merchantID = CybersourceHelper.getMerchantID();
-		__setClientData( request, refCode );
+		var fingerprint : String  = null;
+		if (CybersourceHelper.getDigitalFingerprintEnabled()) {
+		  fingerprint =  session.sessionID;
+		}
+		
+		__setClientData( request, refCode , fingerprint );
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
 		
 		var request_recurringSubscriptionInfo : Object = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
 		request_recurringSubscriptionInfo["subscriptionID"] = subscriptionID;
 		request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
 		
-		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
-		request.ccAuthService.run = true;	
+		//request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
+		//request.ccAuthService.run = true;	
 	},
 
 	addBMLAuthRequestInfo : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object,bml : BML_Object, promo : Boolean, refCode : String)
@@ -716,8 +765,14 @@ var CybersourceHelper = {
 		request.merchantID = CybersourceHelper.getMerchantID();
 		
 		__setClientData( request, orderNo );
-
-		CybersourceHelper.addCardInfo(request, creditCardForm);
+		
+		if (!empty(creditCardForm.subscriptionToken.value)){
+			var request_recurringSubscriptionInfo : Object = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+			request_recurringSubscriptionInfo["subscriptionID"] = creditCardForm.subscriptionToken.value;
+			request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+		} else {
+			CybersourceHelper.addCardInfo(request, creditCardForm);
+		}
 
 		// enroll specific stuff		
 		request.payerAuthEnrollService = new CybersourceHelper.csReference.PayerAuthEnrollService();
@@ -776,8 +831,8 @@ var CybersourceHelper = {
 	
 	addCardInfo : function(request : Object, creditCardForm : dw.web.FormElement) {
      request.card = new CybersourceHelper.csReference.Card();
-     request.card.expirationMonth = StringUtils.formatNumber(creditCardForm.month.htmlValue, "00");
-     request.card.expirationYear = creditCardForm.year.value; 
+     request.card.expirationMonth = StringUtils.formatNumber(creditCardForm.expiration.month.htmlValue, "00");
+     request.card.expirationYear = creditCardForm.expiration.year.value; 
      request.card.accountNumber = creditCardForm.number.value;     
      
      switch(creditCardForm.type.htmlValue){
@@ -805,7 +860,13 @@ var CybersourceHelper = {
 		
 		__setClientData( request, orderNo );
 
-		CybersourceHelper.addCardInfo(request, creditCardForm);
+		if (!empty(creditCardForm.subscriptionToken.value)){
+			var request_recurringSubscriptionInfo : Object = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+			request_recurringSubscriptionInfo["subscriptionID"] = creditCardForm.subscriptionToken.value;
+			request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+		} else {
+			CybersourceHelper.addCardInfo(request, creditCardForm);
+		}
 
 		// validate specific stuff
 		request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
@@ -827,8 +888,12 @@ var CybersourceHelper = {
 		if(request.ccAuthService == null){
 			request.ccAuthService=new CybersourceHelper.csReference.CCAuthService();
 		}
-		request.ccAuthService.commerceIndicator = commerceIndicator;
-		request.ccAuthService.xid = xid;
+		if(commerceIndicator != null){
+			request.ccAuthService.commerceIndicator = commerceIndicator;
+		}
+		if(xid != null){
+			request.ccAuthService.xid = xid;
+		}
 		if(cavv != null){
 			request.ccAuthService.cavv = cavv;	
 		}
@@ -839,9 +904,13 @@ var CybersourceHelper = {
 			request.ucaf = new CybersourceHelper.csReference.UCAF();
 			request.ucaf.authenticationData = ucafAuthenticationData;
 			request.ucaf.collectionIndicator = ucafCollectionIndicator;
-		}
-		if(CybersourceHelper.getPASaveParesStatus())
+		} else if (ucafCollectionIndicator != null) {
+			request.ucaf = new CybersourceHelper.csReference.UCAF();
+			request.ucaf.collectionIndicator = ucafCollectionIndicator;
+	    }
+		if(CybersourceHelper.getPASaveParesStatus() && paresStatus != null) {
 			request.ccAuthService.paresStatus = paresStatus;
+		}
 	},
 
    addTaxRequest : function(request : Object, billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object, shipFrom : ShipFrom_Object, taxService : TaxService_Object, items : Array, refCode : String)
@@ -873,7 +942,7 @@ var CybersourceHelper = {
 		var length : Number = items.length;
 		var i = 0;
 		while(i < length){
-			_items[i] = items[i];
+			_items.push(items[i]);
 			i++;
 		}
 		request.item = _items;
@@ -1120,8 +1189,10 @@ var CybersourceHelper = {
 	    	request.shipTo     = __copyShipTo( shipTo );
 			payPalEcSetService.paypalAddressOverride="1";
 	    	if(CybersourceHelper.IsPaypalNoShipping()==true){
-			payPalEcSetService.paypalNoshipping="1";
-			}
+				payPalEcSetService.paypalNoshipping="1";
+			}else{
+				payPalEcSetService.paypalNoshipping="0";
+	   		}
 	     }
 	    
 		 payPalEcSetService.paypalReturn=returnUrl;
@@ -1284,7 +1355,7 @@ function __setClientData( request : Object, refCode : String , fingerprint : Str
 {
 	request.merchantReferenceCode = refCode; 
 	request.clientLibrary='Demandware';
-	request.clientLibraryVersion='15.1.0';
+	request.clientLibraryVersion='16.3.0';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {
 	  request.deviceFingerprintID = fingerprint;
@@ -1352,7 +1423,7 @@ function __copyCreditCard( card : Card_Object ) : Object
 	var value : String;
 	for ( var name : String in card)
 	{
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1)
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1 && name.indexOf("CardToken") == -1)
 		{
 			value = card[name];
 			if(value != "")

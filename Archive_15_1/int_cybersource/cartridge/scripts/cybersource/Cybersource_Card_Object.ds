@@ -1,0 +1,137 @@
+/**
+* Cybersource_Card_Object.ds
+* This Object is used for the Cybersource CreditCard xsd
+*/
+function Card_Object(){
+	
+	this.fullname = "";
+	this.setFullName = setFullName;
+	this.getFullName = getFullName;
+	
+	this.accountNumber = "";
+	this.setAccountNumber = setAccountNumber;
+	this.getAccountNumber = getAccountNumber;
+	
+	this.expirationMonth = "";
+	this.setExpirationMonth = setExpirationMonth;
+	this.getExpirationMonth = getExpirationMonth;
+	
+	this.expirationYear = "";
+	this.setExpirationYear = setExpirationYear;
+	this.getExpirationYear = getExpirationYear;
+	
+	this.cvIndicator = "";
+	this.setCvIndicator = setCvIndicator;
+	this.getCvIndicator = getCvIndicator;
+	
+	this.cvNumber = "";
+	this.setCvNumber = setCvNumber;
+	this.getCvNumber = getCvNumber;
+	
+	this.cardType = "";
+	this.setCardType = setCardType;
+	this.getCardType = getCardType;
+	
+	this.issueNumber = "";
+	this.setIssueNumber = setIssueNumber;
+	this.getIssueNumber = getIssueNumber;
+	
+	this.startMonth = "";
+	this.setStartMonth = setStartMonth;
+	this.getStartMonth = getStartMonth;
+	
+	this.startYear = "";
+	this.setStartYear = setStartYear;
+	this.getStartYear = getStartYear;
+	
+	this.pin = "";
+	this.setPin = setPin;
+	this.getPin = getPin;
+	
+	this.accountEncoderID = "";
+	this.setAccountEncoderID = setAccountEncoderID;
+	this.getAccountEncoderID = getAccountEncoderID;
+	
+	this.bin = "";
+	this.setBin = setBin;
+	this.getBin = getBin;
+}
+
+function setFullName(value){
+	this.fullName = value;
+}
+function getFullName(){
+	return this.fullName;
+}
+function setAccountNumber(value){
+	this.accountNumber = value;
+}
+function getAccountNumber(){
+	return this.accountNumber;
+}
+function setExpirationMonth(value){
+	this.expirationMonth = value;
+}
+function getExpirationMonth(){
+	return this.expirationMonth;
+}
+function setExpirationYear(value){
+	this.expirationYear = value;
+}
+function getExpirationYear(){
+	return this.expirationYear;
+}
+function setCvIndicator(value){
+	this.cvIndicator = value;
+}
+function getCvIndicator(){
+	return this.cvIndicator;
+}
+function setCvNumber(value){
+	this.cvNumber = value;
+}
+function getCvNumber(){
+	return this.cvNumber;
+}
+function setCardType(value){
+	this.cardType = value;
+}
+function getCardType(){
+	return this.cardType;
+}
+function setIssueNumber(value){
+	this.issueNumber = value;
+}
+function getIssueNumber(){
+	return this.issueNumber;
+}
+function setStartMonth(value){
+	this.startMonth = value;
+}
+function getStartMonth(){
+	return this.startMonth;
+}		
+function setStartYear(value){
+	this.startYear = value;
+}
+function getStartYear(){
+	return this.startYear;
+}
+function setPin(value){
+	this.pin = value;
+}
+function getPin(){
+	return this.pin;
+}
+function setAccountEncoderID(value){
+	this.accountEncoderID = value;
+}
+function getAccountEncoderID(){
+	return this.accountEncoderID;
+}
+function setBin(value){
+	this.bin = value;
+}
+function getBin(){
+	return this.bin;
+}																																								

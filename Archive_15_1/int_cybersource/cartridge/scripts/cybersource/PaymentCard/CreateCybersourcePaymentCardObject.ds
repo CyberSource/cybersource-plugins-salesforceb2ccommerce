@@ -1,0 +1,82 @@
+/**
+*	CreateCybersourcePaymentCardObject.ds
+*	This script creates the PaymentCardObject data object and set it to CybersourceCard output object.
+*
+*    @input CreditCardForm : dw.web.FormElement The form containing the credit card data
+*    @input Basket : dw.order.LineItemCtnr  Alternative to readnig from the Form the data can be gather from the basket.  The CvNumber needs to be set then! 
+*    @input CvNumber : String          This field needs to be filled only when reading from basket
+*    @input ReadFromBasket : Boolean   Flag indicating wether to read from Basket or from the Forms object
+*    @output CybersourceCard : Object
+*/
+importPackage( dw.system );
+importPackage( dw.order);
+importPackage( dw.crypto );
+importClass( dw.util.List );
+importClass( dw.order.PaymentInstrument );
+
+importScript('cybersource/Cybersource_Card_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var cardObject : Card_Object = new Card_Object();
+	var cardType : String = "";
+	if ( pdict.ReadFromBasket )
+	{
+		var basket : LineItemCtnr = pdict.Basket;
+		var l : List = basket.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_CREDIT_CARD );
+		if( !empty(basket) && !empty(l) && l.length>0 ) {
+			if ( l.length != 1 )
+			{
+				throw "Expected exactly one credit card.  Foun " + l.length + " cards!?";
+			}
+			var paymentInst : PaymentInstrument = l[0];
+						
+			cardObject.setAccountNumber  ( paymentInst.getCreditCardNumber() );
+			cardObject.setFullName       ( paymentInst.getCreditCardHolder() );
+			cardObject.setExpirationMonth( paymentInst.getCreditCardExpirationMonth() );
+			cardObject.setExpirationYear ( paymentInst.getCreditCardExpirationYear() );
+			cardObject.setCvNumber       ( pdict.CvNumber );
+			
+			cardType = paymentInst.getCreditCardType();
+		}
+	}
+	else
+	{
+		var creditCardForm : dw.web.FormElement = pdict.CurrentForms.billing.paymentMethods.creditCard;
+
+		cardObject.setAccountNumber  ( creditCardForm.number.value );
+		cardObject.setFullName       ( creditCardForm.owner.value );
+		cardObject.setExpirationMonth( creditCardForm.month.value );
+		cardObject.setExpirationYear ( creditCardForm.year.value );
+		cardObject.setCvNumber       ( creditCardForm.cvn.value );
+		
+		cardType = creditCardForm.type.value;
+	}
+	
+	switch( cardType )
+	{
+		case "Visa": 
+			cardType="001";
+			break;
+		case "MasterCard": 
+			cardType="002";
+			break;
+		case "Amex": 
+			cardType="003";
+			break;
+		case "Discover": 
+			cardType="004";
+			break;
+		case "Maestro": 
+			cardType="042";
+			break;
+		// Diners Club
+		// JCB
+		// Maestro (UK Domestic) and Solo 
+	}
+
+	cardObject.setCardType(cardType);
+	pdict.CybersourceCard = cardObject;
+	
+    return PIPELET_NEXT;
+}

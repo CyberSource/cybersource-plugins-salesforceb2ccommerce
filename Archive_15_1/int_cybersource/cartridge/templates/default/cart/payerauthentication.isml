@@ -1,0 +1,29 @@
+<iscomment>
+	This template the template rendering the payer authentication page
+</iscomment>
+<isdecorate template="payerauthentication/pt_payerauthentication">
+	<iscontent type="text/html" charset="UTF-8" compact="true">
+	
+	<div class="payerauth">
+		<div class=processing>
+			${Resource.msg('cart.payerauthentication.001','cart','')}
+		</div>
+		<div class="message">
+			${Resource.msg('cart.payerauthentication.002','cart','')}
+		</div>
+		<iframe name="PAFrame" width="400" height="500" src="" style="border: none;">${Resource.msg('cart.payerauthentication.003','cart','')}</iframe>
+		<form action="${pdict.AcsURL}" method="POST" name="PAInfoForm" target="PAFrame">
+			<input type="hidden" name="TermUrl" value="${URLUtils.httpsContinue()}">
+			<input type="hidden" name="PaReq" value="${pdict.PAReq}">
+			<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
+		</form>
+		<script language="javascript">
+			var loaded = false;
+			function load(){
+				document.PAInfoForm.submit();
+				loaded = true;
+			}
+			load();
+		</script>
+	</div>
+</isdecorate>

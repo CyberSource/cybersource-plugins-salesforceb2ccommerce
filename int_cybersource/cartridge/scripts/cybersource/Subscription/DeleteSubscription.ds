@@ -23,7 +23,7 @@ importScript('cybersource/Cybersource_BillTo_Object.ds');
 importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -32,14 +32,14 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	
 	CybersourceHelper.setEndpoint(service);
 	
 	if(!CybersourceHelper.createHeader(service)){
 		return null;
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
 
@@ -48,17 +48,19 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	// send request
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}catch(e){
 		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
 		return PIPELET_ERROR;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		return PIPELET_ERROR;
 	}
 	else
 	{
+		response = response.object;
 		pdict.decision = response.decision;
 		pdict.invalidField = response.invalidField;
 		pdict.missingField = response.missingField;

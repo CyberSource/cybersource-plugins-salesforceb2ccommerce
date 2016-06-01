@@ -1,0 +1,31 @@
+/**
+* Performs the null end point check
+*/
+importPackage( dw.system );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	// Go to sleep for 45 seconds to time out the service request
+	sleep(45);
+
+    return PIPELET_ERROR;
+}
+
+function sleep(sec)
+{
+	sec = sec*1000;
+
+	var start=new Date();
+	var startMS = start.getTime();
+
+	var now;	
+	var running = true;
+	while(running){
+		now = new Date();
+		nowMS = now.getTime();
+		if(nowMS-startMS > sec) 
+		{
+			running = false;
+		}
+	}
+}

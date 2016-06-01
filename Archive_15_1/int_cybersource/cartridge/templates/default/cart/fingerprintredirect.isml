@@ -1,0 +1,44 @@
+<iscomment>
+	This template will redirect location based off the varaible that is set
+</iscomment>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<isset name="location" value="${pdict.DeviceFingerprintJetmetrixLocation}" scope="page" />
+<isset name="session_id" value="${pdict.MerchantId + "" + pdict.SessionId}" scope="page" />
+
+
+<isscript>
+  var url = [];
+  var selectedLink = null;
+  url[1] = location + "/fp/clear.png?org_id=" + pdict.DeviceFingerprintOrgId + "&session_id=" + session_id + "&m=1";
+  url[2] = location + "/fp/clear.png?org_id=" + pdict.DeviceFingerprintOrgId + "&session_id=" + session_id + "&m=2";
+  url[3] = location + "/fp/fp.swf?org_id=" + pdict.DeviceFingerprintOrgId + "&session_id=" + session_id;
+  url[4] = location + "/fp/check.js?org_id=" + pdict.DeviceFingerprintOrgId + "&session_id=" + session_id;
+  
+  
+  var selectedIndex = parseInt(pdict.LinkType);
+  var selectedLink = url[selectedIndex];
+  
+  
+  
+</isscript>
+
+<isif condition="${selectedLink!=null}"> 
+  <isredirect location="${selectedLink}" permanent="true"/>
+<iselse/>
+
+  
+  <isscript>
+    var origUrl = pdict.CurrentRequest.httpQueryString;
+    var urlParts = origUrl.split("/");
+    var newUrl = location ;
+    for (var i= 3;i<urlParts.length;i++) {
+      
+      newUrl += "/" + urlParts[i];
+    } 
+    //var demandwareHost = pdict.CurrentRequest.httpHost;
+    
+  </isscript>
+  <isredirect location="${newUrl}" permanent="true"/>
+</isif>
+

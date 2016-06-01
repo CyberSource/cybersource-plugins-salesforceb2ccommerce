@@ -1,0 +1,96 @@
+<style type="text/css">
+label {
+	width:100px;    /*Or however much space you need for the form’s labels*/
+    float:left;
+}
+td {
+	border-width: medium; 
+	border-style: outset;
+}
+</style>
+<iscomment>
+	This template will populate the input fields of update subscription
+</iscomment>
+<isinclude template="util/modules"/>
+<h2><center><b><u>Update Subscription Test Page</u></b></center></h2><br/><br/>
+<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+	<table>
+		<tr>
+			<th>Subscription ID</th>
+			<th>Billing Address</th>
+			<th>Credit Card</th>
+			<th>Order Details</th>
+		</tr>
+		<tr>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
+			</td>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.title}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.firstName}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.lastName}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.street1}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.city}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.state}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.postalCode}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.country}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.phoneNumber}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.email}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.ipAddress}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.dateOfBirth}" type="input"/>
+			</td>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.accountNumber}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.cardType}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.expiryMonth}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.expiryYear}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.cvnNumber}" type="input"/>
+			</td>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.currency}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.amount}" type="input"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<u>Sample Test Data for Subscription ID.</u><br/><br/>
+				<label>Subscription ID:</label>	9997000016232809<br/>
+			</td>
+			<td>
+				<u>Sample Test Data Billing Address.</u><br/><br/>
+				<label>First Name:</label>	FNAME<br/>
+				<label>Last Name:</label>	LNAME<br/>
+				<label>Street1:</label>	728 Geary St<br/> 
+				<label>City:</label>	San Francisco<br/>
+				<label>State:</label>	California<br/>
+				<label>Postal Code:</label>	94109<br/>
+				<label>Country:</label>	United States<br/> 
+				<label>Phone Number:</label>	1111111111<br/>
+				<label>Email Address:</label>	abc@test.com<br/>
+			</td>
+			<td>
+				<u>Sample Test Data Credit Card.</u><br/><br/>
+				<label>Account No:</label>	4111111111111111<br/>
+				<label>Card Type:</label>	VISA<br/>
+				<label>Expiry Month:</label>	03<br/> 
+				<label>Expiry Year:</label>	2017<br/>
+				<label>CVN Number:</label>	111<br/>
+			</td>
+			<td>
+				<u>Sample Test Data for Order Details.</u><br/><br/>
+				<label>Currency:</label>	USD<br/>
+				<label>Amount:</label>	100<br/>
+			</td>
+		</tr>
+	</table>
+	
+	
+		<div class="form-row form-row-button">
+			<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+				${Resource.msg('global.submit','locale',null)}
+			</button>
+			<INPUT TYPE="button" onClick="parent.location='${URLUtils.http('Cybersource_Subscription-Start')}'" value="BACK"/>
+		</div>
+	
+	
+</form>

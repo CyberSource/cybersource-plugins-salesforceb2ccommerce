@@ -1,0 +1,171 @@
+/**
+* TaxationRequest.ds
+* Performs the tax calculation on each items exist in Basket. If basket is null it returns
+* with PIPELET_ERROR if not null, Cybersource request will be processed.   
+*
+* @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated
+* @input  billTo : Object
+* @input  shipTo : Object
+* @input  card : Object
+* @input  shipFrom : Object
+* @input  itemArray: Array
+* @input  itemMap : dw.util.HashMap
+* @input  purchaseTotals : Object
+* @input  taxService : Object
+* @output totalTaxAmount : String
+* @output response : Object
+* @output ReasonCode : Number The reason code returned by Cybersource (100 = Success)
+* @output Decision : String
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+
+importScript('cybersource/libCybersource.ds');
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+importScript('cybersource/Cybersource_ShipFrom_Object.ds');
+importScript('cybersource/Cybersource_Card_Object.ds');
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/Cybersource_TaxRequest_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    // read pipeline dictionary input parameter
+    var reasonCode : Number;
+	var basket : LineItemCtnr = pdict.Basket;
+		
+	if((basket == null)){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}
+	
+	var billToObject: BillTo_Object = pdict.billTo;
+	var shipToObject: ShipTo_Object = pdict.shipTo;
+	var cardObject: Card_Object = pdict.card;
+	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+	var itemArray : Array = pdict.itemArray;
+	var itemMap : HashMap = pdict.itemMap;
+	var shipFrom : ShipFrom_Object = pdict.shipFrom;
+	var taxService : TaxService_Object = pdict.taxService;
+	
+	var csReference : WebReference = webreferences.CyberSourceTransaction;
+	var taxationService : Stub = csReference.getService("TransactionProcessor", "portXML");
+	var CybersourceHelper = getCybersourceHelper();
+	taxationService.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
+	CybersourceHelper.setEndpoint(taxationService);
+	
+	if(!CybersourceHelper.createHeader(taxationService)){
+		return PIPELET_ERROR;
+	}
+	
+	// create request body
+	var request = new csReference.RequestMessage();
+	
+	CybersourceHelper.addTaxRequest(request,billToObject,shipToObject,purchaseObject,cardObject,shipFrom,taxService,itemArray,basket.UUID);
+	var taxationResponse = null;
+	// send request
+	try{
+		taxationResponse = taxationService.runTransaction(request);
+	}catch(e){
+		Logger.error("[libCybersource2.ds] Error in taxation request ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}
+	
+	if(taxationResponse == null){
+		return PIPELET_ERROR;
+	}
+	
+	pdict.response = taxationResponse;
+	pdict.Decision = taxationResponse.decision;
+	// in case of success update basket
+	if(taxationResponse.decision == "ACCEPT"){
+		var resItem;
+		for each(resItem in taxationResponse.taxReply.item)
+		{
+			var lineItem : ProductLineItem = itemMap.get(resItem.id.toString());
+			var itemTax : dw.value.Money = new dw.value.Money(new Number((lineItem.class.name == 'dw.order.PriceAdjustment'?"-":"")+resItem.totalTaxAmount),basket.currencyCode);
+			lineItem.setTax(itemTax);
+			var taxRate : Number = 0.00;
+			//lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+			
+			//*****************************************************************//
+			// An issue with this code incorrectly updates the line items and the order totals in the basket by ignoring the
+			// discount –  resulting in an order total higher than it should be. 
+			// This block of code fix is used to accumulate the gross price of line item's adjusted/discounted price and item tax in the basket.
+			// And update the basket after accumulating all line items gross price and taxes. 
+			//    
+			//*****************************************************************//
+			
+			if( lineItem instanceof dw.order.ProductLineItem) 
+			{
+				if(!lineItem.bonusProductLineItem)
+				{
+					if(!empty(lineItem.proratedPrice) && lineItem.proratedPrice.value != 0)
+					{
+						taxRate = itemTax.value/lineItem.proratedPrice.value;
+					}
+					lineItem.updateTax(taxRate,lineItem.proratedPrice);
+					//	lineItem.setGrossPrice(lineItem.proratedPrice.add(itemTax));
+				} 
+				else
+				 {
+					// tax is not getting calculated for bonus product which is updating bonus line item's tax as /NA. it has the direct impact on basket totals.
+					// Resolution - update line item tax with 0 which will resolve the tax calculation N/A for bonus line items.   
+					lineItem.updateTax(0);
+				}
+			} 
+			else if( lineItem instanceof dw.order.ShippingLineItem )
+		 	{
+		 		if(!empty(lineItem.adjustedNetPrice) && lineItem.adjustedNetPrice.value != 0)
+				{
+					taxRate = itemTax.value/lineItem.adjustedNetPrice.value;
+				}
+				lineItem.updateTax(taxRate,lineItem.adjustedNetPrice);
+				//	lineItem.setGrossPrice(lineItem.adjustedNetPrice.add(itemTax));
+			} 
+			else 
+			{
+				if(!empty(lineItem.netPrice) && lineItem.netPrice.value != 0)
+				{
+					taxRate = itemTax.value/lineItem.netPrice.value;
+				}
+				lineItem.updateTax(taxRate,lineItem.netPrice);
+				//	lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+			}
+
+		}
+		pdict.totalTaxAmount = taxationResponse.taxReply.totalTaxAmount;
+		basket.updateTotals();
+		
+		reasonCode = taxationResponse.reasonCode;
+	}else if(taxationResponse.decision == "REJECT"){
+		var missingFields = "";
+		var invalidFields = "";
+		if(null != taxationResponse.missingField){
+			for(var i : Number = 0; i < taxationResponse.missingField.length; i++){
+				missingFields += taxationResponse.missingField[i];
+			}
+		}
+		if(null != taxationResponse.invalidField){
+			for(var i : Number = 0; i < taxationResponse.invalidField.length; i++){
+				invalidFields += taxationResponse.invalidField[i];
+			}
+		}
+		Logger.error("[libCybersource.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",taxationResponse.reasonCode,taxationResponse.requestToken,missingFields,invalidFields);
+		reasonCode = taxationResponse.reasonCode;
+	}else if(taxationResponse.decision == "ERROR"){
+		Logger.error("[libCybersource.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",taxationResponse.reasonCode,taxationResponse.requestToken);
+		reasonCode = taxationResponse.reasonCode;
+	}
+
+	if(reasonCode == 100){
+		return PIPELET_NEXT;
+	}else{
+		return PIPELET_ERROR;
+	}
+	
+    return PIPELET_NEXT;
+}

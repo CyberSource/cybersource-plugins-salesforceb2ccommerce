@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>Main sub-pipeline to integrate for Retail POS transaction</description>
+        </text-node>
+        <node-display x="0" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AuthorizePOS">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AuthorizePOS" secure="false"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(storeLocation)" condition-operator="expr">
+          <description>store location value required to retrieve merchant ID and corresponding Security key</description>
+        </decision-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="!empty(entryMode) &amp;&amp; entryMode.equals(&quot;swiped&quot;)" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in1" target-path="./b4.1"/>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-ref="Cybersource_POS-CreatePOSPaymentCard"/>
+              <node-display x="1" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1" target-path="../+1"/>
+              </branch>
+              <branch basename="b4" source-connector="OK">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="-1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <call-node start-name-ref="Cybersource_POS-CreatePOSPurchaseTotal"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in2" target-path="../../+1"/>
+                    </branch>
+                    <branch basename="b3" source-connector="OK">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <call-node start-name-ref="Cybersource_POS-CreatePOS"/>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+2"/>
+                          </branch>
+                          <branch basename="b3" source-connector="OK">
+                            <transition target-connector="in"/>
+                            <segment>
+                              <node>
+                                <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                                  <config-property key="ScriptFile" value="cybersource/POSAuthRequest.ds"/>
+                                  <config-property key="Transactional" value="true"/>
+                                  <config-property key="Timeout" value="30"/>
+                                  <key-binding alias="ScriptLog" key="ScriptLog"/>
+                                  <key-binding alias="decision" key="Decision"/>
+                                  <key-binding alias="reasonCode" key="ReasonCode"/>
+                                  <key-binding alias="requestID" key="RequestID"/>
+                                  <key-binding alias="authAmount" key="AuthorizationAmount"/>
+                                  <key-binding alias="authCode" key="AuthorizationCode"/>
+                                  <key-binding alias="authReasonCode" key="AuthorizationReasonCode"/>
+                                  <key-binding alias="AuthorizationDecision" key="AuthorizationDecision"/>
+                                  <key-binding alias="pos_paymentcard" key="card"/>
+                                  <key-binding alias="pos" key="pos"/>
+                                  <key-binding alias="pos_purchasetotal" key="purchaseTotal"/>
+                                  <key-binding alias="pos_ordernumber" key="orderNo"/>
+                                  <key-binding alias="authCardCategory" key="AuthReplyCardCategory"/>
+                                  <key-binding alias="authCardGroup" key="AuthReplyCardGroup"/>
+                                  <key-binding alias="authPaymentTransID" key="AuthReplyPaymentNetworkTransactionID"/>
+                                  <key-binding alias="authProcessorResponse" key="AuthReplyProcessorResponse"/>
+                                  <key-binding alias="authReconciliationID" key="AuthReplyReconciliationID"/>
+                                  <key-binding alias="avsCode" key="AVSCode"/>
+                                  <key-binding alias="avsCodeRaw" key="AVSCodeRaw"/>
+                                  <key-binding alias="captureAmount" key="CaptureReplyAmount"/>
+                                  <key-binding alias="captureResonCode" key="CaptureReplyReasonCode"/>
+                                  <key-binding alias="captureReconciliationID" key="CaptureReplyReconciliationID"/>
+                                  <key-binding alias="invalidField" key="InvalidField"/>
+                                  <key-binding alias="merchantRefCode" key="MerchantReferenceCode"/>
+                                  <key-binding alias="missingField" key="MissingField"/>
+                                  <key-binding alias="purchaseTotalCurrency" key="PurchaseTotalsCurrency"/>
+                                  <key-binding alias="storeLocation" key="location"/>
+                                  <key-binding alias="receiptNumber" key="ReceiptNumber"/>
+                                  <key-binding alias="CreditCardStatus" key="Status"/>
+                                </pipelet-node>
+                                <node-display x="0" y="1"/>
+                                <branch basename="b2" source-connector="error">
+                                  <transition target-connector="in1" target-path="../../../../+3"/>
+                                </branch>
+                              </node>
+                              <simple-transition>
+                                <transition-display>
+                                  <bend-point relative-to="source" x="0" y="1"/>
+                                </transition-display>
+                              </simple-transition>
+                              <node>
+                                <end-node/>
+                                <node-display x="0" y="1"/>
+                              </node>
+                            </segment>
+                          </branch>
+                        </node>
+                      </segment>
+                    </branch>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="4" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="3"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="error"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>This is the pipeline created for Unit Testing purpose. This is integrated from Cybersource_UnitTesting pipeline</description>
+        </text-node>
+        <node-display x="4" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreateRetailPOS">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CreateRetailPOS" secure="false"/>
+        <node-display x="4" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+          <key-binding alias="CurrentForms.pos" key="FormElement"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-continue-node secure="false" start-name="CreatePosData" transaction-required="false">
+          <template buffered="true" dynamic="false" name="pos/createpos"/>
+        </interaction-continue-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="submit">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="CurrentForms.pos.entryMode.htmlValue.equals(&quot;keyed&quot;)" condition-operator="expr">
+                <description>Check if entry mode is keyed or swiped.</description>
+              </decision-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="cybersource/POS/CreateCyberSourcePaymentCardObject_UserData.ds"/>
+                      <key-binding alias="log" key="ScriptLog"/>
+                      <key-binding alias="CybersourcePaymentCard" key="CyberSourceCard"/>
+                      <key-binding alias="CurrentForms.pos.accountNumber.htmlValue" key="accountNumber"/>
+                      <key-binding alias="CurrentForms.pos.cardType.htmlValue" key="cardType"/>
+                      <key-binding alias="CurrentForms.pos.expiryMonth.htmlValue" key="expiryMonth"/>
+                      <key-binding alias="CurrentForms.pos.expiryYear.htmlValue" key="expiryYear"/>
+                      <key-binding alias="CurrentForms.pos.cvnNumber.htmlValue" key="cvnNumber"/>
+                      <key-binding alias="cybersource_error" key="error"/>
+                      <key-binding alias="errorCode" key="errorCode"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in1"/>
+                      <segment>
+                        <node>
+                          <join-node/>
+                          <node-display x="1" y="0"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../+3/b2.1"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="../+3"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="3" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="2"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-3" y="0"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/POS/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CurrentForms.pos.amount.htmlValue" key="amount"/>
+                <key-binding alias="CurrentForms.pos.currency.htmlValue" key="currency"/>
+                <key-binding alias="CybersourcePurchaseTotal" key="CyberSourcePurchaseTotal"/>
+                <key-binding alias="cybersource_error" key="error"/>
+                <key-binding alias="errorCode" key="errorCode"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in2"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b3.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="cybersource/POS/CreateCyberSourcePOSObject_UserData.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="CybersourcePaymentCard" key="CyberSourceCard"/>
+                <key-binding alias="CurrentForms.pos.cardPresent.htmlValue" key="cardPresent"/>
+                <key-binding alias="CurrentForms.pos.catLevel.htmlValue" key="catLevel"/>
+                <key-binding alias="CurrentForms.pos.entryMode.htmlValue" key="entryMode"/>
+                <key-binding alias="CurrentForms.pos.terminalCapability.htmlValue" key="terminalCapability"/>
+                <key-binding alias="CurrentForms.pos.terminalID.htmlValue" key="terminalID"/>
+                <key-binding alias="CurrentForms.pos.trackData.htmlValue" key="trackData"/>
+                <key-binding alias="CybersourcePos" key="CyberSourcePos"/>
+                <key-binding alias="cybersource_error" key="error"/>
+                <key-binding alias="errorCode" key="errorCode"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in2"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../b4.1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="Cybersource_UnitTesting/TestPOSAuth.ds"/>
+                <key-binding alias="log" key="ScriptLog"/>
+                <key-binding alias="reasonCode" key="ReasonCode"/>
+                <key-binding alias="authReasonCode" key="AuthorizationReasonCode"/>
+                <key-binding alias="authAmount" key="AuthorizationAmount"/>
+                <key-binding alias="authCode" key="AuthorizationCode"/>
+                <key-binding alias="decision" key="Decision"/>
+                <key-binding alias="requestID" key="RequestID"/>
+                <key-binding alias="CybersourcePurchaseTotal" key="purchaseTotals"/>
+                <key-binding alias="avsCode" key="AVSCode"/>
+                <key-binding alias="avsCodeRaw" key="AVSCodeRaw"/>
+                <key-binding alias="CybersourcePos" key="pos"/>
+                <key-binding alias="invalidField" key="InvalidField"/>
+                <key-binding alias="merchantRefCode" key="MerchantReferenceCode"/>
+                <key-binding alias="missingField" key="MissingField"/>
+                <key-binding alias="authCardCategory" key="AuthReplyCardCategory"/>
+                <key-binding alias="authCardGroup" key="AuthReplyCardGroup"/>
+                <key-binding alias="authPaymentTransID" key="AuthReplyPaymentNetworkTransactionID"/>
+                <key-binding alias="authProcessorResponse" key="AuthReplyProcessorResponse"/>
+                <key-binding alias="authReconciliationID" key="AuthReplyReconciliationID"/>
+                <key-binding alias="captureAmount" key="CaptureReplyAmount"/>
+                <key-binding alias="captureReasonCode" key="CaptureReplyReasonCode"/>
+                <key-binding alias="captureReconciliationID" key="CaptureReplyReconciliationID"/>
+                <key-binding alias="purchaseTotalCurrency" key="PurchaseTotalsCurrency"/>
+                <key-binding alias="receiptNumber" key="ReceiptNumber"/>
+                <key-binding alias="CurrentForms.pos.storeLocation.htmlValue" key="location"/>
+                <key-binding alias="CybersourcePaymentCard" key="card"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./-1"/>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_5">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipekine to create a POS Object for real time  integrated pipeline.</description>
+        </text-node>
+        <node-display x="8" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreatePOS">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CreatePOS" secure="false"/>
+        <node-display x="8" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/POS/CreateCyberSourcePOSObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="pos" key="CyberSourcePos"/>
+          <key-binding alias="cardPresent" key="cardPresent"/>
+          <key-binding alias="catLevel" key="catLevel"/>
+          <key-binding alias="entryMode" key="entryMode"/>
+          <key-binding alias="terminalCapability" key="terminalCapability"/>
+          <key-binding alias="terminalID" key="terminalID"/>
+          <key-binding alias="trackData" key="trackData"/>
+          <key-binding alias="cybersource_error" key="error"/>
+          <key-binding alias="errorCode" key="errorCode"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="OK">
+          <description>OK</description>
+        </end-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_7">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipeline to create purchase total object used in real time integrated pipeline.</description>
+        </text-node>
+        <node-display x="12" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreatePOSPurchaseTotal">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CreatePOSPurchaseTotal" secure="false"/>
+        <node-display x="12" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/POS/CreateCyberSourcePurchaseTotalsObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="amount" key="amount"/>
+          <key-binding alias="currency" key="currency"/>
+          <key-binding alias="pos_purchasetotal" key="CyberSourcePurchaseTotal"/>
+          <key-binding alias="cybersource_error" key="error"/>
+          <key-binding alias="errorCode" key="errorCode"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="OK">
+          <description>OK</description>
+        </end-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_9">
+    <segment>
+      <node>
+        <text-node>
+          <description>Pipeline to create payment card object used in real time integrated pipeline.</description>
+        </text-node>
+        <node-display x="16" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreatePOSPaymentCard">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CreatePOSPaymentCard" secure="false"/>
+        <node-display x="16" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/POS/CreateCyberSourcePaymentCardObject_UserData.ds"/>
+          <key-binding alias="log" key="ScriptLog"/>
+          <key-binding alias="pos_paymentcard" key="CyberSourceCard"/>
+          <key-binding alias="accountNumber" key="accountNumber"/>
+          <key-binding alias="cardType" key="cardType"/>
+          <key-binding alias="cvnNumber" key="cvnNumber"/>
+          <key-binding alias="expiryMonth" key="expiryMonth"/>
+          <key-binding alias="expiryYear" key="expiryYear"/>
+          <key-binding alias="cybersource_error" key="error"/>
+          <key-binding alias="errorCode" key="errorCode"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="OK">
+          <description>OK</description>
+        </end-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

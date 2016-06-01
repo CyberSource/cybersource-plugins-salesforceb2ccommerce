@@ -1,0 +1,36 @@
+/**
+* CreateCyberSourceTaxRequestObject.ds
+* This script creates the Tax Request Object and set it to CybersourceTaxService output object.
+*
+* @output CybersourceTaxService : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value);
+
+importScript('cybersource/libCybersource.ds');
+importScript('cybersource/Cybersource_TaxRequest_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var CybersourceHelper = getCybersourceHelper();
+	
+	var taxServiceObject : TaxService_Object = new TaxService_Object();
+	
+	taxServiceObject.setOrderAcceptanceCity(CybersourceHelper.getPOACity());
+    taxServiceObject.setOrderAcceptanceState(CybersourceHelper.getPOAStateCode());
+    taxServiceObject.setOrderAcceptancePostalCode(CybersourceHelper.getPOAZipCode());
+    taxServiceObject.setOrderAcceptanceCountry(CybersourceHelper.getPOACountryCode());
+    
+    taxServiceObject.setOrderOriginCity(CybersourceHelper.getPOOCity());
+    taxServiceObject.setOrderOriginState(CybersourceHelper.getPOOStateCode());
+    taxServiceObject.setOrderOriginPostalCode(CybersourceHelper.getPOOZipCode());
+    taxServiceObject.setOrderOriginCountry(CybersourceHelper.getPOOCountryCode());
+    
+    pdict.CybersourceTaxService = taxServiceObject;
+        
+    return PIPELET_NEXT;
+}

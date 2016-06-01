@@ -1,0 +1,112 @@
+/**
+*	CreateCybersourceTaxationItems.ds.ds
+*	This script creates the Taxation Items Objects and set it to output objects.
+* 
+*    @input Basket : dw.order.LineItemCtnr
+*    @output itemmap : dw.util.ArrayList()
+*    @output itemarray : Array
+*/
+importPackage( dw.system );
+importPackage( dw.order);
+importPackage( dw.util );
+importPackage( dw.value);
+
+importScript('cybersource/libCybersource.ds');
+importScript('Cybersource_UnitTesting/LineItemObject.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+			var itemMap : ArrayList = new ArrayList();
+			var basket : LineItemCtnr = pdict.Basket;
+			//var lineItems : Iterator = basket.allLineItems.iterator();
+			var lineItems : Iterator = getLineItems();
+			var items : Array = new Array();
+			var idcount : Number = 0;
+			var CybersourceHelper = getCybersourceHelper();
+			while(lineItems.hasNext()){
+				var lineItem : ProductLineItem = lineItems.next();
+				itemMap.addAt(idcount, lineItem);
+				
+				var item = new CybersourceHelper.csReference.Item();
+				item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice),"#####0.00","en_US");
+				
+		 		if(lineItem.class == 'dw.order.ProductLineItem'){
+					item.quantity = lineItem.quantity;
+				}else{
+					item.quantity = 5;
+				}
+				if(lineItem.class == 'dw.order.ProductLineItem'){
+					item.productName = lineItem.productName;
+					item.productSKU = lineItem.productID;
+					item.productCode = "01"; // todo: fill in product code when available
+					
+				}else if(lineItem.class == 'dw.order.ShippingLineItem'){
+					item.productName = lineItem.lineItemText;
+					item.productSKU = lineItem.ID;
+					item.productCode = "78.100";
+				}else{
+					item.productName = lineItem.lineItemText;
+					item.productSKU = "PriceAdjustment";
+					item.productCode = "coupon"; // Set to coupon as not to tax
+				}
+				item.id = idcount++;
+				items.push(item);
+			}
+    		// besides shipment line items, we need to calculate tax for possible order-level price adjustments
+    		// this includes order-level shipping price adjustments
+    		/*
+    			if(!basket.getPriceAdjustments().empty || !basket.getShippingPriceAdjustments().empty)
+    				{
+        				var basketPriceAdjustments : Iterator = basket.getPriceAdjustments().iterator();
+        				while(basketPriceAdjustments.hasNext())
+        				{
+							var lineItem : PriceAdjustment = basketPriceAdjustments.next();
+							itemMap.addAt(idcount, lineItem);
+			
+							var item = new CybersourceHelper.csReference.Item();
+							item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice.value),"#####0.00","en_US"); 
+							item.quantity = 1;
+							item.productCode = "";
+							item.productName = lineItem.lineItemText;
+							item.productSKU = "PriceAdjustment";
+							item.id = idcount++;
+							items.push(item);
+        				}
+
+        		var basketShippingPriceAdjustments : Iterator = basket.getShippingPriceAdjustments().iterator();
+        				while(basketShippingPriceAdjustments.hasNext())
+        				{
+							var lineItem : PriceAdjustment = basketShippingPriceAdjustments.next();
+							itemMap.addAt(idcount, lineItem);
+							var item = new csReference.Item();
+							item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice.value),"#####0.00","en_US");
+							item.quantity = 1;
+							item.productCode = "";
+							item.productName = lineItem.lineItemText;
+							item.productSKU = "PriceAdjustment";
+							item.id = idcount++;
+							items.push(item);
+        				}
+        				
+            }
+	
+*/
+
+
+	pdict.itemarray = items;
+	pdict.itemmap = itemMap;
+    return PIPELET_NEXT;
+}
+function getLineItems() : Iterator{
+
+	var items : ArrayList = new ArrayList();
+	var item : MockLineItem_Object = new MockLineItem_Object();
+	item.basePrice = "109.00";
+	item.quantity = "5";
+    item.class ="dw.order.ProductLineItem";
+	item.productName = "foobar is my name";
+	item.productID = "11111111";
+	item.productCode = "";
+	items.add(item);
+	return items.iterator();	
+
+}

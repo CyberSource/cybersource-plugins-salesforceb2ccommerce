@@ -35,6 +35,7 @@ function execute( pdict : PipelineDictionary ) : Number
 			cardObject.setFullName       ( paymentInst.getCreditCardHolder() );
 			cardObject.setExpirationMonth( paymentInst.getCreditCardExpirationMonth() );
 			cardObject.setExpirationYear ( paymentInst.getCreditCardExpirationYear() );
+			if (!empty(paymentInst.getCreditCardToken())) {cardObject.setCreditCardToken ( paymentInst.getCreditCardToken() );}
 			cardObject.setCvNumber       ( pdict.CvNumber );
 			
 			cardType = paymentInst.getCreditCardType();
@@ -46,8 +47,9 @@ function execute( pdict : PipelineDictionary ) : Number
 
 		cardObject.setAccountNumber  ( creditCardForm.number.value );
 		cardObject.setFullName       ( creditCardForm.owner.value );
-		cardObject.setExpirationMonth( creditCardForm.month.value );
-		cardObject.setExpirationYear ( creditCardForm.year.value );
+		cardObject.setExpirationMonth( creditCardForm.expiration.month.value );
+		cardObject.setExpirationYear ( creditCardForm.expiration.year.value );
+		if (!empty(creditCardForm.subscriptionToken.value)) {cardObject.setCreditCardToken ( creditCardForm.subscriptionToken.value );}
 		cardObject.setCvNumber       ( creditCardForm.cvn.value );
 		
 		cardType = creditCardForm.type.value;

@@ -1,0 +1,94 @@
+/**
+*	OnDemandSubscription.ds
+*	Perfroms the on demand subscription info service and returns the response.
+*
+*	@input 	subscriptionID : String
+*	@input 	purchaseTotals : Object
+*
+*	@output amount : String
+* 	@output authorizationCode : String
+*	@output authorizedDateTime : String
+*	@output processorResponse : String
+*	@output reconciliationID : String
+*	@output decision : String
+* 	@output reasonCode : Object
+* 	@output requestID : Object
+* 	@output requestToken : Object
+* 	@output invalidField : Array
+* 	@output missingField : Array
+*
+*/
+importPackage( dw.system );
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value);
+
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_Card_Object.ds');
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/libCybersource.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+	var subscriptionID : String = pdict.subscriptionID;
+	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+	
+    var CybersourceHelper = getCybersourceHelper();
+	
+	
+	var csReference : WebReference = webreferences.CyberSourceTransaction;
+	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
+	
+	CybersourceHelper.setEndpoint(service);
+	
+	if(!CybersourceHelper.createHeader(service)){
+		return null;
+	}
+
+	var request = new csReference.RequestMessage();
+
+	CybersourceHelper.addOnDemandSubscriptionInfo(subscriptionID, request, purchaseObject, "test");
+	
+	var response = null;
+	// send request
+	try{
+		response = service.runTransaction(request);
+	}catch(e){
+		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}
+	
+	if(response == null){
+		return PIPELET_ERROR;
+	}
+	else
+	{
+		if(null!=response.ccAuthReply)
+		{
+			pdict.amount = response.ccAuthReply.amount;
+			pdict.authorizationCode = response.ccAuthReply.authorizationCode;
+			pdict.authorizedDateTime = response.ccAuthReply.authorizedDateTime;
+			pdict.processorResponse = response.ccAuthReply.processorResponse;
+			pdict.reasonCode = response.ccAuthReply.reasonCode;
+			pdict.reconciliationID = response.ccAuthReply.reconciliationID;
+			pdict.decision = response.decision;
+			pdict.requestID = response.requestID;
+			pdict.requestToken = response.requestToken;
+		}
+		else
+		{
+			pdict.decision = response.decision;
+			pdict.requestID = response.requestID;
+			pdict.requestToken = response.requestToken;
+			pdict.reasonCode = response.reasonCode;
+			pdict.invalidField = response.invalidField;
+			pdict.missingField = response.missingField;
+		}
+	}
+	return PIPELET_NEXT;
+}
+

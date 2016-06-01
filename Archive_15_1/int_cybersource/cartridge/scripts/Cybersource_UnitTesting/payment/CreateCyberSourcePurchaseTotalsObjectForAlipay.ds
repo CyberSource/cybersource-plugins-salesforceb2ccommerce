@@ -1,0 +1,45 @@
+/**
+*	 CreateCyberSourcePurchaseTotalsObjectForAlipay.ds
+*	 This script creates the mock purchase totals data object and set it to CyberSourcePurchaseTotals output object For Alipay Initiate Request.
+*
+*	@input currency : String
+*	@input amount : String
+*   @output CyberSourcePurchaseTotals : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.web);
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{  
+    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
+	var alipayPaymentType : String = Site.getCurrent().getCustomPreferenceValue('apPaymentType');	
+	/**
+	* It is mandatory for Alipay services.
+	* 
+	**/ 
+	if(pdict.currency != null) {
+		purchaseObject.setCurrency(pdict.currency);
+	} else {
+		if(!empty(alipayPaymentType) && alipayPaymentType.value.equals(Resource.msg('alipaycheckout.domesticpaymenttype', 'checkout', null))) {
+			purchaseObject.setCurrency("CNY");
+		} else {
+			purchaseObject.setCurrency("USD");
+		}
+	}
+	/***
+	 * It is mandatory for Alipay confirm purchase (The actual total amount of an order required here), Vme Transaction Details, optional for all services
+	 * 
+	 **/
+	if(pdict.amount != null){ 
+		var amount : Number = new Number(pdict.amount);
+	} else {
+		var amount : Number = new Number("200.00");
+	}	
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
+    
+    pdict.CyberSourcePurchaseTotals = purchaseObject;
+    
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,30 @@
+/**
+*	 CreateCreditCardData.ds
+*	 This script creates the mock credit card data object and set it to CreditCardData output object.
+*
+*    @input  payment : dw.order.PaymentInstrument
+*    @output CreditCardData : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+
+importScript('cybersource/Creditcardinfo.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+ 	var payment : PaymentInstrument = pdict.payment;
+ 	var CreditCardInfoHelper = getCreditCardInfoHelper();
+ 	//hard coded as payment.getCreditCardNumber() returns the masked number.
+ 	//normally you would be getting this from the form.
+    CreditCardInfoHelper.setAccountNumber("4111111111111111");
+	CreditCardInfoHelper.setCvNumber(payment.getCreditCardIssueNumber());
+	CreditCardInfoHelper.setFullName(payment.getCreditCardHolder());
+	CreditCardInfoHelper.setExpirationMonth(payment.getCreditCardExpirationMonth());
+	CreditCardInfoHelper.setExpirationYear(payment.getCreditCardExpirationYear());
+	CreditCardInfoHelper.setCardType(payment.getCreditCardType());
+    
+    pdict.CreditCardData = CreditCardInfoHelper;
+    
+    
+    return PIPELET_NEXT;
+}

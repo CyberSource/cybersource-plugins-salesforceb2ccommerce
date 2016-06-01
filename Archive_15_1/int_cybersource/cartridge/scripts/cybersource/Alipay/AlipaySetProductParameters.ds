@@ -1,0 +1,63 @@
+/**
+* 	AlipaySetProductParameters.ds
+* 	This script set the value of product name and product description which is require
+* 	as input to pass in initiate payment service request.
+*
+* 	@input Order : dw.order.LineItemCtnr
+* 	@output productObject : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.web);
+importPackage( dw.order);
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{	
+	//get the order lineitem from order object
+	var order : LineItemCtnr = pdict.Order;
+	var lineItems : Iterator = order.allLineItems.iterator();
+	var productObject : Object = new Object();
+
+	while(lineItems.hasNext()) {
+		//set the product line item to get the product name and description 
+		var lineItem : ProductLineItem = lineItems.next();
+		var productData : Object = new Object();
+		//get the value of alipay payment type from site preference
+    	var alipayPaymentType : String = Site.getCurrent().getCustomPreferenceValue('apPaymentType');
+		//set the value of product name and description if the line item is an instance of product line item
+		if(lineItem instanceof dw.order.ProductLineItem && !empty(lineItem.product)) {
+			var prodName : String = lineItem.product.name;
+			var prodDesc : String = lineItem.product.shortDescription.toString();
+			/*get the substring of product name and description to 35 and 65 as required by alipay initiate payment service 
+			in reference with payment type as domestic or international*/
+			if(!empty(alipayPaymentType) && alipayPaymentType.value.equals(Resource.msg('alipaycheckout.internationalpaymenttype', 'checkout', null))) {
+				if(!empty(prodName) && prodName.length > 35){
+					productData.productName = prodName.substr(0, 35);
+				} else {
+					productData.productName = prodName;
+				}
+				if(!empty(prodDesc) && prodDesc.length > 65){
+					productData.productDescription = prodDesc.substr(0, 65);
+				} else {
+					productData.productDescription = prodDesc;
+				}
+			} else {
+				if(!empty(prodName) && prodName.length > 105){
+					productData.productName = prodName.substr(0, 105);
+				} else {
+					productData.productName = prodName;
+				}
+				if(!empty(prodDesc) && prodDesc.length > 255){
+					productData.productDescription = prodDesc.substr(0, 255);
+				} else {
+					productData.productDescription = prodDesc;
+				}
+			}
+			//set the product data into an object
+			pdict.productObject = productData;
+		}
+	}
+	
+   	return PIPELET_NEXT;
+}

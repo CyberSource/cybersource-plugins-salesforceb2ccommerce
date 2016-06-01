@@ -1,0 +1,39 @@
+/**
+*	CreateCybersourcePurchaseTotalsObject.ds
+*	This script creates the PurchaseTotalsObject data object and set it to CybersourcePurchaseTotals output object.
+*	
+*	 @input Basket : dw.order.LineItemCtnr
+*    @output CyberSourcePurchaseTotals : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.order);
+importPackage( dw.value);
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : LineItemCtnr = pdict.Basket;
+  	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}
+    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
+    var amount : Money = new Money(0,basket.currencyCode);
+    var ccPaymentInstruments = basket.getPaymentInstruments();
+    for each (var pi : PaymentInstrument in ccPaymentInstruments) {
+    	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
+	    	{
+	    		amount = amount.add(pi.paymentTransaction.amount);
+	    	}
+    }
+	purchaseObject.setCurrency(amount.currencyCode);
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));
+    
+    pdict.CyberSourcePurchaseTotals = purchaseObject;
+    
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,28 @@
+/**
+*	 CreatePaymentInstrument.ds
+*	 This script creates the mock payment instrument data object and set it to payment output object.
+*
+*    @input Basket : dw.order.LineItemCtnr
+*    @output payment : dw.order.PaymentInstrument
+*
+*/
+importPackage( dw.system );
+importPackage(dw.order);
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : LineItemCtnr = pdict.Basket;
+	
+	var payment : PaymentInstrument ;
+	payment = basket.createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD, basket.totalGrossPrice);
+	payment.creditCardNumber = '4111111111111111';
+	payment.setCreditCardType('Visa');
+	payment.setCreditCardHolder('Donald Rivard');
+	payment.setCreditCardExpirationMonth(12);
+	payment.setCreditCardExpirationYear(2010);
+	payment.setCreditCardIssueNumber('321');
+	payment.setCreditCardValidFromMonth(12);
+	payment.setCreditCardValidFromYear(2010);
+	pdict.payment = payment;
+    return PIPELET_NEXT;
+}

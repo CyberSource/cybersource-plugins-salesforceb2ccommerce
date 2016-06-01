@@ -1,0 +1,76 @@
+<isinclude template="util/modules"/>
+<isset name="DecoratorTemplate" value="account/pt_account" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.ajax.stringValue == 'true' }">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+	
+	<h1>${Resource.msg('paymentinstrumentlist.addcard','account',null)}</h1>
+	<isif condition="${pdict.SubscriptionError != null}">
+					<div class="error-form">${Resource.msg('account.subscription','account',null)}</div>
+				</isif>
+
+		<form id="CreditCardForm" name="CreditCardForm" action="${URLUtils.httpsContinue()}"  method="post" id="newcreditcard">
+			
+			<fieldset>
+			
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.owner}" type="input" maxlength="40" size="40" attribute1="autocomplete" value1="off"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.type}" type="select"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.number}" p_dynamic="true" type="input" maxlength="16" size="17" attribute1="autocomplete" value1="off"/>
+				
+				<div class="form-label-text">
+					${Resource.msg('paymentinstrumentdetails.expires','account',null)}
+				</div>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.month}" type="select"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.newcreditcard.year}" type="select"/>
+				<!-- code comments for adding new billing fields..-->
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.firstname}" type="input"/>
+			
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.lastname}" type="input"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.address1}" type="input"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.address2}" type="input"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.country}" type="select"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.states.state}" type="select"/>			
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.city}" type="input"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.zip}" type="input"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.phone}" type="input"/>
+				
+				<isinputfield formfield="${pdict.CurrentForms.paymentinstruments.creditcards.address.email.emailAddress}" xhtmlclass="email" type="input"/>
+    	
+    	<!-- end code changes for billing fields. -->	
+					
+				<div class="form-row form-row-button">	
+					<button id="applyBtn" type="submit" value="${Resource.msg('global.apply','locale',null)}">
+						${Resource.msg('global.apply','locale',null)}
+					</button>	
+					<a href="${URLUtils.url('PaymentInstruments-List')}" class="button-secondary" >
+						${Resource.msg('global.cancel','locale',null)}
+					</a>
+				</div>
+				
+				<input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}"/>
+			
+			</fieldset>
+			
+		</form>
+
+	
+	<div class="confirmation-container dialog-content" id="confirmation-container" style="display:none;">
+		<div class="error-form">${Resource.msg('account.forbidden','account',null)}</div>
+		<button type="button">${Resource.msg('global.close','locale',null)}</button>			
+	</div>
+
+</isdecorate>

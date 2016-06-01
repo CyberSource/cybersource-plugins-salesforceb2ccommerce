@@ -1,0 +1,77 @@
+<style type="text/css">
+label {
+	width:300px;    /*Or however much space you need for the form’s labels*/
+    float:left;
+}
+td {
+	border-width: medium; 
+	border-style: outset;
+}
+</style>
+<iscomment>
+	This template will populate the result of view subscription
+</iscomment>
+<label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br/>
+<label><b>CyberSource Response for Invalid Field :</b></label>
+<isloop items="${pdict.invalidField}" alias="invalidField">									
+	<isprint value="${invalidField}">,
+</isloop>
+<br/>
+<label><b>CyberSource Response for Missing Field :</b></label>
+<isloop items="${pdict.missingField}" alias="missingField">									
+	<isprint value="${missingField}">,
+</isloop>
+<br/>
+<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.reasonCode}"><br>
+<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.requestID}"><br>
+<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.requestToken}"><br/>
+<label><b>approvalRequired :</b></label><isprint value="${pdict.response.approvalRequired}"><br/>
+<label><b>automaticRenew :</b></label><isprint value="${pdict.response.automaticRenew}"><br/>
+<label><b>billPayment :</b></label><isprint value="${pdict.response.billPayment}"><br/>
+<label><b>cardAccountNumber :</b></label><isprint value="${pdict.response.cardAccountNumber}"><br/>
+<label><b>cardExpirationMonth :</b></label><isprint value="${pdict.response.cardExpirationMonth}"><br/>
+<label><b>cardExpirationYear :</b></label><isprint value="${pdict.response.cardExpirationYear}"><br/>
+<label><b>cardIssueNumber :</b></label><isprint value="${pdict.response.cardIssueNumber}"><br/>
+<label><b>cardStartMonth :</b></label><isprint value="${pdict.response.cardStartMonth}"><br/>
+<label><b>cardStartYear :</b></label><isprint value="${pdict.response.cardStartYear}"><br/>
+<label><b>cardType :</b></label><isprint value="${pdict.response.cardType}"><br/>
+<label><b>checkAccountNumber :</b></label><isprint value="${pdict.response.checkAccountNumber}"><br/>
+<label><b>checkAuthenticateID :</b></label><isprint value="${pdict.response.checkAuthenticateID}"><br/>
+<label><b>checkBankTransitNumber :</b></label><isprint value="${pdict.response.checkBankTransitNumber}"><br/>
+<label><b>checkSecCode :</b></label><isprint value="${pdict.response.checkSecCode}"><br/>
+<label><b>city :</b></label><isprint value="${pdict.response.city}"><br/>
+<label><b>comments :</b></label><isprint value="${pdict.response.comments}"><br/>
+<label><b>companyName :</b></label><isprint value="${pdict.response.companyName}"><br/>
+<label><b>companyTaxID :</b></label><isprint value="${pdict.response.companyTaxID}"><br/>
+<label><b>country :</b></label><isprint value="${pdict.response.country}"><br/>
+<label><b>currency :</b></label><isprint value="${pdict.response.currency}"><br/>
+<label><b>dateOfBirth :</b></label><isprint value="${pdict.response.dateOfBirth}"><br/>
+<label><b>driversLicenseNumber :</b></label><isprint value="${pdict.response.driversLicenseState}"><br/>
+<label><b>driversLicenseState :</b></label><isprint value="${pdict.response.checkAccountType}"><br/>
+<label><b>email :</b></label><isprint value="${pdict.response.email}"><br/>
+<label><b>endDate :</b></label><isprint value="${pdict.response.endDate}"><br/>
+<label><b>firstName :</b></label><isprint value="${pdict.response.firstName}"><br/>
+<label><b>frequency :</b></label><isprint value="${pdict.response.frequency}"><br/>
+<label><b>lastName :</b></label><isprint value="${pdict.response.lastName}"><br/>
+<label><b>ownerMerchantID :</b></label><isprint value="${pdict.response.ownerMerchantID}"><br/>
+<label><b>paymentMethod :</b></label><isprint value="${pdict.response.paymentMethod}"><br/>
+<label><b>paymentsRemaining :</b></label><isprint value="${pdict.response.paymentsRemaining}"><br/>
+<label><b>phoneNumber :</b></label><isprint value="${pdict.response.phoneNumber}"><br/>
+<label><b>postalCode :</b></label><isprint value="${pdict.response.postalCode}"><br/>
+<label><b>reasonCode :</b></label><isprint value="${pdict.response.reasonCode}"><br/>
+<label><b>recurringAmount :</b></label><isprint value="${pdict.response.recurringAmount}"><br/>
+<label><b>setupAmount :</b></label><isprint value="${pdict.response.setupAmount}"><br/>
+<label><b>startDate :</b></label><isprint value="${pdict.response.startDate}"><br/>
+<label><b>state :</b></label><isprint value="${pdict.response.state}"><br/>
+<label><b>status :</b></label><isprint value="${pdict.response.status}"><br/>
+<label><b>street1 :</b></label><isprint value="${pdict.response.street1}"><br/>
+<label><b>street2 :</b></label><isprint value="${pdict.response.street2}"><br/>
+<label><b>subscriptionID :</b></label><isprint value="${pdict.response.subscriptionID}"><br/>
+<label><b>subscriptionIDNew :</b></label><isprint value="${pdict.response.subscriptionIDNew}"><br/>
+<label><b>title :</b></label><isprint value="${pdict.response.title}"><br/>
+<label><b>totalPayments :</b></label><isprint value="${pdict.response.totalPayments}"><br/>
+<br/><br/><br/>
+
+<b>To check for Subscription details, please log in to following link with your CyberSource Merchant ID and Password:</b><br/>
+<a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">CyberSource Test Account</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.http('Cybersource_Subscription-Start')}" >BACK</a>

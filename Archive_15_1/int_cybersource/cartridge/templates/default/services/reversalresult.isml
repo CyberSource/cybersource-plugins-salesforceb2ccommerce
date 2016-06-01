@@ -1,0 +1,34 @@
+<style type="text/css">
+label {
+	width:300px;    /*Or however much space you need for the form’s labels*/
+    float:left;
+}
+td {
+	border-width: medium; 
+	border-style: outset;
+}
+</style>
+<iscomment>
+	This template will populate Test result of reversal.
+</iscomment>
+<label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br>
+<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.reasonCode}"><br>
+<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.requestID}"><br>
+<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.requestToken}"><br/>
+<label><b>Amount :</b></label><isprint value="${pdict.amount}"><br/>
+<label><b>Authorization Code :</b></label><isprint value="${pdict.authorizationCode}"><br/>
+<label><b>Processor Response :</b></label><isprint value="${pdict.processorResponse}"><br/><br/><br/>
+<label><b>CyberSource Response for Invalid Field :</b></label>
+<isloop items="${pdict.invalidField}" alias="invalidField">									
+	<isprint value="${invalidField}">,
+</isloop>
+<br>
+<label><b>CyberSource Response for Missing Field :</b></label>
+<isloop items="${pdict.missingField}" alias="missingField">									
+	<isprint value="${missingField}">,
+</isloop>
+<br>
+
+<b>To check for Subscription details, please log in to following link with your CyberSource Merchant ID and Password:</b><br/>
+<a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">CyberSource Test Account</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.http('Cybersource_Services-Start')}" >BACK</a>

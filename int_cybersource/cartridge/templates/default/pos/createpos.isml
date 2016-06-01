@@ -15,7 +15,7 @@ td {
 </iscomment>
 <isinclude template="util/modules"/>
 <h2><center><b><u>POS Transaction Test Page</u></b></center></h2><br/><br/>
-<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+<form action="${URLUtils.https(pdict.ActionPOS,'service','pos')}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
 	<div id="entry-mode">
 		<isinputfield formfield="${pdict.CurrentForms.pos.entryMode}" type="select"/>
 		<isinputfield formfield="${pdict.CurrentForms.pos.storeLocation}" type="input"/>

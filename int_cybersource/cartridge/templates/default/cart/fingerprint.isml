@@ -15,7 +15,7 @@ Test = 1snn5n9w
 Production = k8vif92e
 --->
 <isset name="location" value="${pdict.DeviceFingerprintJetmetrixLocation}" scope="page" />
-<isset name="session_id" value="${pdict.MerchantId + "" + pdict.SessionId}" scope="page" /> 
+<isset name="session_id" value="${pdict.MerchantId + "" + pdict.SessionId}" scope="page" />  
 <!--- Test redirection --->
 
 <!---

@@ -42,4 +42,8 @@
 </isif>
 
 <br/>
-<a href="${dw.web.URLUtils.http('CybersourceUnitTesting-StartPOS')}">Back to Test Page</a>
+<isif condition="${pdict.ActionPOS.equals('Cybersource_POS-TestAuthorizePOS')}"> 
+<a href="${dw.web.URLUtils.https(pdict.ActionPOS)}">Back to Test Page</a>
+<iselse>
+<a href="${dw.web.URLUtils.https('CybersourceUnitTesting-StartPOS')}">Back to Test Page</a>
+</isif>

@@ -1,0 +1,90 @@
+/**
+*	UpdateSubscription.ds
+*	Perfroms the update subscription info service and returns the response.
+*
+* 	@input 	billTo : Object
+* 	@input 	card : Object
+* 	@input 	purchaseTotals : Object 
+* 	@input 	storedSubscriptionID : String
+*
+*	@output decision :String
+* 	@output invalidField : Array;
+* 	@output missingField : Array
+* 	@output reasonCode : Object
+* 	@output requestID : Object
+* 	@output requestToken : Object
+* 	@output NewSubscriptionID : String
+*
+*/
+importPackage( dw.system );
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value);
+
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+importScript('cybersource/Cybersource_Card_Object.ds');
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/libCybersource.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var billToObject: BillTo_Object = pdict.billTo;
+	var cardObject: Card_Object = pdict.card;
+	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+	var storedSubscriptionID : String = pdict.storedSubscriptionID;
+	
+	var CybersourceHelper = getCybersourceHelper();
+	
+	
+	var csReference : WebReference = webreferences.CyberSourceTransaction;
+	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
+	
+	CybersourceHelper.setEndpoint(service);
+	
+	if(!CybersourceHelper.createHeader(service)){
+		Logger.error("[UpdateSubscription.ds] Not able to create service header");
+		return PIPELET_ERROR;
+	}
+
+	var request = new csReference.RequestMessage();
+
+	CybersourceHelper.addSubscriptionUpdateInfo(
+					request,billToObject,purchaseObject,cardObject,storedSubscriptionID);
+	
+	var response = null;
+	// send request
+	try{
+		response = service.runTransaction(request);
+	}catch(e){
+		pdict.CybersourceUnavailableFlag = "true";
+		Logger.error("[UpdateSubscription.ds] Error in Service Call",e.message);
+		return PIPELET_ERROR;
+	}
+	
+	if(response == null){
+		Logger.error("[UpdateSubscription.ds] response is null");
+		return PIPELET_ERROR;
+	}
+	
+	else
+	{
+		pdict.requestID = response.requestID;
+		pdict.requestToken = response.requestToken;
+		pdict.reasonCode = response.reasonCode;
+		pdict.decision = response.decision;
+		pdict.invalidField = response.invalidField;
+		pdict.missingField = response.missingField;
+		if(null != response.paySubscriptionUpdateReply){
+			pdict.NewSubscriptionID = response.paySubscriptionUpdateReply.subscriptionIDNew;
+		}
+	}
+	
+
+	Logger.info("[UpdateSubscriptionID.ds] Leaving");
+    return PIPELET_NEXT;
+}
+

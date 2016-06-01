@@ -4,7 +4,7 @@
 <iscontent type="text/html" charset="UTF-8" compact="true">
 
 <isset name="location" value="${pdict.DeviceFingerprintJetmetrixLocation}" scope="page" />
-<isset name="session_id" value="${pdict.MerchantId + "" + pdict.SessionId}" scope="page" />
+<isset name="session_id" value="${pdict.MerchantId + pdict.SessionId}" scope="page" />
 
 
 <isscript>

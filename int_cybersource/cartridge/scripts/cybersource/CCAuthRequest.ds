@@ -25,6 +25,7 @@
 * @input CommerceIndicator : String The cybersource PAValidate reply field
 * @input XID : String The cybersource PAValidate reply field - A unique transaction ID generated for each payment authentication request (PAReq) message. The PARes returned by issuing bank contains the XID of the PAReq.
 * @input ECIRaw : String The cybersource PAValidate reply field - Electronic commerce indicator (ECI) value that may be returned for Visa, MasterCard, and JCB
+* @input SubscriptionID :String Token
 *
 * @output Decision : String The decision of the complete request, one of ACCEPT, REJECT, or ERROR
 * @output ReasonCode : Number The global reason code returned by Cybersource (100 = Success)
@@ -53,7 +54,7 @@ importScript('cybersource/Cybersource_ShipTo_Object.ds');
 importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -82,7 +83,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	//**************************************************************************//	
 	var CybersourceHelper = getCybersourceHelper();	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+/*	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	CybersourceHelper.setEndpoint(service);
 
@@ -90,25 +91,31 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		return PIPELET_ERROR;
 	}
-	
+	*/
 
-	//**************************************************************************//
-	// the request object holds the input parameter for the AUTH request
-	//**************************************************************************//	
 	var request = new csReference.RequestMessage();
-	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), pdict.item);		
-	if(pdict.XID != null)
-	{
-		CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID, pdict.ParesStatus);
+	//**************************************************************************//
+	// the request object holds the input parameter for the OnDemand Subscription request
+	//**************************************************************************//	
+	if (!empty(pdict.SubscriptionID)) {
+		CybersourceHelper.addOnDemandSubscriptionInfo(pdict.SubscriptionID, request, purchaseObject,orderNo);
 	}
 	
 	/********************************/
 	/* TOKEN-related WebService setup */
 	/********************************/
 	var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
-	if(enableTokenization=='YES')
+	if(enableTokenization=='YES' && empty(pdict.SubscriptionID))
+	{
 		CybersourceHelper.addPaySubscriptionCreateService(request,billToObject,purchaseObject,cardObject,pdict.OrderNo);
+	}
 	
+	//**************************************************************************//
+	// the request object holds the input parameter for the AUTH request
+	//**************************************************************************//	
+	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), pdict.item);		
+	CybersourceHelper.addPayerAuthReplyInfo(request, pdict.CAVV, pdict.UCAFAuthenticationData, pdict.UCAFCollectionIndicator, pdict.ECIRaw, pdict.CommerceIndicator, pdict.XID, pdict.ParesStatus);
+
 	/********************************/
 	/* DAV-related WebService setup */
 	/********************************/	
@@ -137,7 +144,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	try
 	{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}
 	catch(e)
 	{
@@ -154,12 +162,12 @@ function execute( pdict : PipelineDictionary ) : Number
 	Logger.debug(response);
 	
 	
-	if(response == null)
+	if(empty(response) || response.status != "OK")
 	{
 		Logger.getRootLogger().fatal("[libCybersource.ds] Error in CCAuthRequestInfo: null response");
 		return PIPELET_ERROR;
 	}
-		
+	response = response.object;	
 	//**************************************************************************//
 	// Process Response
 	//**************************************************************************//		
@@ -202,9 +210,21 @@ function execute( pdict : PipelineDictionary ) : Number
 			stdAddress.address1 = response.davReply.standardizedAddress1;
 			stdAddress.address2 = response.davReply.standardizedAddress2;
 			stdAddress.city = response.davReply.standardizedCity;
+			//Defect fix: CYB-92 : DAV Country province code 
+		if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") == false)
+			stdAddress.state = pdict.shipTo.state;
+		else
 			stdAddress.state = response.davReply.standardizedState;
+				//The second fix addressed the issue for Gift Certs when there is no shipto info:
+ 		if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") == true)
+			stdAddress.state = response.davReply.standardizedState;
+		else if(!empty(pdict.shipTo.state))
+			stdAddress.state = pdict.shipTo.state;
+		else
+			stdAddress.state = pdict.billTo.state;
 			stdAddress.postalCode = response.davReply.standardizedPostalCode;
-			stdAddress.country = response.davReply.standardizedCountry;
+			//Fix for CYB-91: DAV Country code 
+			stdAddress.country = response.davReply.standardizedISOCountry;
 			pdict.StandardizedAddress = stdAddress;
 		}
 	}

@@ -48,7 +48,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/BillTo/CreateCybersourceBillToObject.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
           <key-binding alias="billto" key="CyberSourceBillTo"/>
           <key-binding alias="CurrentRequest.httpHeaders[&quot;x-is-remote_addr&quot;]" key="ipAddress"/>
           <key-binding alias="CurrentForms.billing.paymentMethods.bml" key="BMLForm"/>
@@ -134,7 +134,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/ShipTo/CreateCybersourceShipToObject.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
           <key-binding alias="shipto" key="CybersourceBillTo"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
@@ -212,7 +212,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/PurchaseTotals/CreateCybersourcePurchaseTotalsObject.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
           <key-binding alias="purchaseTotals" key="CybersourcePurchaseTotals"/>
           <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
         </pipelet-node>
@@ -349,7 +349,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/PaymentCard/CreateCybersourcePaymentCardObject.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
           <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardForm"/>
           <key-binding alias="card" key="CybersourceCard"/>
           <key-binding alias="ReadFromForm" key="ReadFromForm"/>
@@ -569,7 +569,7 @@
           <config-property key="ScriptFile" value="cybersource/Taxation/CreateCybersourceTaxationPurchaseTotalsObject.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="purchaseTaxTotals" key="CybersourcePurchaseTotals"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
@@ -807,7 +807,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/Item/CreateCybersourceItemObject.ds"/>
           <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
           <key-binding alias="item" key="CyberSourceItem"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
@@ -989,10 +989,14 @@
         <join-node/>
         <node-display x="2" y="1"/>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <end-node/>
-        <node-display orientation="horizontal" x="1" y="0"/>
+        <node-display orientation="horizontal" x="2" y="0"/>
       </node>
     </segment>
   </branch>
@@ -1041,7 +1045,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/Item/CreateCybersourceItemForPaypal.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="Basket != null ? Basket : Order" key="Basket"/>
           <key-binding alias="paypalOrigin" key="PaypalOrigin"/>
           <key-binding alias="item" key="CyberSourceItem"/>
         </pipelet-node>

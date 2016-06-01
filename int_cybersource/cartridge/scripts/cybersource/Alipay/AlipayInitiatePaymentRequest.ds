@@ -21,7 +21,7 @@ importPackage( dw.system );
 
 importScript('cybersource/libCybersource.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 	//set the order object, purchase object and return URL from pipeline dictionary
@@ -32,14 +32,14 @@ function execute( pdict : PipelineDictionary ) : Number
    	//create service stubs
    	var CybersourceHelper = getCybersourceHelper();	
    	var csReference : WebReference = webreferences.CyberSourceTransaction;
-   	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+   	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
    	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
    	CybersourceHelper.setEndpoint(service);
 
 	if(!CybersourceHelper.createHeader(service))
 	{
 		return PIPELET_ERROR;
-	}
+	}*/
 	
 	//set alipay payment type to pass it as input in request
 	var alipayPaymentType : String = CybersourceHelper.getAlipayPaymentType();
@@ -51,7 +51,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	//get the response in response object
 	try
 	{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}
 	catch(e)
 	{
@@ -69,12 +70,12 @@ function execute( pdict : PipelineDictionary ) : Number
 	Logger.debug(response);
 	
 	//log the response in case of error scenario
-	if(response == null)
+	if(empty(response) || response.status != "OK")
 	{
 		Logger.getRootLogger().fatal("[libCybersource.ds] Error : null response");
 		return PIPELET_ERROR;
 	}
-	
+	response = response.object;
 	//setting the payment type from request object
 	pdict.InitiatePaymentType = request.apPaymentType;
 	//set response values in pipeline dictionary

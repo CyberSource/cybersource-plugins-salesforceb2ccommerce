@@ -13,7 +13,7 @@
 		</div>
 		<iframe name="PAFrame" width="400" height="500" src="" style="border: none;">${Resource.msg('cart.payerauthentication.003','cart','')}</iframe>
 		<form action="${pdict.AcsURL}" method="POST" name="PAInfoForm" target="PAFrame">
-			<input type="hidden" name="TermUrl" value="${URLUtils.httpsContinue()}">
+			<input type="hidden" name="TermUrl" value="${URLUtils.https('COPlaceOrder-Submit','order_token',pdict.Order.orderToken,'PAXID',pdict.PAXID)}">
 			<input type="hidden" name="PaReq" value="${pdict.PAReq}">
 			<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
 		</form>

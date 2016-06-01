@@ -1,0 +1,67 @@
+/**
+* Cybersource_PurchaseTotals_Object.ds
+* This Object is used for the Cybersource PurchaseTotals xsd
+*/
+function PurchaseTotals_Object() {
+
+	this.grandTotalAmount = "";
+	this.setGrandTotalAmount = setGrandTotalAmount;
+	this.getGrandTotalAmount = getGrandTotalAmount;
+	
+	this.currency = "";
+	this.setCurrency = setCurrency;
+	this.getCurrency = getCurrency;
+	
+	this.discountAmount = "";
+	this.setDiscountAmount = setDiscountAmount;
+	this.getDiscountAmount = getDiscountAmount;
+	
+	this.taxAmount = "";
+	this.setTaxAmount = setTaxAmount;
+	this.getTaxAmount = getTaxAmount;
+	
+	this.dutyAmount = "";
+	this.setDutyAmount = setDutyAmount;
+	this.getDutyAmount = getDutyAmount;
+	
+	this.freightAmount = "";
+	this.setFreightAmount = setFreightAmount;
+	this.getFreightAmount = getFreightAmount;
+}
+
+function setGrandTotalAmount(value){
+	this.grandTotalAmount = value;
+}
+function getGrandTotalAmount(){
+	return this.grandTotalAmount;
+}
+function setCurrency(value){
+	this.currency = value;
+}
+function getCurrency(){
+	return this.currency;
+}
+function setDiscountAmount(value){
+	this.discountAmount = value;
+}
+function getDiscountAmount(){
+	return this.discountAmount;
+}
+function setTaxAmount(value){
+	this.taxAmount = value;
+}
+function getTaxAmount(){
+	return this.taxAmount;
+}
+function setDutyAmount(value){
+	this.dutyAmount = value;
+}
+function getDutyAmount(){
+	return this.dutyAmount;
+}
+function setFreightAmount(value){
+	this.freightAmount = value;
+}
+function getFreightAmount(){
+	return this.freightAmount;
+}									

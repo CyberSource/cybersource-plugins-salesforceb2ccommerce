@@ -1,0 +1,76 @@
+/**
+*	 CreateCybersourceItemObject.ds
+*	 This script creates the ItemObject data object and set it to CyberSourceItem output object.
+*
+*	 @input Basket : dw.order.LineItemCtnr
+*    @output CyberSourceItem : Array
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.order );
+importScript('cybersource/Cybersource_Item_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	
+	var basket : LineItemCtnr = pdict.Basket;
+	var lineItems : Iterator = basket.allLineItems.iterator();
+	var itemObjects : Array = new Array();
+	var count : Number = 1;
+	while(lineItems.hasNext())
+	{
+		var lineItem : ProductLineItem = lineItems.next();
+		var itemObject: Item_Object = new Item_Object();
+		if(lineItem instanceof dw.order.ProductLineItem)
+		{
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.proratedPrice.value,"000000.00","en_US"));
+			itemObject.setQuantity(lineItem.quantityValue);
+			itemObject.setProductCode("default");
+			itemObject.setProductName(lineItem.productName);
+			itemObject.setProductSKU(lineItem.productID);
+			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.GiftCertificateLineItem)
+		{
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.grossPrice.value,"000000.00","en_US"));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode("GIFT_CERTIFICATE");
+			itemObject.setProductName("GIFT_CERTIFICATE");
+			itemObject.setProductSKU("GIFT_CERTIFICATE");
+			itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00","en_US"));
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.ShippingLineItem)
+		{
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00","en_US"));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode(lineItem.ID);
+			itemObject.setProductName(lineItem.ID);
+			itemObject.setProductSKU(lineItem.ID);
+			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.ProductShippingLineItem)
+		{
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00","en_US"));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode("SHIPPING_SURCHARGE");
+			itemObject.setProductName("SHIPPING_SURCHARGE");
+			itemObject.setProductSKU("SHIPPING_SURCHARGE");
+			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setId(count);
+		}
+		if(!(lineItem instanceof dw.order.PriceAdjustment))
+		{
+			count = count+1;
+			itemObjects.push(itemObject);	
+		}
+		
+
+	}
+	pdict.CyberSourceItem = itemObjects;
+	
+    return PIPELET_NEXT;
+}

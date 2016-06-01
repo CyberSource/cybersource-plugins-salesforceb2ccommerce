@@ -31,8 +31,9 @@ importScript('cybersource/Cybersource_BillTo_Object.ds');
 importScript('cybersource/Cybersource_ShipTo_Object.ds');
 importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/Cybersource_Item_Object.ds');
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 var numbersOnlyRegExp : RegExp = /\D/g;
 function execute( pdict : PipelineDictionary ) : Number
 {
@@ -48,18 +49,23 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	
 	CybersourceHelper.setEndpoint(service);
 	
 	if(!CybersourceHelper.createHeader(service)){
 		return null;
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
+	var itemObject: Item_Object = new Item_Object();
+	itemObject.setUnitPrice(10,"000000.00","en_US");
+	itemObject.setId(1);
+	var itemObjects : ArrayList = new ArrayList();
+	itemObjects.add(itemObject);
 	
-	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,"test",CybersourceHelper.getDigitalFingerprintEnabled(),null);
+	CybersourceHelper.addCCAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,"test",CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
 	
 	/********************************/
 	/* DAV-related WebService setup */
@@ -87,16 +93,18 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	// send request
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}catch(e){
 		Logger.error("[libCybersource.ds] Error in taxation request ( {0} )",e.message);
 		return PIPELET_ERROR;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		return PIPELET_ERROR;
 	}
 	
+	response = response.object;
 	pdict.RequestID = response.requestID;
 	pdict.RequestToken = response.requestToken;
 	pdict.ReasonCode = response.reasonCode.get();

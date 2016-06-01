@@ -1,0 +1,79 @@
+/**
+*  
+* This script is used to parse an incoming Decision Manager Request and set contained orders to the appropriate state
+*
+* @input xmlString : String content that was posted
+* @output acceptedOrders : dw.util.Set finally accepted orders
+* @output declinedOrders : dw.util.Set finally declined orders
+*
+*/
+
+/*
+Sample XML and url call to test NewDecision
+
+http://<sandbox>/on/demandware.store/Sites-<store>-Site/default/Cybersource-NewDecision?content=<xml content>
+http://dev.web.client.demandware.net/on/demandware.store/Sites-<siteName>-Site/default/Cybersource-NewDecision?content=<?xml%20version="1.0"%20encoding="utf-8"?><!DOCTYPE%20CaseManagementOrderStatus%20SYSTEM%20"https://ebctest.cybersource.com/ebctest/%20reports/dtd/cmorderstatus_1_1.dtd"><CaseManagementOrderStatus%20MerchantID="sample_merchant"%20Name="Case%20Management%20Order%20Status"%20Date="2008-12-18%2012:22:09%20GMT"%20Version="1.1"%20nxmlns="http://reports.cybersource.com/reports/cmos/1.0"><Update%20MerchantReferenceNumber="10679256010963322294714"%20RequestID="1744185012770167904567"><OriginalDecision>REVIEW</OriginalDecision><NewDecision>ACCEPT</NewDecision><Reviewer>sample_reviewer</Reviewer><ReviewerComments>sample_comment</ReviewerComments><Queue>sample_queue</Queue><Profile>test</Profile><FollowonResult><Status>Success</Status><Application>Credit%20Card%20Settlement</Application><RequestID>1744185012770167904567</RequestID><Decision>Accept</Decision><ReasonCode>100</ReasonCode><RCode>1</RCode><RFlag>SOK</RFlag><RMsg>Request%20was%20processed%20successfully.</RMsg></FollowonResult></Update></CaseManagementOrderStatus>
+http://dev.web.client.demandware.net/on/demandware.store/Sites-<siteName>-Site/default/Cybersource-NewDecision?content=<?xml version="1.0" encoding="utf-8"?><!DOCTYPE CaseManagementOrderStatus SYSTEM "https://ebctest.cybersource.com/ebctest/ reports/dtd/cmorderstatus_1_1.dtd"><CaseManagementOrderStatus MerchantID="sample_merchant" Name="Case Management Order Status" Date="2008-12-18 12:22:09 GMT" Version="1.1" nxmlns="http://reports.cybersource.com/reports/cmos/1.0"><Update MerchantReferenceNumber="10679256010963322294714" RequestID="1744185012770167904567"><OriginalDecision>REVIEW</OriginalDecision><NewDecision>ACCEPT</NewDecision><Reviewer>sample_reviewer</Reviewer><ReviewerComments>sample_comment</ReviewerComments><Queue>sample_queue</Queue><Profile>test</Profile><FollowonResult><Status>Success</Status><Application>Credit Card Settlement</Application><RequestID>1744185012770167904567</RequestID><Decision>Accept</Decision><ReasonCode>100</ReasonCode><RCode>1</RCode><RFlag>SOK</RFlag><RMsg>Request was processed successfully.</RMsg></FollowonResult></Update></CaseManagementOrderStatus>
+*/
+
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var xmlString : String = pdict.xmlString;
+	var declinedOrders : HashSet = new HashSet(); 
+	var acceptedOrders : HashSet = new HashSet(); 
+	
+	Logger.debug("Entering Determine New Decision ------- ");
+	
+	if (!empty(xmlString) && xmlString.length>0)
+	{
+		//create hashmap of orders based on the query below
+		var query : String = "exportStatus =" + Order.EXPORT_STATUS_NOTEXPORTED + "d";
+			query += " and confirmationStatus =0d";
+			query += " and status !=" + Order.ORDER_STATUS_CANCELLED + "d";
+		var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
+		var orderHashMap : HashMap = new HashMap();
+		if (!empty(orderIterator))
+		{
+			while (orderIterator.hasNext())
+			{
+				var order : Order = orderIterator.next();
+				var transactionID : String = order.paymentTransaction.transactionID;
+				orderHashMap.put(transactionID, order);
+			}
+		}
+		Logger.debug("unconfirmend orders - " + orderHashMap.length);
+		xmlString = xmlString.replace("<!DOCTYPE CaseManagementOrderStatus SYSTEM \"https://ebctest.cybersource.com/ebctest/reports/dtd/cmorderstatus_1_1.dtd\">", "");
+    	var xmlDocument : XML = new XML(xmlString);
+		var ns = new Namespace("http://reports.cybersource.com/reports/cmos/1.0");
+		
+		Logger.debug("Processing orders xml ......");
+		for each (var xmlConversion in xmlDocument.ns::Update)
+		{
+			var order : Order = orderHashMap.get(xmlConversion.@RequestID.toString());
+			Logger.debug("Order Id - " + xmlConversion.@RequestID.toString());
+			if (order != null) {
+				//new decision ACCEPT decision applied to order
+				if (xmlConversion.ns::NewDecision.toString() == 'ACCEPT') {
+					acceptedOrders.add(order);
+					order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+					
+				//new decision REJECT decision applied to order
+				} else if (xmlConversion.ns::NewDecision.toString() == 'REJECT') { 
+					declinedOrders.add(order);
+					order.setStatus(Order.ORDER_STATUS_CANCELLED);
+				} else {
+					//do nothing
+				}
+			} else {
+				Logger.debug(" Order not found");
+			}
+		}
+	}
+	pdict.acceptedOrders = acceptedOrders;
+	pdict.declinedOrders = declinedOrders;
+    return PIPELET_NEXT;
+}

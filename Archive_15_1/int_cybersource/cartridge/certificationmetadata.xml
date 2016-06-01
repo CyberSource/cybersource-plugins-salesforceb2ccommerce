@@ -1,0 +1,46 @@
+<certification>
+	<cartridgeInfo>
+		<name>Cybersource</name>
+		<version>2.1.1</version>
+		<implementer>Sapient</implementer>
+	</cartridgeInfo>
+	<certificationInfo>
+		<certificationID>155</certificationID>
+		<certifiedby>
+			Brian LeBlanc
+		</certifiedby>
+		<date>
+			November 7, 2013
+		</date>
+		<platform>
+			<version>13.6</version>
+			<storefront>13.5</storefront>
+		</platform>
+		<usecases>
+			<usecase>
+				<description>
+					Tax Integration
+				</description>
+				<steps>
+					1.  Add items to the basket
+					2.  Proceed to checkout
+					3.  Provide a shipping address in a state where there are taxes
+					4.  Verify that the correct tax rate is applied to the basket
+				</steps>
+			</usecase>
+			<usecase>
+				<description>
+					V.me Integration
+				</description>
+				<steps>
+					1.  Add items to the cart
+					2.  Proceed to checkout
+					3.  Provide shipping information
+					4.  Provide billing information
+					5.  Choose v.me as the payment instrument
+					6.  Verify that the order is generated successfully
+				</steps>
+			</usecase>
+		</usecases>
+	</certificationInfo>
+</certification>

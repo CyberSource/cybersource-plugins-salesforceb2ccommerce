@@ -1,0 +1,608 @@
+/**
+* Cybersource_Item_Object.ds
+* This Object is used for the Cybersource Item xsd
+*/
+function Item_Object() {
+	
+	this.unitPrice = "";
+	this.setUnitPrice = setUnitPrice;
+	this.getUnitPrice = getUnitPrice;
+	
+	this.quantity = "";
+	this.setQuantity = setQuantity;
+	this.getQuantity = getQuantity;
+	
+	this.productCode = "";
+	this.setProductCode = setProductCode;
+	this.getProductCode = getProductCode;
+	
+	this.productName = "";
+	this.setProductName = setProductName;
+	this.getProductName = getProductName;
+	
+	this.productSKU = "";
+	this.setProductSKU = setProductSKU;
+	this.getProductSKU = getProductSKU;
+	
+	this.productRisk = "";
+	this.setProductRisk = setProductRisk;
+	this.getProductRisk = getProductRisk;
+	
+	this.taxAmount = "";
+	this.setTaxAmount = setTaxAmount;
+	this.getTaxAmount = getTaxAmount;
+	
+	this.cityOverrideAmount = "";
+	this.setCityOverrideAmount = setCityOverrideAmount;
+	this.getCityOverrideAmount = getCityOverrideAmount;
+	
+	this.cityOverrideRate = "";
+	this.setCityOverrideRate = setCityOverrideRate;
+	this.getCityOverrideRate = getCityOverrideRate;
+	
+	this.countyOverrideAmount = "";
+	this.setCountyOverrideAmount = setCountyOverrideAmount;
+	this.getCountyOverrideAmount = getCountyOverrideAmount;
+	
+	this.countyOverrideRate = "";
+	this.setCountyOverrideRate = setCountyOverrideRate;
+	this.getCountyOverrideRate = getCountyOverrideRate;
+	
+	this.districtOverrideAmount = "";
+	this.setDistrictOverrideAmount = setDistrictOverrideAmount;
+	this.getDistrictOverrideAmount = getDistrictOverrideAmount;
+	
+	this.districtOverrideRate = "";
+	this.setDistrictOverrideRate = setDistrictOverrideRate;
+	this.getDistrictOverrideRate = getDistrictOverrideRate;
+	
+	this.stateOverrideAmount = "";
+	this.setStateOverrideAmount = setStateOverrideAmount;
+	this.getStateOverrideAmount = getStateOverrideAmount;
+	
+	this.stateOverrideRate = "";
+	this.setStateOverrideRate = setStateOverrideRate;
+	this.getStateOverrideRate = getStateOverrideRate;
+	
+	this.orderAcceptanceCity = "";
+	this.setOrderAcceptanceCity = setOrderAcceptanceCity;
+	this.getOrderAcceptanceCity = getOrderAcceptanceCity;
+	
+	this.orderAcceptanceCounty = "";
+	this.setOrderAcceptanceCounty = setOrderAcceptanceCounty;
+	this.getOrderAcceptanceCounty = getOrderAcceptanceCounty;
+	
+	this.orderAcceptanceCountry = "";
+	this.setOrderAcceptanceCountry = setOrderAcceptanceCountry;
+	this.getOrderAcceptanceCountry = getOrderAcceptanceCountry;
+	
+	this.orderAcceptanceState = "";
+	this.setOrderAcceptanceState = setOrderAcceptanceState;
+	this.getOrderAcceptanceState = getOrderAcceptanceState;
+	
+	this.orderAcceptancePostalCode = "";
+	this.setOrderAcceptancePostalCode = setOrderAcceptancePostalCode;
+	this.getOrderAcceptancePostalCode = getOrderAcceptancePostalCode;
+	
+	this.orderOriginCity = "";
+	this.setOrderOriginCity = setOrderOriginCity;
+	this.getOrderOriginCity = getOrderOriginCity;
+	
+	this.orderOriginCounty = "";
+	this.setOrderOriginCounty = setOrderOriginCounty;
+	this.getOrderOriginCounty = getOrderOriginCounty;
+	
+	this.orderOriginCountry = "";
+	this.setOrderOriginCountry = setOrderOriginCountry;
+	this.getOrderOriginCountry = getOrderOriginCountry;
+	
+	this.orderOriginState = "";
+	this.setOrderOriginState = setOrderOriginState;
+	this.getOrderOriginState = getOrderOriginState;
+	
+	this.orderOriginPostalCode = "";
+	this.setOrderOriginPostalCode = setOrderOriginPostalCode;
+	this.getOrderOriginPostalCode = getOrderOriginPostalCode;
+	
+	this.shipFromCity = "";
+	this.setShipFromCity = setShipFromCity;
+	this.getShipFromCity = getShipFromCity;
+	
+	this.shipFromCounty = "";
+	this.setShipFromCounty = setShipFromCounty;
+	this.getShipFromCounty = getShipFromCounty;
+	
+	this.shipFromCountry = "";
+	this.setShipFromCountry = setShipFromCountry;
+	this.getShipFromCountry = getShipFromCountry;
+	
+	this.shipFromState = "";
+	this.setShipFromState = setShipFromState;
+	this.getShipFromState = getShipFromState;
+	
+	this.shipFromPostalCode = "";
+	this.setShipFromPostalCode = setShipFromPostalCode;
+	this.getShipFromPostalCode = getShipFromPostalCode;
+	
+	this.Export = "";
+	this.setExport = setExport;
+	this.getExport = getExport;
+	
+	this.nationalTax = "";
+	this.setNationalTax = setNationalTax;
+	this.getNationalTax = getNationalTax;
+	
+	this.varRate = "";
+	this.setVarRate = setVarRate;
+	this.getVarRate = getVarRate;
+	
+	this.sellerRegistration = "";
+	this.setSellerRegistration = setSellerRegistration;
+	this.getSellerRegistration = getSellerRegistration;
+	
+	this.buyerRegistration = "";
+	this.setBuyerRegistration = setBuyerRegistration;
+	this.getBuyerRegistration = getBuyerRegistration;
+	
+	this.middlemanRegistration = "";
+	this.setMiddlemanRegistration = setMiddlemanRegistration;
+	this.getMiddlemanRegistration = getMiddlemanRegistration;
+	
+	this.pointOfTitleTransfer = "";
+	this.setPointOfTitleTransfer = setPointOfTitleTransfer;
+	this.getPointOfTitleTransfer = getPointOfTitleTransfer;
+	
+	this.giftCategory = "";
+	this.setGiftCategory = setGiftCategory;
+	this.getGiftCategory = getGiftCategory;
+	
+	this.timeCategory = "";
+	this.setTimeCategory = setTimeCategory;
+	this.getTimeCategory = getTimeCategory;
+	
+	this.hostHedge = "";
+	this.setHostHedge = setHostHedge;
+	this.getHostHedge = getHostHedge;
+	
+	this.timeHedge = "";
+	this.setTimeHedge = setTimeHedge;
+	this.getTimeHedge = getTimeHedge;
+	
+	this.velocityHedge = "";
+	this.setVelocityHedge = setVelocityHedge;
+	this.getVelocityHedge = getVelocityHedge;
+	
+	this.nonsensicalHedge = "";
+	this.setNonsensicalHedge = setNonsensicalHedge;
+	this.getNonsensicalHedge = getNonsensicalHedge;
+	
+	this.phoneHedge = "";
+	this.setPhoneHedge = setPhoneHedge;
+	this.getPhoneHedge = getPhoneHedge;
+	
+	this.unitOfMeasure = "";
+	this.setUnitOfMeasure = setUnitOfMeasure;
+	this.getUnitOfMeasure = getUnitOfMeasure;
+	
+	this.taxRate = "";
+	this.setTaxRate = setTaxRate;
+	this.getTaxRate = getTaxRate;
+	
+	this.totalAmount = "";
+	this.setTotalAmount = setTotalAmount;
+	this.getTotalAmount = getTotalAmount;
+	
+	this.discountAmount = "";
+	this.setDiscountAmount = setDiscountAmount;
+	this.getDiscountAmount = getDiscountAmount;
+	
+	this.commodityCode = "";
+	this.setCommodityCode = setCommodityCode;
+	this.getCommodityCode = getCommodityCode;
+	
+	this.grossNetIndicator = "";
+	this.setGrossNetIndicator = setGrossNetIndicator;
+	this.getGrossNetIndicator = getGrossNetIndicator;
+	
+	this.taxTypeApplied = "";
+	this.setTaxTypeApplied = setTaxTypeApplied;
+	this.getTaxTypeApplied = getTaxTypeApplied;
+	
+	this.discountIndicator = "";
+	this.setDiscountIndicator = setDiscountIndicator;
+	this.getDiscountIndicator = getDiscountIndicator;
+	
+	this.alternateTaxID = "";
+	this.setAlternateTaxID = setAlternateTaxID;
+	this.getAlternateTaxID = getAlternateTaxID;
+	
+	this.alternateTaxAmount = "";
+	this.setAlternateTaxAmount = setAlternateTaxAmount;
+	this.getAlternateTaxAmount = getAlternateTaxAmount;
+	
+	this.alternateTaxApplied = "";
+	this.setAlternateTaxApplied = setAlternateTaxApplied;
+	this.getAlternateTaxApplied = getAlternateTaxApplied;
+	
+	this.alternateTaxRate = "";
+	this.setAlternateTaxRate = setAlternateTaxRate;
+	this.getAlternateTaxRate = getAlternateTaxRate;
+	
+	this.alternateTaxType = "";
+	this.setAlternateTaxType = setAlternateTaxType;
+	this.getAlternateTaxType = getAlternateTaxType;
+	
+	this.localTax = "";
+	this.setLocalTax = setLocalTax;
+	this.getLocalTax = getLocalTax;
+	
+	this.zeroCostToCustomerIndicator = "";
+	this.setZeroCostToCustomerIndicator = setZeroCostToCustomerIndicator;
+	this.getZeroCostToCustomerIndicator = getZeroCostToCustomerIndicator;
+	
+	this.id = "";
+	this.setId = setId;
+	this.getId = getId;
+
+}
+
+function setUnitPrice(value){
+	this.unitPrice = value;
+}
+function getUnitPrice(){
+	return this.unitPrice;
+}
+function setQuantity(value){
+	this.quantity = value;
+}
+function getQuantity(){
+	return this.quantity;
+}
+function setProductCode(value){
+	this.productCode = value;
+}
+function getProductCode(){
+	return this.productCode;
+}
+function setProductName(value){
+	this.productName = value;
+}
+function getProductName(){
+	return this.productName;
+}
+function setProductSKU(value){
+	this.productSKU = value;
+}
+function getProductSKU(){
+	return this.productSKU;
+}
+function setProductRisk(value){
+	this.productRisk = value;
+}
+function getProductRisk(){
+	return this.productRisk;
+}
+function setTaxAmount(value){
+	this.taxAmount = value;
+}
+function getTaxAmount(){
+	return this.taxAmount;
+}
+function setCityOverrideAmount(value){
+	this.cityOverrideAmount = value;
+}
+function getCityOverrideAmount(){
+	return this.cityOverrideAmount;
+}
+function setCityOverrideRate(value){
+	this.cityOverrideRate = value;
+}
+function getCityOverrideRate(){
+	return this.cityOverrideRate;
+}
+function setCountyOverrideAmount(value){
+	this.countyOverrideAmount = value;
+}
+function getCountyOverrideAmount(){
+	return this.countyOverrideAmount;
+}
+function setCountyOverrideRate(value){
+	this.countyOverrideRate = value;
+}
+function getCountyOverrideRate(){
+	return this.countyOverrideRate;
+}
+function setDistrictOverrideAmount(value){
+	this.districtOverrideAmount = value;
+}
+function getDistrictOverrideAmount(){
+	return this.districtOverrideAmount;
+}
+function setDistrictOverrideRate(value){
+	this.districtOverrideRate = value;
+}
+function getDistrictOverrideRate(){
+	return this.districtOverrideRate;
+}
+function setStateOverrideAmount(value){
+	this.stateOverrideAmount = value;
+}
+function getStateOverrideAmount(){
+	return this.stateOverrideAmount;
+}
+function setStateOverrideRate(value){
+	this.stateOverrideRate = value;
+}
+function getStateOverrideRate(){
+	return this.stateOverrideRate;
+}
+function setOrderAcceptanceCity(value){
+	this.orderAcceptanceCity = value;
+}
+function getOrderAcceptanceCity(){
+	return this.orderAcceptanceCity;
+}
+function setOrderAcceptanceCounty(value){
+	this.orderAcceptanceCounty = value;
+}
+function getOrderAcceptanceCounty(){
+	return this.orderAcceptanceCounty;
+}
+function setOrderAcceptanceCountry(value){
+	this.orderAcceptanceCountry = value;
+}
+function getOrderAcceptanceCountry(){
+	return this.orderAcceptanceCountry;
+}
+function setOrderAcceptanceState(value){
+	this.orderAcceptanceState = value;
+}
+function getOrderAcceptanceState(){
+	return this.orderAcceptanceState;
+}
+function setOrderAcceptancePostalCode(value){
+	this.orderAcceptancePostalCode = value;
+}
+function getOrderAcceptancePostalCode(){
+	return this.orderAcceptancePostalCode;
+}
+function setOrderOriginCity(value){
+	this.orderOriginCity = value;
+}
+function getOrderOriginCity(){
+	return this.orderOriginCity;
+}
+function setOrderOriginCounty(value){
+	this.orderOriginCounty = value;
+}
+function getOrderOriginCounty(){
+	return this.orderOriginCounty;
+}
+function setOrderOriginCountry(value){
+	this.orderOriginCountry = value;
+}
+function getOrderOriginCountry(){
+	return this.orderOriginCountry;
+}
+function setOrderOriginState(value){
+	this.orderOriginState = value;
+}
+function getOrderOriginState(){
+	return this.orderOriginState;
+}
+function setOrderOriginPostalCode(value){
+	this.orderOriginPostalCode = value;
+}
+function getOrderOriginPostalCode(){
+	return this.orderOriginPostalCode;
+}
+function setShipFromCity(value){
+	this.shipFromCity = value;
+}
+function getShipFromCity(){
+	return this.shipFromCity;
+}
+function setShipFromCounty(value){
+	this.shipFromCounty = value;
+}
+function getShipFromCounty(){
+	return this.shipFromCounty;
+}
+function setShipFromCountry(value){
+	this.shipFromCountry = value;
+}
+function getShipFromCountry(){
+	return this.shipFromCountry;
+}
+function setShipFromState(value){
+	this.shipFromState = value;
+}
+function getShipFromState(){
+	return this.shipFromState;
+}
+function setShipFromPostalCode(value){
+	this.shipFromPostalCode = value;
+}
+function getShipFromPostalCode(){
+	return this.shipFromPostalCode;
+}
+function setExport(value){
+	this.Export = value;
+}
+function getExport(){
+	return this.Export;
+}
+function setNationalTax(value){
+	this.nationalTax = value;
+}
+function getNationalTax(){
+	return this.nationalTax;
+}
+function setVarRate(value){
+	this.varRate = value;
+}
+function getVarRate(){
+	return this.varRate;
+}
+function setSellerRegistration(value){
+	this.sellerRegistration = value;
+}
+function getSellerRegistration(){
+	return this.sellerRegistration;
+}
+function setBuyerRegistration(value){
+	this.buyerRegistration = value;
+}
+function getBuyerRegistration(){
+	return this.buyerRegistration;
+}
+function setMiddlemanRegistration(value){
+	this.middlemanRegistration = value;
+}
+function getMiddlemanRegistration(){
+	return this.middlemanRegistration;
+}
+function setPointOfTitleTransfer(value){
+	this.pointOfTitleTransfer = value;
+}
+function getPointOfTitleTransfer(){
+	return this.pointOfTitleTransfer;
+}
+function setGiftCategory(value){
+	this.giftCategory = value;
+}
+function getGiftCategory(){
+	return this.giftCategory;
+}
+function setTimeCategory(value){
+	this.timeCategory = value;
+}
+function getTimeCategory(){
+	return this.timeCategory;
+}
+function setHostHedge(value){
+	this.hostHedge = value;
+}
+function getHostHedge(){
+	return this.hostHedge;
+}
+function setTimeHedge(value){
+	this.timeHedge = value;
+}
+function getTimeHedge(){
+	return this.timeHedge;
+}
+function setVelocityHedge(value){
+	this.velocityHedge = value;
+}
+function getVelocityHedge(){
+	return this.velocityHedge;
+}
+function setNonsensicalHedge(value){
+	this.nonsensicalHedge = value;
+}
+function getNonsensicalHedge(){
+	return this.nonsensicalHedge;
+}
+function setPhoneHedge(value){
+	this.phoneHedge = value;
+}
+function getPhoneHedge(){
+	return this.phoneHedge;
+}
+function setUnitOfMeasure(value){
+	this.unitOfMeasure = value;
+}
+function getUnitOfMeasure(){
+	return this.unitOfMeasure;
+}
+function setTaxRate(value){
+	this.taxRate = value;
+}
+function getTaxRate(){
+	return this.taxRate;
+}
+function setTotalAmount(value){
+	this.totalAmount = value;
+}
+function getTotalAmount(){
+	return this.totalAmount;
+}
+function setDiscountAmount(value){
+	this.discountAmount = value;
+}
+function getDiscountAmount(){
+	return this.discountAmount;
+}
+function setCommodityCode(value){
+	this.commodityCode = value;
+}
+function getCommodityCode(){
+	return this.commodityCode;
+}
+function setGrossNetIndicator(value){
+	this.grossNetIndicator = value;
+}
+function getGrossNetIndicator(){
+	return this.grossNetIndicator;
+}
+function setTaxTypeApplied(value){
+	this.taxTypeApplied = value;
+}
+function getTaxTypeApplied(){
+	return this.taxTypeApplied;
+}
+function setDiscountIndicator(value){
+	this.discountIndicator = value;
+}
+function getDiscountIndicator(){
+	return this.discountIndicator;
+}
+function setAlternateTaxID(value){
+	this.alternateTaxID = value;
+}
+function getAlternateTaxID(){
+	return this.getAlternateTaxID;
+}
+function setAlternateTaxAmount(value){
+	this.alternateTaxAmount = value;
+}
+function getAlternateTaxAmount(){
+	return this.alternateTaxAmount;
+}
+function setAlternateTaxApplied(value){
+	this.alternateTaxApplied = value;
+}
+function getAlternateTaxApplied(){
+	return this.alternateTaxApplied;
+}
+function setAlternateTaxRate(value){
+	this.alternateTaxRate = value;
+}
+function getAlternateTaxRate(){
+	return this.alternateTaxRate;
+}
+function setAlternateTaxType(value){
+	this.alternateTaxType = value;
+}
+function getAlternateTaxType(){
+	return this.getAlternateTaxType;
+}
+function setLocalTax(value){
+	this.localTax = value;
+}
+function getLocalTax(){
+	return this.localTax;
+}
+function setZeroCostToCustomerIndicator(value){
+	this.zeroCostToCustomerIndicator = value;
+}
+function getZeroCostToCustomerIndicator(){
+	return this.zeroCostToCustomerIndicator;
+}
+function setId(value){
+	this.id = value;
+}
+function getId(){
+	return this.id;
+}	

@@ -1,0 +1,35 @@
+/**
+*	CreateCyberSourceBillToObject.ds
+*	This script creates the BillTo object and set it to CybersourceBillTo output object.
+*
+*    @input Basket : dw.order.LineItemCtnr
+*    @input ipAddress : String
+*    @output CyberSourceBillTo : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.util );
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var billToObject: BillTo_Object = new BillTo_Object();
+	
+	billToObject.setTitle("This is the Title");
+	billToObject.setFirstName("Donald");
+	billToObject.setLastName("Rivard");
+	billToObject.setStreet1("131 Dartmouth Street");
+	billToObject.setCity("Boston");
+	billToObject.setState("MA");
+	billToObject.setPostalCode("02116");
+	billToObject.setCountry("US");
+	billToObject.setPhoneNumber("777-777-7777");
+	billToObject.setEmail("drivard@demandware.com");
+	billToObject.setIpAddress(pdict.ipAddress);
+	billToObject.setDateOfBirth("19541217");
+	billToObject.setSsn("000001234");
+	
+	pdict.CyberSourceBillTo = billToObject;
+
+    return PIPELET_NEXT;
+}

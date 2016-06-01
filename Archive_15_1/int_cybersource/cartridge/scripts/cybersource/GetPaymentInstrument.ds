@@ -1,0 +1,50 @@
+/**
+* Locates the payment instrument using the specified 
+* payment method value and puts the PaymentInstrument into the 
+* dictionary under the key TargetPaymentInstrument.
+*
+* @input Basket : Object The basket (cart).
+* @input MethodType : String the PaymentInstrument method type. 
+* @input PaymentProcessor : Object The payment processor.
+* @output TargetPaymentInstrument : dw.order.PaymentInstrument
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	// fetch the basket and method type.
+ 	var basket : LineItemCtnr = pdict.Basket; 
+ 	var paymentProcessor : PaymentProcessor = pdict.PaymentProcessor;
+    var methodType : String = pdict.MethodType;
+
+	if (basket == null || methodType == null) {
+		return PIPELET_ERROR;
+	} 	
+	
+ 	var paymentInstrument : OrderPaymentInstrument = null;
+    
+ 	// now iterate over the payment instruments and locate the 
+ 	// target based on the method.
+    var paymentInstruments : Collection = basket.getPaymentInstruments();
+    for (var i = 0; i < paymentInstruments.size(); i++)
+    {
+    	paymentInstrument = paymentInstruments[i];
+    	if (paymentInstrument.getPaymentMethod() == methodType) { 
+    		break;
+    	} else {
+    		paymentInstrument = null;
+    	}
+    }
+ 	
+ 	if (paymentInstrument != null ) {
+ 		if (paymentProcessor != null) {
+	 		paymentInstrument.getPaymentTransaction().setPaymentProcessor(paymentProcessor);
+	 	}
+	 	pdict.TargetPaymentInstrument = paymentInstrument;
+	}
+	
+    return PIPELET_NEXT;
+}

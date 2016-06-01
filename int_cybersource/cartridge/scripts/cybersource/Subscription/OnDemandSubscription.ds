@@ -6,6 +6,7 @@
 *	@input 	purchaseTotals : Object
 * 	@input  billTo : Object 
 * 	@input  shipTo : Object
+*	@input  OrderID : String
 *	@output amount : String
 * 	@output authorizationCode : String
 *	@output authorizedDateTime : String
@@ -19,6 +20,7 @@
 * 	@output missingField : Array
 * 	@output DAVReasonCode : Number The DAV reason code returned by Cybersource (100 = Success)
 * 	@output StandardizedAddress : Object Contains any 'corrections' made to the address from standards point of view
+*	@output authReasonCode: Object
 *
 */
 importPackage( dw.system );
@@ -33,7 +35,7 @@ importScript('cybersource/Cybersource_ShipTo_Object.ds');
 importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -46,18 +48,18 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	
 	CybersourceHelper.setEndpoint(service);
 	
 	if(!CybersourceHelper.createHeader(service)){
 		return null;
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
-
-	CybersourceHelper.addOnDemandSubscriptionInfo(subscriptionID, request, purchaseObject, "test");
+	//Defect fix: CYB-110:Not able to search order with Order number in CyberSource control.
+	CybersourceHelper.addOnDemandSubscriptionInfo(subscriptionID, request, purchaseObject,pdict.OrderID);
 	
 	/********************************/
 	/* DAV-related WebService setup */
@@ -84,24 +86,28 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	// send request
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}catch(e){
 		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
 		return PIPELET_ERROR;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		return PIPELET_ERROR;
 	}
 	else
 	{
+		response = response.object;
 		if(null!=response.ccAuthReply)
 		{
 			pdict.amount = response.ccAuthReply.amount;
 			pdict.authorizationCode = response.ccAuthReply.authorizationCode;
 			pdict.authorizedDateTime = response.ccAuthReply.authorizedDateTime;
 			pdict.processorResponse = response.ccAuthReply.processorResponse;
-			pdict.reasonCode = response.ccAuthReply.reasonCode;
+			//Defect fix: CYB-99 : CyberSource does not create a Subscription ID for 480 decision
+			pdict.authReasonCode = response.ccAuthReply.reasonCode;
+			pdict.reasonCode = response.reasonCode;
 			pdict.reconciliationID = response.ccAuthReply.reconciliationID;
 			pdict.decision = response.decision;
 			pdict.requestID = response.requestID;
@@ -129,9 +135,21 @@ function execute( pdict : PipelineDictionary ) : Number
 				stdAddress.address1 = response.davReply.standardizedAddress1;
 				stdAddress.address2 = response.davReply.standardizedAddress2;
 				stdAddress.city = response.davReply.standardizedCity;
+				//Defect fix: CYB-92 : DAV Country province code 
+			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") == false)
+				stdAddress.state = pdict.shipTo.state;
+			else
 				stdAddress.state = response.davReply.standardizedState;
+				//The second fix addressed the issue for Gift Certs when there is no shipto info:
+ 			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") == true)
+				stdAddress.state = response.davReply.standardizedState;
+			else if(!empty(pdict.shipTo.state))
+				stdAddress.state = pdict.shipTo.state;
+			else
+				stdAddress.state = pdict.billTo.state;
 				stdAddress.postalCode = response.davReply.standardizedPostalCode;
-				stdAddress.country = response.davReply.standardizedCountry;
+				//Fix for CYB-91: DAV Country code 
+				stdAddress.country = response.davReply.standardizedISOCountry;
 				pdict.StandardizedAddress = stdAddress;
 			}
 		}

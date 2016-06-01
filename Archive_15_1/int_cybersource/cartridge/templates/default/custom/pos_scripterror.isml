@@ -1,0 +1,22 @@
+<iscomment>
+	This template will populate the error log/message 
+</iscomment>
+
+<isif condition="${!empty(pdict.log)}">
+	<div style="border:1px gray solid">
+		<b>Log:</b>
+		Here is the log:<br/>
+		<isprint value="${pdict.log}" />
+	</div>
+</isif>
+
+<isif condition="${!empty(pdict.errorCode)}">
+	<div style="border:1px gray solid">
+		<b>Error:</b>
+		Here is the Error:<br/>
+		Code: <isprint value="${pdict.errorCode}" /><br/>
+		Error Message: <isprint value="${pdict.cybersource_error}" />
+	</div>
+</isif>
+
+<a href="${dw.web.URLUtils.http('CybersourceUnitTesting-StartPOS')}">Back to Test Page</a>

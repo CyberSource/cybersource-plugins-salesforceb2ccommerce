@@ -1,0 +1,80 @@
+/**
+* 
+* UpdatePriceAdjustment.ds
+*
+* Updates the basket price adjustments as tax has already been calculated on 
+* prorated price of Productlineitems
+*
+* 
+* @input Basket : dw.order.LineItemCtnr  The basket whose adjustments are to be updated
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var basket : LineItemCtnr = pdict.Basket;	
+	if(basket == null) {	
+		return PIPELET_ERROR;
+	}
+	try{
+		
+		if(!basket.getPriceAdjustments().empty)
+	    {
+	        var basketPriceAdjustments : Iterator = basket.getPriceAdjustments().iterator();
+		    while(basketPriceAdjustments.hasNext())
+		    {
+				var basketPriceAdjustment : PriceAdjustment = basketPriceAdjustments.next();
+				basketPriceAdjustment.updateTax(0);        	
+		    }
+	
+		}
+		var shipments : Iterator = basket.getShipments().iterator();
+		while(shipments.hasNext())
+		{
+			var shipment : Shipment = shipments.next();
+	
+			var shipmentLineItems : Iterator = shipment.getAllLineItems().iterator();
+			while(shipmentLineItems.hasNext())
+			{
+				var lineItem : LineItem = shipmentLineItems.next();
+								
+				if( lineItem instanceof dw.order.ProductLineItem) 
+				{
+					if(!lineItem.bonusProductLineItem)
+					{
+						lineItem.updateTax(lineItem.taxRate,lineItem.proratedPrice);
+					}
+					 else
+					 {
+						// tax is not getting calculated for bonus product which is updating bonus line item's tax as /NA. it has the direct impact on basket totals
+						// Resolution - update line item tax with 0 which will resolve the tax calculation N/A for bonus line items.
+						lineItem.updateTax(0);
+					}
+				} 
+				else if( lineItem instanceof dw.order.ShippingLineItem )
+			 	{
+					lineItem.updateTax(lineItem.taxRate,lineItem.adjustedNetPrice);
+				} 
+				else if( !lineItem instanceof dw.order.PriceAdjustment )
+				{
+					lineItem.updateTax(lineItem.taxRate,lineItem.netPrice);
+				}
+				else 
+				{
+					lineItem.updateTax(lineItem.taxRate,lineItem.netPrice);
+				}
+		   }
+		}	
+				
+		basket.updateTotals();
+	}catch(e){			
+		Logger.error("Error in [UpdatePriceAdjustment.ds] ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}   
+
+    return PIPELET_NEXT;
+}

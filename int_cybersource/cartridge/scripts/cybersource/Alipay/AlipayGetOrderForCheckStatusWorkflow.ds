@@ -19,7 +19,9 @@ function execute( pdict : PipelineDictionary ) : Number
 		query += " or status =" + Order.ORDER_STATUS_OPEN + "d)";
 		
 	//get order iterator list from OrderMgr by passing query variable
-	var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
+	//var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
+	/*comment above queryOrders code to avoid quota exception*/
+	var orderIterator : Iterator = OrderMgr.searchOrders(query, "orderNo asc", null);
 	var orderList : ArrayList = new ArrayList();
 	if (!empty(orderIterator))
 	{

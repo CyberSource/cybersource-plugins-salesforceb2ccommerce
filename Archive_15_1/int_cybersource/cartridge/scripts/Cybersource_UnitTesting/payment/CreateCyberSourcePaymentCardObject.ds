@@ -1,0 +1,24 @@
+/**
+*	 CreateCyberSourcePaymentCardObject.ds
+*	 This script creates the mock payment card data object and set it to CyberSourceCard output object.
+*
+*    @output CyberSourceCard : Object
+*/
+importPackage( dw.system );
+importScript('cybersource/Cybersource_Card_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var cardObject : Card_Object = new Card_Object();
+	cardObject.setAccountNumber('4000000000000002');
+	cardObject.setCardType('001');
+	cardObject.setFullName('Donald Rivard');
+	cardObject.setExpirationMonth("12");
+	cardObject.setExpirationYear("2021");
+	cardObject.setCvNumber('321');
+	
+	pdict.CyberSourceCard = cardObject;
+	
+
+    return PIPELET_NEXT;
+}

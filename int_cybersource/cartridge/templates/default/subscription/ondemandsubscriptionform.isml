@@ -13,7 +13,7 @@ td {
 </iscomment>
 <isinclude template="util/modules"/>
 <h2><center><b><u>On Demand Subscription Payment Test Page</u></b></center></h2><br/><br/>
-<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+<form action="${URLUtils.https('Cybersource_Subscription-OnDemandPayment','service','ondemand')}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
 	<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
 	<isinputfield formfield="${pdict.CurrentForms.subscription.currency}" type="select"/>
 	<isinputfield formfield="${pdict.CurrentForms.subscription.amount}" type="input"/>
@@ -21,6 +21,6 @@ td {
 		<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
 			${Resource.msg('global.submit','locale',null)}
 		</button>
-		<INPUT TYPE="button" onClick="parent.location='${URLUtils.http('Cybersource_Subscription-Start')}'" value="BACK"/>
+		<INPUT TYPE="button" onClick="parent.location='${URLUtils.https('Cybersource_Subscription-Start')}'" value="BACK"/>
 	</div>
 </form>

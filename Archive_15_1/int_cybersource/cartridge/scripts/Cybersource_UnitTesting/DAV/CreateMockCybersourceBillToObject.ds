@@ -1,0 +1,41 @@
+/**
+*	 CreateMockCybersourceBillToObject.ds
+*	 This script creates the mock bill to data object and set it to CyberSourceBillTo output object.
+*
+*	 @input MissingFields : Boolean
+*	 @input InvalidFields : Boolean
+*    @output CyberSourceBillTo : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var billToObject: BillTo_Object = new BillTo_Object();
+	
+	billToObject.setFirstName  ( "Peter" );
+	billToObject.setLastName   ( "Pritchard" );
+	if( !empty(pdict.InvalidFields) && pdict.InvalidFields.valueOf() ) {
+		billToObject.setStreet1 ( "xxxxxxxxxxxxxx" );
+	} else {
+		billToObject.setStreet1 ( "25 Call Street" );
+	}
+	billToObject.setStreet2    ( "" );
+	billToObject.setCity       ( "Billerica" );
+	billToObject.setState      ( "MA" );
+	if( !empty(pdict.MissingFields) && pdict.MissingFields.valueOf() ) {
+		billToObject.setPostalCode ( "" );
+	} else {
+		billToObject.setPostalCode ( "01862" );
+	}
+	billToObject.setCountry    ( "US" );
+	billToObject.setPhoneNumber( "978-362-1553" );
+	billToObject.setEmail      ( "ppritchard@demandware.com" );
+	
+	billToObject.setIpAddress("127.0.0.1");
+
+	pdict.CyberSourceBillTo = billToObject;
+	
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,18 @@
+<iscomment>
+	This template will populate input fields of AP Refund.
+</iscomment>
+<isinclude template="util/modules"/>
+<h2><center><b><u>V.me Refund API Test Page</u></b></center></h2><br/><br/>
+<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.ap.htmlName}">
+	<isinputfield formfield="${pdict.CurrentForms.ap.apCaptureID}" type="input"/>
+	<isinputfield formfield="${pdict.CurrentForms.ap.reason}" type="textarea"/>
+	<isinputfield formfield="${pdict.CurrentForms.ap.note}" type="textarea"/>
+	<isinputfield formfield="${pdict.CurrentForms.ap.currency}" type="select"/>
+	<isinputfield formfield="${pdict.CurrentForms.ap.amount}" type="input"/>	
+	<div class="form-row form-row-button">
+		<button type="submit" name="${pdict.CurrentForms.ap.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+			${Resource.msg('global.submit','locale',null)}
+		</button>
+		<INPUT TYPE="button" onClick="parent.location='${URLUtils.http('CybersourceUnitTesting-StartVme')}'" value="BACK"/>
+	</div>
+</form>

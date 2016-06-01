@@ -28,7 +28,7 @@ importScript('cybersource/Cybersource_ShipTo_Object.ds');
 importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var billToObject: BillTo_Object = pdict.billTo;
@@ -40,7 +40,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	
 	CybersourceHelper.setEndpoint(service);
@@ -48,7 +48,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	if(!CybersourceHelper.createHeader(service)){
 		Logger.error("[UpdateSubscription.ds] Not able to create service header");
 		return PIPELET_ERROR;
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
 
@@ -58,20 +58,22 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	// send request
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}catch(e){
 		pdict.CybersourceUnavailableFlag = "true";
 		Logger.error("[UpdateSubscription.ds] Error in Service Call",e.message);
 		return PIPELET_ERROR;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		Logger.error("[UpdateSubscription.ds] response is null");
 		return PIPELET_ERROR;
 	}
 	
 	else
 	{
+		response = response.object;
 		pdict.requestID = response.requestID;
 		pdict.requestToken = response.requestToken;
 		pdict.reasonCode = response.reasonCode;

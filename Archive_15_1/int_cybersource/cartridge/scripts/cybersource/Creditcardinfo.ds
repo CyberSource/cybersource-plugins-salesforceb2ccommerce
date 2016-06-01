@@ -1,0 +1,81 @@
+/**
+* Creditcardinfo.ds
+* This script has declaration of its variables and methods.  
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+
+var accountNumber : String;
+var cvNumber : String;
+var fullName : String;
+var expirationMonth : String;
+var expirationYear : String;
+var cardType : String;
+
+var CreditCardInfoHelper = {
+
+setAccountNumber : function (value : String) {
+		accountNumber = value;
+},
+getAccountNumber : function (){
+		return accountNumber;
+	},
+	
+setCvNumber : function (value : String) {
+		cvNumber = value;
+},
+getCvNumber : function (){
+		return cvNumber;
+	},
+
+setFullName : function (value : String) {
+		fullName = value;
+},
+getFullName : function (){
+		return fullName;
+	},
+	
+setExpirationMonth : function (value : Number) {
+		expirationMonth = value;
+},
+getExpirationMonth : function (){
+		return expirationMonth;
+	},
+
+setExpirationYear : function (value : Number) {
+		expirationYear = value;
+},
+getExpirationYear : function (){
+		return expirationYear;
+	},	
+	
+setCardType : function (value : String) {
+		
+		switch(value){
+			case "Visa": 
+				cardType="001";
+				break;
+			case "Master": 
+				cardType="002";
+				break;
+			case "Amex": 
+				cardType="003";
+				break;
+			case "Discover": 
+				cardType="004";
+				break;
+		}
+		
+},
+getCardType : function (){
+		return cardType;
+	},	
+
+}
+
+// Helper method to export the helper
+function getCreditCardInfoHelper(){
+	return CreditCardInfoHelper;
+}

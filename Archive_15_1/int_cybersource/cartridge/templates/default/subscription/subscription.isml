@@ -1,0 +1,9 @@
+<iscomment>
+	This template will populate the hyperlinks for create, view, update, delete subscriotion
+</iscomment>
+<h2><center><b><u>Subscription Test Suite</u></b></center></h2><br/><br/>
+<a href="${URLUtils.http('Cybersource_Subscription-CreateSubscription')}" >Create Subscription</a><br/>
+<a href="${URLUtils.http('Cybersource_Subscription-ViewSubscription')}">View Subscription</a><br/>
+<a href="${URLUtils.http('Cybersource_Subscription-UpdateSubscription')}">Update Subscription</a><br/>
+<a href="${URLUtils.http('Cybersource_Subscription-DeleteSubscription')}">Delete Subscription</a><br/>
+<a href="${URLUtils.http('Cybersource_Subscription-OnDemandPayment')}">Make On Demand Payment</a><br/>

@@ -1,0 +1,105 @@
+/**
+*	CreateCybersourceBillToObject.ds
+*	This script creates the BillToObject data object and set it to CyberSourceBillTo output object.
+*
+*	@input BMLForm : dw.web.FormElement
+*	@input ipAddress : String
+*	@input Basket : dw.order.LineItemCtnr
+*	@input ReadFromBasket : Boolean
+*	@output CyberSourceBillTo : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.order );
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var billToObject: BillTo_Object = new BillTo_Object();
+	
+	if( pdict.ReadFromBasket)
+	{
+		var basket : LineItemCtnr = pdict.Basket;
+		var billingAddress : OrderAddress = basket.billingAddress;
+		var shippingAddress : OrderAddress = basket.defaultShipment.shippingAddress;
+
+		if( !empty(billingAddress)&&!empty(basket) ) {			
+			/*This if condition checks if billingAddress.address1 is present only for V.Me
+			* create the billToObject using billingAddress else it will create billToObject using shippingAddress 
+			*/			  
+			if(!empty(billingAddress.address1)){
+				billToObject.setFirstName  ( billingAddress.firstName );
+				billToObject.setLastName   ( billingAddress.lastName );
+				billToObject.setStreet1    ( billingAddress.address1 );
+				billToObject.setStreet2    ( billingAddress.address2 );
+				billToObject.setCity       ( billingAddress.city );
+				billToObject.setState      ( billingAddress.stateCode );
+				billToObject.setPostalCode ( billingAddress.postalCode );
+				billToObject.setCountry    ( billingAddress.countryCode );
+				billToObject.setPhoneNumber( billingAddress.phone );
+				billToObject.setEmail      ( basket.customerEmail );
+			} else {
+				billToObject.setFirstName  ( shippingAddress.firstName );
+				billToObject.setLastName   ( shippingAddress.lastName );
+				billToObject.setStreet1    ( shippingAddress.address1 );
+				billToObject.setStreet2    ( shippingAddress.address2 );
+				billToObject.setCity       ( shippingAddress.city );
+				billToObject.setState      ( shippingAddress.stateCode );
+				billToObject.setPostalCode ( shippingAddress.postalCode );
+				billToObject.setCountry    ( shippingAddress.countryCode );
+				billToObject.setPhoneNumber( shippingAddress.phone );
+				billToObject.setEmail      ( "test@test.com" );			
+			}
+		}
+		else
+		{
+			billToObject.setFirstName  ( shippingAddress.firstName );
+			billToObject.setLastName   ( shippingAddress.lastName );
+			billToObject.setStreet1    ( shippingAddress.address1 );
+			billToObject.setStreet2    ( shippingAddress.address2 );
+			billToObject.setCity       ( shippingAddress.city );
+			billToObject.setState      ( shippingAddress.stateCode );
+			billToObject.setPostalCode ( shippingAddress.postalCode );
+			billToObject.setCountry    ( shippingAddress.countryCode );
+			billToObject.setPhoneNumber( shippingAddress.phone );
+			billToObject.setEmail      ( "test@test.com" );
+		}
+	}
+	else
+	{
+		var billAddrForm : dw.web.FormElement =  pdict.CurrentForms.billing.billingAddress;
+		
+		billToObject.setFirstName  ( billAddrForm.addressFields.firstName.value);
+		billToObject.setLastName   ( billAddrForm.addressFields.lastName.value);
+		billToObject.setStreet1    ( billAddrForm.addressFields.address1.value);
+		billToObject.setStreet2    ( billAddrForm.addressFields.address2.value);
+		billToObject.setCity       ( billAddrForm.addressFields.city.value);
+		billToObject.setState      ( billAddrForm.addressFields.states.state.value);
+		billToObject.setPostalCode ( billAddrForm.addressFields.zip.value);
+		billToObject.setCountry    ( billAddrForm.addressFields.country.value);
+		billToObject.setPhoneNumber( billAddrForm.addressFields.phone.value);
+		billToObject.setEmail(pdict.CurrentForms.checkout.addresses.email.value);
+	
+	}
+	billToObject.setIpAddress(pdict.ipAddress);
+
+	//  @@@@@@@@@@@   BML part @@@@@@@@@@@@@	
+	var bmlform :  dw.web.FormElement =  pdict.BMLForm;
+	if(bmlform != null)
+	{
+		// billToObject.setDateOfBirth("19541217");
+		// billToObject.setSsn("000001234"); 
+		
+		if(bmlform.year.value != null)
+		{	
+			if (bmlform.year.value.toString() != null && bmlform.year.value.toString() != "")
+			{  
+				billToObject.setDateOfBirth(bmlform.year.value.toString()+ StringUtils.formatNumber(bmlform.month.value, "00", "en_US") + StringUtils.formatNumber(bmlform.day.value, "00", "en_US"));
+				billToObject.setSsn('00000' + bmlform.ssn.value);			
+			}
+		}
+	}
+	pdict.CyberSourceBillTo = billToObject;
+	
+    return PIPELET_NEXT;
+}

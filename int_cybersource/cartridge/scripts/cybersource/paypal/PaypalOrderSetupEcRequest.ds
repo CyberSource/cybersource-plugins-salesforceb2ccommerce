@@ -20,6 +20,7 @@ importPackage( dw.order);
 importPackage( dw.value);
 importScript('cybersource/libCybersource.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -60,14 +61,14 @@ function execute( pdict : PipelineDictionary ) : Number
 	//creating Cybersource helper object and setting the end point as "Test", "Staging", "Development" or "Production"
  	var CybersourceHelper = getCybersourceHelper();	
     var csReference : WebReference = webreferences.CyberSourceTransaction;
-    var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+    /*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
     service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
    	CybersourceHelper.setEndpoint(service);
 
 	if(!CybersourceHelper.createHeader(service))
 	{
 		return PIPELET_ERROR;
-	}
+	}*/
 	
 	//create request object and call paypal order setup service
 	var request = new csReference.RequestMessage();
@@ -76,7 +77,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	try
 	{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}
 	catch(e)
 	{
@@ -92,12 +94,12 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	//logging response object as a result of service call
 	Logger.debug(response);
-	if(response == null)
+	if(empty(response) || response.status != "OK")
 	{
 		Logger.getRootLogger().fatal("[libCybersource.ds] Error in payPalEcOrderSetupService: null response");
 		return PIPELET_ERROR;
 	}
-	
+	response = response.object;
 	//setting response back into pipleine dictionary variables
 	if(!empty(response.payPalEcOrderSetupReply)){
 		pdict.orderSetupTransactionId = response.payPalEcOrderSetupReply.transactionId;

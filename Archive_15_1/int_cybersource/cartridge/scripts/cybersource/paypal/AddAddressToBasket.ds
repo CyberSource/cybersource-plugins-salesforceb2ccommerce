@@ -1,0 +1,115 @@
+/**
+* @input Response :Object
+* @input paypalOrigin : String
+* @input Basket   : dw.order.LineItemCtnr The basket used for Authorization
+* @input PaymentProcessor : dw.order.PaymentProcessor The needed paymentprocessor.
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//setting pipleine values in local variables
+    var basket : LineItemCtnr = pdict.Basket;
+    var response = pdict.Response;
+    var paymentProcessor : PaymentProcessor = pdict.PaymentProcessor;
+    //**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}
+	//setting response in a variable to get the output of response
+	var payPalEcGetDetails = response.payPalEcGetDetailsReply;
+		//setting customer email in basket from response object
+	   	basket.setCustomerEmail(payPalEcGetDetails.payer);
+	   	
+	   	var shippingAddress : OrderAddress =  basket.defaultShipment.shippingAddress;
+	   	if (shippingAddress == null) 
+				{
+					var shippingAddressCollection : Collection = basket.shipments;
+							
+					for( var i = 0; i < shippingAddressCollection.size(); i++ ) 
+					{
+						shippingAddress = shippingAddressCollection[i].shippingAddress;
+					}
+				}
+			//setting shipping details in basket from response object
+			var getShipToName = (payPalEcGetDetails.shipToName).split(" ");
+	   		shippingAddress.setFirstName(getShipToName[0]);
+			shippingAddress.setLastName(getShipToName[1]);
+			if(!empty(payPalEcGetDetails.payerPhone)) {
+				shippingAddress.setPhone( payPalEcGetDetails.payerPhone );
+			} else {
+				shippingAddress.setPhone( "3333333333" );
+			}
+			shippingAddress.setAddress1(payPalEcGetDetails.shipToAddress1);
+			shippingAddress.setAddress2(payPalEcGetDetails.shipToAddress2);
+			shippingAddress.setCity( payPalEcGetDetails.shipToCity);
+			shippingAddress.setPostalCode( payPalEcGetDetails.shipToZip);
+			shippingAddress.setCountryCode( payPalEcGetDetails.shipToCountry);
+			shippingAddress.setStateCode( payPalEcGetDetails.shipToState);
+			
+			//setting billing details in basket from response object 
+			var billingAddress : OrderAddress = basket.getBillingAddress();
+			var paypalPays : Collection = basket.getPaymentInstruments( "PayPal" );
+			var payment : dw.order.OrderPaymentInstrument;
+			
+			if( paypalPays == null || paypalPays.isEmpty() ) {
+					payment = basket.createPaymentInstrument( "PayPal", basket.getTotalGrossPrice() );
+				} else {
+					payment = paypalPays.iterator().next();
+			}
+			var paymentTransaction : PaymentTransaction = payment.getPaymentTransaction();
+			if(!empty(payPalEcGetDetails.street1) && !empty(payPalEcGetDetails.city) && !empty(payPalEcGetDetails.state) 
+				&& !empty(payPalEcGetDetails.postalCode) && !empty(payPalEcGetDetails.countryCode)) {
+				
+				billingAddress.setFirstName(payPalEcGetDetails.payerFirstname);
+				billingAddress.setSecondName(payPalEcGetDetails.payerMiddlename);
+				billingAddress.setLastName(payPalEcGetDetails.payerLastname);
+				if(!empty(payPalEcGetDetails.payerPhone)) {
+					billingAddress.setPhone( payPalEcGetDetails.payerPhone );
+				} else {
+					billingAddress.setPhone( "3333333333" );
+				}
+				billingAddress.setAddress1( payPalEcGetDetails.street1 );
+				billingAddress.setAddress2( payPalEcGetDetails.street2 );
+				billingAddress.setCity( payPalEcGetDetails.city);
+				billingAddress.setPostalCode( payPalEcGetDetails.postalCode);
+				billingAddress.setCountryCode( payPalEcGetDetails.countryCode);
+				billingAddress.setStateCode( payPalEcGetDetails.state);
+				paymentTransaction.custom.isPaypalBillingAddressPresent=true;
+			} else if(!empty(pdict.paypalOrigin) && pdict.paypalOrigin.equals("billing")) {
+				paymentTransaction.custom.isPaypalBillingAddressPresent=true;
+			} else {
+				billingAddress.setFirstName ( payPalEcGetDetails.payerFirstname );
+				billingAddress.setLastName   ( payPalEcGetDetails.payerLastname );
+				billingAddress.setAddress1   ( "1295 Charleston Rd" );
+				billingAddress.setAddress2    ( "" );
+				billingAddress.setCity       ( "Mountain View" );
+				billingAddress.setStateCode      ( "CA" );
+				billingAddress.setPostalCode ( "94043" );
+				billingAddress.setCountryCode    ( "US" );
+				billingAddress.setPhone( "" );
+				paymentTransaction.custom.isPaypalBillingAddressPresent=false;
+			}
+			
+			//setting the response values in PaymentTransaction Object
+			paymentTransaction.setPaymentProcessor(paymentProcessor);
+			paymentTransaction.custom.paypalEcSetRequestToken=response.requestToken;
+			paymentTransaction.custom.payPalPayerId=payPalEcGetDetails.payerId;
+			paymentTransaction.custom.paypalEcSetRequestID=response.requestID;
+			paymentTransaction.custom.paypalToken=payPalEcGetDetails.paypalToken;
+			paymentTransaction.custom.paypalAvsCode=payPalEcGetDetails.avsCode;
+			paymentTransaction.custom.paypalGetDetailsPayerStatus=payPalEcGetDetails.payerStatus;
+			paymentTransaction.custom.paypalGetDetailsAddressStatus=payPalEcGetDetails.addressStatus;
+			paymentTransaction.custom.paypalGetDetailsCorrelationId=payPalEcGetDetails.correlationID;
+			paymentTransaction.custom.paypalGetDetailsTaxAmount=payPalEcGetDetails.paypalTaxAmount;
+			paymentTransaction.custom.paypalPayerFirstName=payPalEcGetDetails.payerFirstname;
+			paymentTransaction.custom.paypalPayerLastName=payPalEcGetDetails.payerLastname;
+			paymentTransaction.custom.paypalPayerCountry=payPalEcGetDetails.payerCountry;
+			paymentTransaction.custom.paypalBillingAgreementAcceptedStatus=payPalEcGetDetails.paypalBillingAgreementAcceptedStatus;
+	
+   return PIPELET_NEXT;
+}

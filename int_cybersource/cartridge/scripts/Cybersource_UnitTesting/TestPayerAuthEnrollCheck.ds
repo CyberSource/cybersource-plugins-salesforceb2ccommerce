@@ -16,13 +16,13 @@
 * @output PAReq : String The paReq field - Payer authentication request message that you send to the ACS through the card association
 * @output XID : String The xid field - A unique transaction ID generated for each payment authentication request (PAReq) message. The PARes returned by issuing bank contains the XID of the PAReq.
 * @output ProxyPAN : String The proxyPAN field - Encrypted versio of credit card number used in the payer authentication request message
-*
+* @output ResponseObject : Object The response object of this script
 */
 importPackage( dw.system );
 importPackage( dw.order );
 
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -30,14 +30,14 @@ function execute( pdict : PipelineDictionary ) : Number
     var CybersourceHelper = getCybersourceHelper();
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 
 	CybersourceHelper.setEndpoint(service);
 	
 	if(!CybersourceHelper.createHeader(service)){
 		return null;
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
 	
@@ -45,15 +45,23 @@ function execute( pdict : PipelineDictionary ) : Number
 
 	var response = null;
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}catch(e){
 		return false;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		return PIPELET_ERROR;
 	}
 	
+	response = response.object;
+	var responseObject = {};
+	responseObject["RequestID"] = response.requestID;
+	responseObject["RequestToken"] = response.requestToken;
+	responseObject["ReasonCode"] = response.reasonCode.get();
+	responseObject["Decision"] = response.decision;
+	responseObject["payerAuthEnrollReply"] = response.payerAuthEnrollReply != null ? "exists" : null;
 	pdict.RequestID = response.requestID;
 	pdict.RequestToken = response.requestToken;
 	pdict.ReasonCode = response.reasonCode.get();
@@ -65,7 +73,13 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.XID =  response.payerAuthEnrollReply.xid;
 		pdict.PAReq = response.payerAuthEnrollReply.paReq;
 		pdict.ProxyPAN = response.payerAuthEnrollReply.proxyPAN;
+		responseObject["CommerceIndicator"] = response.payerAuthEnrollReply.commerceIndicator;
+		responseObject["ProofXML"] = response.payerAuthEnrollReply.proofXML;
+		responseObject["AcsURL"] = response.payerAuthEnrollReply.acsURL;
+		responseObject["XID"] = response.payerAuthEnrollReply.xid;
+		responseObject["PAReq"] = response.payerAuthEnrollReply.paReq;
+		responseObject["ProxyPAN"] = response.payerAuthEnrollReply.proxyPAN;
 	}
-
+	pdict.ResponseObject = responseObject;
     return PIPELET_NEXT;
 }

@@ -1,4 +1,6 @@
-/**
+
+            
+        /**
 *	 CreateCybersourceItemForPaypal.ds
 *	 This script creates the ItemObject data object and set it to CyberSourceItem output object.
 *
@@ -11,6 +13,8 @@ importPackage( dw.util );
 importPackage( dw.order );
 importPackage( dw.value);
 importScript('cybersource/Cybersource_Item_Object.ds');
+importScript('utils/Utils.ds'); 
+
 function execute( pdict : PipelineDictionary ) : Number
 {
 	
@@ -21,19 +25,22 @@ function execute( pdict : PipelineDictionary ) : Number
 	var count : Number = 1;
 		
 	// START adjust order level promos	
-	var basketSubTotalPrice = basket.getAdjustedMerchandizeTotalNetPrice();
+	var basketSubTotalPrice = basket.getAdjustedMerchandizeTotalPrice();
 				
 	var orderDiscount : Money	= new Money(0,basket.currencyCode);
 	
-	var subTotal : Money = basket.adjustedMerchandizeTotalNetPrice;
+	var subTotal : Money = basket.adjustedMerchandizeTotalPrice;
 	
 	for each( var promo : PriceAdjustment in basket.priceAdjustments ) {
-		orderDiscount	= orderDiscount.add(promo.netPrice);
-		if(promo.netPrice.value < 0) {
-			basketSubTotalPrice	= subTotal.add(promo.netPrice.multiply(-1));
+		orderDiscount	= orderDiscount.add(promo.price);
+		if(promo.price.value < 0) {
+			basketSubTotalPrice	= subTotal.add(promo.price.multiply(-1));
 		}
 	}
-		
+	
+	if(basket.getGiftCertificatePaymentInstruments().size() > 0){
+		itemObjects.push(getGiftCertificateLineItem(basket));
+	}	
 	var orderLevelAdjustment : Collection = basket.getPriceAdjustments();
 	
 	var orderLevelIterator : Iterator = orderLevelAdjustment.iterator();
@@ -63,9 +70,9 @@ function execute( pdict : PipelineDictionary ) : Number
 	        	orderLevelTaxAdjustment = orderLevelTaxAdjustment.multiply(-1);
 	        }
 			if( orderLevelAdjustmentPrice != null && !empty(orderLevelAdjustmentPrice) ) {		
-				adjustedLineItemFinalPrice = getOrderLevelAdjustedLineItemPrice(lineItem.adjustedNetPrice,orderLevelAdjustmentPrice,basketSubTotalPrice,basket.currencyCode,actualQuantity);
-			} else {						
-			    adjustedLineItemFinalPrice = lineItem.adjustedNetPrice.divide(actualQuantity);		
+				adjustedLineItemFinalPrice = getOrderLevelAdjustedLineItemPrice(lineItem.adjustedPrice,orderLevelAdjustmentPrice,basketSubTotalPrice,basket.currencyCode,actualQuantity);
+			} else {	
+				adjustedLineItemFinalPrice = lineItem.getAdjustedPrice().divide(actualQuantity);		
 			}
 			
 			itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(adjustedLineItemFinalPrice.getValue()),"000000.00","en_US"));
@@ -151,4 +158,23 @@ function getOrderLevelAdjustedLineItemPrice(lineItemPrice : Money, orderLevelAdj
 	}
 
 	return price;
+}
+
+function getGiftCertificateLineItem(lineItemCtnr : LineItemCtnr){
+			var itemObject: Item_Object = new Item_Object();
+			// get the order total
+			var orderTotal : Money = lineItemCtnr.totalGrossPrice;
+			
+			var nonGCAmount =  calculateNonGiftCertificateAmount(lineItemCtnr);
+			var giftAmount : Money = orderTotal.subtract(nonGCAmount);
+			//	giftAmount=giftAmount.multiply(-1);
+			itemObject.setUnitPrice(StringUtils.formatNumber(giftAmount.value,"000000.00","en_US"));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode("coupon");
+			itemObject.setProductName("GIFT_CERTIFICATE");
+			itemObject.setProductSKU("GIFT_CERTIFICATE");
+			
+			itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00","en_US"));
+			itemObject.setId("GIFT");
+			return itemObject;
 }

@@ -1,0 +1,98 @@
+/**
+* This script is used to retrieve the detailed conversion report from HttpClient.
+*
+* @input merchantID : String MerchantId to access conversion detail report.
+* @input conversionReportURL : String URL to get conversion detail report.
+* @input timeZone : String 
+* @input reportName : String 
+* @input userId : String 
+* @input password : String 
+*-   @output ExampleOut : Number
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+	Logger.debug("ConversionDetailReport---------------- -");
+	var httpClient : HTTPClient = new HTTPClient();
+	var postURL : String;
+	var message : String;
+	
+
+	//create hashmap of orders based on the query below
+	var query : String = "exportStatus =" + Order.EXPORT_STATUS_NOTEXPORTED + "d";
+		query += " and confirmationStatus =0d";
+		query += " and status !=" + Order.ORDER_STATUS_CANCELLED + "d";
+	var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
+	var orderHashMap : HashMap = new HashMap();
+	if (!empty(orderIterator))
+	{
+		while (orderIterator.hasNext())
+		{
+			var order : Order = orderIterator.next();
+			var transactionID : String = order.paymentTransaction.transactionID;
+			orderHashMap.put(transactionID, order);
+		}
+	}
+	Logger.debug("unconfirmend orders - " + orderHashMap.length);
+
+	//get current date and time, set timezone, reset date and time back by 24 hrs.
+	var endDate : dw.util.Calendar = System.getCalendar();
+	endDate.setTimeZone(pdict.timeZone);
+	endDate.add(dw.util.Calendar.HOUR, -24);
+	
+	//Create the Post URl
+	postURL = pdict.conversionReportURL;
+	postURL += StringUtils.formatCalendar(endDate, "yyyy/MM/dd");
+	postURL += "/" + pdict.merchantID;
+	postURL += "/" + pdict.reportName;
+
+	//Get Daily Conversion report
+	Logger.debug("Post Url ---- " + postURL);
+	httpClient.open('GET', postURL, pdict.userId, pdict.password);
+	httpClient.send();
+	
+	if (httpClient.statusCode == 200)
+	{
+		Logger.debug("Got the report....");
+		//var xmlMessage : String  = xmlString.replace("<!DOCTYPE CaseManagementOrderStatus SYSTEM \"https://ebctest.cybersource.com/ebctest/reports/dtd/cmorderstatus_1_1.dtd\">", "");
+    	//var xmlDocument : XML = new XML(xmlString);
+		//var ns = new Namespace("http://reports.cybersource.com/reports/cmos/1.0");
+
+	    message = httpClient.text;
+		Logger.debug("Message - " + message);
+	    var xmlDocument : XML = new XML(message);
+	    var ns = new Namespace("http://reports.cybersource.com/reports/cmos/1.0");
+
+		Logger.debug("Processing daily conversion report xml ......");
+		for each (var xmlConversion in xmlDocument.ns::Conversion)
+		{
+			var order : Order = orderHashMap.get(xmlConversion.@RequestID.toString());
+			Logger.debug("Order Id - " + xmlConversion.@RequestID.toString());
+			if (order != null) {
+				//new decision ACCEPT decision applied to order
+				if (xmlConversion.ns::NewDecision.toString() == 'ACCEPT') {
+					order.setConfirmationStatus(Order.ORDER_STATUS_COMPLETED);
+				//new decision REJECT decision applied to order
+				} else if (xmlConversion.ns::NewDecision.toString() == 'REJECT') { 
+					order.setStatus(Order.ORDER_STATUS_CANCELLED);
+				} else {
+					//do nothing
+				}
+			} else {
+				Logger.debug("Order in Daily conversion report not found in the query results against Demandware DB");
+			}
+		}
+	} else {
+	    // error handling
+	    message = httpClient.statusCode;
+		Logger.debug("Error getting the coversion report -- " + message);
+	}
+	 
+    return PIPELET_NEXT;
+}

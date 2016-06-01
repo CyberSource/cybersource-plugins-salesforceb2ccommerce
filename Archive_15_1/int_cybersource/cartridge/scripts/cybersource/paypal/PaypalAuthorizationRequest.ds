@@ -1,0 +1,162 @@
+/**
+* 	PaypalAuthorizationRequest.ds
+* 	Initiate the Paypal Authorize request 
+*
+* 	@input Order : dw.order.Order
+* 	@input orderSetupRequestId :String
+* 	@input orderSetupRequestToken :String
+* 	@input billTo : Object
+* 	@input shipTo : Object
+* 	@input item : Array
+* 	@input orderSetupTransactionId : String 
+* 	@input purchaseTotals : Object
+* 	@output ReasonCode :Number  The global reason code returned by Cybersource (100 = Success)
+* 	@output authDecision : String
+* 	@output authReasonCode : Number
+* 	@output authTransactionId :String
+* 	@output authAmount : String
+* 	@output paypalProtectionEligibility : String
+* 	@output paypalProtectionEligibilityType : String
+* 	@output paypalCorrelationId : String
+* 	@output paypalAuthorizedAmount : String
+* 	@output requestId :String
+* 	@output requestToken :String
+* 	@output PaymentInstrument : dw.order.PaymentInstrument
+* 	@output Response : Object
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.order);
+importPackage( dw.value);
+importScript('cybersource/libCybersource.ds'); 
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//setting pipeline dictionary values in local variables
+	var order : Order = pdict.Order;
+    var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+   	var billToObject: BillTo_Object = pdict.billTo;
+   	var shipToObject: ShipTo_Object = pdict.shipTo;
+   	var isDMEnabled : Boolean = Site.getCurrent().getCustomPreferenceValue('isDecisionManagerEnable');
+   	
+   	//setting amount and currency in purchase object
+   	if( purchaseObject == null ) {
+   		
+   		purchaseObject = new PurchaseTotals_Object();
+   		var amount : Money = new Money(0,order.currencyCode);
+   		var paymentInstruments : Collection = order.getPaymentInstruments();
+   		for each (var pi : PaymentInstrument in paymentInstruments) {
+    		if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
+	    		{
+	    			amount = amount.add(pi.paymentTransaction.amount);
+	    		}
+   		 	}
+   		purchaseObject.setCurrency(amount.currencyCode);
+		purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));   
+   	} 
+   	
+   	//setting orderSetupRequestId, orderSetupRequestToken, orderSetupTransactionId in variables to pass it to authorization service
+   	var orderSetupRequestId =pdict.orderSetupRequestId;
+   	var orderSetupRequestToken= pdict.orderSetupRequestToken;
+   	var paypalorderId :String =pdict.orderSetupTransactionId; 
+	var CybersourceHelper = getCybersourceHelper();	
+    var csReference : WebReference = webreferences.CyberSourceTransaction;
+    var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+    service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
+    //creating Cybersource helper object and setting the end point as "Test", "Staging", "Development" or "Production"
+   	CybersourceHelper.setEndpoint(service);
+
+	if(!CybersourceHelper.createHeader(service))
+	{
+		return PIPELET_ERROR;
+	}
+	//create request object and call paypal authorization service
+	var request = new csReference.RequestMessage();
+	CybersourceHelper.payPalAuthorizationService(request,paypalorderId,purchaseObject,order.getCustomerEmail(),orderSetupRequestId,orderSetupRequestToken,order.orderNo,billToObject,shipToObject,CybersourceHelper.getDigitalFingerprintEnabled(),pdict.item,isDMEnabled);
+	
+	//setting response in response object
+	var response = null;
+	try
+	{
+		response = service.runTransaction(request);
+	}
+	
+	catch(e)
+	{
+		Logger.getRootLogger().fatal("[PaypalAuthorizationRequest.ds] Error in Execute request ( {0} )",e.message);
+		
+		if(e.message.indexOf("SocketTimeoutException") != -1){
+            pdict.ReasonCode = 999; //set timeout error code 999
+            return PIPELET_NEXT;
+		}       
+		return PIPELET_ERROR;
+	}
+	
+	//logging response object as a result of service call
+	Logger.debug(response);
+	var res = response.toString();
+	if(response == null)
+	{
+		Logger.getRootLogger().fatal("[libCybersource.ds] Error in payPalAuthorizationService: null response");
+		return PIPELET_ERROR;
+	}
+	
+	//setting response back into pipleine dictionary variables
+	pdict.authDecision = response.decision;
+	pdict.requestId = response.requestID;
+	pdict.requestToken= response.requestToken;
+	pdict.ReasonCode = response.reasonCode.get();
+	pdict.Response=response;
+	
+	if(!empty(response.payPalAuthorizationReply)){
+  			pdict.authTransactionId = response.payPalAuthorizationReply.transactionId; 
+			pdict.authAmount= response.payPalAuthorizationReply.amount;
+			pdict.paypalAuthorizedAmount= response.payPalAuthorizationReply.paypalAmount;
+			pdict.paypalProtectionEligibility = response.payPalAuthorizationReply.protectionEligibility;
+			pdict.paypalProtectionEligibilityType = response.payPalAuthorizationReply.protectionEligibilityType;
+			pdict.paypalCorrelationId = response.payPalAuthorizationReply.correlationID;
+			pdict.authReasonCode = response.payPalAuthorizationReply.reasonCode.get();
+    }
+    
+    //logging as per reason code
+	var logTransactionData : String = " Cybersource Request ID = " +response.requestID;
+	logTransactionData += ", Cybersource Request Token = " +response.requestToken;
+	logTransactionData += ", Cybersource Reason Code = " +response.reasonCode.get();
+	logTransactionData += ", Cybersource Decision = " +response.decision;
+    
+	 switch(response.reasonCode.get()){
+    	case 100:
+    		
+			Logger.info("[PaypalAuthorizationRequest] [Cybersource Reason Code: 100] [INFO] " + logTransactionData + ", Successful transaction."); 
+    		break;
+    	case 101:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 101] [ERROR] " + logTransactionData + " Error Message = The request is missing one or more required fields in the request to CyberSource. The could be due to coding error since all required fields should be set by the COSubmit pipeline.");
+    		break;
+    	case 102: 
+    	    Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 102] [ERROR] " + logTransactionData + " Error Message = One or more fields in the request to cybersource contains invalid data.");
+    	    break;
+    	case 150:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 150] [ERROR] " + logTransactionData + " Error Message = Error: General system failure.");
+    		break;
+    	case 151:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 151] [ERROR] " + logTransactionData + " Error Message = Error: The request was received but there was a server time-out. This error does not include time-outs between the client and the server. ");
+    		break;
+    	case 152:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 152] [ERROR] " + logTransactionData + " Error Message = Error: The request was received but there was a service time-out. - ");
+    		break;
+    	case 223:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 223] [ERROR] " + logTransactionData + " Error Message = Error from paypal. Paypal rejected this request because of invalid order request.");
+    		break;
+    	case 233:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 233] [ERROR] " + logTransactionData + " Error Message = Error from paypal. Paypal rejected this request because of invalid order request.");
+    		break;
+    	case 234:
+    		Logger.error("[PaypalAuthorizationRequest] [Cybersource Reason Code: 234] [ERROR] " + logTransactionData + " Error Message = There is a problem with your CyberSource merchant configuration. - Please verify the Cybersource Custom preference in the Business Manager");
+    		break;
+    }
+	
+   return PIPELET_NEXT;
+}

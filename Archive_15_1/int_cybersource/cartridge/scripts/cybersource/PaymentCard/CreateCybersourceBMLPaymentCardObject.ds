@@ -1,0 +1,26 @@
+/**
+*	 CreateCybersourceBMLPaymentCardObject.ds
+*	 This script creates the BMLPaymentCardObject data object and set it to CybersourceBMLCard output object.
+*
+*    @input  Basket : dw.order.LineItemCtnr
+*    @output CybersourceBMLCard : Object
+*/
+importPackage( dw.system );
+importPackage( dw.order);
+importPackage( dw.customer );
+importScript('cybersource/Cybersource_Card_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : LineItemCtnr = pdict.Basket; 
+	var cust : Customer = basket.getCustomer();
+    var cardObject : Card_Object = new Card_Object();	
+	cardObject.setAccountNumber(Site.getCurrent().getCustomPreferenceValue("CsBmlNewAcctNo"));
+	cardObject.setExpirationMonth("12");
+	cardObject.setExpirationYear("2120");
+	var cardType : String = "028";
+	cardObject.setCardType(cardType);
+
+	pdict.CybersourceBMLCard = cardObject;	
+
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,81 @@
+/**
+*	TestCreateSubscription.ds
+*	Perfroms the pay subscription create service and returns the response.
+*
+* @input 	billTo : Object
+* @input 	card : Object
+* @input 	purchaseTotals : Object
+* @output SubscriptionIDToken :String
+* @output decision :String
+* @output invalidField : Array;
+* @output missingField : Array
+* @output reasonCode : Object
+* @output requestID : Object
+* @output requestToken : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value);
+
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_Card_Object.ds');
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/libCybersource.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var billToObject: BillTo_Object = pdict.billTo;
+	var cardObject: Card_Object = pdict.card;
+	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+	
+	
+	var CybersourceHelper = getCybersourceHelper();
+	
+	
+	var csReference : WebReference = webreferences.CyberSourceTransaction;
+	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
+	
+	CybersourceHelper.setEndpoint(service);
+	
+	if(!CybersourceHelper.createHeader(service)){
+		return null;
+	}
+
+	var request = new csReference.RequestMessage();
+
+	CybersourceHelper.addPaySubscriptionCreateService(request, billToObject, purchaseObject, cardObject, "test");
+	
+	var response = null;
+	// send request
+	try{
+		response = service.runTransaction(request);
+	}catch(e){
+		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}
+	
+	if(response == null){
+		return PIPELET_ERROR;
+	}
+	else
+	{
+		if ( null != response.paySubscriptionCreateReply)
+		{
+			pdict.SubscriptionIDToken = response.paySubscriptionCreateReply.subscriptionID;
+		}
+		pdict.decision = response.decision;
+		pdict.invalidField = response.invalidField;
+		pdict.missingField = response.missingField;
+		pdict.reasonCode = response.reasonCode;
+		pdict.requestID = response.requestID;
+		pdict.requestToken = response.requestToken;
+	}
+	return PIPELET_NEXT;
+}
+

@@ -1,0 +1,23 @@
+/**
+*	 CreateCybersourceBMLObject.ds
+*	 This script creates the BMLObject data object and set it to CybersourceBML output object.
+*    @output CyberSourceBML : Object
+*
+*/
+importPackage( dw.system );
+importScript('cybersource/Cybersource_BML_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+	var bmlObject: BML_Object = new BML_Object();
+	bmlObject.setItemCategory("4150");
+	bmlObject.setProductDeliveryTypeIndicator("shipping_and_handling");
+	bmlObject.setTcVersion("01234");
+	bmlObject.setCustomerRegistrationDate("20080212");
+	bmlObject.setCustomerTypeFlag("N");
+	//bmlObject.customerTypeFlag = "E";
+	
+	pdict.CyberSourceBML = bmlObject;
+	
+    return PIPELET_NEXT;
+}

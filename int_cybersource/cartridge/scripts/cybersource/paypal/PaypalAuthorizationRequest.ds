@@ -32,7 +32,7 @@ importScript('cybersource/libCybersource.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 importScript('cybersource/Cybersource_BillTo_Object.ds');
 importScript('cybersource/Cybersource_ShipTo_Object.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 	//setting pipeline dictionary values in local variables
@@ -64,7 +64,7 @@ function execute( pdict : PipelineDictionary ) : Number
    	var paypalorderId :String =pdict.orderSetupTransactionId; 
 	var CybersourceHelper = getCybersourceHelper();	
     var csReference : WebReference = webreferences.CyberSourceTransaction;
-    var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+    /*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
     service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
     //creating Cybersource helper object and setting the end point as "Test", "Staging", "Development" or "Production"
    	CybersourceHelper.setEndpoint(service);
@@ -72,7 +72,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	if(!CybersourceHelper.createHeader(service))
 	{
 		return PIPELET_ERROR;
-	}
+	}*/
 	//create request object and call paypal authorization service
 	var request = new csReference.RequestMessage();
 	CybersourceHelper.payPalAuthorizationService(request,paypalorderId,purchaseObject,order.getCustomerEmail(),orderSetupRequestId,orderSetupRequestToken,order.orderNo,billToObject,shipToObject,CybersourceHelper.getDigitalFingerprintEnabled(),pdict.item,isDMEnabled);
@@ -81,7 +81,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	try
 	{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
 	}
 	
 	catch(e)
@@ -98,12 +99,12 @@ function execute( pdict : PipelineDictionary ) : Number
 	//logging response object as a result of service call
 	Logger.debug(response);
 	var res = response.toString();
-	if(response == null)
+	if(empty(response) || response.status != "OK")
 	{
 		Logger.getRootLogger().fatal("[libCybersource.ds] Error in payPalAuthorizationService: null response");
 		return PIPELET_ERROR;
 	}
-	
+	response = response.object;
 	//setting response back into pipleine dictionary variables
 	pdict.authDecision = response.decision;
 	pdict.requestId = response.requestID;

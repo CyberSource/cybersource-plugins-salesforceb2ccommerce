@@ -47,7 +47,7 @@ importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
 importScript('cybersource/Cybersource_POS_Object.ds');
 importScript('cybersource/libCybersource.ds');
-
+var dwsvc		= require ("dw/svc");
 var numbersOnlyRegExp : RegExp = /\D/g;
 function execute( pdict : PipelineDictionary ) : Number
 {
@@ -62,32 +62,34 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 	
 	CybersourceHelper.setEndpoint(service);
 	
 	if(!CybersourceHelper.createPosHeader(service, location)){
 		return PIPELET_ERROR;
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPOSAuthRequestInfo(request, location, purchaseObject,cardObject,"POS",CybersourceHelper.getDigitalFingerprintEnabled(), posObject);
+	CybersourceHelper.addPOSAuthRequestInfo(request, location, purchaseObject,cardObject,"POS",false, posObject);
 		
 	var response = null;
 	// send request
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.pos"); 
+	var requestObj = {location:location,requestObj:request};
+		response = service.call(requestObj);
 	}catch(e){
 		Logger.error("[Test POS transaction TestPosAuth.ds] Error in request: {0}",e.message);
 		return PIPELET_ERROR;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		return PIPELET_ERROR;
 	}
-	
+	response = response.object;
 	pdict.RequestID 								= response.requestID;
 	pdict.MerchantReferenceCode						= response.merchantReferenceCode;
 	pdict.Decision									= response.decision;

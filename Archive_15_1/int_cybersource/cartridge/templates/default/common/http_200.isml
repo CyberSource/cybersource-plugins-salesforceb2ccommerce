@@ -1,0 +1,4 @@
+<iscomment>
+	This template is used to set the status of page, 200 for success 
+</iscomment>
+<isstatus value="200"/>

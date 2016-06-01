@@ -31,7 +31,8 @@ function execute( pdict : PipelineDictionary ) : Number
 		var amount : Number = new Number(pdict.amount);
 	} else {
 		var amount : Number = new Number("200.00");
-	}	
+	}
+		
 	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
     
     pdict.CyberSourcePurchaseTotals = purchaseObject;

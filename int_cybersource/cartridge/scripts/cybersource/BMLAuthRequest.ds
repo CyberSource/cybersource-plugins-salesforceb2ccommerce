@@ -37,7 +37,7 @@ importScript('cybersource/Cybersource_BillTo_Object.ds');
 importScript('cybersource/Cybersource_ShipTo_Object.ds');
 importScript('cybersource/Cybersource_Card_Object.ds');
 importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
-
+var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -60,7 +60,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	var CybersourceHelper = getCybersourceHelper();
 	
 	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	var service : Stub = csReference.getService("TransactionProcessor", "portXML");
+	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
 	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
 
 	CybersourceHelper.setEndpoint(service);
@@ -76,7 +76,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		if(!CybersourceHelper.createBMLHeader(service)){
 			return PIPELET_ERROR;
 		}
-	}
+	}*/
 
 	var request = new csReference.RequestMessage();
 	CybersourceHelper.addBMLAuthRequestInfo(request,billToObject,shipToObject,purchaseObject,cardObject,bmlObject,Promo,orderNo);
@@ -85,16 +85,21 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	// send request
 	try{
-		response = service.runTransaction(request);
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.bml");
+		if(pdict.Promo)
+		{
+			var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.bmlpromo"); 
+		}
+		response = service.call(request);
 	}catch(e){
 		Logger.error("[libCybersource.ds] Error in BML request request ( {0} )",e.message);
 		return false;
 	}
 	
-	if(response == null){
+	if(empty(response) || response.status != "OK"){
 		return PIPELET_ERROR;
 	}
-	
+	response = response.object;
 	pdict.RequestID = response.requestID;
 	pdict.RequestToken = response.requestToken;
 	pdict.ReasonCode = response.reasonCode.get();

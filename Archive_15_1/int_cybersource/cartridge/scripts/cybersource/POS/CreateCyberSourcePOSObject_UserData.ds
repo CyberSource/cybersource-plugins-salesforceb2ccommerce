@@ -1,0 +1,98 @@
+/**
+*	 CreateCyberSourcePurchaseTotalsObject.ds
+*	 This script creates the mock purchase totals data object and set it to CyberSourcePurchaseTotals output object.
+*
+*	@input entryMode 			: String
+*	@input cardPresent 			: String
+*	@input terminalCapability	: String
+*	@input trackData			: String
+*	@input catLevel 			: String
+*	@input terminalID			: String
+*
+*   @output CyberSourcePos 		: Object
+*   @output error 				: String
+*   @output errorCode			: String
+*
+*/
+importPackage( dw.system );
+importPackage( dw.object );
+importPackage( dw.util);
+
+importScript('cybersource/Cybersource_POS_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{  
+    var posObject : Pos_Object = new Pos_Object();
+	
+	if( !empty(pdict.cardPresent) )
+		posObject.setCardPresent( pdict.cardPresent );
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Card Present value is missing";
+		return PIPELET_ERROR;
+	}
+
+	if( !empty(pdict.entryMode) )
+		posObject.setEntryMode( pdict.entryMode );
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Entry Mode value is missing";
+		return PIPELET_ERROR;
+	}
+
+	if( !empty(pdict.terminalCapability) )
+		posObject.setTerminalCapability( parseInt(pdict.terminalCapability) );
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Terminal Capability value is missing";
+		return PIPELET_ERROR;
+	}
+
+	try{
+		if( !empty(pdict.terminalID) ){
+			// passed terminal ID is the serial number of POS terminal.
+			// fetch configured terminalID for passed serial number from custom object
+			// and set the terminalID accordingly in request
+			var customObject : CustomObject = null;
+			
+			customObject = CustomObjectMgr.getCustomObject("POS_TerminalMapping", pdict.terminalID);
+			if(customObject != null){
+				posObject.setTerminalID( customObject.custom.terminalID );
+			}
+			else{
+				pdict.errorCode = "102";
+				pdict.error = "Serial number passed is invalid/not found";
+				return PIPELET_ERROR;
+			}
+		}
+	}
+	catch(e){
+		pdict.errorCode = "ERR";
+		pdict.error = "System error: "+e.message;
+		return PIPELET_ERROR;
+	}
+	
+	if( !empty(posObject.getTerminalID()) ){
+		if( !empty(pdict.catLevel) )
+			posObject.setCatLevel( parseInt(pdict.catLevel) );
+		else{
+			pdict.errorCode = "102";
+			pdict.error = "CatLevel can't be empty when Terminal ID is present";
+			return PIPELET_ERROR;
+		}
+	}
+	
+	if(pdict.entryMode.equals("swiped")){
+		if( !empty(pdict.trackData) )
+			posObject.setTrackData( pdict.trackData );
+		else{
+			pdict.errorCode = "101";
+			pdict.error = "Track Data is missing";
+			return PIPELET_ERROR;
+		}
+	}
+	    
+    pdict.CyberSourcePos = posObject;
+    
+    return PIPELET_NEXT;
+}

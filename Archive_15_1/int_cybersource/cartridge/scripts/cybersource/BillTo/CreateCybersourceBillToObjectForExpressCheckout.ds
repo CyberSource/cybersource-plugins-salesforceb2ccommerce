@@ -1,0 +1,140 @@
+/**
+*	CreateCybersourceBillToObjectForExpressCheckout.ds
+*	This script creates the BillToObject data object and set it to CyberSourceBillTo output object .
+*	when Decision Manager is enable from Cybersource console and Authentication servvice need billto
+*	Object to authorize the Paypal request incase of express checkout.
+*
+*	@input Order : dw.order.LineItemCtnr
+*	@input ipAddress : String
+*	@output CyberSourceBillTo : Object
+*	@output CyberSourceShipTo : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.order );
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+		var billToObject: BillTo_Object = new BillTo_Object();
+		var shipToObject: ShipTo_Object = new ShipTo_Object();
+		var order : LineItemCtnr = pdict.Order;
+		var billingAddress : OrderAddress = order.billingAddress;
+		var shippingAddress : OrderAddress = order.defaultShipment.shippingAddress;
+		var shippingMethod : ShippingMethod = order.defaultShipment.shippingMethod;
+		var it : Iterator = order.getShipments().iterator();
+		
+		if(shippingAddress == null) {
+			while(it.hasNext()){
+				var shipment : Shipment = it.next();
+				shippingAddress = shipment.getShippingAddress();
+				shippingMethod = shipment.getShippingMethod();
+				if(shippingAddress != null){
+					break;
+				}
+			}
+		}
+		if( !empty(billingAddress) && (order.getPaymentInstruments("PayPal")[0].paymentTransaction.custom.isPaypalBillingAddressPresent)) {			
+			/*
+			* create the billToObject using billingAddress else it will create billToObject using shippingAddress 
+			*/			  
+			if(!empty(billingAddress.address1)){
+				billToObject.setFirstName  ( billingAddress.firstName );
+				billToObject.setLastName   ( billingAddress.lastName );
+				billToObject.setStreet1    ( billingAddress.address1 );
+				billToObject.setStreet2    ( billingAddress.address2 );
+				billToObject.setCity       ( billingAddress.city );
+				billToObject.setState      ( billingAddress.stateCode );
+				billToObject.setPostalCode ( billingAddress.postalCode );
+				billToObject.setCountry    ( billingAddress.countryCode );
+				billToObject.setPhoneNumber( billingAddress.phone );
+				billToObject.setEmail      ( order.customerEmail );
+			} else {
+				billToObject.setFirstName  ( shippingAddress.firstName );
+				billToObject.setLastName   ( shippingAddress.lastName );
+				billToObject.setStreet1    ( shippingAddress.address1 );
+				billToObject.setStreet2    ( shippingAddress.address2 );
+				billToObject.setCity       ( shippingAddress.city );
+				billToObject.setState      ( shippingAddress.stateCode );
+				billToObject.setPostalCode ( shippingAddress.postalCode );
+				billToObject.setCountry    ( shippingAddress.countryCode );
+				billToObject.setPhoneNumber( shippingAddress.phone );
+				billToObject.setEmail      ( order.customerEmail );			
+			}
+		}
+		else
+		{
+			billToObject.setFirstName  ( billingAddress.firstName );
+			billToObject.setLastName   ( billingAddress.lastName );
+			billToObject.setStreet1    ( "1295 Charleston Rd" );
+			billToObject.setStreet2    ( "" );
+			billToObject.setCity       ( "Mountain View" );
+			billToObject.setState      ( "CA" );
+			billToObject.setPostalCode ( "94043" );
+			billToObject.setCountry    ( "US" );
+			billToObject.setPhoneNumber( "" );
+			billToObject.setEmail      ( order.customerEmail );
+		}
+		billToObject.setIpAddress(pdict.ipAddress);
+		
+		if( !empty(shippingAddress) ) {
+		shipToObject.setFirstName(shippingAddress.firstName);
+		shipToObject.setLastName(shippingAddress.lastName);
+		shipToObject.setStreet1(shippingAddress.address1);
+		shipToObject.setStreet2(shippingAddress.address2);
+		shipToObject.setCity(shippingAddress.city);
+		shipToObject.setState(shippingAddress.stateCode);
+		shipToObject.setPostalCode(shippingAddress.postalCode);
+		shipToObject.setCountry(shippingAddress.countryCode);
+		shipToObject.setPhoneNumber(shippingAddress.phone);
+		shipToObject.setEmail(order.customerEmail);		
+		//*****************************************************//
+		// ShippingMethod custom attribute CybersourceShippingID is used to fetch Cybersource Shipping method i.e. oneday, sameday, twoday etc.
+		// if merchant does not specify Cybersource Shipping Id whilie creating shipping methods within Business Manager, the switch statement
+		// fetch default shipping method available in Demandware's Site Genesis.  
+		//*****************************************************//
+		if( !empty(shippingMethod) ) 
+		{
+			if ( !empty(shippingMethod.custom.CybersouceShippingID.value) ) 
+			{
+				shipToObject.setShippingMethod(shippingMethod.custom.CybersouceShippingID.value);
+			} 
+			else
+			{
+				switch (shippingMethod.displayName)
+					{									
+						case "Overnight":
+						shipToObject.setShippingMethod("oneday");						
+						break;
+						case "Next Day":
+						shipToObject.setShippingMethod("oneday");						
+						break;
+						case "2-Day Express":
+						shipToObject.setShippingMethod("twoday");						
+						break;	
+						case "Super Saver":
+						shipToObject.setShippingMethod("threeday");						
+						break;		
+						case "Ground":
+						shipToObject.setShippingMethod("other");						
+						break;			
+						case "None":
+						shipToObject.setShippingMethod("none");						
+						break;
+						default:
+						shipToObject.setShippingMethod("N/A");						
+						break;	
+					}				
+			}			
+		} 
+		else {
+			shipToObject.setShippingMethod("N/A");
+		}
+	}
+	pdict.CyberSourceBillTo = billToObject;
+	pdict.CyberSourceShipTo = shipToObject;
+	
+    return PIPELET_NEXT;
+}

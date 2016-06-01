@@ -55,6 +55,10 @@ function Card_Object(){
 	this.bin = "";
 	this.setBin = setBin;
 	this.getBin = getBin;
+
+	this.creditCardToken = "";
+	this.setCreditCardToken = setCreditCardToken;
+	this.getCreditCardToken = getCreditCardToken;
 }
 
 function setFullName(value){
@@ -134,4 +138,12 @@ function setBin(value){
 }
 function getBin(){
 	return this.bin;
-}																																								
+}
+function setCreditCardToken(value){
+	if (!empty(value)) {
+		this.creditCardToken = value;
+	}
+}
+function getCreditCardToken(){
+	return this.creditCardToken;
+}

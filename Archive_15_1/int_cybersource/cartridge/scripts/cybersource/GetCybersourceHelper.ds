@@ -1,0 +1,15 @@
+/**
+*	GetCybersourceHelper.ds
+	This script is used to get the CyberSourceHerlper method
+*   @output CybersourceHelper : Object
+*
+*/
+importPackage( dw.system );
+importScript("cybersource/libCybersource.ds");
+
+function execute( args : PipelineDictionary ) : Number
+{
+	args.CybersourceHelper = getCybersourceHelper();
+	 
+    return PIPELET_NEXT;
+}

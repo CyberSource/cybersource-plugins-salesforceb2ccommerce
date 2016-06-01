@@ -1,0 +1,26 @@
+<style type="text/css">
+label {
+	width:150px;    /*Or however much space you need for the form’s labels*/
+    float:left;
+}
+td {
+	border-width: medium; 
+	border-style: outset;
+}
+</style>
+<iscomment>
+	This template will populate the input fields of on demand subscription
+</iscomment>
+<isinclude template="util/modules"/>
+<h2><center><b><u>On Demand Subscription Payment Test Page</u></b></center></h2><br/><br/>
+<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+	<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
+	<isinputfield formfield="${pdict.CurrentForms.subscription.currency}" type="select"/>
+	<isinputfield formfield="${pdict.CurrentForms.subscription.amount}" type="input"/>
+	<div class="form-row form-row-button">
+		<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+			${Resource.msg('global.submit','locale',null)}
+		</button>
+		<INPUT TYPE="button" onClick="parent.location='${URLUtils.http('Cybersource_Subscription-Start')}'" value="BACK"/>
+	</div>
+</form>

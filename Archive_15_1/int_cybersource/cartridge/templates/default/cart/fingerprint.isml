@@ -1,0 +1,86 @@
+<iscomment>
+	This template will include finger print image or flash based off mapping set
+</iscomment>
+<!---
+Important       1- In all code segments, when substituting your values for the variables, make sure to omit the angle brackets (< >) around org ID,
+		   merchant id, and session ID.
+		2- For production, redirect h.online-metrix.net to a local domain as stated in the developer's guide.
+
+--->
+
+<!---
+You would need <org ID> for Test and another for Production:
+
+Test = 1snn5n9w
+Production = k8vif92e
+--->
+<isset name="location" value="${pdict.DeviceFingerprintJetmetrixLocation}" scope="page" />
+<isset name="session_id" value="${pdict.MerchantId + "" + pdict.SessionId}" scope="page" /> 
+<!--- Test redirection --->
+
+<!---
+   Here are two types of redirects possible.
+     Level_1:
+     a static mapping without Requirement to define a Static mapping at Businessmanager a pipline will do the redirect.
+     Level_2:
+     a dynamic mapping, a mapping rule must be defined at Businessmanager
+     Level_0:
+     no redirect
+--->
+
+<isscript>
+  
+   var redirectionType = pdict.RedirectionType;
+  
+  // no mapping:
+  var url_1 = location + "/fp/clear.png?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id + "&amp;m=1";
+  var url_2 = location + "/fp/clear.png?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id + "&amp;m=2";
+  var url_3 = location + "/fp/fp.swf?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id;
+  var url_4 = location + "/fp/check.js?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id;
+  
+  // Level_1 is a static Mapping (direct pipline call with redirect):
+  if (redirectionType == "static") {
+	  url_1 = URLUtils.url('Cybersource-RedirectFpLocation', 'type' , '1');
+	  url_2 = URLUtils.url('Cybersource-RedirectFpLocation', 'type' , '2');
+	  url_3 = URLUtils.url('Cybersource-RedirectFpLocation', 'type' , '3');
+	  url_4 = URLUtils.url('Cybersource-RedirectFpLocation', 'type' , '4');
+  }  
+  // Level_2 is a general redirection, requires a mapping rule:
+  else if (redirectionType == "dynamic") {
+	  url_1 = "/fp/clear.png?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id + "&amp;m=1";
+	  url_2 = "/fp/clear.png?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id + "&amp;m=2";
+	  url_3 = "/fp/fp.swf?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id;
+	  url_4 = "/fp/check.js?org_id=" + pdict.DeviceFingerprintOrgId + "&amp;session_id=" + session_id;
+  }
+  
+</isscript>
+
+
+<!--***************************
+******** PNG image ********-->
+
+<isif condition="${pdict.DeviceFingerprintEnabled}">
+
+	<p style="background:url(<isprint value="${url_1}" encoding="off"/>)"></p>
+	<img src="<isprint value="${url_2}" encoding="off"/>" alt="">
+	
+	<!--****************************
+	******** Flash code ********-->
+	
+	<object type="application/x-shockwave-flash" 
+		data="<isprint value="${url_3}" encoding="off"/>" 
+		width="1" 
+		height="1" 
+		id="thm_fp">
+	   <param name="movie" value="<isprint value="${url_3}" encoding="off"/>" />
+	</object>
+	
+	<!--*********************************
+	******** JavaScript code ********-->
+	
+	<script src="<isprint value="${url_4}" encoding="off"/>" 
+		type="text/javascript">
+	</script>
+	
+</isif>
+

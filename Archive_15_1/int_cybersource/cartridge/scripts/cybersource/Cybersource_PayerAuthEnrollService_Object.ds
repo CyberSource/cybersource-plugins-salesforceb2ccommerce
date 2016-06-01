@@ -1,0 +1,71 @@
+/**
+* Cybersource_PayerAuthEnrollService_Object.ds
+* This Object is used for the Cybersource PayerAuthEnrollService xsd
+*/
+function PayerAuthEnrollService_Object() {
+
+	this.httpAccept = "";
+	this.setHttpAccept = setHttpAccept;
+	this.getHttpAccept = getHttpAccept;
+	
+	this.httpUserAgent = "";
+	this.setHttpUserAgent = setHttpUserAgent;
+	this.getHttpUserAgent = getHttpUserAgent;
+	
+	this.merchantName = "";
+	this.setMerchantName = setMerchantName;
+	this.getMerchantName = getMerchantName;
+	
+	this.merchantURL = "";
+	this.setMerchantURL = setMerchantURL;
+	this.getMerchantURL = getMerchantURL;
+	
+	this.purchaseDescription = "";
+	this.setPurchaseDescription = setPurchaseDescription;
+	this.getPurchaseDescription = getPurchaseDescription;
+	
+	this.purchaseTime = "";
+	this.setPurchaseTime =setPurchaseTime;
+	this.getPurchaseTime =getPurchaseTime;
+	
+	this.countryCode = "";
+	this.setCountryCode = setCountryCode;
+	this.getCountryCode = getCountryCode;
+	
+	this.acquirerBin = "";
+	this.setAcquirerBin = setAcquirerBin;
+	this.getAcquirerBin = getAcquirerBin;
+	
+	this.loginID = "":
+	this.setLoginID = setLoginID;
+	this.getLoginID = getLoginID;
+	
+	this.password = "":
+	this.setPassword = setPassword;
+	this.getPassword = getPassword;
+	
+	this.merchantID = "":
+	this.setMerchantID = setMerchantID;
+	this.getMerchantID = getMerchantID;
+
+}
+
+function setHttpAccept(value){
+	this.httpAccept = value;
+}
+function getHttpAccept(){
+	return httpAccept;
+}
+
+function setHttpUserAgent(value){
+	this.httpUserAgent = value;
+}
+function getHttpUserAgent(){
+	return httpUserAgent;
+}
+function setMerchantName(value){
+	this.merchantName = value;
+}
+function getMerchantName(){
+	return merchantName;
+}

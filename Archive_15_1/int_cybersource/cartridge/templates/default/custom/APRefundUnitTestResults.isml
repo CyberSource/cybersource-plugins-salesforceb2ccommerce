@@ -1,0 +1,195 @@
+<iscomment>
+	This template will populate the Vme Unit Test result
+</iscomment>
+<h2><center><b><u>V.me Refund Details API Response Page</u></b></center></h2><br/><br/>
+<isif condition="${!empty(pdict.dateTime)}">
+	Here is the Date Time
+	<isprint value="${pdict.dateTime}"/><br>
+</isif>
+<isif condition="${!empty(pdict.Decision)}">
+	Here is the Decision
+	<isprint value="${pdict.Decision}"/><br>
+</isif>
+<isif condition="${!empty(pdict.ReasonCode)}">
+	Here is the reason code
+	<isprint value="${pdict.ReasonCode}"/><br>
+</isif>
+<isif condition="${!empty(pdict.RequestToken)}">
+	Here is the Request Token
+	<isprint value="${pdict.RequestToken}"/><br>
+</isif>
+<isif condition="${!empty(pdict.RequestID)}">
+	Here is the Request ID
+	<isprint value="${pdict.RequestID}"/><br>
+</isif>
+<isif condition="${!empty(pdict.providerResponse)}">
+	Here is the Provider Response
+	<isprint value="${pdict.providerResponse}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apStatus)}">
+	Here is the status
+	<isprint value="${pdict.apStatus}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apAdditionalAmount)}">
+	Here is the additional amount
+	<isprint value="${pdict.apAdditionalAmount}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apDiscountAmt)}">
+	Here is the discount amount
+	<isprint value="${pdict.apDiscountAmt}"/><br>
+</isif>
+<isif condition="${!empty(pdict.captureAmount)}">
+	Here is the capture amount
+	<isprint value="${pdict.captureAmount}"/><br>
+</isif>
+<isif condition="${!empty(pdict.captureReasonCode)}">
+	Here is the capture reason code
+	<isprint value="${pdict.captureReasonCode}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apGiftWrapAmt)}">	
+	Here is the gift wrap amount
+	<isprint value="${pdict.apGiftWrapAmt}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apGiftWrapAmt)}">
+	Here is the handling amount
+	<isprint value="${pdict.apGiftWrapAmt}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apOrderID)}">
+	Here is the Order ID
+	<isprint value="${pdict.apOrderID}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apProductDescription)}">	
+	Here is the Product Description
+	<isprint value="${pdict.apProductDescription}"/><br>	
+</isif>
+<isif condition="${!empty(pdict.apProductID)}">
+	Here is the Product ID
+	<isprint value="${pdict.apProductID}"/><br>			
+</isif>
+<isif condition="${!empty(pdict.apPurchaseID)}">
+	Here is the Purchase ID
+	<isprint value="${pdict.apPurchaseID}"/><br>	
+</isif>
+<isif condition="${!empty(pdict.apShippingAmount)}">
+	Here is the Shipping Amount
+	<isprint value="${pdict.apShippingAmount}"><br>	
+</isif>
+<isif condition="${!empty(pdict.apShippingHandlingAmount)}">
+	Here is the Shipping Handling Amount
+	<isprint value="${pdict.apShippingHandlingAmount}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apSubtotalAmount)}">
+	Here is the Sub Total Amount
+	<isprint value="${pdict.apSubtotalAmount}"/><br>
+</isif>
+<isif condition="${!empty(pdict.apTaxAmount)}">
+	Here is the Tax
+	<isprint value="${pdict.apTaxAmount}"/><br>	
+</isif>
+<isif condition="${!empty(pdict.apPurchaseAmount)}">
+	Here is the Purchase Amount
+	<isprint value="${pdict.apPurchaseAmount}"/><br>	
+</isif>
+<isif condition="${!empty(pdict.name)}">
+	Here is the customer name
+	<isprint value="${pdict.name}"/><br>
+</isif>
+<isif condition="${!empty(pdict.email)}">
+	Here is the customer email address
+	<isprint value="${pdict.email}"/><br>
+</isif>
+<isif condition="${!empty(pdict.street1)}">
+	Here is the Address Line 1
+	<isprint value="${pdict.street1}"/><br>
+</isif>
+<isif condition="${!empty(pdict.street2)}">
+	Here is the Address Line 2
+	<isprint value="${pdict.street2}"/><br>
+</isif>
+<isif condition="${!empty(pdict.city)}">
+	Here is the city
+	<isprint value="${pdict.city}"/><br>
+</isif>
+<isif condition="${!empty(pdict.state)}">
+	Here is the state
+	<isprint value="${pdict.state}"/><br>
+</isif>
+<isif condition="${!empty(pdict.country)}">
+	Here is the country
+	<isprint value="${pdict.country}"/><br>
+</isif>
+<isif condition="${!empty(pdict.postalCode)}">
+	Here is the postal code
+	<isprint value="${pdict.postalCode}"/><br>
+</isif>
+<isif condition="${!empty(pdict.reason)}">
+	Here is the reason
+	<isprint value="${pdict.reason}"/><br>
+</isif>
+<isif condition="${!empty(pdict.transactionID)}">
+	Here is the transaction ID
+	<isprint value="${pdict.transactionID}"/><br>
+</isif>
+<isif condition="${!empty(pdict.purchaseTotalCurrency)}">
+	Here is the purchase total currency
+	<isprint value="${pdict.purchaseTotalCurrency}"/><br>
+</isif>
+<isif condition="${!empty(pdict.authReason)}">	
+Here is the authreason
+<isprint value="${pdict.authReason}"/><br>
+</isif>
+<isif condition="${!empty(pdict.authCode)}">
+	Here is the authcode
+<isprint value="${pdict.authCode}"/><br>
+</isif>
+<isif condition="${!empty(pdict.token)}">	
+	Here is the token
+	<isprint value="${pdict.token}"><br>
+</isif>
+<isif condition="${!empty(pdict.signature)}">	
+	Here is the signature
+	<isprint value="${pdict.signature}"><br>
+</isif>
+<isif condition="${!empty(pdict.publicKey)}">	
+	Here is the public key
+	<isprint value="${pdict.publicKey}"><br>
+</isif>
+<isif condition="${!empty(pdict.riskIndicator)}">	
+	Here is the risk level
+	<isprint value="${pdict.riskIndicator}"><br>
+</isif>
+<isif condition="${!empty(pdict.AVSCodeRaw)}">	
+	Here is the AVSCodeRaw
+	<isprint value="${pdict.AVSCodeRaw}"><br>
+</isif>
+<isif condition="${!empty(pdict.reconciliationID)}">
+	Here is the Reconciliation ID
+	<isprint value="${pdict.reconciliationID}"/><br>
+</isif>
+<isif condition="${!empty(pdict.invalidField)}">
+<b>CyberSource Response for Invalid Field :</b>
+<isloop items="${pdict.invalidField}" alias="invalidField">									
+	<isprint value="${invalidField}">,
+</isloop>
+<br>
+</isif>
+<isif condition="${!empty(pdict.missingField)}">
+<b>CyberSource Response for Missing Field :</b>
+<isloop items="${pdict.missingField}" alias="missingField">									
+	<isprint value="${missingField}">,
+</isloop>
+<br>
+</isif>
+
+<INPUT TYPE="button" onClick="parent.location='${URLUtils.http('CybersourceUnitTesting-StartVme')}'" value="BACK"/>
+
+
+	
+	
+	
+
+
+
+
+
+

@@ -48,7 +48,11 @@ function execute( pdict : PipelineDictionary ) : Number
 				billToObject.setPostalCode ( shippingAddress.postalCode );
 				billToObject.setCountry    ( shippingAddress.countryCode );
 				billToObject.setPhoneNumber( shippingAddress.phone );
-				billToObject.setEmail      ( "test@test.com" );			
+				if (customer.registered) {
+					billToObject.setEmail      ( customer.profile.email );
+				} else { 
+					billToObject.setEmail      ( "test@test.com" );
+				}
 			}
 		}
 		else
@@ -62,7 +66,11 @@ function execute( pdict : PipelineDictionary ) : Number
 			billToObject.setPostalCode ( shippingAddress.postalCode );
 			billToObject.setCountry    ( shippingAddress.countryCode );
 			billToObject.setPhoneNumber( shippingAddress.phone );
-			billToObject.setEmail      ( "test@test.com" );
+			if (customer.registered) {
+				billToObject.setEmail      ( customer.profile.email );
+			} else { 
+				billToObject.setEmail      ( "test@test.com" );
+			}
 		}
 	}
 	else
@@ -75,10 +83,14 @@ function execute( pdict : PipelineDictionary ) : Number
 		billToObject.setStreet2    ( billAddrForm.addressFields.address2.value);
 		billToObject.setCity       ( billAddrForm.addressFields.city.value);
 		billToObject.setState      ( billAddrForm.addressFields.states.state.value);
-		billToObject.setPostalCode ( billAddrForm.addressFields.zip.value);
+		billToObject.setPostalCode ( billAddrForm.addressFields.postal.value);
 		billToObject.setCountry    ( billAddrForm.addressFields.country.value);
 		billToObject.setPhoneNumber( billAddrForm.addressFields.phone.value);
-		billToObject.setEmail(pdict.CurrentForms.checkout.addresses.email.value);
+		if (customer.registered) {
+			billToObject.setEmail      ( customer.profile.email );
+		} else { 
+			billToObject.setEmail('test@test.com');
+		}
 	
 	}
 	billToObject.setIpAddress(pdict.ipAddress);

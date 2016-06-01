@@ -1,0 +1,27 @@
+/**
+* PopulateBillingAddress.ds
+* This script is used to populate billing address.
+*
+* @input Basket : dw.order.LineItemCtnr
+* @input billingAddress : dw.order.OrderAddress
+*
+*/
+importPackage( dw.system );
+importPackage(dw.order);
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var billingAddress : OrderAddress = pdict.billingAddress;
+	billingAddress.setAddress1("PO Box 224");
+	billingAddress.setAddress2("8 Bosworth Road");
+	billingAddress.setCity("Winchendon");
+	billingAddress.setCountryCode("US");
+	billingAddress.setFirstName("Don");
+	billingAddress.setLastName("Rivard");
+	billingAddress.setPhone("111-222-3333");
+	billingAddress.setPostalCode("01475");
+	billingAddress.setStateCode("MA");
+	
+    return PIPELET_NEXT;
+}

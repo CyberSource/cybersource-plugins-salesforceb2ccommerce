@@ -55,6 +55,12 @@ function removeExistingPaymentInstruments( basket : Basket)
 	while( iter.hasNext() )
 	{
 		existingPI = iter.next();
-		basket.removePaymentInstrument( existingPI );
+		if(existingPI.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)){
+		 continue;
+		}else{
+			basket.removePaymentInstrument( existingPI );
+		}
+		
+		
 	}
 }
