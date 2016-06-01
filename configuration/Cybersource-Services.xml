@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+    <service-credential service-credential-id="CybersourceService">
+        <url>https://ics2ws.ic3.com/commerce/1.x/transactionProcessor</url>
+        <user-id>sapient_nitro</user-id>
+        <password encrypted="true" encryption-type="common.export">U50ABfo+n1+KzpuZc9NqWx0xOLqEXHk9owjQpyha6e4Ez95S1ZRIBAFVZb8gVwy0OiVs9BgLrZiKPozrIiyfJ5ot7TR7Gb3E8fnqjRQUlpWiZvh/A1J+OCV7ZgnatYixOLn4mUa8TqsfbLM/NjZ9AGdPfAJtV0hKFLt9IHjHI0LZQQE1OhlihkH5yc6mivwZ6eSwurFTGnXoyha/ShEXew==</password>
+    </service-credential>
+
+    <service-credential service-credential-id="conversiondetailreport">
+        <url>https://ebctest.cybersource.com/ebctest/ConversionDetailReportRequest.do?merchantID={merchantID}&amp;userName={userName}&amp;password={password}&amp;startDate={startDate}&amp;startTime={startTime}&amp;endDate={endDate}&amp;endTime={endTime}</url>
+        <user-id>anujjain</user-id>
+        <password encrypted="true" encryption-type="common.export">q3xhlFa7ZAXzzMf6l0oUPNzicilFPaFAqp7apy5/MixMfCZxH102rgtC/6Iog1lY</password>
+    </service-credential>
+
+    <service-credential service-credential-id="cybersourcegeneric">
+        <url>https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor</url>
+        <user-id>sapient_nitro</user-id>
+        <password encrypted="true" encryption-type="common.export">BlEkczZ1O6xO13f9O6zjiIRBmHqywvRikfRyWFzDUXw=</password>
+    </service-credential>
+
+    <service-profile service-profile-id="cybersourceprofile">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
+    <service service-id="cybersource.conversiondetailreport">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>cybersource</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>cybersourceprofile</profile-id>
+        <credential-id>conversiondetailreport</credential-id>
+    </service>
+
+    <service service-id="cybersource.soap.transactionprocessor.bml">
+        <service-type>SOAP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>cybersource</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>cybersourceprofile</profile-id>
+        <credential-id>cybersourcegeneric</credential-id>
+    </service>
+
+    <service service-id="cybersource.soap.transactionprocessor.bmlpromo">
+        <service-type>SOAP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>cybersource</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>cybersourceprofile</profile-id>
+        <credential-id>cybersourcegeneric</credential-id>
+    </service>
+
+    <service service-id="cybersource.soap.transactionprocessor.generic">
+        <service-type>SOAP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>cybersource</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>cybersourceprofile</profile-id>
+        <credential-id>cybersourcegeneric</credential-id>
+    </service>
+
+    <service service-id="cybersource.soap.transactionprocessor.pos">
+        <service-type>SOAP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>cybersource</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>cybersourceprofile</profile-id>
+        <credential-id>cybersourcegeneric</credential-id>
+    </service>
+
+</services>
