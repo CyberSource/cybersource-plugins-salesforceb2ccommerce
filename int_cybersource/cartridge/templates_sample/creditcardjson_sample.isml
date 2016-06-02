@@ -9,9 +9,9 @@
 		holder:pdict.SelectedCreditCard.creditCardHolder,
 		type:pdict.SelectedCreditCard.creditCardType,
 		expirationMonth:pdict.SelectedCreditCard.creditCardExpirationMonth,
-		expirationYear:pdict.SelectedCreditCard.creditCardExpirationYear,
-		isSubscription:pdict.SelectedCreditCard.custom.isSubscription,
-		maskedFourDigit:pdict.SelectedCreditCard.custom.maskedFourDigit
+		expirationYear:pdict.SelectedCreditCard.creditCardExpirationYear,		
+		subscriptionToken:pdict.SelectedCreditCard.getCreditCardToken()
+				
 	}
 	var json = JSON.stringify(cc);	
 </isscript>

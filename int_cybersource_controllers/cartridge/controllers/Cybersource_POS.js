@@ -46,11 +46,11 @@ function TestAuthorizePOS(args) {
 	return;
 }
 /*
- * Module exports
- */
-
-/*
  * Local methods
  */
 exports.AuthorizePOS=AuthorizePOS;
-exports.TestAuthorizePOS=guard.ensure(['https'], TestAuthorizePOS);
+//exports.TestAuthorizePOS=guard.ensure(['https'], TestAuthorizePOS);
+/*
+ * Local methods testing
+ */
+exports.TestAuthorizePOS=TestAuthorizePOS;

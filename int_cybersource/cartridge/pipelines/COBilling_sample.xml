@@ -96,12 +96,12 @@
       </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="target" x="0" y="-1"/>
+          <bend-point relative-to="source" x="0" y="1"/>
         </transition-display>
       </simple-transition>
       <node>
         <call-node start-name-ref="COBilling-InitForms"/>
-        <node-display x="0" y="2"/>
+        <node-display x="0" y="1"/>
       </node>
       <transition target-connector="in1" target-path="./+1"/>
     </segment>
@@ -110,17 +110,29 @@
         <join-node/>
         <node-display x="0" y="1"/>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <call-node start-name-ref="COShipping-PrepareShipments"/>
         <node-display x="0" y="1"/>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <call-node start-name-ref="Cart-Calculate"/>
         <node-display x="0" y="1"/>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <pipelet-node pipelet-name="UpdatePageMetaData" pipelet-set-identifier="bc_api">
           <key-binding alias="null" key="DefaultKeywords"/>
@@ -140,27 +152,28 @@
       </node>
       <simple-transition/>
       <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="false" key="From_0"/>
-          <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.isSubscription.value" key="To_0"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
+        <decision-node condition-key="!empty(Basket.paymentInstrument) &amp;&amp; Basket.paymentInstrument.paymentMethod == dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+                <config-property key="Clear" value="false"/>
+                <key-binding alias="CurrentForms.billing" key="Form"/>
+                <key-binding alias="{giftCertCode: Basket.paymentInstrument.giftCertificateCode}" key="Object"/>
+              </pipelet-node>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in3" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
         <node-display x="0" y="1"/>
       </node>
       <simple-transition/>
@@ -169,7 +182,60 @@
           <template buffered="true" dynamic="false" name="checkout/billing/billing"/>
         </interaction-continue-node>
         <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="creditCardSelect">
+        <branch basename="b2" source-connector="applyCoupon">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="CurrentHttpParameterMap.couponCode.stringValue || CurrentHttpParameterMap.dwfrm_billing_couponCode.stringValue" key="From_0"/>
+                <key-binding alias="CouponCode" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="-2" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-ref="Cart-AddCoupon"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <jump-node start-name-ref="COBilling-HandleCoupon"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b3" source-connector="creditCardSelect">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="target" x="0" y="-1"/>
@@ -178,11 +244,11 @@
           <segment>
             <node>
               <jump-node start-name-ref="COBilling-UpdateCreditCardSelection"/>
-              <node-display x="-2" y="0"/>
+              <node-display x="-2" y="-1"/>
             </node>
           </segment>
         </branch>
-        <branch basename="b3" source-connector="paymentSelect">
+        <branch basename="b4" source-connector="paymentSelect">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="target" x="0" y="-1"/>
@@ -195,7 +261,7 @@
             </node>
           </segment>
         </branch>
-        <branch basename="b4" source-connector="redeemGiftCert">
+        <branch basename="b5" source-connector="redeemGiftCert">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="target" x="0" y="-1"/>
@@ -203,8 +269,35 @@
           </transition>
           <segment>
             <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="CurrentForms.billing.giftCertCode.htmlValue" key="From_0"/>
+                <key-binding alias="GiftCertCode" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="-1" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
               <call-node start-name-ref="COBilling-RedeemGiftCertificate"/>
-              <node-display x="-1" y="2"/>
+              <node-display x="0" y="1"/>
             </node>
             <simple-transition>
               <transition-display>
@@ -217,22 +310,29 @@
             </node>
           </segment>
         </branch>
-        <branch basename="b5" source-connector="save">
-          <transition target-connector="in"/>
+        <branch basename="b6" source-connector="save">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
           <segment>
             <node>
               <call-node start-name-ref="COBilling-ResetPaymentForms"/>
-              <node-display x="0" y="1"/>
+              <node-display x="0" y="2"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="../+1"/>
+              </branch>
             </node>
             <simple-transition>
               <transition-display>
-                <bend-point relative-to="target" x="0" y="-1"/>
+                <bend-point relative-to="source" x="0" y="1"/>
               </transition-display>
             </simple-transition>
             <node>
               <call-node start-name-ref="COBilling-ValidateBilling"/>
-              <node-display x="0" y="2"/>
-              <branch basename="b2" source-connector="Error">
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="Error">
                 <transition target-connector="in1" target-path="../+1"/>
               </branch>
             </node>
@@ -240,15 +340,15 @@
             <node>
               <call-node start-name-ref="COBilling-HandleBillingAddress"/>
               <node-display x="0" y="1"/>
-              <branch basename="b3" source-connector="error">
-                <transition target-connector="in1" target-path="./b4.2"/>
+              <branch basename="b4" source-connector="error">
+                <transition target-connector="in1" target-path="./b5.2"/>
               </branch>
             </node>
             <simple-transition/>
             <node>
               <call-node start-name-ref="COBilling-HandlePaymentSelection"/>
               <node-display x="0" y="1"/>
-              <branch basename="b4" source-connector="error">
+              <branch basename="b5" source-connector="error">
                 <transition target-connector="in1">
                   <transition-display>
                     <bend-point relative-to="source" x="1" y="1"/>
@@ -275,7 +375,68 @@
               <call-node start-name-ref="COBilling-SaveAddress"/>
               <node-display x="0" y="1"/>
             </node>
-            <simple-transition/>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals('PayPal') &amp;&amp; !empty(RedirectURL)" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="0" y="1"/>
+              <branch basename="b6" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="RedirectURL" key="From_0"/>
+                      <key-binding alias="Locatiion" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="source" x="1" y="1"/>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <interaction-node transaction-required="false">
+                      <template buffered="true" dynamic="false" name="paypal/paypalredirection"/>
+                    </interaction-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
             <node>
               <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
@@ -300,7 +461,7 @@
                 <key-binding alias="null" key="From_9"/>
                 <key-binding alias="null" key="To_9"/>
               </pipelet-node>
-              <node-display x="0" y="1"/>
+              <node-display x="0" y="2"/>
             </node>
             <simple-transition/>
             <node>
@@ -309,7 +470,7 @@
             </node>
           </segment>
         </branch>
-        <branch basename="b6" source-connector="selectAddress">
+        <branch basename="b7" source-connector="selectAddress">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="target" x="0" y="-1"/>
@@ -318,29 +479,7 @@
           <segment>
             <node>
               <jump-node start-name-ref="COBilling-UpdateAddressDetails"/>
-              <node-display x="-2" y="1"/>
-            </node>
-          </segment>
-        </branch>
-        <branch basename="b7" source-connector="selectAddress6">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="target" x="0" y="-1"/>
-            </transition-display>
-          </transition>
-          <segment>
-            <node>
-              <call-node start-name-ref="COBilling-ApplyCoupon"/>
-              <node-display x="-2" y="2"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <jump-node start-name-ref="COBilling-ReturnToForm"/>
-              <node-display x="0" y="1"/>
+              <node-display x="-2" y="0"/>
             </node>
           </segment>
         </branch>
@@ -352,17 +491,13 @@
         <join-node/>
         <node-display x="2" y="1"/>
       </node>
-      <transition target-connector="in1" target-path="./-1">
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="-4"/>
-        </transition-display>
-      </transition>
+      <transition target-connector="in1" target-path="./-2"/>
     </segment>
   </branch>
   <branch basename="UpdateAddress">
     <segment>
       <node>
-        <start-node name="UpdateAddress" secure="false"/>
+        <start-node name="UpdateAddress" secure="true"/>
         <node-display x="3" y="7"/>
       </node>
       <simple-transition/>
@@ -490,7 +625,7 @@
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/CopyAddressFormFields.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/CopyAddressFormFields.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="CurrentForms.billing.billingAddress.addressFields" key="BillingAddressForm"/>
                 <key-binding alias="CurrentForms.singleshipping.shippingAddress.addressFields" key="ShippingAddressForm"/>
@@ -690,7 +825,7 @@
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="Exception"/>
-          <config-property key="ScriptFile" value="checkout/GetNonGiftCertificatePaymentAmount.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/GetNonGiftCertificatePaymentAmount.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="PaymentAmount" key="Amount"/>
@@ -705,8 +840,37 @@
       <node>
         <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
-          <key-binding alias="CurrentForms.billing.billingAddress.addressFields.country.value" key="From_0"/>
-          <key-binding alias="CountryCode" key="To_0"/>
+          <key-binding alias="(CurrentRequest.locale == 'default') ? null : CurrentRequest.locale" key="From_0"/>
+          <key-binding alias="CurrentLocale" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
           <key-binding alias="dw.order.PaymentMgr.getApplicablePaymentMethods(CurrentCustomer,CountryCode,PaymentAmount)" key="From_1"/>
           <key-binding alias="ApplicablePaymentMethods" key="To_1"/>
           <key-binding alias="dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_CREDIT_CARD).getApplicablePaymentCards(CurrentCustomer,CountryCode,PaymentAmount)" key="From_2"/>
@@ -725,6 +889,8 @@
           <key-binding alias="null" key="To_8"/>
           <key-binding alias="null" key="From_9"/>
           <key-binding alias="null" key="To_9"/>
+          <key-binding alias="CurrentLocale ? CurrentLocale.substring(CurrentLocale.length-2,CurrentLocale.length) : CurrentForms.billing.billingAddress.addressFields.country.value.toUpperCase()" key="From_0"/>
+          <key-binding alias="CountryCode" key="To_0"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
       </node>
@@ -762,14 +928,10 @@
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/ValidatePaymentInstruments.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/ValidatePaymentInstruments.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="CountryCode" key="CountryCode"/>
                 <key-binding alias="CurrentCustomer" key="Customer"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="PaymentCards" key="PaymentCards"/>
-                <key-binding alias="PaymentMethods" key="PaymentMethods"/>
-                <key-binding alias="InvalidPaymentInstrument" key="InvalidPaymentInstrument"/>
                 <key-binding alias="PaymentAmount" key="PaymentAmount"/>
                 <key-binding alias="AvailableCreditCards" key="PaymentInstruments"/>
                 <key-binding alias="ApplicableCreditCards" key="ValidPaymentInstruments"/>
@@ -807,12 +969,12 @@
       </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
+          <bend-point relative-to="target" x="-1" y="0"/>
         </transition-display>
       </simple-transition>
       <node>
         <end-node/>
-        <node-display x="0" y="1"/>
+        <node-display orientation="horizontal" x="2" y="0"/>
       </node>
     </segment>
   </branch>
@@ -857,11 +1019,11 @@
     <segment>
       <node>
         <start-node call-mode="private" name="ReturnToForm" secure="false"/>
-        <node-display x="4" y="11"/>
+        <node-display x="4" y="10"/>
       </node>
       <transition target-connector="in1" target-path="/Start.3">
         <transition-display>
-          <bend-point relative-to="source" x="0" y="4"/>
+          <bend-point relative-to="source" x="0" y="2"/>
         </transition-display>
       </transition>
     </segment>
@@ -870,9 +1032,10 @@
     <segment>
       <node>
         <text-node>
-          <description>Attempts to apply a coupon code to the basket and recalculates the basket if the coupon was applied successfully. If the coupon wasn't applied, the form field is invalidated with the appropriate error message. If the coupon was applied, the form gets cleared. The start node is called by an Ajax request and generates a JSON response.</description>
+          <description>Adjust gift certificate redemptions as after applying coupon(s), order total is changed.
+AdjustGiftCertificate pipeline removes and then adds currently added gift certificates to reflect order total changes.</description>
         </text-node>
-        <node-display height="2" x="6" y="14"/>
+        <node-display height="2" x="9" y="12"/>
       </node>
     </segment>
   </branch>
@@ -886,667 +1049,11 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_18">
-    <segment>
-      <node>
-        <text-node>
-          <description>Adjust gift certificate redemptions as after applying coupon(s), order total is changed.
-AdjustGiftCertificate pipeline removes and then adds currently added gift certificates to reflect order total changes.</description>
-        </text-node>
-        <node-display height="2" x="8" y="14"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_19">
-    <segment>
-      <node>
-        <text-node>
-          <description>Attempts to remove a gift certificate from the basket payment instruments and generates a JSON response with a status. This start node is called by an Ajax request.</description>
-        </text-node>
-        <node-display width="2" x="14" y="13"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="RedeemGiftCertificate">
-    <segment>
-      <node>
-        <start-node call-mode="public" name="RedeemGiftCertificate" secure="true"/>
-        <node-display x="12" y="14"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Cart-GetExistingBasket"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in1" target-path="./b3.1">
-            <transition-display>
-              <bend-point relative-to="target" x="0" y="-1"/>
-            </transition-display>
-          </transition>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="ScriptFile" value="checkout/CreateGiftCertificatePaymentInstrument.ds"/>
-          <config-property key="Transactional" value="true"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <key-binding alias="null" key="ScriptLog"/>
-          <key-binding alias="CurrentForms.giftcert.redemption.amount.value" key="Amount"/>
-          <key-binding alias="Basket" key="Basket"/>
-          <key-binding alias="CurrentHttpParameterMap.giftCertificateID.stringValue||CurrentHttpParameterMap.dwfrm_billing_giftCertCode.stringValue" key="GiftCertificateID"/>
-          <key-binding alias="NewGCPaymentInstrument" key="PaymentInstrument"/>
-          <key-binding alias="RedemptionErrorMessage" key="RedemptionErrorMessage"/>
-          <key-binding alias="GiftCertificateBalance" key="GiftCertificateBalance"/>
-          <key-binding alias="CurrentForms.giftcert.redemption.amount.value" key="GiftCertificateAmount"/>
-          <key-binding alias="null" key="ErrorMessage"/>
-          <key-binding alias="GiftCertStatusCode" key="Status"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b3" source-connector="error">
-          <transition target-connector="in1"/>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="1" y="0"/>
-            </node>
-            <simple-transition/>
-            <node>
-              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <key-binding alias="&quot;invalid_giftcert&quot;" key="From_0"/>
-                <key-binding alias="giftCertError" key="To_0"/>
-                <key-binding alias="null" key="From_1"/>
-                <key-binding alias="null" key="To_1"/>
-                <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
-                <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
-                <key-binding alias="null" key="From_4"/>
-                <key-binding alias="null" key="To_4"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-            </node>
-            <transition target-connector="in3" target-path="../+1">
-              <transition-display>
-                <bend-point relative-to="target" x="2" y="0"/>
-              </transition-display>
-            </transition>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition/>
-      <node>
-        <call-node start-name-ref="Cart-Calculate"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
-          <key-binding alias="CurrentForms.billinggiftcert" key="FormElement"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="null" key="From_0"/>
-          <key-binding alias="giftCertError" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="null" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <end-node/>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="RemoveGiftCertificate">
-    <segment>
-      <node>
-        <start-node call-mode="public" name="RemoveGiftCertificate" secure="true"/>
-        <node-display x="14" y="14"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <decision-node condition-key="!empty(CurrentHttpParameterMap.giftCertificateID.stringValue)" condition-operator="expr"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="yes">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="source" x="0" y="1"/>
-            </transition-display>
-          </transition>
-          <segment>
-            <node>
-              <call-node start-name-ref="Cart-GetExistingBasket"/>
-              <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="error">
-                <transition target-connector="in1" target-path="../+1">
-                  <transition-display>
-                    <bend-point relative-to="source" x="1" y="1"/>
-                  </transition-display>
-                </transition>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="true"/>
-                <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/RemoveGiftCertificatePaymentInstrument.ds"/>
-                <key-binding alias="null" key="ScriptLog"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="CurrentHttpParameterMap.giftCertificateID.stringValue" key="GiftCertificateID"/>
-                <key-binding alias="GiftCertRemoveStatus" key="Status"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-              <branch basename="b3" source-connector="error">
-                <transition target-connector="in1" target-path="../+1"/>
-              </branch>
-            </node>
-            <simple-transition/>
-            <node>
-              <call-node start-name-ref="Cart-Calculate"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <transition target-connector="in1" target-path="../+2"/>
-          </segment>
-        </branch>
-      </node>
-      <transition target-connector="in1" target-path="./+1">
-        <transition-display>
-          <bend-point relative-to="source" x="2" y="0"/>
-        </transition-display>
-      </transition>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="1" y="2"/>
-      </node>
-      <transition target-connector="in2" target-path="./+1">
-        <transition-display>
-          <bend-point relative-to="target" x="2" y="0"/>
-        </transition-display>
-      </transition>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="-1" y="2"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <jump-node start-name-ref="COBilling-Start"/>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_22">
-    <segment>
-      <node>
-        <text-node>
-          <description>Renders the order summary including mini cart order totals and shipment summary. This is used to update the order totals in the UI based on the recalculated basket after a coupon code has been applied.</description>
-        </text-node>
-        <node-display width="2" x="18" y="13"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="UpdateSummary">
-    <segment>
-      <node>
-        <start-node name="UpdateSummary" secure="false"/>
-        <node-display x="18" y="14"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Cart-GetExistingBasket"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Cart-Calculate"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node custom-name="Set the correct checkout step" pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="4" key="From_0"/>
-          <key-binding alias="checkoutstep" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="null" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <interaction-node transaction-required="false">
-          <template buffered="true" dynamic="false" name="checkout/minisummary"/>
-        </interaction-node>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="UpdateAddressDetails">
-    <segment>
-      <node>
-        <start-node name="UpdateAddressDetails" secure="false"/>
-        <node-display x="21" y="14"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <call-node start-name-ref="Cart-GetExistingBasket"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="source" x="1" y="0"/>
-            </transition-display>
-          </transition>
-          <segment>
-            <node>
-              <jump-node start-name-ref="Cart-Show"/>
-              <node-display orientation="horizontal" x="1" y="0"/>
-            </node>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="GetCustomerAddress" pipelet-set-identifier="bc_api">
-          <key-binding alias="empty(CurrentHttpParameterMap.addressID.value)?CurrentHttpParameterMap.dwfrm_billing_addressList.value:CurrentHttpParameterMap.addressID.value" key="AddressID"/>
-          <key-binding alias="Address" key="Address"/>
-          <key-binding alias="CurrentCustomer" key="Customer"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b3" source-connector="error">
-          <transition target-connector="in2" target-path="./+1">
-            <transition-display>
-              <bend-point relative-to="source" x="1" y="0"/>
-              <bend-point relative-to="target" x="1" y="0"/>
-            </transition-display>
-          </transition>
-        </branch>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
-          <config-property key="Clear" value="false"/>
-          <key-binding alias="CurrentForms.billing.billingAddress.addressFields" key="Form"/>
-          <key-binding alias="Address" key="Object"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node custom-name="Bind stateCode to sub form group" pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
-          <config-property key="Clear" value="false"/>
-          <key-binding alias="CurrentForms.billing.billingAddress.addressFields.states" key="Form"/>
-          <key-binding alias="Address" key="Object"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <decision-node condition-key="Basket.billingAddress != null" condition-operator="expr"/>
-        <node-display orientation="horizontal" x="0" y="1"/>
-        <branch basename="b2" source-connector="yes">
-          <transition target-connector="in"/>
-          <segment>
-            <node>
-              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="true"/>
-                <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/UpdateBillingAddress.ds"/>
-                <key-binding alias="null" key="ScriptLog"/>
-                <key-binding alias="CurrentForms.billing.billingAddress" key="AddressForm"/>
-                <key-binding alias="Basket.defaultShipment" key="Shipment"/>
-                <key-binding alias="CurrentForms.singleshipping.shippingAddress" key="GiftOptionsForm"/>
-                <key-binding alias="Basket.billingAddress" key="BillingAddress"/>
-              </pipelet-node>
-              <node-display orientation="horizontal" x="1" y="0"/>
-            </node>
-            <transition target-connector="in1" target-path="./+1"/>
-          </segment>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="0" y="1"/>
-            </node>
-            <transition target-connector="in1" target-path="../+1"/>
-          </segment>
-        </branch>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <jump-node start-name-ref="COBilling-UpdateAddress"/>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_25">
-    <segment>
-      <node>
-        <text-node>
-          <description>Performs validation steps, based upon the entered billing address and address options.</description>
-        </text-node>
-        <node-display x="1" y="18"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_26">
-    <segment>
-      <node>
-        <text-node>
-          <description>Performs payment method specific checks, such as credit card verification.</description>
-        </text-node>
-        <node-display x="1" y="19"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="ApplyCoupon">
-    <segment>
-      <node>
-        <start-node call-mode="private" name="ApplyCoupon" secure="true"/>
-        <node-display x="6" y="16"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Cart-GetExistingBasket"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in1" target-path="./b3.1">
-            <transition-display>
-              <bend-point relative-to="source" x="2" y="0"/>
-            </transition-display>
-          </transition>
-        </branch>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="Basket.getBonusDiscountLineItems().size()" key="From_0"/>
-          <key-binding alias="BonusDiscountLineItemCountBefore" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="CouponStatusCode" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="AddCouponToBasket2" pipelet-set-identifier="bc_api">
-          <key-binding alias="Basket" key="Basket"/>
-          <key-binding alias="!empty(CurrentHttpParameterMap.couponCode.stringValue)?CurrentHttpParameterMap.couponCode.stringValue:CurrentHttpParameterMap.dwfrm_billing_couponCode.stringValue" key="CouponCode"/>
-          <key-binding alias="CouponStatusCode" key="Status"/>
-          <key-binding alias="NewCouponLineItem" key="CouponLineItem"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b3" source-connector="error">
-          <transition target-connector="in1"/>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="1" y="0"/>
-            </node>
-            <simple-transition/>
-            <node>
-              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <key-binding alias="&quot;invalid_coupon&quot;" key="From_0"/>
-                <key-binding alias="couponError" key="To_0"/>
-                <key-binding alias="null" key="From_1"/>
-                <key-binding alias="null" key="To_1"/>
-                <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
-                <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
-                <key-binding alias="null" key="From_4"/>
-                <key-binding alias="null" key="To_4"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-              </pipelet-node>
-              <node-display x="0" y="2"/>
-            </node>
-            <transition target-connector="in3" target-path="../+1">
-              <transition-display>
-                <bend-point relative-to="target" x="2" y="0"/>
-              </transition-display>
-            </transition>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Cart-Calculate"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="Basket.getBonusDiscountLineItems().size()" key="From_0"/>
-          <key-binding alias="BonusDiscountLineItemCountAfter" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="null" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
-          <key-binding alias="CurrentForms.billingcoupon" key="FormElement"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="null" key="From_0"/>
-          <key-binding alias="couponError" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="null" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="COBilling-AdjustGiftCertificates"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <end-node/>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
   <branch basename="AdjustGiftCertificates">
     <segment>
       <node>
         <start-node call-mode="private" name="AdjustGiftCertificates" secure="false"/>
-        <node-display x="8" y="16"/>
+        <node-display x="9" y="14"/>
       </node>
       <simple-transition/>
       <node>
@@ -1575,7 +1082,7 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="checkout/GetGiftCertIdList.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/GetGiftCertIdList.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="gcIdList" key="gcIdList"/>
@@ -1617,7 +1124,7 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/RemoveGiftCertificatePaymentInstrument.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/RemoveGiftCertificatePaymentInstrument.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="Basket" key="Basket"/>
                 <key-binding alias="gcID" key="GiftCertificateID"/>
@@ -1698,19 +1205,14 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
           <segment>
             <node>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="ScriptFile" value="checkout/CreateGiftCertificatePaymentInstrument.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/CreateGiftCertificatePaymentInstrument.ds"/>
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
                 <key-binding alias="null" key="ScriptLog"/>
-                <key-binding alias="CurrentForms.giftcert.redemption.amount.value" key="Amount"/>
                 <key-binding alias="Basket" key="Basket"/>
                 <key-binding alias="gcID" key="GiftCertificateID"/>
                 <key-binding alias="NewGCPaymentInstrument" key="PaymentInstrument"/>
-                <key-binding alias="RedemptionErrorMessage" key="RedemptionErrorMessage"/>
-                <key-binding alias="GiftCertificateBalance" key="GiftCertificateBalance"/>
-                <key-binding alias="CurrentForms.giftcert.redemption.amount.value" key="GiftCertificateAmount"/>
-                <key-binding alias="null" key="ErrorMessage"/>
-                <key-binding alias="GiftCertStatusCode" key="Status"/>
+                <key-binding alias="GiftCertStatus" key="Status"/>
               </pipelet-node>
               <node-display x="0" y="1"/>
               <branch basename="b2" source-connector="error">
@@ -1749,6 +1251,630 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
       </node>
     </segment>
   </branch>
+  <branch basename="RedeemGiftCertificate">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RedeemGiftCertificate" secure="true"/>
+        <node-display x="12" y="14"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="create fake GiftCertStatus object" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="new Object()" key="From_0"/>
+                <key-binding alias="GiftCertStatus" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="1" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="'BASKET_NOT_FOUND'" key="From_0"/>
+                <key-binding alias="GiftCertStatus.code" key="To_0"/>
+                <key-binding alias="true" key="From_1"/>
+                <key-binding alias="GiftCertStatus.error" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in3" target-path="../+1">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/CreateGiftCertificatePaymentInstrument.ds"/>
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <key-binding alias="null" key="ScriptLog"/>
+          <key-binding alias="Basket" key="Basket"/>
+          <key-binding alias="GiftCertCode" key="GiftCertificateID"/>
+          <key-binding alias="NewGCPaymentInstrument" key="PaymentInstrument"/>
+          <key-binding alias="GiftCertStatus" key="Status"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RedeemGiftCertificateJson">
+    <segment>
+      <node>
+        <start-node name="RedeemGiftCertificateJson" secure="false"/>
+        <node-display x="14" y="14"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentHttpParameterMap.giftCertCode.stringValue" key="From_0"/>
+          <key-binding alias="GiftCertCode" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="COBilling-RedeemGiftCertificate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="CurrentHttpParameterMap.format.stringValue == 'ajax'" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node custom-name="create JSONResponse object" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="new Object()" key="From_0"/>
+                <key-binding alias="JSONResponse" key="To_0"/>
+                <key-binding alias="'billing.' + GiftCertStatus.code" key="From_1"/>
+                <key-binding alias="ResourceProperty" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="GiftCertStatus.code" key="From_0"/>
+                <key-binding alias="JSONResponse.status" key="To_0"/>
+                <key-binding alias="!GiftCertStatus.error" key="From_1"/>
+                <key-binding alias="JSONResponse.success" key="To_1"/>
+                <key-binding alias="dw.web.Resource.msgf(ResourceProperty,'checkout', null, GiftCertCode)" key="From_2"/>
+                <key-binding alias="JSONResponse.message" key="To_2"/>
+                <key-binding alias="GiftCertCode" key="From_3"/>
+                <key-binding alias="JSONResponse.code" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <interaction-node transaction-required="false">
+                <description>create JSONResponse object</description>
+                <template buffered="true" dynamic="false" name="util/responsejson"/>
+              </interaction-node>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_21">
+    <segment>
+      <node>
+        <text-node>
+          <description>Attempts to remove a gift certificate from the basket payment instruments and generates a JSON response with a status. This start node is called by an Ajax request.</description>
+        </text-node>
+        <node-display width="2" x="16" y="13"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_22">
+    <segment>
+      <node>
+        <text-node>
+          <description>Renders the order summary including mini cart order totals and shipment summary. This is used to update the order totals in the UI based on the recalculated basket after a coupon code has been applied.</description>
+        </text-node>
+        <node-display width="2" x="19" y="13"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RemoveGiftCertificate">
+    <segment>
+      <node>
+        <start-node call-mode="public" name="RemoveGiftCertificate" secure="true"/>
+        <node-display x="16" y="14"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(CurrentHttpParameterMap.giftCertificateID.stringValue)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <call-node start-name-ref="Cart-GetExistingBasket"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1" target-path="../+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="1"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/RemoveGiftCertificatePaymentInstrument.ds"/>
+                <key-binding alias="null" key="ScriptLog"/>
+                <key-binding alias="Basket" key="Basket"/>
+                <key-binding alias="CurrentHttpParameterMap.giftCertificateID.stringValue" key="GiftCertificateID"/>
+                <key-binding alias="GiftCertRemoveStatus" key="Status"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1" target-path="../+1"/>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="Cart-Calculate"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="2"/>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="target" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="-1" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="COBilling-Start"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="UpdateSummary">
+    <segment>
+      <node>
+        <start-node name="UpdateSummary" secure="true"/>
+        <node-display x="19" y="14"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-ref="Cart-Calculate"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Set the correct checkout step" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="4" key="From_0"/>
+          <key-binding alias="checkoutstep" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="checkout/minisummary"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="UpdateAddressDetails">
+    <segment>
+      <node>
+        <start-node name="UpdateAddressDetails" secure="true"/>
+        <node-display x="21" y="14"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <call-node start-name-ref="Cart-GetExistingBasket"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <jump-node start-name-ref="Cart-Show"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="GetCustomerAddress" pipelet-set-identifier="bc_api">
+          <key-binding alias="empty(CurrentHttpParameterMap.addressID.value)?CurrentHttpParameterMap.dwfrm_billing_addressList.value:CurrentHttpParameterMap.addressID.value" key="AddressID"/>
+          <key-binding alias="Address" key="Address"/>
+          <key-binding alias="CurrentCustomer" key="Customer"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in2" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+          <config-property key="Clear" value="false"/>
+          <key-binding alias="CurrentForms.billing.billingAddress.addressFields" key="Form"/>
+          <key-binding alias="Address" key="Object"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Bind stateCode to sub form group" pipelet-name="UpdateFormWithObject" pipelet-set-identifier="bc_api">
+          <config-property key="Clear" value="false"/>
+          <key-binding alias="CurrentForms.billing.billingAddress.addressFields.states" key="Form"/>
+          <key-binding alias="Address" key="Object"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Basket.billingAddress != null" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/UpdateBillingAddress.ds"/>
+                <key-binding alias="null" key="ScriptLog"/>
+                <key-binding alias="CurrentForms.billing.billingAddress" key="AddressForm"/>
+                <key-binding alias="Basket.billingAddress" key="BillingAddress"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <jump-node start-name-ref="COBilling-UpdateAddress"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_26">
+    <segment>
+      <node>
+        <text-node>
+          <description>Performs validation steps, based upon the entered billing address and address options.</description>
+        </text-node>
+        <node-display x="1" y="18"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_27">
+    <segment>
+      <node>
+        <text-node>
+          <description>Performs payment method specific checks, such as credit card verification.</description>
+        </text-node>
+        <node-display x="1" y="19"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="HandleCoupon">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="HandleCoupon" secure="true"/>
+        <node-display x="6" y="16"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="empty(CouponError)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <call-node start-name-ref="COBilling-AdjustGiftCertificates"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="2"/>
+      </node>
+      <transition target-connector="in3" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="-1" y="0"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <jump-node start-name-ref="COBilling-ReturnToForm"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="_ANONYMOUS_BRANCH_29">
     <segment>
       <node>
@@ -1784,9 +1910,9 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
     <segment>
       <node>
         <text-node>
-          <description>Renders a form dialog to edit an address. The dialog is supposed to be opened by an Ajax request and ends in templates, which just trigger a certain JS event. The calling page of this dialog is responsible for handling these events.</description>
+          <description>Handles the selection of the payment method and performs payment method specific validation and verification upon the entered form fields.</description>
         </text-node>
-        <node-display width="2" x="2" y="25"/>
+        <node-display width="2" x="10" y="23"/>
       </node>
     </segment>
   </branch>
@@ -1955,9 +2081,9 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
     <segment>
       <node>
         <text-node>
-          <description>Handles the selection of the payment method and performs payment method specific validation and verification upon the entered form fields.</description>
+          <description>Renders a form dialog to edit an address. The dialog is supposed to be opened by an Ajax request and ends in templates, which just trigger a certain JS event. The calling page of this dialog is responsible for handling these events.</description>
         </text-node>
-        <node-display width="2" x="10" y="24"/>
+        <node-display width="2" x="3" y="26"/>
       </node>
     </segment>
   </branch>
@@ -1965,7 +2091,34 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
     <segment>
       <node>
         <start-node call-mode="private" name="HandlePaymentSelection" secure="false"/>
-        <node-display x="10" y="25"/>
+        <node-display x="10" y="24"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="null" key="From_0"/>
+          <key-binding alias="MissingPaymentProcessor" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -2036,12 +2189,88 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
       </node>
       <simple-transition/>
       <node>
-        <pipelet-node custom-name="Handle Pipeline Assignment" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+        <decision-node condition-key="!empty(dw.order.PaymentMgr.getPaymentMethod(CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value).paymentProcessor)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Handle Pipeline Assignment" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="dw.order.PaymentMgr.getPaymentMethod(CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value).paymentProcessor.ID" key="From_0"/>
+                <key-binding alias="HandlePipeline" key="To_0"/>
+                <key-binding alias="HandlePipeline + '-Handle'" key="From_1"/>
+                <key-binding alias="HandlePipelineAction" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-key="HandlePipelineAction"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in1"/>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="2" y="0"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="ok"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
-          <key-binding alias="dw.order.PaymentMgr.getPaymentMethod(CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value).paymentProcessor.ID" key="From_0"/>
-          <key-binding alias="HandlePipeline" key="To_0"/>
-          <key-binding alias="HandlePipeline + '-Handle'" key="From_1"/>
-          <key-binding alias="HandlePipelineAction" key="To_1"/>
+          <key-binding alias="true" key="From_0"/>
+          <key-binding alias="MissingPaymentProcessor" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
           <key-binding alias="null" key="From_2"/>
           <key-binding alias="null" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
@@ -2059,43 +2288,16 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
           <key-binding alias="null" key="From_9"/>
           <key-binding alias="null" key="To_9"/>
         </pipelet-node>
-        <node-display x="0" y="2"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
       </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
+          <bend-point relative-to="source" x="1" y="0"/>
         </transition-display>
       </simple-transition>
       <node>
-        <call-node start-name-key="HandlePipelineAction"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b4" source-connector="error">
-          <transition target-connector="in1"/>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="2" y="0"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <end-node name="error"/>
-              <node-display x="0" y="1"/>
-            </node>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <end-node name="ok"/>
-        <node-display x="0" y="1"/>
+        <end-node name="error"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
       </node>
     </segment>
   </branch>
@@ -2115,7 +2317,7 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
         <text-node>
           <description>if the order total is 0 (in case user has product promotions etc.) then we do not need a valid payment method.</description>
         </text-node>
-        <node-display x="12" y="25"/>
+        <node-display x="12" y="24"/>
       </node>
     </segment>
   </branch>
@@ -2202,7 +2404,7 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="checkout/GetCustomerCreditCard.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/GetCustomerCreditCard.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="CurrentHttpParameterMap.creditCardUUID.value" key="CreditCardUUID"/>
           <key-binding alias="ApplicableCreditCards" key="CustomerPaymentInstruments"/>
@@ -2213,7 +2415,6 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
           <transition target-connector="in2" target-path="./+1">
             <transition-display>
               <bend-point relative-to="source" x="1" y="0"/>
-              <bend-point relative-to="source" x="1" y="2"/>
               <bend-point relative-to="target" x="1" y="0"/>
             </transition-display>
           </transition>
@@ -2225,7 +2426,10 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
           <config-property key="Transactional" value="false"/>
           <key-binding alias="SelectedCreditCard.creditCardNumber" key="From_0"/>
           <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="To_0"/>
-          <key-binding alias="SelectedCreditCard.custom.isSubscription" key="From_1"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
           <key-binding alias="null" key="To_3"/>
           <key-binding alias="null" key="From_4"/>
@@ -2240,9 +2444,37 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
           <key-binding alias="null" key="To_8"/>
           <key-binding alias="null" key="From_9"/>
           <key-binding alias="null" key="To_9"/>
-          <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.isSubscription.value" key="To_1"/>
-          <key-binding alias="SelectedCreditCard.custom.maskedFourDigit" key="From_2"/>
-          <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.maskedFourDigit.value" key="To_2"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Assign the unmasked credit card number to the credit card form" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="SelectedCreditCard.creditCardToken" key="From_0"/>
+          <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.subscriptionToken.value" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
       </node>
@@ -2318,7 +2550,7 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="checkout/GetCustomerCreditCard.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/GetCustomerCreditCard.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
           <key-binding alias="UUID" key="CreditCardUUID"/>
           <key-binding alias="ApplicableCreditCards" key="CustomerPaymentInstruments"/>
@@ -2341,6 +2573,8 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
           <config-property key="Transactional" value="false"/>
           <key-binding alias="SelectedCreditCard.creditCardNumber" key="From_0"/>
           <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
           <key-binding alias="null" key="From_2"/>
           <key-binding alias="null" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
@@ -2470,11 +2704,9 @@ AdjustGiftCertificate pipeline removes and then adds currently added gift certif
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="checkout/UpdateBillingAddress.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/UpdateBillingAddress.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="CurrentForms.billing.billingAddress" key="AddressForm"/>
-          <key-binding alias="Basket.defaultShipment" key="Shipment"/>
-          <key-binding alias="CurrentForms.singleshipping.shippingAddress" key="GiftOptionsForm"/>
           <key-binding alias="Basket.billingAddress" key="BillingAddress"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
@@ -2572,84 +2804,6 @@ The handle pipeline is responsible for payment provider / payment method specifi
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_50">
-    <segment>
-      <node>
-        <text-node>
-          <description>Confirmation dialog to delete a selected credit card.</description>
-        </text-node>
-        <node-display x="2" y="37"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="DeleteCreditCard">
-    <segment>
-      <node>
-        <start-node name="DeleteCreditCard" secure="false"/>
-        <node-display x="2" y="38"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="Cart-GetExistingBasket"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <call-node start-name-ref="COBilling-InitCreditCardList"/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="checkout/GetCustomerCreditCard.ds"/>
-          <key-binding alias="null" key="ScriptLog"/>
-          <key-binding alias="CurrentHttpParameterMap.creditCardID.value" key="CreditCardUUID"/>
-          <key-binding alias="ApplicableCreditCards" key="CustomerPaymentInstruments"/>
-          <key-binding alias="CreditCardToRemove" key="CreditCardPaymentInstrument"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in2" target-path="./+1">
-            <transition-display>
-              <bend-point relative-to="source" x="1" y="0"/>
-              <bend-point relative-to="target" x="1" y="0"/>
-            </transition-display>
-          </transition>
-        </branch>
-      </node>
-      <simple-transition/>
-      <node>
-        <pipelet-node pipelet-name="RemoveCustomerPaymentInstrument" pipelet-set-identifier="bc_api">
-          <key-binding alias="CreditCardToRemove" key="PaymentInstrument"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition/>
-      <node>
-        <interaction-node transaction-required="false">
-          <template buffered="true" dynamic="false" name="account/payment/creditcarddeletedjson"/>
-        </interaction-node>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
   <branch basename="ResetPaymentForms">
     <segment>
       <node>
@@ -2716,15 +2870,111 @@ The handle pipeline is responsible for payment provider / payment method specifi
               <decision-node condition-key="!CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals(dw.order.PaymentInstrument.METHOD_BML)" condition-operator="expr"/>
               <node-display orientation="horizontal" x="1" y="0"/>
               <branch basename="b2" source-connector="yes">
-                <transition target-connector="in1" target-path="../+2">
+                <transition target-connector="in">
                   <transition-display>
                     <bend-point relative-to="source" x="1" y="0"/>
-                    <bend-point relative-to="target" x="5" y="0"/>
                   </transition-display>
                 </transition>
+                <segment>
+                  <node>
+                    <decision-node condition-key="CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals(&quot;ALIPAY&quot;)" condition-operator="expr"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="2" y="0"/>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+                            <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="FormElement"/>
+                          </pipelet-node>
+                          <node-display x="1" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
+                            <key-binding alias="CurrentForms.billing.paymentMethods.bml" key="FormElement"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
+                            <key-binding alias="null" key="PaymentInstrument"/>
+                            <key-binding alias="Basket.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_CREDIT_CARD)" key="PaymentInstruments"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
+                            <key-binding alias="null" key="PaymentInstrument"/>
+                            <key-binding alias="Basket.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_BML)" key="PaymentInstruments"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
+                            <key-binding alias="null" key="PaymentInstrument"/>
+                            <key-binding alias="Basket.getPaymentInstruments(&quot;PayPal&quot;)" key="PaymentInstruments"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <transition target-connector="in2" target-path="../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="5"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="1" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <end-node/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
               </branch>
             </node>
-            <simple-transition/>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
             <node>
               <pipelet-node pipelet-name="ClearFormElement" pipelet-set-identifier="bc_api">
                 <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="FormElement"/>
@@ -2733,17 +2983,36 @@ The handle pipeline is responsible for payment provider / payment method specifi
             </node>
             <simple-transition/>
             <node>
-              <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
-                <key-binding alias="null" key="PaymentInstrument"/>
-                <key-binding alias="Basket.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_CREDIT_CARD)" key="PaymentInstruments"/>
-              </pipelet-node>
+              <decision-node condition-key="CurrentForms.billing.paymentMethods.bml.ssn.valid" condition-operator="expr"/>
               <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
+                      <key-binding alias="null" key="PaymentInstrument"/>
+                      <key-binding alias="Basket.getPaymentInstruments( dw.order.PaymentInstrument.METHOD_CREDIT_CARD)" key="PaymentInstruments"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in3" target-path="../../+1">
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                      <bend-point relative-to="target" x="0" y="1"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
             </node>
-            <transition target-connector="in3" target-path="../+1">
+            <simple-transition>
               <transition-display>
-                <bend-point relative-to="source" x="0" y="2"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
               </transition-display>
-            </transition>
+            </simple-transition>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="4" y="0"/>
+            </node>
           </segment>
         </branch>
       </node>
@@ -2819,7 +3088,7 @@ The handle pipeline is responsible for payment provider / payment method specifi
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="Exception"/>
-          <config-property key="ScriptFile" value="checkout/GetNonGiftCertificatePaymentAmount.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/GetNonGiftCertificatePaymentAmount.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="PaymentAmount" key="Amount"/>
@@ -2842,14 +3111,10 @@ The handle pipeline is responsible for payment provider / payment method specifi
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="checkout/ValidatePaymentInstruments.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core:checkout/ValidatePaymentInstruments.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="CurrentHttpParameterMap.countryCode.value" key="CountryCode"/>
           <key-binding alias="CurrentCustomer" key="Customer"/>
-          <key-binding alias="Basket" key="Basket"/>
-          <key-binding alias="PaymentCards" key="PaymentCards"/>
-          <key-binding alias="PaymentMethods" key="PaymentMethods"/>
-          <key-binding alias="InvalidPaymentInstrument" key="InvalidPaymentInstrument"/>
           <key-binding alias="PaymentAmount" key="PaymentAmount"/>
           <key-binding alias="Basket.paymentInstruments" key="PaymentInstruments"/>
           <key-binding alias="InvalidPaymentInstruments" key="InvalidPaymentInstruments"/>
@@ -2940,14 +3205,10 @@ The handle pipeline is responsible for payment provider / payment method specifi
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/ValidatePaymentInstruments.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/ValidatePaymentInstruments.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="CurrentHttpParameterMap.countryCode.value" key="CountryCode"/>
                 <key-binding alias="CurrentCustomer" key="Customer"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="PaymentCards" key="PaymentCards"/>
-                <key-binding alias="PaymentMethods" key="PaymentMethods"/>
-                <key-binding alias="InvalidPaymentInstrument" key="InvalidPaymentInstrument"/>
                 <key-binding alias="PaymentAmount" key="PaymentAmount"/>
                 <key-binding alias="AvailableCreditCards" key="PaymentInstruments"/>
                 <key-binding alias="ApplicableCreditCards" key="ValidPaymentInstruments"/>
@@ -3098,9 +3359,9 @@ The handle pipeline is responsible for payment provider / payment method specifi
                       <key-binding alias="ValidPaymentInstrument.creditCardType" key="From_2"/>
                       <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.type.value" key="To_2"/>
                       <key-binding alias="ValidPaymentInstrument.creditCardExpirationMonth" key="From_3"/>
-                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.month.value" key="To_3"/>
+                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.expiration.month.value" key="To_3"/>
                       <key-binding alias="ValidPaymentInstrument.creditCardExpirationYear" key="From_4"/>
-                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.year.value" key="To_4"/>
+                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.expiration.year.value" key="To_4"/>
                       <key-binding alias="null" key="From_5"/>
                       <key-binding alias="null" key="To_5"/>
                       <key-binding alias="null" key="From_6"/>
@@ -3176,7 +3437,7 @@ The handle pipeline is responsible for payment provider / payment method specifi
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="Exception"/>
-                <config-property key="ScriptFile" value="checkout/GetNonGiftCertificatePaymentAmount.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/GetNonGiftCertificatePaymentAmount.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="Basket" key="Basket"/>
                 <key-binding alias="PaymentAmount" key="Amount"/>
@@ -3192,14 +3453,10 @@ The handle pipeline is responsible for payment provider / payment method specifi
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/ValidatePaymentInstruments.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/ValidatePaymentInstruments.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
-                <key-binding alias="CurrentForms.billing.billingAddress.addressFields.country.value" key="CountryCode"/>
+                <key-binding alias="CountryCode" key="CountryCode"/>
                 <key-binding alias="CurrentCustomer" key="Customer"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="PaymentCards" key="PaymentCards"/>
-                <key-binding alias="PaymentMethods" key="PaymentMethods"/>
-                <key-binding alias="InvalidPaymentInstrument" key="InvalidPaymentInstrument"/>
                 <key-binding alias="PaymentAmount" key="PaymentAmount"/>
                 <key-binding alias="Basket.paymentInstruments" key="PaymentInstruments"/>
               </pipelet-node>
@@ -3215,7 +3472,7 @@ The handle pipeline is responsible for payment provider / payment method specifi
             </simple-transition>
             <node>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="ScriptFile" value="checkout/CalculatePaymentTransactionTotals.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/CalculatePaymentTransactionTotals.ds"/>
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
                 <key-binding alias="null" key="ScriptLog"/>
@@ -3324,13 +3581,13 @@ The handle pipeline is responsible for payment provider / payment method specifi
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_56">
+  <branch basename="_ANONYMOUS_BRANCH_54">
     <segment>
       <node>
         <text-node>
           <description>Attempts to save the used credit card in the customer payment instruments. The logic replaces an old saved credit card with the same masked credit card number of the same card type with the new credit card. This ensures creating only unique cards as well as replacing expired cards.</description>
         </text-node>
-        <node-display width="2" x="6" y="44"/>
+        <node-display width="2" x="6" y="43"/>
       </node>
     </segment>
   </branch>
@@ -3338,7 +3595,7 @@ The handle pipeline is responsible for payment provider / payment method specifi
     <segment>
       <node>
         <start-node call-mode="private" name="SaveCreditCard" secure="false"/>
-        <node-display x="6" y="45"/>
+        <node-display x="6" y="44"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -3348,7 +3605,7 @@ The handle pipeline is responsible for payment provider / payment method specifi
         </transition-display>
       </simple-transition>
       <node>
-        <decision-node condition-key="CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals(dw.order.PaymentInstrument.METHOD_BML)" condition-operator="expr"/>
+        <decision-node condition-key="CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals(dw.order.PaymentInstrument.METHOD_BML) || CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals(&quot;PayPal&quot;) || CurrentForms.billing.paymentMethods.selectedPaymentMethodID.value.equals(&quot;ALIPAY&quot;) || !empty(Basket.getPaymentInstruments(&quot;PayPal&quot;))" condition-operator="expr"/>
         <node-display orientation="horizontal" x="0" y="1"/>
         <branch basename="b2" source-connector="yes">
           <transition target-connector="in">
@@ -3364,84 +3621,96 @@ The handle pipeline is responsible for payment provider / payment method specifi
           </segment>
         </branch>
       </node>
-      <simple-transition/>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
       <node>
         <decision-node condition-key="CurrentCustomer.authenticated &amp;&amp; CurrentForms.billing.paymentMethods.creditCard.saveCard.value" condition-operator="expr"/>
         <node-display x="0" y="1"/>
         <branch basename="b3" source-connector="yes">
-          <transition target-connector="in"/>
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+              <bend-point relative-to="source" x="-1" y="1"/>
+              <bend-point relative-to="target" x="-1" y="0"/>
+            </transition-display>
+          </transition>
           <segment>
             <node>
-              <decision-node condition-key="CurrentForms.billing.paymentMethods.creditCard.isSubscription.value" condition-operator="expr"/>
-              <node-display x="0" y="1"/>
+              <decision-node condition-key="(empty(CurrentForms.billing.paymentMethods.creditCard.subscriptionToken.value) &amp;&amp; dw.system.Site.getCurrent().getCustomPreferenceValue(&quot;CsTokenizationEnable&quot;) == &quot;YES&quot;)" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="0" y="1"/>
               <branch basename="b2" source-connector="yes">
-                <transition target-connector="in2" target-path="./+1"/>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="2" y="0"/>
-                <bend-point relative-to="target" x="0" y="-1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <call-node start-name-ref="Cybersource_Subscription-CreateSubscriptionBilling"/>
-              <node-display x="1" y="1"/>
-              <branch basename="b3" source-connector="error">
                 <transition target-connector="in">
                   <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
                     <bend-point relative-to="target" x="0" y="-1"/>
                   </transition-display>
                 </transition>
                 <segment>
                   <node>
-                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="false"/>
-                      <key-binding alias="new dw.system.Status(dw.system.Status.ERROR, &quot;confirm.error.session&quot;)" key="From_0"/>
-                      <key-binding alias="PlaceOrderError" key="To_0"/>
-                      <key-binding alias="null" key="From_1"/>
-                      <key-binding alias="null" key="To_1"/>
-                      <key-binding alias="null" key="From_2"/>
-                      <key-binding alias="null" key="To_2"/>
-                      <key-binding alias="null" key="From_3"/>
-                      <key-binding alias="null" key="To_3"/>
-                      <key-binding alias="null" key="From_4"/>
-                      <key-binding alias="null" key="To_4"/>
-                      <key-binding alias="null" key="From_5"/>
-                      <key-binding alias="null" key="To_5"/>
-                      <key-binding alias="null" key="From_6"/>
-                      <key-binding alias="null" key="To_6"/>
-                      <key-binding alias="null" key="From_7"/>
-                      <key-binding alias="null" key="To_7"/>
-                      <key-binding alias="null" key="From_8"/>
-                      <key-binding alias="null" key="To_8"/>
-                      <key-binding alias="null" key="From_9"/>
-                      <key-binding alias="null" key="To_9"/>
-                    </pipelet-node>
+                    <call-node start-name-ref="Cybersource_Subscription-CreateSubscriptionBilling"/>
                     <node-display x="1" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <key-binding alias="new dw.system.Status(dw.system.Status.ERROR, &quot;confirm.error.session&quot;)" key="From_0"/>
+                            <key-binding alias="PlaceOrderError" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="1" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <end-node name="error"/>
+                          <node-display x="0" y="1"/>
+                        </node>
+                      </segment>
+                    </branch>
                   </node>
-                  <simple-transition>
+                  <transition target-connector="in1" target-path="../+1">
                     <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
+                      <bend-point relative-to="source" x="0" y="2"/>
                     </transition-display>
-                  </simple-transition>
-                  <node>
-                    <end-node name="error"/>
-                    <node-display x="0" y="1"/>
-                  </node>
+                  </transition>
                 </segment>
               </branch>
             </node>
-            <transition target-connector="in1" target-path="./+1">
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="2"/>
-              </transition-display>
-            </transition>
+            <transition target-connector="in1" target-path="./+1"/>
           </segment>
           <segment>
             <node>
               <join-node/>
-              <node-display x="-1" y="1"/>
+              <node-display x="0" y="2"/>
             </node>
             <simple-transition/>
             <node>
@@ -3471,146 +3740,16 @@ The handle pipeline is responsible for payment provider / payment method specifi
               </transition-display>
             </simple-transition>
             <node>
-              <decision-node condition-key="!empty(subscriptionID)" condition-operator="expr"/>
-              <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="yes">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="source" x="0" y="1"/>
-                  </transition-display>
-                </transition>
-                <segment>
-                  <node>
-                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="false"/>
-                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="From_0"/>
-                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.maskedFourDigit.value" key="To_0"/>
-                      <key-binding alias="null" key="From_1"/>
-                      <key-binding alias="null" key="To_1"/>
-                      <key-binding alias="null" key="From_2"/>
-                      <key-binding alias="null" key="To_2"/>
-                      <key-binding alias="null" key="From_3"/>
-                      <key-binding alias="null" key="To_3"/>
-                      <key-binding alias="null" key="From_4"/>
-                      <key-binding alias="null" key="To_4"/>
-                      <key-binding alias="null" key="From_5"/>
-                      <key-binding alias="null" key="To_5"/>
-                      <key-binding alias="null" key="From_6"/>
-                      <key-binding alias="null" key="To_6"/>
-                      <key-binding alias="null" key="From_7"/>
-                      <key-binding alias="null" key="To_7"/>
-                      <key-binding alias="null" key="From_8"/>
-                      <key-binding alias="null" key="To_8"/>
-                      <key-binding alias="null" key="From_9"/>
-                      <key-binding alias="null" key="To_9"/>
-                    </pipelet-node>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
-                  <node>
-                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="false"/>
-                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="To_0"/>
-                      <key-binding alias="null" key="From_3"/>
-                      <key-binding alias="null" key="To_3"/>
-                      <key-binding alias="null" key="From_4"/>
-                      <key-binding alias="null" key="To_4"/>
-                      <key-binding alias="null" key="From_5"/>
-                      <key-binding alias="null" key="To_5"/>
-                      <key-binding alias="null" key="From_6"/>
-                      <key-binding alias="null" key="To_6"/>
-                      <key-binding alias="null" key="From_7"/>
-                      <key-binding alias="null" key="To_7"/>
-                      <key-binding alias="null" key="From_8"/>
-                      <key-binding alias="null" key="To_8"/>
-                      <key-binding alias="null" key="From_9"/>
-                      <key-binding alias="null" key="To_9"/>
-                      <key-binding alias="subscriptionID" key="From_0"/>
-                    </pipelet-node>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
-                  <node>
-                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="true"/>
-                      <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="checkout/SaveCustomerCreditCard.ds"/>
-                      <key-binding alias="null" key="ScriptLog"/>
-                      <key-binding alias="NewCreditCard" key="PaymentInstrument"/>
-                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardFormFields"/>
-                    </pipelet-node>
-                    <node-display x="0" y="1"/>
-                    <branch basename="b2" source-connector="error">
-                      <transition target-connector="in">
-                        <transition-display>
-                          <bend-point relative-to="source" x="1" y="0"/>
-                        </transition-display>
-                      </transition>
-                      <segment>
-                        <node>
-                          <end-node name="error"/>
-                          <node-display orientation="horizontal" x="1" y="0"/>
-                        </node>
-                      </segment>
-                    </branch>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
-                  <node>
-                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="true"/>
-                      <key-binding alias="true" key="From_0"/>
-                      <key-binding alias="NewCreditCard.custom.isSubscription" key="To_0"/>
-                      <key-binding alias="true" key="From_1"/>
-                      <key-binding alias="Basket.paymentInstrument.custom.isSubscription" key="To_1"/>
-                      <key-binding alias="null" key="From_5"/>
-                      <key-binding alias="null" key="To_5"/>
-                      <key-binding alias="null" key="From_6"/>
-                      <key-binding alias="null" key="To_6"/>
-                      <key-binding alias="null" key="From_7"/>
-                      <key-binding alias="null" key="To_7"/>
-                      <key-binding alias="null" key="From_8"/>
-                      <key-binding alias="null" key="To_8"/>
-                      <key-binding alias="null" key="From_9"/>
-                      <key-binding alias="null" key="To_9"/>
-                      <key-binding alias="Basket.paymentInstrument.creditCardNumber" key="To_2"/>
-                      <key-binding alias="NewCreditCard.creditCardNumber" key="From_2"/>
-                      <key-binding alias="NewCreditCard.custom.maskedFourDigit" key="From_3"/>
-                      <key-binding alias="Basket.paymentInstrument.custom.maskedFourDigit" key="To_3"/>
-                    </pipelet-node>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <transition target-connector="in1" target-path="../+2"/>
-                </segment>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="target" x="0" y="-2"/>
-              </transition-display>
-            </simple-transition>
-            <node>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/SaveCustomerCreditCard.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/SaveCustomerCreditCard.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="NewCreditCard" key="PaymentInstrument"/>
                 <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardFormFields"/>
               </pipelet-node>
-              <node-display x="2" y="1"/>
-              <branch basename="b3" source-connector="error">
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
                 <transition target-connector="in">
                   <transition-display>
                     <bend-point relative-to="source" x="1" y="0"/>
@@ -3630,9 +3769,9 @@ The handle pipeline is responsible for payment provider / payment method specifi
               </transition-display>
             </simple-transition>
             <node>
-              <decision-node condition-key="!empty(NewCreditCard.custom.maskedFourDigit)" condition-operator="expr"/>
+              <decision-node condition-key="!empty(subscriptionID)" condition-operator="expr"/>
               <node-display x="0" y="1"/>
-              <branch basename="b4" source-connector="yes">
+              <branch basename="b3" source-connector="yes">
                 <transition target-connector="in">
                   <transition-display>
                     <bend-point relative-to="source" x="0" y="1"/>
@@ -3642,10 +3781,10 @@ The handle pipeline is responsible for payment provider / payment method specifi
                   <node>
                     <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
-                      <key-binding alias="true" key="From_0"/>
-                      <key-binding alias="NewCreditCard.custom.isSubscription" key="To_0"/>
-                      <key-binding alias="true" key="From_1"/>
-                      <key-binding alias="Basket.paymentInstrument.custom.isSubscription" key="To_1"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
                       <key-binding alias="null" key="From_5"/>
                       <key-binding alias="null" key="To_5"/>
                       <key-binding alias="null" key="From_6"/>
@@ -3656,30 +3795,116 @@ The handle pipeline is responsible for payment provider / payment method specifi
                       <key-binding alias="null" key="To_8"/>
                       <key-binding alias="null" key="From_9"/>
                       <key-binding alias="null" key="To_9"/>
-                      <key-binding alias="Basket.paymentInstrument.creditCardNumber" key="To_2"/>
-                      <key-binding alias="NewCreditCard.creditCardNumber" key="From_2"/>
-                      <key-binding alias="NewCreditCard.custom.maskedFourDigit" key="From_3"/>
-                      <key-binding alias="Basket.paymentInstrument.custom.maskedFourDigit" key="To_3"/>
+                      <key-binding alias="subscriptionID" key="From_0"/>
+                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.subscriptionToken.value" key="To_0"/>
+                      <key-binding alias="subscriptionID" key="From_1"/>
+                      <key-binding alias="NewCreditCard.creditCardToken" key="To_1"/>
                     </pipelet-node>
                     <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="!empty(CurrentForms.billing.paymentMethods.creditCard.subscriptionToken.value)" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.subscriptionToken.value" key="From_1"/>
+                      <key-binding alias="NewCreditCard.creditCardToken" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="1" y="1"/>
                   </node>
                   <transition target-connector="in1" target-path="../+1"/>
                 </segment>
               </branch>
             </node>
-            <transition target-connector="in2" target-path="./+1">
-              <transition-display>
-                <bend-point relative-to="source" x="2" y="0"/>
-                <bend-point relative-to="target" x="2" y="0"/>
-              </transition-display>
-            </transition>
+            <transition target-connector="in3" target-path="./+1"/>
           </segment>
           <segment>
             <node>
               <join-node/>
               <node-display x="0" y="2"/>
             </node>
-            <transition target-connector="in1" target-path="./+1">
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-1" y="0"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="app_storefront_core:account/payment/DuplicateCheck.ds"/>
+                <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="NoIn"/>
+                <key-binding alias="DuplicateCard" key="Duplicate"/>
+                <key-binding alias="CreditCards" key="PIList"/>
+                <key-binding alias="debugger" key="ScriptLog"/>
+                <key-binding alias="OldCard" key="OldCard"/>
+                <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.type.value" key="cardType"/>
+                <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.expiration.month.value" key="expMonth"/>
+                <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.expiration.year.value" key="expYear"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="!DuplicateCard" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in1" target-path="./+1"/>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="RemoveCustomerPaymentInstrument" pipelet-set-identifier="bc_api">
+                <key-binding alias="OldCard" key="PaymentInstrument"/>
+              </pipelet-node>
+              <node-display x="1" y="0"/>
+            </node>
+            <transition target-connector="in3" target-path="./+1">
               <transition-display>
                 <bend-point relative-to="source" x="0" y="2"/>
               </transition-display>
@@ -3688,70 +3913,12 @@ The handle pipeline is responsible for payment provider / payment method specifi
           <segment>
             <node>
               <join-node/>
-              <node-display x="-2" y="1"/>
+              <node-display x="-1" y="1"/>
             </node>
-            <transition target-connector="in" target-path="./+1"/>
-          </segment>
-          <segment>
-            <node>
-              <loop-node element-key="creditcard" iterator-key="CreditCards"/>
-              <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="do">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="source" x="0" y="1"/>
-                  </transition-display>
-                </transition>
-                <segment>
-                  <node>
-                    <decision-node condition-key="(creditcard.maskedCreditCardNumber == NewCreditCard.maskedCreditCardNumber &amp;&amp; creditcard.creditCardType == NewCreditCard.creditCardType)" condition-operator="expr"/>
-                    <node-display x="0" y="1"/>
-                    <branch basename="b2" source-connector="yes">
-                      <transition target-connector="in">
-                        <transition-display>
-                          <bend-point relative-to="source" x="0" y="1"/>
-                        </transition-display>
-                      </transition>
-                      <segment>
-                        <node>
-                          <pipelet-node custom-name="Remove the saved record of the same credit card" pipelet-name="RemoveCustomerPaymentInstrument" pipelet-set-identifier="bc_api">
-                            <key-binding alias="creditcard" key="PaymentInstrument"/>
-                          </pipelet-node>
-                          <node-display x="0" y="1"/>
-                        </node>
-                        <transition target-connector="in1" target-path="../+1"/>
-                      </segment>
-                    </branch>
-                  </node>
-                  <transition target-connector="in2" target-path="./+1">
-                    <transition-display>
-                      <bend-point relative-to="source" x="2" y="0"/>
-                      <bend-point relative-to="target" x="2" y="0"/>
-                    </transition-display>
-                  </transition>
-                </segment>
-                <segment>
-                  <node>
-                    <join-node/>
-                    <node-display x="0" y="2"/>
-                  </node>
-                  <transition target-connector="loop" target-path="..">
-                    <transition-display>
-                      <bend-point relative-to="source" x="-1" y="0"/>
-                      <bend-point relative-to="target" x="-1" y="0"/>
-                    </transition-display>
-                  </transition>
-                </segment>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="1" y="0"/>
-              </transition-display>
-            </simple-transition>
+            <simple-transition/>
             <node>
               <end-node/>
-              <node-display orientation="horizontal" x="1" y="0"/>
+              <node-display x="0" y="1"/>
             </node>
           </segment>
         </branch>
@@ -3767,7 +3934,7 @@ The handle pipeline is responsible for payment provider / payment method specifi
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_58">
+  <branch basename="_ANONYMOUS_BRANCH_56">
     <segment>
       <node>
         <text-node>
@@ -3820,13 +3987,13 @@ The handle pipeline is responsible for payment provider / payment method specifi
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_60">
+  <branch basename="_ANONYMOUS_BRANCH_58">
     <segment>
       <node>
         <text-node>
           <description>Attempts to save the used billing address in the customer address book.</description>
         </text-node>
-        <node-display x="13" y="44"/>
+        <node-display x="12" y="45"/>
       </node>
     </segment>
   </branch>
@@ -3855,9 +4022,8 @@ The handle pipeline is responsible for payment provider / payment method specifi
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="checkout/AddAddressToAddressBook.ds"/>
+                <config-property key="ScriptFile" value="app_storefront_core:checkout/AddAddressToAddressBook.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
-                <key-binding alias="CurrentForms.billing.billingAddress.addressFields" key="AddressForm"/>
                 <key-binding alias="CurrentCustomer.profile" key="Profile"/>
                 <key-binding alias="Basket.billingAddress" key="OrderAddress"/>
               </pipelet-node>

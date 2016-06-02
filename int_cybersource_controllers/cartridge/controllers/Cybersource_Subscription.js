@@ -105,9 +105,19 @@ function Start() {
 exports.CreateSubscriptionMyAccount=CreateSubscriptionMyAccount;
 exports.CreateSubscriptionBilling=CreateSubscriptionBilling;
 exports.DeleteSubscriptionAccount=DeleteSubscriptionAccount;
-exports.CreateSubscription=guard.ensure(['https'], CreateSubscription);
-exports.ViewSubscription=guard.ensure(['https'], ViewSubscription);
-exports.UpdateSubscription=guard.ensure(['https'], UpdateSubscription);
-exports.DeleteSubscription=guard.ensure(['https'], DeleteSubscription);
-exports.OnDemandPayment=guard.ensure(['https'], OnDemandPayment);
-exports.Start=guard.ensure(['https'], Start);
+//exports.CreateSubscription=guard.ensure(['https'], CreateSubscription);
+//exports.ViewSubscription=guard.ensure(['https'], ViewSubscription);
+//exports.UpdateSubscription=guard.ensure(['https'], UpdateSubscription);
+//exports.DeleteSubscription=guard.ensure(['https'], DeleteSubscription);
+//exports.OnDemandPayment=guard.ensure(['https'], OnDemandPayment);
+//exports.Start=guard.ensure(['https'], Start);
+
+/*
+ * Local methods testing
+ */
+exports.CreateSubscription=CreateSubscription;
+exports.ViewSubscription=ViewSubscription;
+exports.UpdateSubscription=UpdateSubscription;
+exports.DeleteSubscription=DeleteSubscription;
+exports.OnDemandPayment=OnDemandPayment;
+exports.Start=Start;

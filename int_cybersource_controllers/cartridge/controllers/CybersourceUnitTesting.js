@@ -78,18 +78,30 @@ function TestCaptureCard(args) {
  * Local methods require guard change below usage
  */
 
-exports.StartPOS=guard.ensure(['https'], StartPOS);
-exports.TestBMLAuth=guard.ensure(['https'], TestBMLAuth);
-exports.TestCCAuth=guard.ensure(['https'], TestCCAuth);
-exports.TestTax=guard.ensure(['https'], TestTax);
-exports.TestDAVCheck=guard.ensure(['https'], TestDAVCheck);
-exports.TestPA=guard.ensure(['https'], TestPA);
-exports.TestFingerprint=guard.ensure(['https'], TestFingerprint);
-exports.TestAlipayInitiateService=guard.ensure(['https'], TestAlipayInitiateService);
-exports.TestAlipayCheckStatusService=guard.ensure(['https'], TestAlipayCheckStatusService);
-exports.TestPaypalCaptureService=guard.ensure(['https'], TestPaypalCaptureService);
-exports.TestCaptureCard=guard.ensure(['https'], TestCaptureCard);
+//exports.StartPOS=guard.ensure(['https'], StartPOS);
+//exports.TestBMLAuth=guard.ensure(['https'], TestBMLAuth);
+//exports.TestCCAuth=guard.ensure(['https'], TestCCAuth);
+//exports.TestTax=guard.ensure(['https'], TestTax);
+//exports.TestDAVCheck=guard.ensure(['https'], TestDAVCheck);
+//exports.TestPA=guard.ensure(['https'], TestPA);
+//exports.TestFingerprint=guard.ensure(['https'], TestFingerprint);
+//exports.TestAlipayInitiateService=guard.ensure(['https'], TestAlipayInitiateService);
+//exports.TestAlipayCheckStatusService=guard.ensure(['https'], TestAlipayCheckStatusService);
+//exports.TestPaypalCaptureService=guard.ensure(['https'], TestPaypalCaptureService);
+//exports.TestCaptureCard=guard.ensure(['https'], TestCaptureCard);
 
 /*
  * Local methods
  */
+
+exports.StartPOS=StartPOS;
+exports.TestBMLAuth=TestBMLAuth;
+exports.TestCCAuth=TestCCAuth;
+exports.TestTax=TestTax;
+exports.TestDAVCheck=TestDAVCheck;
+exports.TestPA=TestPA;
+exports.TestFingerprint=TestFingerprint;
+exports.TestAlipayInitiateService=TestAlipayInitiateService;
+exports.TestAlipayCheckStatusService=TestAlipayCheckStatusService;
+exports.TestPaypalCaptureService=TestPaypalCaptureService;
+exports.TestCaptureCard=TestCaptureCard;

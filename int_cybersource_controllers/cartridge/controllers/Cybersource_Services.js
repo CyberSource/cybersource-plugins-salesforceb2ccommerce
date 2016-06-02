@@ -56,11 +56,14 @@ function Start() {
  * Local methods require guard change below usage
  */
 
-exports.Start=guard.ensure(['https'], Start);
-//exports.Start=Start;
-exports.Reversal=guard.ensure(['https'], Reversal);
-//exports.Reversal=Reversal;
+//exports.Start=guard.ensure(['https'], Start);
+//exports.Reversal=guard.ensure(['https'], Reversal);
 /*
  * Local methods
  */
 exports.PaypalExpressCheckout=PaypalExpressCheckout;
+/*
+ * Local methods Testing
+ */
+exports.Start=Start;
+exports.Reversal=Reversal;
