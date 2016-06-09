@@ -28,7 +28,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		//set the value of product name and description if the line item is an instance of product line item
 		if(lineItem instanceof dw.order.ProductLineItem && !empty(lineItem.product)) {
 			var prodName : String = lineItem.product.name;
-			var prodDesc : String = lineItem.product.shortDescription.toString();
+			var prodDesc : String = !empty(lineItem.product.shortDescription) ? lineItem.product.shortDescription.toString() : "";
 			/*get the substring of product name and description to 35 and 65 as required by alipay initiate payment service 
 			in reference with payment type as domestic or international*/
 			if(!empty(alipayPaymentType) && alipayPaymentType.value.equals(Resource.msg('alipaycheckout.internationalpaymenttype', 'checkout', null))) {
