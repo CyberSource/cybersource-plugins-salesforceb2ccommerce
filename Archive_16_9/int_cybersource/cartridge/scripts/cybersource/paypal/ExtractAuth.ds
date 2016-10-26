@@ -1,0 +1,25 @@
+/**
+* ExtractAuth.ds
+* This scrpit will extract the Auth from Request Header. Auth info should be in HTTP Basic Auth format.
+*@input AuthCredentials :String info from Request Header
+*@output username :String
+*@output password :String
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var authCredentials : String = pdict.AuthCredentials;
+   
+    if(empty(authCredentials)){
+     return PIPELET_ERROR;
+    }
+    var j: Number = authCredentials.length;
+   	var base64encodedUsernameAndPassword = authCredentials.substr(6,j);      // extrating username password from auth string e.g. authCredentials='Basic userpass'
+   	var userNameandPass :String=StringUtils.decodeBase64(base64encodedUsernameAndPassword);
+    var arr = userNameandPass.split(":");
+    pdict.username=arr[0];
+    pdict.password=arr[1];
+   return PIPELET_NEXT;
+}

@@ -1,0 +1,27 @@
+<!--- TEMPLATENAME: secureAcceptanceRequestForm.isml --->
+<html>
+	
+	<head>
+	<title>${Resource.msg('sa.redirect.form.title','cybersource',null)}</title>
+	<script language="javascript">
+		var loaded = false;
+		function OnLoadEvent(){
+		
+			document.ePayment.submit();
+			
+		}
+	</script>
+	<FONT FACE="arial"><center>
+	<h1>${Resource.msg('sa.redirect.form.waitmessage','cybersource',null)}</h1></centre></FONT>
+</head>
+	<body OnLoad="OnLoadEvent();">
+		<form method="post" name="ePayment" action="${pdict.formAction}" target="_parent">
+			<isif condition="${!empty(pdict.requestData)}"> 
+				<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
+					<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="off"/>' />
+				</isloop>
+			</isif>
+			<input type="hidden" value="Proceed with Payment" name="Submit">
+		</form>
+	</body>
+</html>

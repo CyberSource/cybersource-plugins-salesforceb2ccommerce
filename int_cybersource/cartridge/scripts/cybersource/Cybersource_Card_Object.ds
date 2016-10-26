@@ -3,147 +3,109 @@
 * This Object is used for the Cybersource CreditCard xsd
 */
 function Card_Object(){
-	
 	this.fullname = "";
-	this.setFullName = setFullName;
-	this.getFullName = getFullName;
-	
 	this.accountNumber = "";
-	this.setAccountNumber = setAccountNumber;
-	this.getAccountNumber = getAccountNumber;
-	
 	this.expirationMonth = "";
-	this.setExpirationMonth = setExpirationMonth;
-	this.getExpirationMonth = getExpirationMonth;
-	
 	this.expirationYear = "";
-	this.setExpirationYear = setExpirationYear;
-	this.getExpirationYear = getExpirationYear;
-	
 	this.cvIndicator = "";
-	this.setCvIndicator = setCvIndicator;
-	this.getCvIndicator = getCvIndicator;
-	
 	this.cvNumber = "";
-	this.setCvNumber = setCvNumber;
-	this.getCvNumber = getCvNumber;
-	
 	this.cardType = "";
-	this.setCardType = setCardType;
-	this.getCardType = getCardType;
-	
 	this.issueNumber = "";
-	this.setIssueNumber = setIssueNumber;
-	this.getIssueNumber = getIssueNumber;
-	
 	this.startMonth = "";
-	this.setStartMonth = setStartMonth;
-	this.getStartMonth = getStartMonth;
-	
 	this.startYear = "";
-	this.setStartYear = setStartYear;
-	this.getStartYear = getStartYear;
-	
 	this.pin = "";
-	this.setPin = setPin;
-	this.getPin = getPin;
-	
 	this.accountEncoderID = "";
-	this.setAccountEncoderID = setAccountEncoderID;
-	this.getAccountEncoderID = getAccountEncoderID;
-	
 	this.bin = "";
-	this.setBin = setBin;
-	this.getBin = getBin;
-
 	this.creditCardToken = "";
-	this.setCreditCardToken = setCreditCardToken;
-	this.getCreditCardToken = getCreditCardToken;
 }
 
-function setFullName(value){
+Card_Object.prototype = 
+{
+	setFullName : function(value){
 	this.fullName = value;
-}
-function getFullName(){
+	},
+	getFullName : function(){
 	return this.fullName;
-}
-function setAccountNumber(value){
+	},
+	setAccountNumber : function(value){
 	this.accountNumber = value;
-}
-function getAccountNumber(){
+	},
+	getAccountNumber : function(){
 	return this.accountNumber;
-}
-function setExpirationMonth(value){
+	},
+	setExpirationMonth : function(value){
 	this.expirationMonth = value;
-}
-function getExpirationMonth(){
+	},
+	getExpirationMonth : function(){
 	return this.expirationMonth;
-}
-function setExpirationYear(value){
+	},
+	setExpirationYear : function(value){
 	this.expirationYear = value;
-}
-function getExpirationYear(){
+	},
+	getExpirationYear : function(){
 	return this.expirationYear;
-}
-function setCvIndicator(value){
+	},
+	setCvIndicator : function(value){
 	this.cvIndicator = value;
-}
-function getCvIndicator(){
+	},
+	getCvIndicator : function(){
 	return this.cvIndicator;
-}
-function setCvNumber(value){
+	},
+	setCvNumber : function(value){
 	this.cvNumber = value;
-}
-function getCvNumber(){
+	},
+	getCvNumber : function(){
 	return this.cvNumber;
-}
-function setCardType(value){
+	},
+	setCardType : function(value){
 	this.cardType = value;
-}
-function getCardType(){
+	},
+	getCardType : function(){
 	return this.cardType;
-}
-function setIssueNumber(value){
+	},
+	setIssueNumber : function(value){
 	this.issueNumber = value;
-}
-function getIssueNumber(){
+	},
+	getIssueNumber : function(){
 	return this.issueNumber;
-}
-function setStartMonth(value){
+	},
+	setStartMonth : function(value){
 	this.startMonth = value;
-}
-function getStartMonth(){
+	},
+	getStartMonth : function(){
 	return this.startMonth;
-}		
-function setStartYear(value){
+	},		
+	setStartYear : function(value){
 	this.startYear = value;
-}
-function getStartYear(){
+	},
+	getStartYear : function(){
 	return this.startYear;
-}
-function setPin(value){
+	},
+	setPin : function(value){
 	this.pin = value;
-}
-function getPin(){
+	},
+	getPin : function(){
 	return this.pin;
-}
-function setAccountEncoderID(value){
+	},
+	setAccountEncoderID : function(value){
 	this.accountEncoderID = value;
-}
-function getAccountEncoderID(){
+	},
+	getAccountEncoderID : function(){
 	return this.accountEncoderID;
-}
-function setBin(value){
+	},
+	setBin : function(value){
 	this.bin = value;
-}
-function getBin(){
+	},
+	getBin : function(){
 	return this.bin;
-}
-function setCreditCardToken(value){
-	if (!empty(value)) {
+	},
+	setCreditCardToken : function(value){
+		if (!empty(value)) {
 		this.creditCardToken = value;
+		}
+	},
+	getCreditCardToken : function(){
+	return this.creditCardToken;
 	}
 }
-function getCreditCardToken(){
-	return this.creditCardToken;
-}
+module.exports = Card_Object;

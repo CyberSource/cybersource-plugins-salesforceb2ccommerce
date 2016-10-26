@@ -1,0 +1,37 @@
+/**
+* ValidateApplePayRequest.ds
+* Validate the request parameters of Apple Pay for API and InApp.
+*
+* @output Cryptogram : String
+* @output NetworkToken : String The card network token returned by Apple Pay
+* @output TokenExpirationMonth : String The card Token expiry month returned by Apple Pay
+* @output TokenExpirationYear : String The card token expiry year returned by Apple Pay
+* @output CardType : String
+* @output PaymentData : String
+* @output OrderNo : String
+* @output ErrorCode : String Custom Error code during processing
+* @output ErrorMsg : String Custom Error message during processing
+*/
+var ApplePayHelper = require('int_cybersource/cartridge/scripts/Helper/ApplePayHelper');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var result = ApplePayHelper.validateApplePayRequest();
+	if (result.error) {
+		pdict.ErrorCode = result.ErrorCode;
+		pdict.ErrorMsg = result.ErrorMsg;
+		return PIPELET_ERROR;
+	}
+    // write pipeline dictionary output parameter
+    pdict.OrderNo = result.OrderNo;
+    if (result.RequestType.equals("API")) {
+    	pdict.PaymentData = result.PaymentData;
+    }
+    if (result.RequestType.equals("INAPP")) {
+	    pdict.Cryptogram = result.requestParam.Cryptogram;
+	    pdict.NetworkToken = result.requestParam.NetworkToken;
+	    pdict.TokenExpirationMonth = result.requestParam.TokenExpirationMonth;
+	    pdict.TokenExpirationYear = result.requestParam.TokenExpirationYear;
+	    pdict.CardType = result.requestParam.CardType;
+   }
+   return PIPELET_NEXT;
+}

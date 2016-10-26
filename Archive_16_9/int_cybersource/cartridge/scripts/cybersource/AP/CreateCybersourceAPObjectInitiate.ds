@@ -1,0 +1,29 @@
+/**
+*	 CreateCybersourceAPObject.ds
+*	 This script creates the APObject data object and set it to CybersourceAP output object.
+*	 @input Basket : dw.order.Basket
+*    @output CybersourceAPObject : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value);
+importScript('cybersource/Cybersource_AP_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var apObject : AP_Object= new AP_Object();
+	var basket : dw.order.Basket = pdict.Basket;
+	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}	
+	apObject.setPurchaseID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
+	apObject.setProductID(basket.getUUID());
+	pdict.CybersourceAPObject = apObject;
+    return PIPELET_NEXT;
+}

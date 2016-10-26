@@ -3,20 +3,9 @@
 * This Mock Object is used for the Cybersource Line Item xsd
 */
 function MockLineItem_Object() {
-
 	this.tax="";
-	this.setTax = setTax;
-	this.getTax = getTax;
-	
 	this.grossPrice ="";
-	this.setGrossPrice = setGrossPrice;
-	this.getGrossPrice = getGrossPrice;
-	
 	this.product = "";
-	this.setProduct = setProduct;
-	this.getProduct = getProduct;
-	
-	
 	this.basePrice = "";
 	this.quantity = "";
     this.class ="";
@@ -24,25 +13,29 @@ function MockLineItem_Object() {
 	this.productID = "";
 	this.productCode = "";
 	this.netPrice = "";
+}
+MockLineItem_Object.prototype = 
+{
+	setTax : function(value){
+		this.tax = value;
+	},
+	getTax : function(){
+		return this.tax;
+	},
+	
+	setGrossPrice : function(value){
+		this.grossPrice = value;
+	},
+	getGrossPrice : function(value){
+		return this.grossPrice;
+	},
+	
+	setProduct : function(value){
+		this.product = value;
+	},
+	getProduct : function(){
+		return this.product;
+	}
+}
 
-}
-function setTax(value){
-	this.tax = value;
-}
-function getTax(){
-	return this.tax;
-}
-
-function setGrossPrice(value){
-	this.grossPrice = value;
-}
-function getGrossPrice(value){
-	return this.grossPrice;
-}
-
-function setProduct(value){
-	this.product = value;
-}
-function getProduct(){
-	return this.product;
-}
+module.exports = MockLineItem_Object;

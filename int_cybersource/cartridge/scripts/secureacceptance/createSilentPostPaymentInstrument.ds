@@ -1,0 +1,35 @@
+/**
+* Creates a Silent Post Secure Acceptance payment instrument. This script requires a Basket and payment method  as 
+* input parameters. 
+*
+*   @input Basket : dw.order.Basket The basket.
+*/
+importPackage( dw.order );
+function execute( pdict : PipelineDictionary ) : Number
+{
+    // read pipeline dictionary input parameters
+    var basket : Basket = pdict.Basket;
+	var orderTotal  = basket.getTotalGrossPrice();
+	removeDuplicates(basket);
+	basket.createPaymentInstrument( "SA_SILENTPOST", orderTotal );
+	return PIPELET_NEXT;
+}
+
+
+/** 
+Determines if the basket already contains a silent post 
+payment instrument representing the ID. If so, removes 
+the existing payment instrument from the basket.
+*/
+
+function removeDuplicates(basket : Basket)
+{
+	var paymentInstruments = basket.getPaymentInstruments();
+	for each (var pi : PaymentInstrument in paymentInstruments) {		
+	// deletes gift card payment instruments if existing
+		if("SA_SILENTPOST".equalsIgnoreCase(pi.paymentMethod) )
+		{		
+			basket.removePaymentInstrument(pi);
+		}
+	}	
+}

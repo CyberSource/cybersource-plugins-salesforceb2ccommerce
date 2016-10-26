@@ -49,8 +49,12 @@ function execute( pdict : PipelineDictionary ) : Number
 	var paypalAuthorizationRequestToken=order.getPaymentInstruments("PayPal")[0].paymentTransaction.custom.requestToken;
 	var paypalAuthorizationRequestId=order.getPaymentInstruments("PayPal")[0].paymentTransaction.custom.requestId;
 	var transactionId :String =order.getPaymentInstruments("PayPal")[0].paymentTransaction.custom.paypalAuthTransactionID;
-	var transactionType :String ="NotComplete";
+	var transactionType :String ="Complete";
 	var refCode :String = order.orderNo;
+	var completeType = dw.system.Site.getCurrent().getCustomPreferenceValue("CsPaypalCaptureCompleteType");
+	if (!empty(completeType) && completeType.valueOf()=='NotComplete') {
+		transactionType = 'NotComplete';
+	}
 	
 	//setting purchase total
 	var pt : PaymentTransaction = order.getPaymentInstruments("PayPal")[0].paymentTransaction;
@@ -64,7 +68,6 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	//setting response in response object
 	try{
-		
 		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
 		response = service.call(request);
 		

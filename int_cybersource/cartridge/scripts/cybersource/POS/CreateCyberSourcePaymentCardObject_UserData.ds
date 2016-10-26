@@ -12,9 +12,7 @@
 *   @output error 			: String
 *   @output errorCode		: String
 */
-importPackage( dw.system );
-
-importScript('int_cybersource:cybersource/Cybersource_Card_Object.ds');
+var POSHelper = require('int_cybersource/cartridge/scripts/Helper/POSHelper');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
@@ -24,36 +22,15 @@ function execute( pdict : PipelineDictionary ) : Number
 	var expiryYear : String = pdict.expiryYear;
 	var cvnNumber : String = pdict.cvnNumber;
 
-    var cardObject : Card_Object = new Card_Object();
+	var result = POSHelper.CreateCyberSourcePaymentCardObject_UserData(accounNumber, cardType, cvnNumber, expiryMonth, expiryYear);
+		if(result.error)
+		{
+			pdict.errorCode = result.errorCode;
+			pdict.error = result.errorMsg;
+			return PIPELET_ERROR;
+		}
 
-	if(!empty(accounNumber))
-		cardObject.setAccountNumber(accounNumber);
-	else{
-		pdict.errorCode = "101";
-		pdict.error = "Account Number is missing";
-		return PIPELET_ERROR;
-	}	
-
-	if(!empty(expiryMonth))
-		cardObject.setExpirationMonth(expiryMonth);
-	else{
-		pdict.errorCode = "101";
-		pdict.error = "Expiry Month is missing";
-		return PIPELET_ERROR;
-	}
-	
-	if(!empty(expiryYear))
-		cardObject.setExpirationYear(expiryYear);
-	else{
-		pdict.errorCode = "101";
-		pdict.error = "Expiry Year is missing";
-		return PIPELET_ERROR;
-	}
-	
-	cardObject.setCardType(cardType);
-	cardObject.setCvNumber(cvnNumber);
-	
-	pdict.CyberSourceCard = cardObject;
+			pdict.CyberSourceCard = result.card;
 
     return PIPELET_NEXT;
 }

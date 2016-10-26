@@ -1,0 +1,25 @@
+/**
+*	CreateCybersourceShipFromObject.ds
+*	This script creates the ShipFrom data object and set it to CybersourceShipFrom output object.
+*
+*    @output CybersourceShipFrom : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.rpc );
+importPackage( dw.util );
+importPackage( dw.value);
+importScript('cybersource/Cybersource_ShipFrom_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var shipFrom : ShipFrom_Object = new ShipFrom_Object();
+
+	shipFrom.setCity(Site.getCurrent().getCustomPreferenceValue("CsShipFromCity"));
+    shipFrom.setState(Site.getCurrent().getCustomPreferenceValue("CsShipFromStateCode"));
+    shipFrom.setPostalCode(Site.getCurrent().getCustomPreferenceValue("CsShipFromZipCode"));
+    shipFrom.setCountry(Site.getCurrent().getCustomPreferenceValue("CsShipFromCountryCode"));
+       
+    pdict.CybersourceShipFrom = shipFrom;
+    return PIPELET_NEXT;
+}

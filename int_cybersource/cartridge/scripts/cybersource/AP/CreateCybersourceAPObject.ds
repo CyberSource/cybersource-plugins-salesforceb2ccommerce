@@ -6,16 +6,14 @@
 *    @output CybersourceAPObject : Object
 *
 */
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.util );
-importPackage( dw.value);
+var Logger = dw.system.Logger;
+var Money = require('dw/value/Money');
 importScript('cybersource/Cybersource_AP_Object.ds');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var apObject : AP_Object= new AP_Object();
-	var basket : LineItemCtnr = pdict.Basket;	
+	var apObject = new AP_Object();
+	var basket = pdict.Basket;	
 	//**************************************************************************//
 	// Check if Basket exists
 	//**************************************************************************//
@@ -25,13 +23,13 @@ function execute( pdict : PipelineDictionary ) : Number
 	}
 	apObject.setCustomerRepresentativeID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
 	apObject.setOrderID(pdict.orderID);
-	var amount : Money = new Money(0,basket.currencyCode);
+	var amount : dw.value.Money = new Money(0,basket.currencyCode);
     if(null != basket) {
     	var ccPaymentInstruments = basket.getPaymentInstruments();						
 		/**
 		* Product ID required by AP InitiateService, Purchase ID is optional for APInitiateService.
 		**/	
-		var _pli : Collection = basket.getProductLineItems();
+		var _pli = basket.getProductLineItems();
 		if(_pli != null && _pli.length>0) {	
 			apObject.setProductID(_pli[0].productID);
 		}
@@ -39,7 +37,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		{
 			apObject.setProductID("test");
 		}
-		for each (var pi : PaymentInstrument in ccPaymentInstruments) {
+		for each (var pi in ccPaymentInstruments) {
     	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
     	{
     		amount = amount.add(pi.paymentTransaction.amount);
@@ -49,9 +47,6 @@ function execute( pdict : PipelineDictionary ) : Number
 	* These fields are used for Vme confirm purchase service. not mandatory for other Vme services. 
 	**/	
 	apObject.setSubtotalAmount(amount.value);
-	/*apObject.setShippingHandlingAmount(basket.adjustedShippingTotalPrice.value);	
-	apObject.setTaxAmount(basket.totalTax.value);	
-	apObject.setDiscountAmount(basket.getAdjustedMerchandizeTotalPrice(false).subtract(basket.getAdjustedMerchandizeTotalPrice(true)).value);*/
 	}
 			
 	pdict.CybersourceAPObject = apObject;

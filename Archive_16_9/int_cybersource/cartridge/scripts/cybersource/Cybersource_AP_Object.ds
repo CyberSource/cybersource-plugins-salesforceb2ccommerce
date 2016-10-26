@@ -1,0 +1,144 @@
+function AP_Object(){
+	
+	this.orderID = "";
+	this.setOrderID = setOrderID;
+	this.getOrderID = getOrderID;
+	
+	this.customerRepresentativeID = "";
+	this.setCustomerRepresentativeID = setCustomerRepresentativeID;
+	this.getCustomerRepresentativeID = getCustomerRepresentativeID;
+	
+	this.productDescription = "";
+	this.setProductDescription = setProductDescription;
+	this.getProductDescription = getProductDescription;
+	
+	this.settlementCurrency = "";
+	this.setSettlementCurrency = setSettlementCurrency;
+	this.getSettlementCurrency = getSettlementCurrency;
+	
+	this.subtotalAmount = "";
+	this.setSubtotalAmount = setSubtotalAmount;
+	this.getSubtotalAmount = getSubtotalAmount;
+	
+	this.shippingAmount = "";
+	this.setShippingAmount = setShippingAmount;
+	this.getShippingAmount = getShippingAmount;
+	
+	this.handlingAmount = "";
+	this.setHandlingAmount = setHandlingAmount;
+	this.getHandlingAmount = getHandlingAmount;
+	
+	this.shippingHandlingAmount = "";
+	this.setShippingHandlingAmount = setShippingHandlingAmount;
+	this.getShippingHandlingAmount = getShippingHandlingAmount;
+	
+	this.additionalAmount = "";
+	this.setAdditionalAmount = setAdditionalAmount;
+	this.getAdditionalAmount = getAdditionalAmount;
+	
+	this.taxAmount = "";
+	this.setTaxAmount = setTaxAmount;
+	this.getTaxAmount = getTaxAmount;
+	
+	this.giftWrapAmount = "";
+	this.setGiftWrapAmount = setGiftWrapAmount;
+	this.getGiftWrapAmount = getGiftWrapAmount;
+	
+	this.discountAmount = "";
+	this.setDiscountAmount = setDiscountAmount;
+	this.getDiscountAmount = getDiscountAmount;	
+	
+	this.productID = "";
+	this.setProductID = setProductID;
+	this.getProductID = getProductID;
+	
+	this.purchaseID = "";
+	this.setPurchaseID = setPurchaseID;
+	this.getPurchaseID = getPurchaseID;
+}
+
+function setOrderID(value){
+	this.orderID = value;
+}
+function getOrderID(){
+	return this.orderID;
+}
+function setCustomerRepresentativeID(value){
+	this.customerRepresentativeID = value;
+}
+function getCustomerRepresentativeID(){
+	return this.customerRepresentativeID;
+}
+function setProductDescription(value){
+	this.productDescription = value;
+}
+function getProductDescription(){
+	return this.productDescription;
+}
+function setSettlementCurrency(value){
+	this.settlementCurrency = value;
+}
+function getSettlementCurrency(){
+	return this.settlementCurrency;
+}
+function setSubtotalAmount(value){
+	this.subtotalAmount = value;
+}
+function getSubtotalAmount(){
+	return this.subtotalAmount;
+}
+function setShippingAmount(value){
+	this.shippingAmount = value;
+}
+function getShippingAmount(){
+	return this.shippingAmount;
+}
+function setHandlingAmount(value){
+	this.handlingAmount = value;
+}
+function getHandlingAmount(){
+	return this.handlingAmount;
+}
+function setShippingHandlingAmount(value){
+	this.shippingHandlingAmount = value;
+}
+function getShippingHandlingAmount(){
+	return this.shippingHandlingAmount;
+}
+function setAdditionalAmount(value){
+	this.additionalAmount = value;
+}
+function getAdditionalAmount(){
+	return this.additionalAmount;
+}		
+function setTaxAmount(value){
+	this.taxAmount = value;
+}
+function getTaxAmount(){
+	return this.taxAmount;
+}
+function setGiftWrapAmount(value){
+	this.giftWrapAmount = value;
+}
+function getGiftWrapAmount(){
+	return this.giftWrapAmount;
+}
+function setDiscountAmount(value){
+	this.discountAmount = value;
+}
+function getDiscountAmount(){
+	return this.discountAmount;
+}
+function setProductID(value){
+	this.productID = value;
+}
+function getProductID(){
+	return this.productID;
+}
+function setPurchaseID(value){
+	this.purchaseID = value;
+}
+function getPurchaseID(){
+	return this.purchaseID;
+}
+																																								

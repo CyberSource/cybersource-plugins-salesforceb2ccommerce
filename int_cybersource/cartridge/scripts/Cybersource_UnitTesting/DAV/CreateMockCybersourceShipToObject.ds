@@ -7,36 +7,10 @@
 *    @output CybersourceBillTo : Object
 *
 */
-importPackage( dw.system );
-importPackage( dw.util );
-importPackage( dw.order );
-importScript('cybersource/Cybersource_ShipTo_Object.ds');
+var TestHelper = require('int_cybersource/cartridge/scripts/Helper/TestHelper');
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var shipToObject: ShipTo_Object = new ShipTo_Object();
-	
-	shipToObject.setFirstName  ( "Peter" );
-	shipToObject.setLastName   ( "Pritchard" );
-	if( !empty(pdict.InvalidFields) && pdict.InvalidFields.valueOf() ) {
-		shipToObject.setStreet1 ( "xxxxxxxxxxxxxx" );
-	} else {
-		shipToObject.setStreet1 ( "25 Call Street" );
-	}
-	shipToObject.setStreet2    ( "" );
-	shipToObject.setCity       ( "Billerica" );
-	shipToObject.setState      ( "MA" );
-	if( !empty(pdict.MissingFields) && pdict.MissingFields.valueOf() ) {
-		shipToObject.setPostalCode ( "" );
-	} else {
-		shipToObject.setPostalCode ( "01862" );
-	}
-	shipToObject.setCountry    ( "US" );
-	shipToObject.setPhoneNumber( "978-362-1553" );
-	shipToObject.setEmail      ( "ppritchard@demandware.com" );
-	
-	shipToObject.setShippingMethod("Bills Shipping");
-	
-	pdict.CybersourceBillTo = shipToObject;
+	pdict.CybersourceBillTo = TestHelper.CreateMockCybersourceShipToObject(pdict.InvalidFields, pdict.MissingFields).shipTo;
 
     return PIPELET_NEXT;
 }

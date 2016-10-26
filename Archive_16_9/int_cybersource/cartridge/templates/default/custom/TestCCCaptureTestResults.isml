@@ -1,0 +1,21 @@
+<iscomment>
+	This template will populate the Unit Test result of Capture CCAuth
+</iscomment>
+Here is the Capture Amount
+<isprint value="${pdict.CaptureAmount}"><br>
+
+Here is the Capture Reason Code
+<isprint value="${pdict.CaptureReasonCode}"><br>
+
+Here is the Decision
+<isprint value="${pdict.Decision}"><br>
+
+Here is the Reason Code
+<isprint value="${pdict.ReasonCode}"><br>
+
+Here is the RequestID
+<isprint value="${pdict.RequestID}"><br>
+
+Here is the Request Token
+<isprint value="${pdict.RequestToken}"><br>
+

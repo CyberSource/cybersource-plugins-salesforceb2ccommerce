@@ -1,25 +1,25 @@
-<!--- TEMPLATENAME: AlipayInitiateServiceTestResults.isml --->
+<!--- TEMPLATENAME: AlipayCheckStatusServiceTestResults.isml --->
 <iscomment>
 	This template will populate the Unit Test result of Alipay Check Status Service
 </iscomment>
 Here is the Reason
-<isprint value="${pdict.ReasonCode}"><br>
+<isprint value="${pdict.alipayCheckResponse.ReasonCode}"><br>
 
 Here is the Descision
-<isprint value="${pdict.Decision}"><br>
+<isprint value="${pdict.alipayCheckResponse.Decision}"><br>
 
 Here is the Request ID
-<isprint value="${pdict.CheckStatusRequestID}"><br>
+<isprint value="${pdict.alipayCheckResponse.RequestID}"><br>
 
 Here is the Request Token
-<isprint value="${pdict.RequestToken}"><br>
+<isprint value="${pdict.alipayCheckResponse.RequestToken}"><br>
 
 Here is the Reconciliation ID
-<isprint value="${pdict.ReconciliationID}"><br>
+<isprint value="${pdict.alipayCheckResponse.ReconciliationID}"><br>
 
 Here is the Payment Status
-<isprint value="${pdict.PaymentStatus}"><br>
+<isprint value="${pdict.alipayCheckResponse.PaymentStatus}"><br>
 
 Here is the Processor Transaction ID
-<isprint value="${pdict.ProcessorTransactionId}"><br>
+<isprint value="${pdict.alipayCheckResponse.ProcessorTransactionId}"><br>
 

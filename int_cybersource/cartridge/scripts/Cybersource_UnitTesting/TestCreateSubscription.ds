@@ -12,64 +12,29 @@
 * @output reasonCode : Object
 * @output requestID : Object
 * @output requestToken : Object
-*
+* @output subscriptionResponse : Object
 */
-importPackage( dw.system );
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.rpc );
-importPackage( dw.util );
-importPackage( dw.value);
+var SubscriptionFacade = require('int_cybersource/cartridge/scripts/Facade/SubscriptionFacade');
 
-importScript('cybersource/Cybersource_BillTo_Object.ds');
-importScript('cybersource/Cybersource_Card_Object.ds');
-importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
-importScript('cybersource/libCybersource.ds');
-var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
-    var billToObject: BillTo_Object = pdict.billTo;
-	var cardObject: Card_Object = pdict.card;
-	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
-	
-	
-	var CybersourceHelper = getCybersourceHelper();
-	
-	
-	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
-	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
-	
-	CybersourceHelper.setEndpoint(service);
-	
-	if(!CybersourceHelper.createHeader(service)){
-		return null;
-	}*/
-
-	var request = new csReference.RequestMessage();
-
-	CybersourceHelper.addPaySubscriptionCreateService(request, billToObject, purchaseObject, cardObject, "test");
-	
+    var billToObject = pdict.billTo;
+	var cardObject = pdict.card;
+	var purchaseObject = pdict.purchaseTotals;
 	var response = null;
-	// send request
-	try{
-		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		response = service.call(request);
-	}catch(e){
-		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+
+	var result = SubscriptionFacade.CreateSubscription(billToObject,cardObject, purchaseObject);
+	
+	if(result.error){
 		return PIPELET_ERROR;
 	}
 	
-	if(empty(response) || response.status != "OK"){
-		return PIPELET_ERROR;
-	}
-	else
-	{
-		response = response.object;
-		if ( null != response.paySubscriptionCreateReply)
+		response = result.serviceResponse;
+		pdict.subscriptionResponse = response;
+		if ( null != response.SubscriptionIDToken)
 		{
-			pdict.SubscriptionIDToken = response.paySubscriptionCreateReply.subscriptionID;
+			pdict.SubscriptionIDToken = response.SubscriptionIDToken;
 		}
 		pdict.decision = response.decision;
 		pdict.invalidField = response.invalidField;
@@ -77,7 +42,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.reasonCode = response.reasonCode;
 		pdict.requestID = response.requestID;
 		pdict.requestToken = response.requestToken;
-	}
+	
 	return PIPELET_NEXT;
 }
 

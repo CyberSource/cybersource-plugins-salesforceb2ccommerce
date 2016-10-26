@@ -1,0 +1,34 @@
+/**
+* Identifies whether to proceed for Payer Authorization or not in checkout flow
+*
+* @input cardType: String Credit Card selected by used before proceeding for checkout
+* @output paEnabled: Boolean Whether to proceed for Payer Authentication or not
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var paymentMethod : dw.order.PaymentMethod = dw.order.PaymentMgr.getPaymentMethod("CREDIT_CARD");
+	
+	if(null==paymentMethod)
+		return PIPLET_ERROR;
+	var paymentCardList : dw.util.List = paymentMethod.getActivePaymentCards();
+	var paymentCard : dw.order.PaymentCard = null;
+	iter = paymentCardList.iterator();
+	while(iter.hasNext())
+	{
+		paymentCard = iter.next();
+		if(paymentCard.cardType==pdict.cardType)
+			break;
+	}
+	if(null==paymentCard)
+		return PIPLET_ERROR;
+	
+	pdict.paEnabled = paymentCard.custom.csEnablePayerAuthentication;
+	
+	
+    return PIPELET_NEXT;
+}

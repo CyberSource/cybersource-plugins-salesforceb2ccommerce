@@ -1,0 +1,39 @@
+/**
+ * UpdateVisaCheckoutShipment.ds
+ * updates an order shipment with the Visa Checkout address details.
+ *
+ * This script additionally sets the shipping method to the default.
+ *
+ * @input Shipment : dw.order.Shipment The shipment to create or update
+ * @input VisaDecrypted : Object The Visa Checkout decrypted object
+ */
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.web );
+var logger = require('dw/system/Logger');
+var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/Helper/VisaCheckoutHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	try {
+		// Retrieve the inputs
+		var visaDecrypted = pdict.VisaDecrypted;
+		
+		// Create or replace the shipping address
+		var shippingAddress : OrderAddress = pdict.Shipment.createShippingAddress();	
+		
+		// Populate the shipping address from the visa object
+		VisaCheckoutHelper.CreateLineItemCtnrShippingAddress(shippingAddress, visaDecrypted);
+		
+		// Set shipping method to default if not already set
+		if (pdict.Shipment.shippingMethod == null) {
+			pdict.Shipment.setShippingMethod(ShippingMgr.getDefaultShippingMethod());
+		}
+		
+		return PIPELET_NEXT;
+	}
+	catch(err) {
+		logger.error('Error creating shipment from Visa Checkout address: {0}', err.message);
+		return PIPELET_ERROR;	
+	}
+}

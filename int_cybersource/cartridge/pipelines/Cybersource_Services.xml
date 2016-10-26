@@ -35,7 +35,7 @@
   <branch basename="Start">
     <segment>
       <node>
-        <start-node call-mode="public" name="Start" secure="true"/>
+        <start-node call-mode="private" name="Start" secure="true"/>
         <node-display x="1" y="2"/>
       </node>
       <simple-transition>
@@ -54,7 +54,7 @@
   <branch basename="Reversal">
     <segment>
       <node>
-        <start-node call-mode="public" name="Reversal" secure="true"/>
+        <start-node call-mode="private" name="Reversal" secure="true"/>
         <node-display x="2" y="2"/>
       </node>
       <simple-transition/>
@@ -143,6 +143,7 @@
           <key-binding alias="requestToken" key="requestToken"/>
           <key-binding alias="missingField" key="missingField"/>
           <key-binding alias="CurrentForms.subscription.authorizationID.htmlValue" key="authorizationID"/>
+          <key-binding alias="reversalResponse" key="reversalResponse"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b4" source-connector="error">

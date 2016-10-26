@@ -1,0 +1,33 @@
+/**
+* Writes the given content to a file whose name has to be provided as well.
+*
+* @input File : dw.io.File the File to read
+* @input Encoding : String The file encoding. If null or an empty string, "ISO-8859-1" is assumed.
+*
+* @output FileContent : String the content read from the file
+*
+* @Author Danny Gehl
+*/
+
+importPackage( dw.system );
+importPackage( dw.io );
+
+importScript( "bc_sally:util/libUtils.ds" );
+
+/*
+*/ 
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var file     : File = pdict.File;
+	var encoding : String = pdict.Encoding;
+	var content  : String = null;
+	
+	if(!file.exists() || !file.file)
+	{
+		return PIPELET_ERROR;
+	}
+	
+	pdict.FileContent = readFile(file, encoding);
+	
+	return PIPELET_NEXT;
+}

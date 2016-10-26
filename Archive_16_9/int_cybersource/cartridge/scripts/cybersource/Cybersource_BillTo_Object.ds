@@ -1,0 +1,331 @@
+/**
+* Cybersource_BillTo_Object.ds
+* This Object is used for the Cybersource BillTo xsd complex type
+*/
+function BillTo_Object() {
+
+	this.title = "";
+	this.setTitle = setTitle;
+	this.getTitle = getTitle;
+	
+	this.firstName = "";
+	this.setFirstName = setFirstName;
+	this.getFirstName = getFirstName;
+	
+	this.middleName = "";
+	this.setMiddleName = setMiddleName;
+	this.getMiddleName = getMiddleName;
+	
+	this.lastName = "";
+	this.setLastName = setLastName;
+	this.getLastName = getLastName;
+	
+	this.suffix = "";
+	this.setSuffix = setSuffix;
+	this.getSuffix = getSuffix;
+	
+	this.street1 = "";
+	this.setStreet1 = setStreet1;
+	this.getStreet1 = getStreet1;
+	
+	this.street2 = "";
+	this.setStreet2 = setStreet2;
+	this.getStreet2 = getStreet2;
+	
+	this.street3 = "";
+	this.setStreet3 = setStreet3;
+	this.getStreet3 = getStreet3;
+	
+	this.street4 = "";
+	this.setStreet4 = setStreet4;
+	this.getStreet4 = getStreet4;
+	
+	this.city = "";
+	this.setCity = setCity;
+	this.getCity = getCity;
+	
+	this.county = "";
+	this.setCounty = setCounty;
+	this.getCounty = getCounty;
+	
+	this.state = "";
+	this.setState = setState;
+	this.getState = getState;
+	
+	this.postalCode = "";
+	this.setPostalCode = setPostalCode;
+	this.getPostalCode = getPostalCode;
+	
+	this.country = "";
+	this.setCountry = setCountry;
+	this.getCountry = getCountry;
+	
+	this.company = "";
+	this.setCompany = setCompany;
+	this.getCompany = getCompany;
+	
+	this.companyTaxID ="";
+	this.setCompanyTaxID = setCompanyTaxID;
+	this.getCompanyTaxID = getCompanyTaxID;
+	
+	this.phoneNumber = "";
+	this.setPhoneNumber = setPhoneNumber;
+	this.getPhoneNumber = getPhoneNumber;
+	
+	this.email = "";
+	this.setEmail = setEmail;
+	this.getEmail = getEmail;
+	
+	this.ipAddress = "";
+	this.setIpAddress = setIpAddress;
+	this.getIpAddress = getIpAddress;
+	
+	this.ipNetworkAddress = "";
+	this.setIpNetworkAddress = setIpNetworkAddress;
+	this.getIpNetworkAddress = getIpNetworkAddress;
+	
+	this.hostname = "";
+	this.setHostName = setHostName;
+	this.getHostName = getHostName;
+	
+	this.domainName = "";
+	this.setDomainName = setDomainName;
+	this.getDomainName = getDomainName;
+	
+	this.dateOfBirth = "";
+	this.setDateOfBirth = setDateOfBirth;
+	this.getDateOfBirth = getDateOfBirth;
+	
+	this.driversLicenseNumber = "";
+	this.setDriversLicenseNumber = setDriversLicenseNumber;
+	this.getDriversLicenseNumber = getDriversLicenseNumber;
+	
+	this.driversLicenseState = "";
+	this.setDriversLicenseState = setDriversLicenseState;
+	this.getDriversLicenseState = getDriversLicenseState;
+	
+	this.ssn = "";
+	this.setSsn = setSsn;
+	this.getSsn = getSsn;
+	
+	this.customerID = "";
+	this.setCustomerID = setCustomerID;
+	this.getCustomerID = getCustomerID;
+	
+	this.httpBrowserType = "";
+	this.setHttpBrowserType = setHttpBrowserType;
+	this.getHttpBrowserType = getHttpBrowserType;
+	
+	this.httpBrowserEmail = "" ;
+	this.setHttpBrowserEmail = setHttpBrowserEmail;
+	this.getHttpBrowserEmail = getHttpBrowserEmail;
+	
+	this.httpBrowserCookiesAccepted = true;
+	this.setHttpBrowserCookiesAccepted = setHttpBrowserCookiesAccepted;
+	this.getHttpBrowserCookiesAccepted = getHttpBrowserCookiesAccepted;
+	
+	this.nif = "";
+	this.setNif = setNif;
+	this.getNif = getNif;
+	
+	this.personalID = "";
+	this.setPersonalID = setPersonalID;
+	this.getPersonalID = getPersonalID;
+	
+}
+
+function setTitle(value){
+	this.title = value;
+	}
+function getTitle(){
+	return this.title;
+	}
+function setFirstName(value){
+	this.firstName = value;
+	}
+function getFirstName(){
+	return this.firstName;
+	}
+function setMiddleName(value){
+	this.middleName = value;
+	}
+function getMiddleName(){
+	return this.middleName;
+	}
+function setLastName(value){
+	this.lastName = value;
+	}
+function getLastName(){
+	return this.lastName;
+	}
+function setSuffix(value){
+	this.suffix = value;
+	}
+function getSuffix(){
+	return this.suffix;
+	}
+function setStreet1(value){
+	this.street1 = value;
+	}
+function getStreet1(){
+	return this.street1;
+	}								
+function setStreet2(value){
+	this.street2 = value;
+	}
+function getStreet2(){
+	return this.street2;
+	}
+function setStreet3(value){
+	this.street3 = value;
+	}
+function getStreet3(){
+	return this.street3;
+	}
+function setStreet4(value){
+	this.street4 = value;
+	}
+function getStreet4(){
+	return this.street4;
+	}					
+function setCity(value){
+	this.city = value;
+	}
+function getCity(){
+	return this.city;
+	}
+function setCounty(value){
+	this.county = value;
+	}
+function getCounty(){
+	return this.county;
+	}																		
+function setState(value){
+	this.state = value;
+	}
+function getState(){
+	return this.state;
+	}
+function setPostalCode(value){
+	this.postalCode = value;
+	}
+function getPostalCode(){
+	return this.postalCode;
+	}
+function setCountry(value){
+	this.country = value;
+	}
+function getCountry(){
+	return this.country;
+	}
+function setCompany(value){
+	this.company = value;
+	}
+function getCompany(){
+	return this.company;
+	}
+function setCompanyTaxID(value){
+	this.companyTaxID = value;
+	}
+function getCompanyTaxID(){
+	return this.companyTaxID;
+	}
+function setPhoneNumber(value){
+	this.phoneNumber = value;
+	}
+function getPhoneNumber(){
+	return this.phoneNumber;
+	}					
+function setEmail(value){
+	this.email = value;
+	}
+function getEmail(){
+	return this.email;
+	}					
+function setIpAddress(value){
+	this.ipAddress = value;
+	}
+function getIpAddress(){
+	return this.ipAddress;
+	}
+function setIpNetworkAddress(value){
+	this.ipNetworkAddress = value;
+	}
+function getIpNetworkAddress(){
+	return this.ipNetworkAddress;
+	}
+function setHostName(value){
+	this.hostName = value;
+	}
+function getHostName(){
+	return this.hostName;
+	}					
+function setDomainName(value){
+	this.domainName = value;
+	}
+function getDomainName(){
+	return this.domainName;
+	}
+function setDateOfBirth(value){
+	this.dateOfBirth = value;
+	}
+function getDateOfBirth(){
+	return this.dateOfBirth;
+	}					
+function setDriversLicenseNumber(value){
+	this.driversLicenseNumber = value;
+	}
+function getDriversLicenseNumber(){
+	return this.driversLicenseNumber;
+	}	
+function setDriversLicenseState(value){
+	this.driversLicenseState = value;
+	}
+function getDriversLicenseState(){
+	return this.driversLicenseState;
+	}
+function setSsn(value){
+	this.ssn = value;
+	}
+function getSsn(){
+	return this.ssn;
+	}										
+function setCustomerID(value){
+	this.customerID = value;
+	}
+function getCustomerID(){
+	return this.customerID;
+	}	
+function setHttpBrowserType(value){
+	this.httpBrowserType = value;
+	}
+function getHttpBrowserType(){
+	return this.httpBrowserType;
+	}	
+function setHttpBrowserEmail(value){
+	this.httpBrowserEmail = value;
+	}
+function getHttpBrowserEmail(){
+	return this.httpBrowserEmail;
+	}	
+function setHttpBrowserCookiesAccepted(value){
+	this.httpBrowserCookiesAccepted = value;
+	}
+function getHttpBrowserCookiesAccepted(){
+	return this.httpBrowserCookiesAccepted;
+	}
+function setNif(value){
+	this.nif = value;
+	}
+function getNif(){
+	return this.nif;
+	}																
+function setPersonalID(value){
+	this.personalID = value;
+	}
+function getPersonalID(){
+	return this.personalID;
+	}							
+						
+						
+																																		

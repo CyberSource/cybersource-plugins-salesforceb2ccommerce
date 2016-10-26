@@ -4,21 +4,9 @@
 *
 *    @output CyberSourceCard : Object
 */
-importPackage( dw.system );
-importScript('cybersource/Cybersource_Card_Object.ds');
+var TestHelper = require('int_cybersource/cartridge/scripts/Helper/TestHelper');
 function execute( pdict : PipelineDictionary ) : Number
 {
-
-    var cardObject : Card_Object = new Card_Object();
-	cardObject.setAccountNumber('4000000000000002');
-	cardObject.setCardType('001');
-	cardObject.setFullName('Donald Rivard');
-	cardObject.setExpirationMonth("12");
-	cardObject.setExpirationYear("2021");
-	cardObject.setCvNumber('321');
-	
-	pdict.CyberSourceCard = cardObject;
-	
-
+	pdict.CyberSourceCard = TestHelper.CreateCyberSourcePaymentCardObject().card;
     return PIPELET_NEXT;
 }

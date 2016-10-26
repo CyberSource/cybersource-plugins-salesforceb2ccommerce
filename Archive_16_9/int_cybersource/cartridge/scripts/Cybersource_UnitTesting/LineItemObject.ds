@@ -1,0 +1,48 @@
+/**
+* LineItemObject.ds
+* This Mock Object is used for the Cybersource Line Item xsd
+*/
+function MockLineItem_Object() {
+
+	this.tax="";
+	this.setTax = setTax;
+	this.getTax = getTax;
+	
+	this.grossPrice ="";
+	this.setGrossPrice = setGrossPrice;
+	this.getGrossPrice = getGrossPrice;
+	
+	this.product = "";
+	this.setProduct = setProduct;
+	this.getProduct = getProduct;
+	
+	
+	this.basePrice = "";
+	this.quantity = "";
+    this.class ="";
+	this.productName = "";
+	this.productID = "";
+	this.productCode = "";
+	this.netPrice = "";
+
+}
+function setTax(value){
+	this.tax = value;
+}
+function getTax(){
+	return this.tax;
+}
+
+function setGrossPrice(value){
+	this.grossPrice = value;
+}
+function getGrossPrice(value){
+	return this.grossPrice;
+}
+
+function setProduct(value){
+	this.product = value;
+}
+function getProduct(){
+	return this.product;
+}

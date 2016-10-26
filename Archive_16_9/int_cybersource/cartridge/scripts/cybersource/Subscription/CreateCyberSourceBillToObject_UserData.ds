@@ -1,0 +1,59 @@
+/**
+*	CreateCyberSourceBillToObject_UserData.ds
+*	This script creates the BillTo object and set it to CybersourceBillTo output object.
+*
+*   @input title : String
+*   @input firstName : String
+*   @input lastName : String
+*   @input street1 : String
+*   @input city : String
+*   @input state : String
+*   @input postalCode : String
+*	@input country : String
+*	@input phonenumber : String
+*	@input email : String
+*	@input ipAddress : String
+*	@input dob : String
+*   @output CyberSourceBillTo : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.util );
+importScript('int_cybersource:cybersource/Cybersource_BillTo_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var title : String = pdict.title;
+	var firstName : String = pdict.firstName;
+	var lastName : String = pdict.lastName;
+	var street1 : String = pdict.street1;
+	var city : String = pdict.city;
+	var state : String = pdict.state;
+	var postalCode : String = pdict.postalCode;
+	var country : String = pdict.country;
+	var phonenumber : String = pdict.phonenumber;
+	var email : String = pdict.email;
+	var dob : String = pdict.dob;
+	var title : String = pdict.title;
+	
+	var billToObject: BillTo_Object = new BillTo_Object();
+	
+	
+	
+	billToObject.setTitle(title);
+	billToObject.setFirstName(firstName);
+	billToObject.setLastName(lastName);
+	billToObject.setStreet1(street1);
+	billToObject.setCity(city);
+	billToObject.setState(state);
+	billToObject.setPostalCode(postalCode);
+	billToObject.setCountry(country);
+	billToObject.setPhoneNumber(phonenumber);
+	billToObject.setEmail(email);
+	billToObject.setIpAddress(pdict.ipAddress);
+	billToObject.setDateOfBirth(dob);
+	
+	pdict.CyberSourceBillTo = billToObject;
+
+    return PIPELET_NEXT;
+}

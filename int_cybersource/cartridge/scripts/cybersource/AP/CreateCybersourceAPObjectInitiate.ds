@@ -6,14 +6,11 @@
 *
 */
 importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.util );
-importPackage( dw.value);
 importScript('cybersource/Cybersource_AP_Object.ds');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var apObject : AP_Object= new AP_Object();
+	var apObject = new AP_Object();
 	var basket : dw.order.Basket = pdict.Basket;
 	//**************************************************************************//
 	// Check if Basket exists

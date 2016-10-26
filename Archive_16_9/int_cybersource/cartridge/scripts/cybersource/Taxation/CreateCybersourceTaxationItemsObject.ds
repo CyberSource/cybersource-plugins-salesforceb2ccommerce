@@ -1,0 +1,171 @@
+/**
+*	CreateCybersourceTaxationItemsObject.ds
+*	This script creates the Taxation Items Objects and set it to output objects.
+*
+*    @input Basket : dw.order.LineItemCtnr
+*    @output itemmap : dw.util.HashMap
+*    @output itemarray : Array
+*/
+importPackage( dw.system );
+importPackage( dw.order);
+importPackage( dw.util );
+importPackage( dw.value);
+
+importScript('cybersource/libCybersource.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var itemMap : HashMap = new HashMap();
+	var basket : LineItemCtnr = pdict.Basket;
+	var shipment : Shipment = basket.getDefaultShipment();
+	var shippingMethod : ShippingMethod = shipment.getShippingMethod();
+	var lineItems : Iterator = basket.allLineItems.iterator();
+	var items : Array = new Array();
+	var idcount : Number = 0;
+	
+	var shippingMethodTaxCode = null;
+	if( !empty(shippingMethod) ) {
+		shippingMethodTaxCode = shippingMethod.taxClassID;
+	}
+	
+	// START adjust order level promos	
+	var basketSubTotalPrice = basket.getAdjustedMerchandizeTotalNetPrice();
+				
+	var orderDiscount : Money	= new Money(0,basket.currencyCode);
+	var subTotal : Money = basket.adjustedMerchandizeTotalNetPrice;
+	for each( var promo : PriceAdjustment in basket.priceAdjustments ) {
+		orderDiscount	= orderDiscount.add(promo.netPrice);
+		if(promo.netPrice.value < 0) {
+			basketSubTotalPrice	= subTotal.add(promo.netPrice.multiply(-1));
+		}
+	}
+		
+	var orderLevelAdjustment : Collection = basket.getPriceAdjustments();
+	
+	var orderLevelIterator : Iterator = orderLevelAdjustment.iterator();
+	var orderLevelAdjustmentPrice = null;
+	while( orderLevelIterator.hasNext() ) {
+	    var oLevelPriceAdjustment = orderLevelIterator.next();
+	    orderLevelAdjustmentPrice = oLevelPriceAdjustment.price;
+	}			
+	// END adjust order level promos
+	
+	var CybersourceHelper = getCybersourceHelper();
+	while( lineItems.hasNext() ) {
+		var actualQuantity : Number = 0;
+		var lineItem : ProductLineItem = lineItems.next();
+		var item = new CybersourceHelper.csReference.Item();
+		
+ 		if( lineItem instanceof dw.order.ProductLineItem ) {
+			itemMap.put(idcount.toString(), lineItem);
+ 			
+ 			actualQuantity = lineItem.quantity.value;
+ 			
+ 			if( orderLevelAdjustmentPrice!=null ){
+         		orderLevelAdjustmentPrice = orderLevelAdjustmentPrice.multiply(-1);
+	        }
+			if( orderLevelAdjustmentPrice != null && !empty(orderLevelAdjustmentPrice) ) {		
+				adjustedLineItemFinalPrice = getOrderLevelAdjustedLineItemPrice(lineItem.adjustedNetPrice,orderLevelAdjustmentPrice,basketSubTotalPrice,basket.currencyCode,actualQuantity);
+			} else {						
+			    adjustedLineItemFinalPrice = lineItem.adjustedNetPrice.divide(actualQuantity);		
+			}
+	
+ 			item.unitPrice = StringUtils.formatNumber(Math.abs(adjustedLineItemFinalPrice.getValue()),"#####0.00","en_US");
+			item.quantity = lineItem.quantity.value;
+			
+			item.productName = lineItem.productName;
+			item.productSKU = lineItem.productID;
+			item.productCode = lineItem.taxClassID || lineItem.getProduct().taxClassID || CybersourceHelper.getDefaultProductTaxCode();
+			
+			item.id = idcount++;
+			items.push(item);
+		} else if( lineItem instanceof dw.order.ShippingLineItem ) {
+			itemMap.put(idcount.toString(), lineItem);
+			item.quantity		= 1;
+			item.productName	= lineItem.lineItemText;
+			item.productSKU		= lineItem.ID;
+			item.productCode	= lineItem.taxClassID || shippingMethodTaxCode || CybersourceHelper.getDefaultShippingMethodTaxCode();
+			item.id = idcount++;
+
+			var shipPriceAdjustTotal = 0;
+			var shipPriceTotal = 0;
+			var basketShippingPriceAdjustments : Iterator = basket.getShippingPriceAdjustments().iterator();
+    		while( basketShippingPriceAdjustments.hasNext() ) {
+				var lineItem : PriceAdjustment = basketShippingPriceAdjustments.next();
+				var shipPriceAdjust = lineItem.getPrice();
+
+				if( shipPriceAdjust != null ) {
+				    shipPriceAdjustTotal += shipPriceAdjust.getValue();
+				}
+			}
+			
+			if( empty(shipPriceAdjustTotal) || shipPriceAdjustTotal==0 ) {
+			   shipPriceAdjustTotal = lineItem.basePrice.value;
+			}
+				
+			item.unitPrice = StringUtils.formatNumber(Math.abs(basket.getAdjustedShippingTotalNetPrice()), '#####0.00', 'en_US');
+			items.push(item); 
+		} else {
+			item.productName = lineItem.lineItemText;
+			item.productSKU = "PriceAdjustment";
+			item.productCode = lineItem.taxClassID || CybersourceHelper.getDefaultCouponTaxCode();
+		//	lineItem.setTax(new dw.value.Money(new Number(0),basket.currencyCode));
+		//	lineItem.setGrossPrice(lineItem.netPrice.add(new dw.value.Money(new Number(0),basket.currencyCode)));
+		 	lineItem.updateTax(0);
+		}				
+	}
+	
+	// besides shipment line items, we need to calculate tax for possible order-level price adjustments
+	// this includes order-level shipping price adjustments
+	if( !basket.getPriceAdjustments().empty || !basket.getShippingPriceAdjustments().empty ) {
+		var basketPriceAdjustments : Iterator = basket.getPriceAdjustments().iterator();
+		while( basketPriceAdjustments.hasNext() ) {
+			var lineItem : PriceAdjustment = basketPriceAdjustments.next();
+			itemMap.put(idcount.toString(), lineItem);
+
+			var item = new CybersourceHelper.csReference.Item();
+			item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice.value),"#####0.00","en_US"); 
+			item.quantity = 1;
+			item.productCode = "";
+			item.productName = lineItem.lineItemText;
+			item.productSKU = "PriceAdjustment";
+		}
+
+		var basketShippingPriceAdjustments : Iterator = basket.getShippingPriceAdjustments().iterator();
+		while( basketShippingPriceAdjustments.hasNext() ) {
+			var lineItem : PriceAdjustment = basketShippingPriceAdjustments.next();
+			itemMap.put(idcount.toString(), lineItem);
+			var item = new csReference.Item();
+			item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice.value),"#####0.00","en_US");
+			item.quantity = 1;
+			item.productCode = "";
+			item.productName = lineItem.lineItemText;
+			item.productSKU = "PriceAdjustment";
+		}
+    }
+	
+	pdict.itemarray = items;
+	pdict.itemmap = itemMap;
+	
+    return PIPELET_NEXT;
+}
+
+function getOrderLevelAdjustedLineItemPrice(lineItemPrice : Money, orderLevelAdjustmentPrice : Money, basketSubTotalPrice : Money, currencyCode : String, quantity : Number) {
+	var price = 0;
+
+	if( lineItemPrice!=null && orderLevelAdjustmentPrice!=null && basketSubTotalPrice!=null && !empty(currencyCode) ) {
+	   var ratioDivided = lineItemPrice.divide(basketSubTotalPrice.getValue());
+
+	   var ratioAdjustment : Number = (ratioDivided * (Math.abs(orderLevelAdjustmentPrice.getValue())));
+
+	   var adjustedPrice = new Money(ratioAdjustment,currencyCode);
+	   
+	   price = lineItemPrice.subtract(adjustedPrice);
+	 	   
+	   if( !empty(quantity) && quantity>1 ) {
+	      price = price.divide(quantity);
+	   }	   
+	}
+
+	return price;
+}

@@ -1,0 +1,75 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+{
+<isif condition="${!empty(pdict.ERRORCODE)}">
+"ERROR_CODE":"<isprint value="${pdict.ERRORCODE}" />",
+"ERROR_MSG":"<isprint value="${pdict.ERRORMSG}" />"
+<iselse>
+"TRANSACTION_RESULT":
+{
+"DECISION":"<isprint value="${pdict.ServiceResponse.Decision}" />",
+"REASON_CODE":"<isprint value="${pdict.ServiceResponse.ReasonCode}" />",
+"REQUEST_ID":"<isprint value="${pdict.ServiceResponse.RequestID}" />",
+"REQUEST_TOKEN":"<isprint value="${pdict.ServiceResponse.RequestToken}" />",
+"AUTHORIZATION_AMOUNT":"<isprint value="${pdict.ServiceResponse.AuthorizationAmount}" />",
+"AUTHORIZATION_CODE":"<isprint value="${pdict.ServiceResponse.AuthorizationCode}" />",
+"AUTHORIZATION_REASON_CODE":"<isprint value="${pdict.ServiceResponse.AuthorizationReasonCode}" />",
+"DAV_REASON_CODE":"<isprint value="${pdict.ServiceResponse.DAVReasonCode}" />",
+<isif condition="${!empty(pdict.ServiceResponse)}">
+"RAW_SERVICE_RESPONSE":{
+	<isif condition="${!empty(pdict.ServiceResponse.RequestID)}">"RequestID":"<isprint value="${pdict.ServiceResponse.RequestID}" />",</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.RequestToken)}">"RequestToken":"<isprint value="${pdict.ServiceResponse.RequestToken}" />",</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.ReasonCode)}">"ReasonCode":"<isprint value="${pdict.ServiceResponse.ReasonCode}" />",</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.Decision)}">"Decision":"<isprint value="${pdict.ServiceResponse.Decision}" />",</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.ccAuthReply)}">"ccAuthReply":"<isprint value="${pdict.ServiceResponse.ccAuthReply}" />",
+		<isif condition="${!empty(pdict.ServiceResponse.AuthorizationAmount)}">
+		"AuthorizationAmount":"<isprint value="${pdict.ServiceResponse.AuthorizationAmount}" />",
+		</isif>
+		<isif condition="${!empty(pdict.ServiceResponse.AuthorizationCode)}">
+		"AuthorizationCode":"<isprint value="${pdict.ServiceResponse.AuthorizationCode}" />",
+		</isif>
+		<isif condition="${!empty(pdict.ServiceResponse.AuthorizationReasonCode)}">
+		"AuthorizationReasonCode":"<isprint value="${pdict.ServiceResponse.AuthorizationReasonCode}" />",
+		</isif>
+	</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.SubscriptionID)}">"SubscriptionID":"<isprint value="${pdict.ServiceResponse.SubscriptionID}" />",</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.MissingFieldsArray)}">
+	"MissingFieldsArray":"<isloop items="${pdict.ServiceResponse.MissingFieldsArray}" var="missingfield">${missingfield},</isloop>",
+	</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.InvalidFieldsArray)}">
+	"InvalidFieldsArray":"<isloop items="${pdict.ServiceResponse.InvalidFieldsArray}" var="invalidfield">${invalidfield},</isloop>",
+	</isif>
+	<isif condition="${!empty(pdict.ServiceResponse.DAVReasonCode)}">"DAVReasonCode":"<isprint value="${pdict.ServiceResponse.DAVReasonCode}" />",
+		<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress)}">
+		"StandardizedAddress": {
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.firstName)}">
+			"firstName":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.firstName}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.lastName)}">
+			"lastName":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.lastName}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.address1)}">
+			"address1":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.address1}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.address2)}">
+			"address2":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.address2}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.city)}">
+			"city":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.city}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.state)}">
+			"state":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.state}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.postalCode)}">
+			"postalCode":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.postalCode}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.country)}">
+			"country":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.country}" />"
+			</isif>
+			}
+		</isif>
+	</isif>
+}
+</isif>
+}
+</isif>
+}

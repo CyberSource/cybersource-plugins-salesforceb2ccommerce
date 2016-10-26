@@ -1,0 +1,142 @@
+'use strict';
+var Logger = dw.system.Logger.getLogger('Cybersource');
+var Resource = require('dw/web/Resource');
+var Site = require('dw/system/Site');
+var StringUtils = require('dw/util/StringUtils');
+var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
+
+
+/**
+ * This function validates the ApplePayRequest, If request header does not have apple pay information then error message is returned back.
+ */
+
+function validateApplePayRequest()
+{
+	var headersMap = request.httpHeaders;
+    var requestParam  = request.httpParameterMap.requestBodyAsString;
+    var jsonObj;
+    
+    if (empty(headersMap)) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing credentials in header");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidrequestcredential', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidrequestcredential', 'cybapplepay', null)};
+    }
+    
+    if (empty(headersMap.containsKey("dw_applepay_user")) || empty(headersMap.containsKey("dw_applepay_password"))) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing credentials user or password in header");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidrequestcredential', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidrequestcredential', 'cybapplepay', null)};
+    }
+    
+    if (empty(headersMap.get("dw_applepay_user")) || empty(headersMap.get("dw_applepay_password"))) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing credentials user or password in header");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidrequestcredential', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidrequestcredential', 'cybapplepay', null)};
+    }
+
+    if (!headersMap.get("dw_applepay_user").equals(Site.getCurrent().getCustomPreferenceValue("CsApplePayUser"))) {
+		Logger.error("[ValidateApplePayRequest.ds] Wrong user in header");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidrequestcredential', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invaliduser', 'cybapplepay', null)};
+    }
+    
+    var encodedPassword = headersMap.get("dw_applepay_password");
+    if (!StringUtils.decodeBase64(encodedPassword).equals(Site.getCurrent().getCustomPreferenceValue("CsApplePayPassword"))) {
+		Logger.error("[ValidateApplePayRequest.ds] Wrong password in header, might be password didnot arrive in base64 encoded form");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidrequestcredential', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidpassword', 'cybapplepay', null)};
+    }
+
+    if (empty(requestParam)) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing post parameters in JSON form");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.missingrequestparams', 'cybapplepay', null)};
+    }
+    // insert business logic here
+    try {
+    	jsonObj = JSON.parse(requestParam);
+    } catch (ex) {
+		Logger.error("[ValidateApplePayRequest.ds] Invalid JSON for request parameters");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidjson', 'cybapplepay', null)};
+    }
+    if (empty(jsonObj.orderID) || jsonObj.orderID.length>50) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing orderID in JSON or exceed max length 50 char");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidorderid', 'cybapplepay', null)};
+    }
+    if (empty(jsonObj.encryptedPaymentBlob) && empty(jsonObj.networkToken)) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing encryptedPaymentBlob or networkToken in JSON");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.missingblobortoken', 'cybapplepay', null)};
+    } 
+	if (!empty(jsonObj.encryptedPaymentBlob)) {
+    	return {success:true, RequestType:"API", OrderNo:jsonObj.orderID, PaymentData:jsonObj.encryptedPaymentBlob};
+    }
+    if (empty(jsonObj.networkToken) || jsonObj.networkToken.length > 20) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing networkToken in JSON  or exceed max length 20 char");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidtoken', 'cybapplepay', null)};
+    }
+    if (empty(jsonObj.tokenExpirationDate)) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing tokenExpirationDate in JSON");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.missingtokenexpiry', 'cybapplepay', null)};
+    }
+    if (empty(jsonObj.cardType) || !(jsonObj.cardType.equalsIgnoreCase("visa") || jsonObj.cardType.equalsIgnoreCase("mastercard") || jsonObj.cardType.equalsIgnoreCase("amex"))) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing cardType in JSON or not a supported card type (visa, mastercard, amex)");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidcardtype', 'cybapplepay', null)};
+    }
+    if (empty(jsonObj.cryptogram)) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing cryptogram in JSON ");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.missingcryptogram', 'cybapplepay', null)};
+    }
+    if (jsonObj.cardType.equalsIgnoreCase("mastercard") && jsonObj.cryptogram.length>32) {
+		Logger.error("[ValidateApplePayRequest.ds] for mastercard cryptogram in JSON length exceeds 32 char");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidmastercardcryptogram', 'cybapplepay', null)};
+    } else if (jsonObj.cryptogram.length>40) {
+		Logger.error("[ValidateApplePayRequest.ds] Missing cryptogram in JSON or length exceeds 40 char");
+		return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidcryptogram', 'cybapplepay', null)};
+    }
+    var currentDate = Number(dw.util.StringUtils.formatCalendar(new dw.util.Calendar(),"YYMMdd"));
+    var tokenExpirationDate;
+    try {
+    	if (jsonObj.tokenExpirationDate.length!=6) throw new Error("invalid tokenExpirationDate length");
+    	tokenExpirationDate = Number(jsonObj.tokenExpirationDate);
+    } catch (ex) {
+		Logger.error("[ValidateApplePayRequest.ds] Invalid tokenExpirationDate, must have format YYMMDD");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.missingtokenexpiry', 'cybapplepay', null)};
+    }
+    if (Number(currentDate)>Number(tokenExpirationDate)) {
+	    Logger.error("[ValidateApplePayRequest.ds] Card tokenExpirationDate older than current date");
+    	return {error:true, ErrorCode : Resource.msg('cyb.applepay.errorcode.invalidjson', 'cybapplepay', null), ErrorMsg : Resource.msg('cyb.applepay.errormsg.invalidtokenexpiry', 'cybapplepay', null)};
+    }
+   	var requestParam = new Object();
+    requestParam["NetworkToken"] = jsonObj.networkToken;
+    requestParam["TokenExpirationMonth"] = jsonObj.tokenExpirationDate.substr(2,2);
+    requestParam["TokenExpirationYear"] = jsonObj.tokenExpirationDate.substr(0,2);
+    requestParam["CardType"] = jsonObj.cardType;
+    requestParam["Cryptogram"] = jsonObj.cryptogram;
+    return {success:true, RequestType:"INAPP", OrderNo:jsonObj.orderID, requestParam:requestParam};
+}
+
+/**
+ * This function creates data for authorization Request like Bill to , Ship to and purchase items.
+ * @param lineItemCtnr : dw.order.LineItemCtnr this can hold object of basket or Order.
+ */
+
+function PrepareAuthRequestObjects(lineItemCtnr : dw.order.LineItemCtnr)
+{
+   //**************************************************************************//
+	// Check if lineItemCtnr exists
+	//**************************************************************************//
+	if(lineItemCtnr == null){
+		Logger.error("Please provide a order or basket!");
+		return {error:true, errorCode:"ORDER_OR_BASKET_NOT_FOUND"};
+	}
+
+	//Objects to set in the Service Request inside facade
+	var billTo, shipTo, purchaseObject;
+	var result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnr, true);
+	billTo = result.billTo;
+	result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnr);
+	shipTo = result.shipTo;
+	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnr);
+	purchaseObject = result.purchaseTotals;
+	result = CommonHelper.CreateCybersourceItemObject(lineItemCtnr);
+	var items : dw.util.List = result.items;
+	return {success:true, billTo:billTo, shipTo:shipTo, purchaseObject:purchaseObject, items:items};
+}
+module.exports = {
+	validateApplePayRequest: validateApplePayRequest,
+	PrepareAuthRequestObjects:PrepareAuthRequestObjects
+}

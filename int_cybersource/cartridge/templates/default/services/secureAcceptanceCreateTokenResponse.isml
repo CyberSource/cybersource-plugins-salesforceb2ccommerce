@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules.isml"/>
+<isloop items="${pdict.CurrentHttpParameterMap.getParameterNames()}" var="paramName" status="loopstate">
+<isprint value="${paramName}" /> = <isprint value="${pdict.CurrentHttpParameterMap.get(paramName).stringValue}" /><br/>
+</isloop>

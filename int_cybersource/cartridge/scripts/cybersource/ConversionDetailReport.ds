@@ -57,7 +57,7 @@ var CybersourceHelper = getCybersourceHelper();
 		var startDate = StringUtils.formatCalendar(currentDate, "yyyy-MM-dd");
 		var startTime = StringUtils.formatCalendar(currentDate, "HH:mm:ss");
 		
-		Logger.error("postValues sent to CyberSource for On Demand Conversion report :: ");
+		Logger.debug("postValues sent to CyberSource for On Demand Conversion report :: ");
 		
 		var responseObj = null;
 		// mapping request object with correct parameter
@@ -75,6 +75,7 @@ var CybersourceHelper = getCybersourceHelper();
                 Logger.error("Error in conversion detail report request ( {0} )",e.message);
                 return PIPELET_ERROR;
 		}
+		
 
 		var errorCode = "";
 		var errorMessage = "";
@@ -109,9 +110,11 @@ var CybersourceHelper = getCybersourceHelper();
 				if (xmlConversion..*::["NewDecision"].toString() == 'ACCEPT') {
 					order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 					OrderMgr.placeOrder(order)	
+					 Logger.info("Order number: ( {0} ) is successfully placed  ",orderNumber);
 				//new decision REJECT decision applied to order
 				} else if (xmlConversion..*::["NewDecision"].toString() == 'REJECT') {  
 						OrderMgr.failOrder(order);
+						 Logger.info("Order number: ( {0} ) is failed   ",orderNumber);
 				} else {
 					//do nothing
 				}

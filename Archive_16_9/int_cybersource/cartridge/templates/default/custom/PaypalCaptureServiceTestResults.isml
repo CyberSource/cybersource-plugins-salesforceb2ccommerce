@@ -1,0 +1,39 @@
+<!--- TEMPLATENAME: AlipayInitiateServiceTestResults.isml --->
+<iscomment>
+	This template will populate the Unit Test result of Paypal Capture Service call
+</iscomment>
+Here is the Reason
+<isprint value="${pdict.ReasonCode}"><br>
+
+Here is the Descision
+<isprint value="${pdict.Decision}"><br>
+
+Here is the Request ID
+<isprint value="${pdict.RequestID}"><br>
+
+Here is the Request Token
+<isprint value="${pdict.RequestToken}"><br>
+
+Here is the Authorization ID
+<isprint value="${pdict.AuthorizationId}"><br>
+
+Here is the Capture Amount
+<isprint value="${pdict.CaptureAmount}"><br>
+
+Here is the Capture Reason Code
+<isprint value="${pdict.CaptureReasonCode}"><br>
+
+Here is the Capture Transaction ID
+<isprint value="${pdict.CaptureTransactionID}"><br>
+
+Here is the Parent Transaction ID
+<isprint value="${pdict.ParentTransactionId}"><br>
+
+Here is the Payment Status
+<isprint value="${pdict.PaymentStatus}"><br>
+
+Here is the Capture Correlation ID
+<isprint value="${pdict.CaptureCorrelationID}"><br>
+
+Here is the Capture Fee Amount
+<isprint value="${pdict.CaptureFeeAmount}"><br>

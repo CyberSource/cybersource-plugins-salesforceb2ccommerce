@@ -68,11 +68,25 @@
         </pipelet-node>
         <node-display x="0" y="1"/>
       </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="utils/GetIPAddress.ds"/>
+          <key-binding alias="null" key="ScriptLog"/>
+          <key-binding alias="IPAddress" key="IPAddress"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="error">
+          <transition target-connector="in1" target-path="./b5.1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <simple-transition/>
       <node>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
@@ -83,7 +97,7 @@
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="OrderNo" key="OrderNo"/>
           <key-binding alias="CurrentForms.checkout.creditcard" key="CreditCardForm"/>
-          <key-binding alias="CurrentRequest.httpRemoteAddress" key="IPAddress"/>
+          <key-binding alias="IPAddress" key="IPAddress"/>
           <key-binding alias="AuthCode" key="AuthorizationCode"/>
           <key-binding alias="Decision" key="Decision"/>
           <key-binding alias="AuthAmount" key="AuthorizationAmount"/>
@@ -96,8 +110,8 @@
           <key-binding alias="false" key="ignoreAVS"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
-        <branch basename="b3" source-connector="error">
-          <transition target-connector="in1" target-path="./b4.1">
+        <branch basename="b4" source-connector="error">
+          <transition target-connector="in1" target-path="./b5.1">
             <transition-display>
               <bend-point relative-to="source" x="2" y="0"/>
             </transition-display>
@@ -114,7 +128,7 @@
       <node>
         <decision-node condition-key="Decision == 'ERROR'" condition-operator="expr"/>
         <node-display orientation="horizontal" x="0" y="1"/>
-        <branch basename="b4" source-connector="yes">
+        <branch basename="b5" source-connector="yes">
           <transition target-connector="in1"/>
           <segment>
             <node>
@@ -141,7 +155,7 @@
       <node>
         <decision-node condition-key="Decision == 'ACCEPT'" condition-operator="expr"/>
         <node-display x="0" y="1"/>
-        <branch basename="b5" source-connector="yes">
+        <branch basename="b6" source-connector="yes">
           <transition target-connector="in">
             <transition-display>
               <bend-point relative-to="source" x="0" y="1"/>

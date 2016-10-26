@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="CybersourceService">
-        <url>https://ics2ws.ic3.com/commerce/1.x/transactionProcessor</url>
+        <url>https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor</url>
         <user-id>sapient_nitro</user-id>
         <password encrypted="true" encryption-type="common.export">U50ABfo+n1+KzpuZc9NqWx0xOLqEXHk9owjQpyha6e4Ez95S1ZRIBAFVZb8gVwy0OiVs9BgLrZiKPozrIiyfJ5ot7TR7Gb3E8fnqjRQUlpWiZvh/A1J+OCV7ZgnatYixOLn4mUa8TqsfbLM/NjZ9AGdPfAJtV0hKFLt9IHjHI0LZQQE1OhlihkH5yc6mivwZ6eSwurFTGnXoyha/ShEXew==</password>
     </service-credential>
 
     <service-credential service-credential-id="conversiondetailreport">
-        <url>https://ebctest.cybersource.com/ebctest/ConversionDetailReportRequest.do?merchantID={merchantID}&amp;userName={userName}&amp;password={password}&amp;startDate={startDate}&amp;startTime={startTime}&amp;endDate={endDate}&amp;endTime={endTime}</url>
+        <url>https://ebctest.cybersource.com/ebctest/ConversionDetailReportRequest.do?merchantID={merchantID}&amp;username={username}&amp;password={password}&amp;startDate={startDate}&amp;startTime={startTime}&amp;endDate={endDate}&amp;endTime={endTime}</url>
         <user-id>anujjain</user-id>
         <password encrypted="true" encryption-type="common.export">q3xhlFa7ZAXzzMf6l0oUPNzicilFPaFAqp7apy5/MixMfCZxH102rgtC/6Iog1lY</password>
     </service-credential>

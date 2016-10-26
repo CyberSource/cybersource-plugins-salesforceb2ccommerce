@@ -1,0 +1,34 @@
+<iscomment>
+	This template will populate the Unit Test result of BML
+</iscomment>
+Here is the id
+<isprint value="${pdict.id}"><br>
+
+Here is the password
+<isprint value="${pdict.password}"><br>
+
+Here is the newid
+<isprint value="${pdict.newid}"><br>
+
+
+Here is the reason
+<isprint value="${pdict.reason}"><br>
+
+Here is the authreason
+<isprint value="${pdict.authreason}"><br>
+
+Here is the authamount
+<isprint value="${pdict.authamount}"><br>
+
+Here is the authcode
+<isprint value="${pdict.authcode}"><br>
+
+Here is the descision
+<isprint value="${pdict.descision}"><br>
+
+Here is the requestid
+<isprint value="${pdict.requestid}"><br>
+
+
+Here is the token
+<isprint value="${pdict.token}"><br>

@@ -1,0 +1,38 @@
+/**
+* PopulateShippingAddress.ds
+* This script is used to populate shipping address.
+*
+* @input Basket : dw.order.LineItemCtnr
+* @input shippingAddress : dw.order.OrderAddress
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+	var basket: LineItemCtnr = pdict.Basket
+	var defaultShipment: Shipment = basket.defaultShipment;
+	var defaultAddress: OrderAddress = defaultShipment.createShippingAddress();
+	
+	var address: OrderAddress = pdict.shippingAddress;
+	address.setAddress1("PO Box 224");
+	address.setFirstName("Donald");
+	address.setLastName("Rivard");
+	address.setCity("Winchendon");
+	address.setStateCode("MA");
+	address.setCompanyName("Demandware");
+	address.setPhone("999-999-9999");
+	address.setPostalCode("12233");
+	
+	defaultAddress.setAddress1("PO Box 224");
+	defaultAddress.setFirstName("Donald");
+	defaultAddress.setLastName("Rivard");
+	defaultAddress.setCity("Winchendon");
+	defaultAddress.setStateCode("MA");
+	defaultAddress.setCompanyName("Demandware");
+	defaultAddress.setPhone("999-999-9999");
+	defaultAddress.setPostalCode("99999");
+	
+    return PIPELET_NEXT;
+}

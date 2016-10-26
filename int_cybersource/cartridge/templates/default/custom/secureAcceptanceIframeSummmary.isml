@@ -1,0 +1,17 @@
+<!--- TEMPLATENAME: secureAcceptanceIframeSummary.isml --->
+<isif condition="${empty(pdict.Basket)}">
+	<isreportcheckout checkoutstep="${6}" checkoutname="${'OrderPay'}"/>
+	<div class="form-row">
+		<a style="display:none" id="SA_IFRAME" name="SA_IFRAME" value="${Resource.msg('global.submitorder','locale',null)}">
+			${Resource.msg('global.submitorder','locale',null)}
+		</a>
+	</div>
+	<div class="SecureAcceptance_IFRAME"></div>
+	<isset name="iframeURL" value="${dw.web.URLUtils.https('SECURE_ACCEPTANCE-OpenIframe').toString()}" scope="page" />
+	<script type="text/javascript">
+	var ifr = '${iframeURL}';
+		$(document).ready(function(){
+			 $(".SecureAcceptance_IFRAME").append('<iframe src='+ifr+'  name="hss_iframe"  width="78%" height="630px" scrolling="no" />');
+		});
+	</script>
+</isif>

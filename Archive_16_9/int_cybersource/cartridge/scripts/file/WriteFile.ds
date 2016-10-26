@@ -1,0 +1,33 @@
+/**
+* Writes the given content to a file whose name has to be provided as well.
+*
+* @input File        : dw.io.File the File to write to
+* @input FileContent : String the content to write into the file
+* @input Encoding 	 : String The file encoding. If null or an empty string, "ISO-8859-1" is assumed.
+*
+* @Author Danny Gehl
+*/
+
+importPackage( dw.system );
+importPackage( dw.io );
+
+importScript( "bc_sally:util/libUtils.ds" );
+
+/*
+*/ 
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var file	 : File = pdict.File;
+	var content  : String = pdict.FileContent;
+	var encoding : String = pdict.Encoding;
+	
+	if(file == null || content == null){
+		Logger.error("Input parameters 'FileName' and 'FileContent' must be specified!");
+		if(file != null){
+			Logger.error("Error while writing File "+file.name+"!");
+		}
+		return PIPELET_ERROR;
+	}
+		
+	return writeFile(file, content, encoding) ? PIPELET_NEXT : PIPELET_ERROR;
+}

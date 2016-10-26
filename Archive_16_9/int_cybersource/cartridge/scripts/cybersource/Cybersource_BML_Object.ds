@@ -1,0 +1,297 @@
+/**
+* Cybersource_BML_Object.ds
+* This Object is used for the Cybersource BML xsd complex type
+*/
+function BML_Object() {
+	
+	this.customerBillingAddressChange = "";
+	this.setCustomerBillingAddressChange = setCustomerBillingAddressChange;
+	this.getCustomerBillingAddressChange = getCustomerBillingAddressChange;
+	
+	this.customerEmailChange = false;
+	this.setCustomerEmailChange = setCustomerEmailChange;
+	this.getCustomerEmailChange = getCustomerEmailChange;
+	
+	this.customerHasCheckingAccount = false;
+	this.setCustomerHasCheckingAccount = setCustomerHasCheckingAccount;
+	this.getCustomerHasCheckingAccount = getCustomerHasCheckingAccount;
+	
+	this.customerHasSavingsAccount = false
+	this.setCustomerHasSavingsAccount = setCustomerHasSavingsAccount;
+	this.getCustomerHasSavingsAccount = getCustomerHasSavingsAccount;
+	
+	this.customerPasswordChange = false;
+	this.setCustomerPasswordChange = setCustomerPasswordChange;
+	this.getCustomerPasswordChange = getCustomerPasswordChange;
+	
+	this.customerPhoneChange = false;
+	this.setCustomerPhoneChange = setCustomerPhoneChange;
+	this.getCustomerPhoneChange = getCustomerPhoneChange;
+	
+	this.customerRegistrationDate = ""; //This is of type xsd:dateTime
+	this.setCustomerRegistrationDate = setCustomerRegistrationDate;
+	this.getCustomerRegistrationDate = getCustomerRegistrationDate;
+	
+	this.customerTypeFlag = "";
+	this.setCustomerTypeFlag = setCustomerTypeFlag;
+	this.getCustomerTypeFlag = getCustomerTypeFlag;
+	
+	this.grossHouseholdIncome = "";
+	this.setGrossHouseholdIncome = setGrossHouseholdIncome;
+	this.getGrossHouseholdIncome = getGrossHouseholdIncome;
+	
+	this.householdIncomeCurrency = "";
+	this.setHouseholdIncomeCurrency = setHouseholdIncomeCurrency;
+	this.getHouseholdIncomeCurrency = getHouseholdIncomeCurrency;
+	
+	this.itemCategory = "";
+	this.setItemCategory = setItemCategory;
+	this.getItemCategory = getItemCategory;
+	
+	this.merchantPromotionCode = "";
+	this.setMerchantPromotionCode = setMerchantPromotionCode;
+	this.getMerchantPromotionCode = getMerchantPromotionCode;
+	
+	this.preapprovalNumber = "";
+	this.setPreapprovalNumber = setPreapprovalNumber;
+	this.getPreapprovalNumber = getPreapprovalNumber;
+	
+	this.productDeliveryTypeIndicator = "";
+	this.setProductDeliveryTypeIndicator = setProductDeliveryTypeIndicator;
+	this.getProductDeliveryTypeIndicator = getProductDeliveryTypeIndicator;
+	
+	this.residenceStatus = "";
+	this.setResidenceStatus = setResidenceStatus;
+	this.getResidenceStatus = getResidenceStatus;
+	
+	this.tcVersion = "";
+	this.setTcVersion = setTcVersion;
+	this.getTcVersion = getTcVersion;
+	
+	this.yearsAtCurrentResidence = "";
+	this.setYearsAtCurrentResidence = setYearsAtCurrentResidence;	
+	this.getYearsAtCurrentResidence = getYearsAtCurrentResidence;
+	
+	this.yearsWithCurrentEmployer = "";
+	this.setYearsWithCurrentEmployer = setYearsWithCurrentEmployer;
+	this.getYearsWithCurrentEmployer = getYearsWithCurrentEmployer;
+	
+	this.employerStreet1 = "";
+	this.setEmployerStreet1 = setEmployerStreet1;
+	this.getEmployerStreet1 = getEmployerStreet1;
+	
+	this.employerStreet2 = "";
+	this.setEmployerStreet2 = setEmployerStreet2;
+	this.getEmployerStreet2 = getEmployerStreet2;
+	
+	this.employerCity = "";
+	this.setEmployerCity = setEmployerCity;
+	this.getEmployerCity = getEmployerCity;
+	
+	this.employerCompanyName = "";
+	this.setEmployerCompanyName = setEmployerCompanyName;
+	this.getEmployerCompanyName = getEmployerCompanyName;
+	
+	this.employerCountry = "";
+	this.setEmployerCountry = setEmployerCountry;
+	this.getEmployerCountry = getEmployerCountry;
+	
+	this.employerPhoneNumber = "";
+	this.setEmployerPhoneNumber = setEmployerPhoneNumber;
+	this.getEmployerPhoneNumber = getEmployerPhoneNumber;
+	
+	this.employerPhoneType = "";
+	this.setEmployerPhoneType = setEmployerPhoneType;
+	this.getEmployerPhoneType = getEmployerPhoneType;
+	
+	this.employerState = "";
+	this.setEmployerState = setEmployerState;
+	this.getEmployerState = getEmployerState;
+	
+	this.employerPostalCode = "";
+	this.setEmployerPostalCode = setEmployerPostalCode;
+	this.getEmployerPostalCode = getEmployerPostalCode;
+	
+	this.shipToPhoneType = "";
+	this.setShipToPhoneType = setShipToPhoneType;
+	this.getShipToPhoneType = getShipToPhoneType;
+	
+	this.billToPhoneType = "";
+	this.setBillToPhoneType = setBillToPhoneType;
+	this.getBillToPhoneType = getBillToPhoneType;
+}
+
+function setCustomerBillingAddressChange(value){
+	this.customerBillingAddressChange = value;
+}		
+function getCustomerBillingAddressChange(){
+	return this.customerBillingAddressChange;
+}		
+function setCustomerEmailChange(value){
+	this.customerEmailChange = value;
+}		
+function getCustomerEmailChange(){
+	return this.customerEmailChange;
+}		
+function setCustomerHasCheckingAccount(value){
+	this.customerHasCheckingAccount = value;
+}		
+function getCustomerHasCheckingAccount(){
+	return this.customerHasCheckingAccount;
+}		
+function setCustomerHasSavingsAccount(value){
+	this.customerHasSavingsAccount = value;
+}		
+function getCustomerHasSavingsAccount(){
+	return this.customerHasSavingsAccount;
+}		
+function setCustomerPasswordChange(value){
+	this.customerPasswordChange = value;
+}		
+function getCustomerPasswordChange(){
+	return this.customerPasswordChange;
+}		
+function setCustomerPhoneChange(value){
+	this.customerPhoneChange = value;
+}		
+function getCustomerPhoneChange(){
+	return this.customerPhoneChange;
+}		
+function setCustomerRegistrationDate(value){
+	this.customerRegistrationDate = value;
+}		
+function getCustomerRegistrationDate(){
+	return this.customerRegistrationDate;
+}		
+function setCustomerTypeFlag(value){
+	this.customerTypeFlag = value;
+}		
+function getCustomerTypeFlag(){
+	return this.customerTypeFlag;
+}
+function setGrossHouseholdIncome(value){
+	this.grossHouseholdIncome = value;
+}		
+function getGrossHouseholdIncome(){
+	return this.grossHouseholdIncome;
+}
+function setHouseholdIncomeCurrency(value){
+	this.householdIncomeCurrency = value;
+}		
+function getHouseholdIncomeCurrency(){
+	return this.householdIncomeCurrency;
+}
+function setItemCategory(value){
+	this.itemCategory = value;
+}		
+function getItemCategory(){
+	return this.itemCategory;
+}
+function setMerchantPromotionCode(value){
+	this.merchantPromotionCode = value;
+}		
+function getMerchantPromotionCode(){
+	return this.merchantPromotionCode;
+}
+function setPreapprovalNumber(value){
+	this.preapprovalNumber = value;
+}		
+function getPreapprovalNumber(){
+	return this.getPreapprovalNumber;
+}
+function setProductDeliveryTypeIndicator(value){
+	this.productDeliveryTypeIndicator = value;
+}		
+function getProductDeliveryTypeIndicator(){
+	return this.productDeliveryTypeIndicator;
+}
+function setResidenceStatus(value){
+	this.residenceStatus = value;
+}		
+function getResidenceStatus(){
+	return this.residenceStatus;
+}
+function setTcVersion(value){
+	this.tcVersion = value;
+}		
+function getTcVersion(){
+	return this.tcVersion;
+}
+function setYearsAtCurrentResidence(value){
+	this.yearsAtCurrentResidence = value;
+}		
+function getYearsAtCurrentResidence(){
+	return this.yearsAtCurrentResidence;
+}
+function setYearsWithCurrentEmployer(value){
+	this.yearsWithCurrentEmployer = value;
+}		
+function getYearsWithCurrentEmployer(){
+	return this.yearsWithCurrentEmployer;
+}
+function setEmployerStreet1(value){
+	this.employerStreet1 = value;
+}		
+function getEmployerStreet1(){
+	return this.employerStreet1;
+}
+function setEmployerStreet2(value){
+	this.employerStreet2 = value;
+}		
+function getEmployerStreet2(){
+	return this.employerStreet2;
+}
+function setEmployerCity(value){
+	this.employerCity = value;
+}		
+function getEmployerCity(){
+	return this.employerCity;
+}
+function setEmployerCompanyName(value){
+	this.employerCompanyName = value;
+}		
+function getEmployerCompanyName(){
+	return this.employerCompanyName;
+}
+function setEmployerCountry(value){
+	this.employerCountry = value;
+}		
+function getEmployerCountry(){
+	return this.employerCountry;
+}
+function setEmployerPhoneNumber(value){
+	this.employerPhoneNumber = value;
+}		
+function getEmployerPhoneNumber(){
+	return this.employerPhoneNumber;
+}
+function setEmployerPhoneType(value){
+	this.employerPhoneType = value;
+}		
+function getEmployerPhoneType(){
+	return this.employerPhoneType;
+}
+function setEmployerState(value){
+	this.employerState = value;
+}		
+function getEmployerState(){
+	return this.employerState;
+}
+function setEmployerPostalCode(value){
+	this.employerPostalCode = value;
+}		
+function getEmployerPostalCode(){
+	return this.employerPostalCode;
+}
+function setShipToPhoneType(value){
+	this.shipToPhoneType = value;
+}		
+function getShipToPhoneType(){
+	return this.shipToPhoneType;
+}
+function setBillToPhoneType(value){
+	this.billToPhoneType = value;
+}		
+function getBillToPhoneType(){
+	return this.billToPhoneType;
+}				

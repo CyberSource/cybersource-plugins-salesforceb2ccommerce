@@ -1,0 +1,59 @@
+/**
+*	CreateCyberSourcePaymentCardObject_UserData.ds
+*	This script creates the PaymentCard user data object and set it to CyberSourceCard output object.
+*
+*	@input accountNumber 	: String
+*	@input cardType 		: String
+*	@input expiryMonth 		: String
+*	@input expiryYear 		: String
+*	@input cvnNumber 		: String
+*
+*	@output CyberSourceCard	: Object
+*   @output error 			: String
+*   @output errorCode		: String
+*/
+importPackage( dw.system );
+
+importScript('int_cybersource:cybersource/Cybersource_Card_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var accounNumber : String = pdict.accountNumber;
+	var cardType : String = pdict.cardType;
+	var expiryMonth : String = pdict.expiryMonth;
+	var expiryYear : String = pdict.expiryYear;
+	var cvnNumber : String = pdict.cvnNumber;
+
+    var cardObject : Card_Object = new Card_Object();
+
+	if(!empty(accounNumber))
+		cardObject.setAccountNumber(accounNumber);
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Account Number is missing";
+		return PIPELET_ERROR;
+	}	
+
+	if(!empty(expiryMonth))
+		cardObject.setExpirationMonth(expiryMonth);
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Expiry Month is missing";
+		return PIPELET_ERROR;
+	}
+	
+	if(!empty(expiryYear))
+		cardObject.setExpirationYear(expiryYear);
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Expiry Year is missing";
+		return PIPELET_ERROR;
+	}
+	
+	cardObject.setCardType(cardType);
+	cardObject.setCvNumber(cvnNumber);
+	
+	pdict.CyberSourceCard = cardObject;
+
+    return PIPELET_NEXT;
+}

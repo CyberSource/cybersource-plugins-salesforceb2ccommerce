@@ -5,11 +5,11 @@
 *
 */
 importPackage( dw.system );
-importScript("cybersource/libCybersource.ds");
+var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
 
 function execute( args : PipelineDictionary ) : Number
 {
-	args.CybersourceHelper = getCybersourceHelper();
+	args.CybersourceHelper = libCybersource.getCybersourceHelper();
 	 
     return PIPELET_NEXT;
 }

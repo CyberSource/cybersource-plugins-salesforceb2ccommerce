@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/></isif></subject>
+<html>
+<head>
+<title>${Resource.msg('email.secureacceptancepostjob','cybersource',null)}</title>
+</head>
+<body>
+Total records picked for job processing <isprint value="${pdict.COResultCount}" />
+<isif condition="${!empty(pdict.alreadyUpdated)}">
+Orders already in updated state or not found are <br/>  ${pdict.alreadyUpdated.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.reviewOrders)}">
+Orders in REVIEW state are <br/> ${pdict.reviewOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.errorOccured)}">
+Merchant to proccess below orders manually are <br/> ${pdict.errorOccured.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.failOrders)}">
+Orders Failed are <br/> ${pdict.failOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.cancelOrders)}">
+Orders Cancelled are <br/> ${pdict.cancelOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.authorizeOrders)}">
+Orders Authorized are <br/> ${pdict.authorizeOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.reviewOrders)}">
+Orders Review are <br/> ${pdict.reviewOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.declineOrders)}">
+Orders Declined are <br/>  ${pdict.declineOrders.join('<br/>')}
+</isif>
+</body>
+</html>

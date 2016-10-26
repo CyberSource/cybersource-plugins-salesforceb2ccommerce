@@ -1,0 +1,677 @@
+'use strict';
+var ArrayList = require('dw/util/ArrayList');
+var Logger = require('dw/system/Logger');
+var Money = require('dw/value/Money');
+var dwsvc		= require ("dw/svc");
+var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+var Item_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_Item_Object'); 
+var numbersOnlyRegExp : RegExp = /\D/g;
+
+/**
+ * Function is used to test the Alipay payment method 
+ * @param RequestID : String , to initiate the request for Alipay
+ */
+
+
+function TestAlipayCheckStatusRequest( RequestID : String )
+{
+   	//create service stubs
+   	var CybersourceHelper = libCybersource.getCybersourceHelper();	
+   	var csReference = webreferences.CyberSourceTransaction;
+	//set alipay payment type to pass it as input in request
+	var alipayPaymentType : String = dw.system.Site.getCurrent().getCustomPreferenceValue('apPaymentType');
+	var serviceRequest  = new csReference.RequestMessage();
+	//call alipay check status service by passing required input parameters
+	CybersourceHelper.apCheckStatusService(serviceRequest,"test",RequestID,alipayPaymentType.value);
+	var serviceResponse = null;
+	//get the response in response object
+	try
+	{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}
+	catch(e)
+	{
+		Logger.getRootLogger().fatal("[TestFacade.ds] Error in AlipayCheckPaymentStatusRequest ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	//log the response in case of error scenario
+	if(empty(serviceResponse) || serviceResponse.status != "OK")
+	{
+		Logger.getRootLogger().fatal("[TestFacade.ds] AlipayCheckPaymentStatusRequest Error : null response");
+		return {error:true, errorMsg:"empty or error in test AlipayCheckPaymentStatusRequest response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	//set response values in local variables
+	var responseObject = {};
+	responseObject["RequestID"] = serviceResponse.requestID;
+	responseObject["RequestToken"] = serviceResponse.requestToken;
+	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["apCheckStatusReply"] = (null !== serviceResponse.apCheckStatusReply) ? "exists" : null;
+	if(null !== serviceResponse.apCheckStatusReply){
+		responseObject["ReconciliationID"] = serviceResponse.apCheckStatusReply.reconciliationID;
+		responseObject["PaymentStatus"] = serviceResponse.apCheckStatusReply.paymentStatus;
+		responseObject["ProcessorTransactionId"] = serviceResponse.apCheckStatusReply.processorTransactionID;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * Function is used to test the Alipay Initial request with the request amount and currency 
+ * @param purchaseTotals : Object , having amount and currency value.
+ */
+
+
+function TestAlipayInitiateRequest( purchaseTotals : Object )
+{
+	//set the order object, purchase object and return URL from pipeline dictionary
+   	var purchaseObject = purchaseTotals;
+   	var productName : String = "Test Product";
+   	var productDescription : String = "Test Description";
+   	//create service stubs
+   	var CybersourceHelper = libCybersource.getCybersourceHelper();	
+   	var csReference = webreferences.CyberSourceTransaction;
+	
+	//set alipay payment type to pass it as input in request
+	var alipayPaymentType : String = CybersourceHelper.getAlipayPaymentType();
+	var serviceRequest = new csReference.RequestMessage();
+	
+	//call alipay initiate service by passing required input parameters
+	CybersourceHelper.apInitiateService(serviceRequest,null,purchaseObject,productName,productDescription,"test",alipayPaymentType.value);
+	var serviceResponse = null;
+	//get the response in response object
+	try
+	{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}
+	catch(e)
+	{
+		Logger.getRootLogger().fatal("[TestFacade.ds] Error in AlipayInitiatePaymentRequest ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	//log the response in case of error scenario
+	if(empty(serviceResponse) || serviceResponse.status != "OK")
+	{
+		Logger.getRootLogger().fatal("[TestFacade.ds] AlipayInitiatePaymentRequest Error : null response");
+		return {error:true, errorMsg:"empty or error in test alipayInitiate response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	//set response values in pipeline dictionary
+	var responseObject = {};
+	responseObject["RequestID"] = serviceResponse.requestID;
+	responseObject["RequestToken"] = serviceResponse.requestToken;
+	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["apInitiateReply"] = (null !== serviceResponse.apInitiateReply) ? "exists" : null;
+	if(null !== serviceResponse.apInitiateReply){
+		responseObject["ReconciliationID"] = serviceResponse.apInitiateReply.reconciliationID;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * Function is used to test the credit card authorization service.
+ * @param purchaseTotals : Object , having amount and currency value.
+ * @param bill To : billing address of the order
+ * @param ship to : Shipping address of the order
+ * @param card : card details
+ */
+
+function TestCCAuth( billTo : Object, shipTo : Object, card : Object, purchaseTotals : Object)
+{
+	var Money = require('dw/value/Money');
+    var amount = new Money(2057.00,"USD");
+	var billToObject = billTo;
+	var shipToObject = shipTo;
+	var cardObject = card;
+	var purchaseObject = purchaseTotals;
+	
+	
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	
+	var csReference = webreferences.CyberSourceTransaction;
+
+	var serviceRequest = new csReference.RequestMessage();
+	var itemObject = new Item_Object();
+	itemObject.setUnitPrice(10,"000000.00","en_US");
+	itemObject.setId(1);
+	var itemObjects = new ArrayList();
+	itemObjects.add(itemObject);
+	
+	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billToObject,shipToObject,purchaseObject,cardObject,"test",CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
+	
+	/********************************/
+	/* DAV-related WebService setup */
+	/********************************/	
+	var enableDAV = CybersourceHelper.getDavEnable();
+	var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+	
+	if( enableDAV=='YES' ) {
+		var ignoreDAVResult = false;
+		if( approveDAV=='APPROVE' ) {
+			ignoreDAVResult = true;
+		}
+		CybersourceHelper.addDAVRequestInfo(serviceRequest,billToObject,shipToObject,ignoreDAVResult);
+	}
+	/* End of DAV WebService setup */
+	
+	/* AVS Service setup */
+	var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+	var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+	
+	CybersourceHelper.addAVSRequestInfo(serviceRequest,ignoreAVSResult,declineAVSFlags);
+	/* End of AVS Service setup */
+	
+		
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.error("[TestFacade.ds] Error in TestCCAuth request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		return {error:true, errorMsg:"empty or error in test ccauth response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+
+	var responseObject = {};
+	responseObject["RequestID"] = serviceResponse.requestID;
+	responseObject["RequestToken"] = serviceResponse.requestToken;
+	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["ccAuthReply"] = (null !== serviceResponse.ccAuthReply) ? "exists" : null;
+	if(null !== serviceResponse.ccAuthReply){
+		responseObject["AuthorizationAmount"] = serviceResponse.ccAuthReply.amount;
+		responseObject["AuthorizationReasonCode"] = serviceResponse.ccAuthReply.reasonCode.get();
+		responseObject["AuthorizationCode"] = serviceResponse.ccAuthReply.authorizationCode;
+		responseObject["AVSCode"] = serviceResponse.ccAuthReply.avsCode;
+		responseObject["AVSCodeRaw"] = serviceResponse.ccAuthReply.avsCodeRaw;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * Function is used to test the create subscription service.
+ * @param purchaseTotals : Object , having amount and currency value.
+ * @param bill To : billing address of the order
+ * @param card : card details
+ */
+function TestCreateSubscription( billTo : Object, card : Object, purchaseTotals : Object )
+{
+
+    var billToObject = billTo;
+	var cardObject = card;
+	var purchaseObject = purchaseTotals;
+	var returnObject = {};
+	
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	
+	var csReference = webreferences.CyberSourceTransaction;
+	var request = new csReference.RequestMessage();
+
+	CybersourceHelper.addPaySubscriptionCreateService(request, billToObject, purchaseObject, cardObject, "test");
+	
+	var response = null;
+	// send request
+	try{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		response = service.call(request);
+	}catch(e){
+		return {error:true, errorCode:"500", errorMsg:e.description};
+	}
+	
+	if(empty(response) || response.status != "OK"){
+		Logger.getRootLogger().fatal("[TestFacade.ds] TestCreateSubscription Error : null response");
+		return {error:true, errorMsg:"empty or error in test TestCreateSubscription response: "+response};
+	}
+	else
+	{
+		response = response.object;
+		if ( null != response.paySubscriptionCreateReply)
+		{
+			returnObject['SubscriptionIDToken'] = response.paySubscriptionCreateReply.subscriptionID;
+		}
+		returnObject['decision'] = response.decision;
+		returnObject['invalidField'] = response.invalidField;
+		returnObject['missingField'] = response.missingField;
+		returnObject['reasonCode'] = response.reasonCode;
+		returnObject['requestID'] = response.requestID;
+		returnObject['requestToken'] = response.requestToken;
+	}
+	return {success:true, response:returnObject};
+}
+
+/**
+ * Function is used to test the DAV request service.
+ * @param bill To : billing address of the order
+ * @param ship to : Shipping address of the order
+*/
+
+function TestDAVRequest( billTo : Object, shipTo : Object )
+{
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addDAVRequestInfo(serviceRequest,billTo,shipTo,false,"TEST123");
+
+	var serviceResponse = null;
+	// send request
+	try{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.error("[TestFacade.ds] Error in TestDAVCheck request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		return {error:true, errorMsg:"empty or error in TestDAVCheck response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	var responseObject = {};
+	responseObject["RequestID"] = serviceResponse.requestID;
+	responseObject["RequestToken"] = serviceResponse.requestToken;
+	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["DAVReasonCode"] = serviceResponse.reasonCode.get();
+	if( !empty(serviceResponse.missingField) ) {
+		responseObject["MissingFieldsArray"] = serviceResponse.missingField;
+	}
+	if( !empty(serviceResponse.invalidField) ) {
+		responseObject["InvalidFieldsArray"] = serviceResponse.invalidField;
+	}
+	responseObject["davReply"] = (null !== serviceResponse.davReply) ? "exists" : null;
+	if(null !== serviceResponse.davReply) {
+		responseObject["DAVReasonCode"] = serviceResponse.davReply.reasonCode.get();
+		if (!empty(serviceResponse.davReply.standardizedAddress1)){
+			var stdAddress : Object = new Object();
+			stdAddress.firstName = shipTo.firstName;
+			stdAddress.lastName = shipTo.lastName;
+			stdAddress.address1 = serviceResponse.davReply.standardizedAddress1;
+			stdAddress.address2 = serviceResponse.davReply.standardizedAddress2;
+			stdAddress.city = serviceResponse.davReply.standardizedCity;
+			//Defect fix: CYB-92 : DAV Country province code 
+			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && 
+					true === dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState")) {
+				stdAddress.state = serviceResponse.davReply.standardizedState;
+			} else if(!empty(shipTo.state))
+				stdAddress.state = shipTo.state;
+			else {
+				stdAddress.state = billTo.state;
+			}
+			stdAddress.postalCode = serviceResponse.davReply.standardizedPostalCode;
+			//Fix for CYB-91: DAV Country code 
+			stdAddress.country = serviceResponse.davReply.standardizedISOCountry;
+			responseObject["StandardizedAddress"] = stdAddress;
+		}
+	}
+	
+	switch (responseObject["DAVReasonCode"]) {
+		case 101:
+		case 102:
+		case 450:
+		case 451:
+		case 452:
+		case 453:
+		case 454:
+		case 455:
+		case 456:
+		case 457:
+		case 458:
+		case 459:
+		case 460:
+			responseObject["Result"] = "Declined"; 
+			break;
+		case 100:
+			responseObject["Result"] = "Authorized"; 
+			break;
+		default :
+			responseObject["Result"] = "Error"; 
+	}
+	
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * Function is used to test the on demand .
+ * @param purchaseTotals : Object , having amount and currency value.
+ * @param bill To : billing address of the order
+ * @param ship to : Shipping address of the order
+ * @param card : card details
+ */
+function TestOnDemandSubscription( subscriptionID : String, purchaseTotals : Object )
+{
+
+	var subscriptionID : String = subscriptionID;
+	var purchaseObject = purchaseTotals;
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addOnDemandSubscriptionInfo(subscriptionID, serviceRequest, purchaseObject, "test");
+	serviceRequest.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
+	serviceRequest.ccAuthService.run = true;	
+
+	var servieResponse = null;
+	// send request
+	try{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		servieResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(servieResponse) || servieResponse.status != "OK"){
+		return {error:true, errorMsg:servieResponse.status};
+	}
+	servieResponse = servieResponse.object;
+	var responseObject = {};
+	if(null!=servieResponse.ccAuthReply)
+	{
+		responseObject["ccAuthReply"] = servieResponse.ccAuthReply;
+		responseObject["amount"] = servieResponse.ccAuthReply.amount;
+		responseObject["authorizationCode"] = servieResponse.ccAuthReply.authorizationCode;
+		responseObject["authorizedDateTime"] = servieResponse.ccAuthReply.authorizedDateTime;
+		responseObject["processorResponse"] = servieResponse.ccAuthReply.processorResponse;
+		responseObject["reasonCode"] = servieResponse.ccAuthReply.reasonCode;
+		responseObject["reconciliationID"] = servieResponse.ccAuthReply.reconciliationID;
+		responseObject["decision"] = servieResponse.decision;
+		responseObject["requestID"] = servieResponse.requestID;
+		responseObject["requestToken"] = servieResponse.requestToken;
+	}
+	else
+	{
+		responseObject["decision"]= servieResponse.decision;
+		responseObject["requestID"] = servieResponse.requestID;
+		responseObject["requestToken"] = servieResponse.requestToken;
+		responseObject["reasonCode"] = servieResponse.reasonCode;
+		responseObject["invalidField"] = servieResponse.invalidField;
+		responseObject["missingField"] = servieResponse.missingField;
+	}
+	return {success:true, response:responseObject};
+}
+
+/**
+ * Function is used to test the Payer Auth Enroll check .
+ * @param CreditCard : Object having credit card details 
+ */
+function TestPayerAuthEnrollCheck( CreditCard : Object )
+{
+
+    var creditCard : dw.web.FormElement = CreditCard;
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addTestPayerAuthEnrollInfo(serviceRequest,creditCard);
+
+	var serviceResponse = null;
+	try{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+	serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.error("[TestFacade.ds] Error in TestPayerAuthEnrollCheck ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		return {error:true, errorMsg:"empty or error in test PAEnrollCheck response: "+serviceResponse};
+	}
+	
+	serviceResponse = serviceResponse.object;
+	var responseObject = {};
+	responseObject["PARequestID"] = serviceResponse.requestID;
+	responseObject["PARequestToken"] = serviceResponse.requestToken;
+	responseObject["PAReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["PADecision"] = serviceResponse.decision;
+	responseObject["payerAuthEnrollReply"] = serviceResponse.payerAuthEnrollReply != null ? "exists" : null;
+	if(serviceResponse.payerAuthEnrollReply != null){
+		responseObject["CommerceIndicator"] = serviceResponse.payerAuthEnrollReply.commerceIndicator;
+		responseObject["ProofXML"] = serviceResponse.payerAuthEnrollReply.proofXML;
+		responseObject["AcsURL"] = serviceResponse.payerAuthEnrollReply.acsURL;
+		responseObject["PAXID"] = serviceResponse.payerAuthEnrollReply.xid;
+		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
+		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * Function is used to test the validation of Payer Auth on basis of payer response .
+ * @param CreditCard : Object having credit card details 
+ * @param PaRes : response of payer 
+ */
+ 
+function TestPayerAuthValidation( PaRes : String, CreditCard : Object )
+{
+	var creditCard : dw.web.FormElement = CreditCard;
+    var signedPaRes : String = dw.util.StringUtils.trim(PaRes);
+	signedPaRes = signedPaRes.replace(/[^a-zA-Z0-9/+=]/g,"");
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	CybersourceHelper.addTestPayerAuthValidateInfo(serviceRequest,signedPaRes,creditCard);
+	var serviceResponse = null;
+	try{
+		Logger.debug("[PayerAuthValidation.ds] Sending PayerAuthValidation...");
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.error("[TestFacade.ds] Error in PayerAuthValidation request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		return {error:true, errorMsg:"empty or error in TestPayerAuthValidation response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	var responseObject = {};
+	responseObject["PAVRequestID"] = serviceResponse.requestID;
+	responseObject["PAVRequestToken"] = serviceResponse.requestToken;
+	responseObject["PAVReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["PAVDecision"] = serviceResponse.decision;
+	responseObject["payerAuthValidateReply"] = serviceResponse.payerAuthValidateReply != null ? "exists" : null;
+	if(serviceResponse.payerAuthValidateReply != null){
+		responseObject["PAVCommerceIndicator"] = serviceResponse.payerAuthValidateReply.commerceIndicator;
+		responseObject["PAVResult"] = serviceResponse.payerAuthValidateReply.authenticationResult;
+		responseObject["ECIRaw"] = serviceResponse.payerAuthValidateReply.eciRaw;
+		responseObject["ParesStatus"] = serviceResponse.payerAuthValidateReply.paresStatus;
+		responseObject["CAVV"] = serviceResponse.payerAuthValidateReply.cavv;
+		responseObject["PAVStatusMessage"] = serviceResponse.payerAuthValidateReply.authenticationStatusMessage;
+		responseObject["UCAFAuthenticationData"] = serviceResponse.payerAuthValidateReply.ucafAuthenticationData;
+		responseObject["UCAFCollectionIndicator"] = serviceResponse.payerAuthValidateReply.ucafCollectionIndicator;
+		responseObject["PAVXID"] = serviceResponse.payerAuthValidateReply.xid;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * Function is used to test the authorization of POS .
+ * @param card : Object having credit card details 
+ * @param purchaseTotals : Object having amount an dcurrency details 
+ * @param pos : Object having POS details 
+ */
+ 
+
+function TestPOSAuth( card : Object, purchaseTotals : Object, pos : Object)
+{
+	var location: String = session.forms.pos.storeLocation.htmlValue;
+	var cardObject = card;
+	var purchaseObject = purchaseTotals;
+	var posObject = pos;
+	
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addPOSAuthRequestInfo(serviceRequest, location, purchaseObject,cardObject,"POS",false, posObject);
+		
+	var serviceResponse = null;
+	// send request
+	try{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.pos"); 
+		var requestObj = {location:location,requestObj:serviceRequest};
+		serviceResponse = service.call(requestObj);
+	}catch(e){
+		Logger.error("[TestFacade.ds] Error in TestPOSAuth: {0}",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		return {error:true, errorMsg:"empty or error in test pos auth response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	var responseObject = {};
+	responseObject["RequestID"] = serviceResponse.requestID;
+	responseObject["RequestToken"] = serviceResponse.requestToken;
+	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["MerchantReferenceCode"] = serviceResponse.merchantReferenceCode;
+	responseObject["ReceiptNumber"] = serviceResponse.receiptNumber;
+	responseObject["PurchaseTotalsCurrency"] = !empty(serviceResponse.purchaseTotals) ? serviceResponse.purchaseTotals.currency : "";
+	responseObject["invalidField"] = serviceResponse.invalidField;
+	responseObject["missingField"] = serviceResponse.missingField;
+	responseObject["ccAuthReply"] = serviceResponse.ccAuthReply != null ? "exists" : null;
+	if(serviceResponse.ccAuthReply != null){
+		responseObject["AuthReasonCode"] = Number(serviceResponse.ccAuthReply.reasonCode.get());
+		responseObject["AuthAmount"] = serviceResponse.ccAuthReply.amount;
+		responseObject["AuthCode"] = serviceResponse.ccAuthReply.authorizationCode;
+		responseObject["AVSCode"] = serviceResponse.ccAuthReply.avsCode;
+		responseObject["AVSCodeRaw"] = serviceResponse.ccAuthReply.avsCodeRaw;
+		responseObject["AuthCardGroup"] = serviceResponse.ccAuthReply.cardGroup;
+		responseObject["AuthCardCategory"] = serviceResponse.ccAuthReply.cardCategory;
+		responseObject["AuthPaymentTransID"] = serviceResponse.ccAuthReply.paymentNetworkTransactionID;
+		responseObject["AuthReconciliationID"] = serviceResponse.ccAuthReply.reconciliationID;
+		responseObject["AuthProcessorResponse"] = serviceResponse.ccAuthReply.processorResponse;	
+	}
+	if(serviceResponse.ccCaptureReply != null){
+		responseObject["CaptureAmount"] = serviceResponse.ccCaptureReply.amount;
+		responseObject["CaptureReconciliationID"] = serviceResponse.ccCaptureReply.reconciliationID;
+		responseObject["CaptureReasonCode"] = serviceResponse.ccCaptureReply.reasonCode.get();
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * This service is used to test the tax request and the service gived tax information in response.
+ * @param bill To : billing address of the order
+ * @param ship to : Shipping address of the order
+ * @param card : card details
+ * @param shipFrom : site preference shipping details
+ * @param itemArray : Array of Items purchased
+ * @param  itemMap : Map having rest Ids
+ * @param purchaseTotals : total of the amt with out gift card
+ */
+
+
+function TestTax( billTo : Object, shipTo : Object, card : Object, purchaseTotals : Object, shipFrom : Object, taxService : Object, itemArray : Array, 
+		itemMap : dw.util.ArrayList )
+{
+    var amount = new Money(2057.00,"USD");
+	var billToObject = billTo;
+	var shipToObject = shipTo;
+	var cardObject = card;
+	var purchaseObject = purchaseTotals;
+	
+	var csReference = webreferences.CyberSourceTransaction;
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	// create request body
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addTaxRequest(serviceRequest,billToObject,shipToObject,purchaseObject,cardObject,shipFrom,taxService,itemArray,"TEST123");
+	var serviceResponse = null;
+	// send request
+	try{
+		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	} catch(e) {
+		Logger.error("[TestFacade.ds] Error in TestTax request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		return {error:true, errorMsg:"empty or error in test ccauth response: "+serviceResponse};
+	}
+	serviceResponse= serviceResponse.object;
+	
+	var DAVReasonCode, TaxReply, resItem, totalTaxAmount, reasonCode;
+	var missingFields = "", invalidFields = "";
+	if( !empty(serviceResponse.davReply) ) {
+		DAVReasonCode = serviceResponse.davReply;
+	}
+
+	// in case of success update basket
+	if( serviceResponse.decision=="ACCEPT" ) {
+		TaxReply = libCybersource.copyTaxAmounts(serviceResponse.taxReply);
+		for each(resItem in serviceResponse.taxReply.item){
+			var lineItem = itemMap.get(resItem.id);
+			var itemTax = new Money(new Number((lineItem['class']=="dw.order.PriceAdjustment"?"-":"")+resItem.totalTaxAmount),"USD");
+			lineItem.setTax(itemTax);
+			//lineItem.setGrossPrice(lineItem.netPrice.add(itemTax));
+			lineItem.setGrossPrice(lineItem.netPrice+=itemTax);
+		}
+		totalTaxAmount = serviceResponse.taxReply.totalTaxAmount;
+		reasonCode = serviceResponse.reasonCode;
+	} else if( serviceResponse.decision=="REJECT" ) {
+		if( null!=serviceResponse.missingField ) {
+			for(var i : Number = 0; i < serviceResponse.missingField.length; i++){
+				missingFields += serviceResponse.missingField[i];
+			}
+		}
+		if( null!=serviceResponse.invalidField ) {
+			for(var i : Number = 0; i < serviceResponse.invalidField.length; i++){
+				invalidFields += serviceResponse.invalidField[i];
+			}
+		}
+		Logger.error("[TestFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",serviceResponse.reasonCode,serviceResponse.requestToken,missingFields,invalidFields);
+		reasonCode = serviceResponse.reasonCode;
+	} else if( serviceResponse.decision == "ERROR" ) {
+		Logger.error("[TestFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",serviceResponse.reasonCode,serviceResponse.requestToken);
+		reasonCode = serviceResponse.reasonCode;
+	}
+
+	if( reasonCode==100 ) {
+		var responseObject = {};
+		responseObject["RequestID"] = serviceResponse.requestID;
+		responseObject["RequestToken"] = serviceResponse.requestToken;
+		responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+		responseObject["Decision"] = serviceResponse.decision;
+		responseObject["DAVReasonCode"] = DAVReasonCode;
+		responseObject["CybersourceShipTo"] = shipTo;
+		responseObject["shipFrom"] = shipFrom;
+		responseObject["CybersourceBillTo"] = billTo;
+		responseObject["MissingFieldsArray"] = missingFields;
+		responseObject["InvalidFieldsArray"] = invalidFields;
+		responseObject["TaxReply"] = TaxReply;
+		responseObject["TotalTaxAmount"] = totalTaxAmount;
+		return {success:true, serviceResponse:responseObject};
+	} else {
+		return {error:true, errorMsg:'reason code mismatch, reason code is '+reasonCode};
+	}
+}
+module.exports = {
+		TestCCAuth: TestCCAuth,
+		TestTax: TestTax,
+		TestAlipayCheckStatusRequest: TestAlipayCheckStatusRequest,
+		TestAlipayInitiateRequest: TestAlipayInitiateRequest,
+		TestPOSAuth: TestPOSAuth,
+		TestPayerAuthEnrollCheck: TestPayerAuthEnrollCheck,
+		TestPayerAuthValidation : TestPayerAuthValidation,
+		TestDAVRequest: TestDAVRequest,
+		TestOnDemandSubscription: TestOnDemandSubscription
+};

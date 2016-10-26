@@ -1,0 +1,13 @@
+<!--- TEMPLATENAME: serviceResponse.isml --->
+<iscontent type="application/html" charset="UTF-8" compact="true"/>
+
+<isif condition="${!empty(pdict.errorMessage)}"> 
+ <isprint value="${pdict.errorMessage}" />
+</isif> 
+
+Reason Code - <isprint value="${pdict.ReasonCode}" />
+Request ID - <isprint value="${pdict.RequestId}" />
+Request Token -<isprint value="${pdict.RequestToken}" />
+Authorization ID -<isprint value="${pdict.AuthorizationTransactionId}" />
+Authorize Amount -<isprint value="${pdict.AuthorizationAmount}" />
+Authorization Decision- <isprint value="${pdict.AuthorizationDecision}" />

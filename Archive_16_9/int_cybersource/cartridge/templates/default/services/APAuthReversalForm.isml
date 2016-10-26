@@ -1,0 +1,20 @@
+<iscomment>
+	This template will populate input fields of AP Authorization Reversal.
+</iscomment>
+<isinclude template="util/modules"/>
+<isif condition="${!empty(pdict.captureID)}">
+	<h2><center><b><u>V.me Authorization Capture API Test Page</u></b></center></h2><br/><br/>
+<iselse>
+<h2><center><b><u>V.me Authorization Reversal API Test Page</u></b></center></h2><br/><br/>
+</isif>
+<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.ap.htmlName}">
+	<isinputfield formfield="${pdict.CurrentForms.ap.apRequestID}" type="input"/>	
+	<isinputfield formfield="${pdict.CurrentForms.ap.currency}" type="select"/>
+	<isinputfield formfield="${pdict.CurrentForms.ap.amount}" type="input"/>	
+	<div class="form-row form-row-button">
+		<button type="submit" name="${pdict.CurrentForms.ap.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+			${Resource.msg('global.submit','locale',null)}
+		</button>
+		<INPUT TYPE="button" onClick="parent.location='${URLUtils.http('CybersourceUnitTesting-StartVme')}'" value="BACK"/>
+	</div>
+</form>

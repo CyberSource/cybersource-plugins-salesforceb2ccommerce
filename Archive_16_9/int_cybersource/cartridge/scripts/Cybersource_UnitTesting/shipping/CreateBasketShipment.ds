@@ -1,0 +1,31 @@
+/**
+*	 CreateBasketShipment.ds
+*	 This script creates the mock shipment data object and set it to Shipment output object.
+*
+*    @input Basket : dw.order.LineItemCtnr
+*    @output Shipment : dw.order.Shipment
+*
+*/
+importPackage( dw.system );
+importPackage(dw.order);
+importPackage(dw.util);
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	var basket : LineItemCtnr = pdict.Basket;
+	
+	//create a new shipment for the basket
+	var ns :  Shipment = basket.createShipment("Fixed_" + UUIDUtils.createUUID());
+	ns.setShippingMethod(ShippingMgr.getDefaultShippingMethod());
+	
+	//assign each product line item to the shipment
+	var plis : Iterator = basket.getAllProductLineItems().iterator();
+	
+	while(plis.hasNext()){
+		var pli : ProductLineItem = plis.next();	
+		pli.setShipment(ns);
+		}
+	pdict.Shipment = ns;	
+	return PIPELET_NEXT;
+}

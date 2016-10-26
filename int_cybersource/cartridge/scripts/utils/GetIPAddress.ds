@@ -1,0 +1,14 @@
+/**
+* Demandware Script File
+* To retrieve the IP Adreess
+*   @output IPAddress : String
+*
+*/
+var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
+function execute( args : PipelineDictionary ) : Number
+{
+    // write pipeline dictionary output parameter
+    args.IPAddress = CommonHelper.GetIPAddress();
+
+   return PIPELET_NEXT;
+}

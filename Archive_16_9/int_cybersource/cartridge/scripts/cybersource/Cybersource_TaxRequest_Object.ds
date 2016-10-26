@@ -1,0 +1,177 @@
+/**
+* Cybersource_TaxRequest_Object.ds.ds
+* This Object is used for the Cybersource Tax Request Service xsd
+*/
+function TaxService_Object() {
+	
+		this.nexus = "";
+		this.setNexus = setNexus;
+		this.getNexus = getNexus;
+		
+		this.noNexus = "";
+		this.setNoNexus = setNoNexus;
+		this.getNoNexus = getNoNexus;
+		
+		this.orderAcceptanceCity = "";
+		this.setOrderAcceptanceCity = setOrderAcceptanceCity;
+		this.getOrderAcceptanceCity = getOrderAcceptanceCity;
+		
+		this.orderAcceptanceCounty = "";
+		this.setOrderAcceptanceCounty = setOrderAcceptanceCounty;
+		this.getOrderAcceptanceCounty = getOrderAcceptanceCounty;
+		
+		this.orderAcceptanceCountry = "";
+		this.setOrderAcceptanceCountry = setOrderAcceptanceCountry;
+		this.getOrderAcceptanceCountry = getOrderAcceptanceCountry;
+		
+		this.orderAcceptanceState = "";
+		this.setOrderAcceptanceState = setOrderAcceptanceState;
+		this.getOrderAcceptanceState = getOrderAcceptanceState;
+		
+		this.orderAcceptancePostalCode = "";
+		this.setOrderAcceptancePostalCode = setOrderAcceptancePostalCode;
+		this.getOrderAcceptancePostalCode = getOrderAcceptancePostalCode;
+		
+		this.orderOriginCity = "";
+		this.setOrderOriginCity = setOrderOriginCity;
+		this.getOrderOriginCity = getOrderOriginCity;
+		
+		this.orderOriginCounty = "";
+		this.setOrderOriginCounty = setOrderOriginCounty;
+		this.getOrderOriginCounty = getOrderOriginCounty;
+
+		this.orderOriginCountry = "";
+		this.setOrderOriginCountry = setOrderOriginCountry;
+		this.getOrderOriginCountry = getOrderOriginCountry;
+
+		this.orderOriginState = "";
+		this.setOrderOriginState = setOrderOriginState;
+		this.getOrderOriginState = getOrderOriginState;
+
+		this.orderOriginPostalCode = "";
+		this.setOrderOriginPostalCode = setOrderOriginPostalCode;
+		this.getOrderOriginPostalCode = getOrderOriginPostalCode;
+		
+		this.sellerRegistration = "";
+		this.setSellerRegistration = setSellerRegistration;
+		this.getSellerRegistration = getSellerRegistration;
+		
+		this.buyerRegistration = "";
+		this.setBuyerRegistration = setBuyerRegistration;
+		this.getBuyerRegistration = getBuyerRegistration;
+		
+		this.middlemanRegistration = "";
+		this.setMiddlemanRegistration = setMiddlemanRegistration;
+		this.getMiddlemanRegistration = getMiddlemanRegistration;
+		
+		this.pointOfTitleTransfer = "";
+		this.setPointOfTitleTransfer = setPointOfTitleTransfer;
+		this.getPointOfTitleTransfer = getPointOfTitleTransfer;
+}
+
+
+function setNexus(value){
+	this.nexus = value;
+}		
+function getNexus(){
+	return this.nexus;
+}	
+function setNoNexus(value){
+	this.noNexus = value;
+}		
+function getNoNexus(){
+	return this.noNexus;
+}	
+	
+function setOrderAcceptanceCity(value){
+	this.orderAcceptanceCity = value;
+}		
+function getOrderAcceptanceCity(){
+	return this.orderAcceptanceCity;
+}	
+function setOrderAcceptanceCounty(value){
+	this.orderAcceptanceCounty = value;
+}		
+function getOrderAcceptanceCounty(){
+	return this.orderAcceptanceCounty;
+}	
+		
+function setOrderAcceptanceCountry(value){
+	this.orderAcceptanceCountry = value;
+}		
+function getOrderAcceptanceCountry(){
+	return this.orderAcceptanceCountry;
+}	
+function setOrderAcceptanceState(value){
+	this.orderAcceptanceState = value;
+}		
+function getOrderAcceptanceState(){
+	return this.orderAcceptanceState;
+}	
+function setOrderAcceptancePostalCode(value){
+	this.orderAcceptancePostalCode = value;
+}		
+function getOrderAcceptancePostalCode(){
+	return this.orderAcceptancePostalCode;
+}	
+function setOrderOriginCity(value){
+	this.orderOriginCity = value;
+}		
+function getOrderOriginCity(){
+	return this.orderOriginCity;
+}	
+
+function setOrderOriginCounty(value){
+	this.orderOriginCounty = value;
+}		
+function getOrderOriginCounty(){
+	return this.orderOriginCounty;
+}	
+function setOrderOriginCountry(value){
+	this.orderOriginCountry = value;
+}		
+function getOrderOriginCountry(){
+	return this.orderOriginCountry;
+}	
+function setOrderOriginState(value){
+	this.orderOriginState = value;
+}		
+function getOrderOriginState(){
+	return this.orderOriginState;
+}	
+function setOrderOriginPostalCode(value){
+	this.orderOriginPostalCode = value;
+}		
+function getOrderOriginPostalCode(){
+	return this.orderOriginPostalCode;
+}	
+function setSellerRegistration(value){
+	this.sellerRegistration = value;
+}		
+function getSellerRegistration(){
+	return this.sellerRegistration;
+}	
+function setBuyerRegistration(value){
+	this.buyerRegistration = value;
+}		
+function getBuyerRegistration(){
+	return this.buyerRegistration;
+}	
+function setMiddlemanRegistration(value){
+	this.middlemanRegistration = value;
+}		
+function getMiddlemanRegistration(){
+	return this.middlemanRegistration;
+}	
+function setPointOfTitleTransfer(value){
+	this.pointOfTitleTransfer = value;
+}		
+function getPointOfTitleTransfer(){
+	return this.pointOfTitleTransfer;
+}	
+		
+		
+		
+		
+
+

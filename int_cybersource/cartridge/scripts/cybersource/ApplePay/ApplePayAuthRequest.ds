@@ -1,0 +1,53 @@
+/**
+* Performs the authorization of the Apple Pay cards.
+*
+* @input Order : dw.order.LineItemCtnr The order used for Authorization
+* @input OrderNo : String The order no
+* @input IPAddress : String The client's IP address
+* @input PaymentData : Object The ApplePay payment Blob data
+* @input Cryptogram : String
+* @input NetworkToken : String
+* @input TokenExpirationMonth : String
+* @input TokenExpirationYear : String
+* @input CardType : String
+*
+* @output ServiceResponse : Object Service Response object
+* @output Decision : String The decision of the complete request, one of ACCEPT, REJECT, or ERROR
+* @output ErrorCode : String Custom Error code during processing 
+*/
+importPackage( dw.system );
+var ApplePayFacade = require('int_cybersource/cartridge/scripts/Facade/ApplePayFacade');
+var CardHelper = require('int_cybersource/cartridge/scripts/Helper/CardHelper');
+var PaymentInstrumentUtils = require('int_cybersource/cartridge/scripts/utils/PaymentInstrumentUtils');
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+	//**************************************************************************//
+	// read pipeline dictionary input parameter	
+	//**************************************************************************//    
+    var order = pdict.Order;
+    var orderNo : String = pdict.OrderNo;
+
+	var result;
+	if (!empty(pdict.PaymentData)) {
+		result = ApplePayFacade.ApplePayAPIAuthRequest(order, orderNo, pdict.IPAddress, pdict.PaymentData);
+	} else {
+		result = ApplePayFacade.ApplePayInAppAuthRequest(order, orderNo, pdict.IPAddress, pdict.Cryptogram, pdict.NetworkToken, 
+			pdict.TokenExpirationMonth, pdict.TokenExpirationYear, pdict.CardType);
+	}
+	if (result.error) {
+		Logger.error("[ApplePayAuthRequest.ds] error "+result.errorMsg);
+		pdict.ErrorCode = result.errorCode;
+		return PIPELET_ERROR;
+	}
+	
+	pdict.ServiceResponse = result.serviceResponse;
+		
+	//**************************************************************************//
+	// Process Response
+	//**************************************************************************//		
+	pdict.Decision = result.serviceResponse.Decision;
+	PaymentInstrumentUtils.UpdatePaymentTransactionCardAuthorize(CardHelper.getNonGCPaymemtInstument(order), result.serviceResponse);
+				
+    return PIPELET_NEXT;
+}

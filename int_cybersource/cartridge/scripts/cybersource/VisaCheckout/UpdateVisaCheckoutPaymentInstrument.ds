@@ -1,0 +1,27 @@
+/**
+ * UpdateVisaCheckoutPaymentInstrument.ds
+ * Update basket PaymentInstrument, PaymentTransaction, and BillingAddress.
+ *
+ * @input Basket : dw.order.Basket The basket
+ * @input VisaCheckoutPaymentData : Object The Visa Checkout decrypted payment data
+ * @input VisaCheckoutCallId : String The Visa Checkout callId (transaction id)
+ */
+importPackage( dw.order );
+var logger = require('dw/system/Logger');
+var PaymentInstrumentUtils = require('int_cybersource/cartridge/scripts/utils/PaymentInstrumentUtils');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	try {
+		// Retrieve the inputs
+		var visa = pdict.VisaCheckoutPaymentData;
+		var visaCheckoutCallId = pdict.VisaCheckoutCallId;
+		var basket = pdict.Basket;
+		
+		PaymentInstrumentUtils.UpdatePaymentInstrumentVisaDecrypt( basket, visa, visaCheckoutCallId );
+		return PIPELET_NEXT;
+	}
+	catch(err) {
+		logger.error('Error creating Visa Checkout payment instrument: {0}', err.message);
+		return PIPELET_ERROR;	
+	}
+}

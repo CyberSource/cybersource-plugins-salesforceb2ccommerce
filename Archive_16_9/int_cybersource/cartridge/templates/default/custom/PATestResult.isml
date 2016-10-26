@@ -1,0 +1,68 @@
+<iscomment>
+	This template will populate the PA Unit Test Results 
+</iscomment>
+Here is the AcsURL:
+<isprint value="${pdict.AcsURL}"><br>
+
+Here is the CommerceIndicator:
+<isprint value="${pdict.CommerceIndicator}"><br>
+
+Here is the PADecission:
+<isprint value="${pdict.PADecission}"><br>
+
+Here is the ProofXML:
+<isprint value="${pdict.ProofXML}"><br>
+
+Here is the ProxyPAN:
+<isprint value="${pdict.ProxyPAN}"><br>
+
+Here is the PAReasonCode:
+<isprint value="${pdict.PAReasonCode}"><br>
+
+Here is the PARequestID:
+<isprint value="${pdict.PARequestID}"><br>
+
+Here is the PARequestToken:
+<isprint value="${pdict.PARequestToken}"><br>
+
+Here is the PAXID:
+<isprint value="${pdict.PAXID}"><br>
+
+Here is the PAVResult:
+<isprint value="${pdict.PAVResult}"><br>
+
+Here is the PAVStatusMessage:
+<isprint value="${pdict.PAVStatusMessage}"><br>
+
+Here is the CAVV:
+<isprint value="${pdict.CAVV}"><br>
+
+Here is the PAVCommerceIndicator:
+<isprint value="${pdict.PAVCommerceIndicator}"><br>
+
+Here is the PAVDecision:
+<isprint value="${pdict.PAVDecision}"><br>
+
+Here is the ECIRaw:
+<isprint value="${pdict.ECIRaw}"><br>
+
+Here is the ParesStatus:
+<isprint value="${pdict.ParesStatus}"><br>
+
+Here is the PAVReasonCode:
+<isprint value="${pdict.PAVReasonCode}"><br>
+
+Here is the PAVRequestID:
+<isprint value="${pdict.PAVRequestID}"><br>
+
+Here is the PAVRequestToken:
+<isprint value="${pdict.PAVRequestToken}"><br>
+
+Here is the UCAFAuthenticationData:
+<isprint value="${pdict.UCAFAuthenticationData}"><br>
+
+Here is the UCAFCollectionIndicator:
+<isprint value="${pdict.UCAFCollectionIndicator}"><br>
+
+Here is the PAVXID:
+<isprint value="${pdict.PAVXID}"><br>

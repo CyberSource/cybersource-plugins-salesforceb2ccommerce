@@ -7,35 +7,10 @@
 *   @output CyberSourcePurchaseTotals : Object
 *
 */
-importPackage( dw.system );
-importPackage( dw.util);
-importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+var TestHelper = require('int_cybersource/cartridge/scripts/Helper/TestHelper');
 function execute( pdict : PipelineDictionary ) : Number
 {  
-    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
-			
-	/**
-	* It is mandatory for all Vme services.
-	* 
-	**/ 
-	if(pdict.currency != null) {
-		purchaseObject.setCurrency(pdict.currency);
-	} else {
-		purchaseObject.setCurrency("USD");
-	}
-	/***
-	 * It is mandatory for Vme confirm purchase (The actual total amount of an order required here), Vme Transaction Details, optional for all services
-	 * 
-	 **/
-	if(pdict.amount != null){ 
-		var amount : Number = new Number(pdict.amount);
-	} else {
-		var amount : Number = new Number("200.00");
-	}
-		
-	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
-    
-    pdict.CyberSourcePurchaseTotals = purchaseObject;
+    pdict.CyberSourcePurchaseTotals = TestHelper.CreateCyberSourcePurchaseTotalsObject({currency:pdict.currency, amount :pdict.amount}).purchaseTotals;
     
     return PIPELET_NEXT;
 }

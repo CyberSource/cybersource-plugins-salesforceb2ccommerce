@@ -1,0 +1,21 @@
+/**
+* Demandware Script File
+* To validate billing address form fields server side validation
+*
+*  	@output ERRORCODE : Array
+*
+*/
+importPackage( dw.system );
+var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var result = CommonHelper.validateBillingAddress();
+	if(result.error) {
+		args.ERRORCODE = result.errorMsg;
+		return PIPELET_ERROR;
+	}
+	else {
+		return PIPELET_NEXT;
+	}
+}

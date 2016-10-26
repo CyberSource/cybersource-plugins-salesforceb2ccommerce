@@ -5,21 +5,11 @@
 *    @output CybersourceShipFrom : Object
 *
 */
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.rpc );
-importPackage( dw.util );
-importPackage( dw.value);
-importScript('cybersource/Cybersource_ShipFrom_Object.ds');
+var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
+
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var shipFrom : ShipFrom_Object = new ShipFrom_Object();
-
-	shipFrom.setCity(Site.getCurrent().getCustomPreferenceValue("CsShipFromCity"));
-    shipFrom.setState(Site.getCurrent().getCustomPreferenceValue("CsShipFromStateCode"));
-    shipFrom.setPostalCode(Site.getCurrent().getCustomPreferenceValue("CsShipFromZipCode"));
-    shipFrom.setCountry(Site.getCurrent().getCustomPreferenceValue("CsShipFromCountryCode"));
-       
-    pdict.CybersourceShipFrom = shipFrom;
+	pdict.CybersourceShipFrom = CommonHelper.CreateCybersourceShipFromObject().shipFrom;
+      
     return PIPELET_NEXT;
 }

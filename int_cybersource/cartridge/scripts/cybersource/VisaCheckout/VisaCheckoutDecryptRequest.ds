@@ -1,0 +1,39 @@
+/**
+* VisaCheckoutDecryptRequest.ds
+*
+* Decrypts Visa Checkout payment data
+*
+*   @input TransactionReference : String Transaction Reference is basket UUID
+*   @input EncryptedPaymentData : Object Encrypted data returned from Visa Checkout
+*   @input EncryptedPaymentWrappedKey : String Encrypted Key returned from Visa Checkout
+*   @output VisaCheckoutDecryptedPaymentData : Object The decrypted output
+*
+*/
+var VisaCheckoutFacade = require('int_cybersource/cartridge/scripts/Facade/VisaCheckoutFacade');
+var logger = require('dw/system/Logger');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	try
+	{
+		var transactionReference = pdict.TransactionReference;
+		var encryptedPaymentData = pdict.EncryptedPaymentData;
+		var encryptedPaymentWrappedKey = pdict.EncryptedPaymentWrappedKey;
+		var output = VisaCheckoutFacade.VCDecryptRequest(transactionReference, encryptedPaymentWrappedKey, encryptedPaymentData);
+		if (output.error) {
+			return PIPELET_ERROR;
+		}
+		pdict.VisaCheckoutDecryptedPaymentData = output.serviceResponse;
+		
+		// check reason code in output
+		if (output.serviceResponse.ReasonCode != 100) {
+			logger.error("Error decrypting Visa Checkout payment: reason code not 100");
+			return PIPELET_ERROR;
+		}
+		return PIPELET_NEXT;
+	}
+	catch(err)
+	{
+		logger.error("Error decrypting Visa Checkout payment: {0}", err.message);
+		return PIPELET_ERROR;
+	}
+}

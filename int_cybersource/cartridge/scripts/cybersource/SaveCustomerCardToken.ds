@@ -1,0 +1,25 @@
+/**
+* SaveCustomerCardToken.ds
+* To save or update card information in customers account:
+*
+*   @input PaymentInstrument : dw.order.PaymentInstrument payment instrument to update.
+*   @input CustomerObj : dw.customer.Customer to update.
+*/
+importPackage( dw.system );
+var logger = require('dw/system/Logger');
+var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/Helper/SecureAcceptanceHelper');
+function execute( args : PipelineDictionary ) : Number
+{
+	try {
+	    // read pipeline dictionary input parameter
+		var paymentInstrument = args.PaymentInstrument;
+	    var customerObj = args.CustomerObj;
+	    // insert business logic here
+		secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
+		return PIPELET_NEXT;
+	}
+	catch(err) {
+		logger.error('Error creating SaveCustomerCardToken.ds payment instrument: {0}', err.message);
+		return PIPELET_ERROR;	
+	}
+}

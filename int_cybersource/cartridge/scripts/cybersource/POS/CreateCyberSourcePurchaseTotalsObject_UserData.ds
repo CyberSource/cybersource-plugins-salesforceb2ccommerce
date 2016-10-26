@@ -9,39 +9,22 @@
 *   @output error 						: String
 *   @output errorCode					: String
 */
-importPackage( dw.system );
-importPackage( dw.util);
-
-importScript('int_cybersource:cybersource/Cybersource_PurchaseTotals_Object.ds');
+var POSHelper = require('int_cybersource/cartridge/scripts/Helper/POSHelper');
 
 function execute( pdict : PipelineDictionary ) : Number
 {  
 	var currency : String = pdict.currency;
 	var amount : String = pdict.amount;
-		
-	var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
 	
-	if(empty(currency))
-		currency = Site.getCurrent().getDefaultCurrency();
-	
-	purchaseObject.setCurrency(currency);
-
-	var amount : Number = new Number(amount);
-	if(!empty(amount)){
-		if(isNaN(amount)){
-			pdict.errorCode = "102";
-			pdict.error = "Amount value is invalid";
+	var result = POSHelper.CreateCyberSourcePurchaseTotalsObject_UserData(amount,currency);
+		if(result.error)
+		{
+			pdict.errorCode = result.errorCode;
+			pdict.error = result.errorMsg;
 			return PIPELET_ERROR;
 		}
-		purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
-	}
-	else{
-		pdict.errorCode = "101";
-		pdict.error = "Amount value is missing";
-		return PIPELET_ERROR;
-	}
-    
-    pdict.CyberSourcePurchaseTotal = purchaseObject;
+
+			pdict.CyberSourcePurchaseTotal = result.purchaseObject;
     
     return PIPELET_NEXT;
 }

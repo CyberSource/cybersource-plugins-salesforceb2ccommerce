@@ -1,0 +1,59 @@
+/**
+*	CreateCyberSourcePaymentCardObject_UserData.ds
+*	This script creates the PaymentCard user data object and set it to CyberSourceCard output object.
+*
+*	@input firstName : String
+*	@input lastName : String
+*	@input accountNumber : String
+*	@input cardType : String
+*	@input expiryMonth : String
+*	@input expiryYear : String
+*	@input cvnNumber : String
+*	@output CyberSourceCard : Object
+*/
+importPackage( dw.system );
+importScript('int_cybersource:cybersource/Cybersource_Card_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var fullName : String = pdict.firstName +" " + pdict.lastName;
+	var accounNumber : String = pdict.accountNumber;
+	var cardType : String = pdict.cardType;
+	var expiryMonth : String = pdict.expiryMonth;
+	var expiryYear : String = pdict.expiryYear;
+	var cvnNumber : String = pdict.cvnNumber;
+
+    var cardObject : Card_Object = new Card_Object();
+	cardObject.setAccountNumber(accounNumber);	
+	cardObject.setCardType(returnCardType(cardType));
+	cardObject.setFullName(fullName);
+	cardObject.setExpirationMonth(expiryMonth);
+	cardObject.setExpirationYear(expiryYear);
+	cardObject.setCvNumber(cvnNumber);
+	
+	pdict.CyberSourceCard = cardObject;
+	
+
+    return PIPELET_NEXT;
+}
+
+function returnCardType (cardType : String) : String {
+		var cardTypeNew = "";
+	switch(cardType){
+				case "Visa": 
+					cardTypeNew="001";
+					break;
+				case "MasterCard": 
+					cardTypeNew="002";
+					break;
+				case "Amex": 
+					cardTypeNew="003";
+					break;
+				case "Discover": 
+					cardTypeNew="004";
+					break;
+				case "Maestro": 
+					cardTypeNew="042";
+					break;
+			}
+			return cardTypeNew;
+}

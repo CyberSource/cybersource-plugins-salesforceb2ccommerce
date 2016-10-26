@@ -1,0 +1,27 @@
+/**
+* ButtonSettings.ds
+* Visa Checkout Button settings from site preferences in query string form.
+* @output VisaCheckoutButtonQueryString : String The settings for the Visa Checkout button in form of query string including button URL
+* @output VisaCheckoutTellMeMoreActive : Boolean Tell me more active as per site preference.
+*/
+var Logger = require('dw/system/Logger');
+var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/Helper/VisaCheckoutHelper');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	try
+	{
+		//set the response header (X-FRAME-OPTIONS) to prevent clickjacking
+		response.addHttpHeader("X-FRAME-OPTIONS","SAMEORIGIN");
+		
+		var result = VisaCheckoutHelper.GetButtonDisplaySettings();
+	    pdict.VisaCheckoutButtonQueryString = result.ButtonDisplayURL;
+	    pdict.VisaCheckoutTellMeMoreActive = result.TellMeMoreActive;
+	
+	    return PIPELET_NEXT;
+	}
+	catch(err)
+	{
+		Logger.error("Error retriveing Visa Checkout button settings: {0}", err.message);
+		return PIPELET_ERROR;	
+	}
+}

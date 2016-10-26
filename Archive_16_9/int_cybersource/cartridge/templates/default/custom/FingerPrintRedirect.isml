@@ -1,0 +1,7 @@
+<iscomment>
+	This template is used to redirect the pipeline 
+</iscomment>
+<isinclude url="${URLUtils.url('Cybersource-IncludeDigitalFingerprint')}"/>
+<script type="text/JavaScript">
+      setTimeout("location.href = '${URLUtils.url('CybersourceUnitTesting-TestCCAuth')}';",3000);
+ </script>

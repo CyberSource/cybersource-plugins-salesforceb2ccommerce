@@ -1,0 +1,4 @@
+<iscomment>
+	This template is used to set the status of page, 500 for failure 
+</iscomment>
+<isstatus value="500"/>

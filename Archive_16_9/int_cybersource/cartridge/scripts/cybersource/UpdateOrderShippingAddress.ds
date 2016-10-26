@@ -1,0 +1,40 @@
+/**
+* Update the Order default shipping Address & billing address.
+*
+* @input StandardizedAddress : Object Contains any 'corrections' made to the address from standards point of view
+* @input Basket : dw.order.LineItemCtnr The Order Object used to Update the default Shipping Address
+* @input useAsBillingAddress : Boolean Check if user selected billing address as same as shipping address, Update Billing Address as well
+* 
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var shippingAddress : OrderAddress = pdict.Basket.defaultShipment.shippingAddress;	
+	var stdAddress : Object = pdict.StandardizedAddress;	
+	shippingAddress.setAddress1(stdAddress.address1);				
+	shippingAddress.setAddress2(stdAddress.address2);			
+	//shippingAddress.setPhone(stdAddress.phone);			
+	shippingAddress.setCity(stdAddress.city);			
+	shippingAddress.setStateCode(stdAddress.state);			
+	shippingAddress.setCountryCode(stdAddress.country);			
+	shippingAddress.setPostalCode(stdAddress.postalCode);			
+	shippingAddress.setFirstName(stdAddress.firstName);			
+	shippingAddress.setLastName(stdAddress.lastName);
+	
+	if(pdict.useAsBillingAddress == true)
+	{
+		var billingAddress : OrderAddress = pdict.Basket.billingAddress;
+		billingAddress.setAddress1(stdAddress.address1);
+		billingAddress.setAddress2(stdAddress.address2);
+		billingAddress.setCity(stdAddress.city);
+		billingAddress.setStateCode(stdAddress.state);			
+		billingAddress.setCountryCode(stdAddress.country);			
+		billingAddress.setPostalCode(stdAddress.postalCode);			
+		billingAddress.setFirstName(stdAddress.firstName);			
+		billingAddress.setLastName(stdAddress.lastName);	
+	} 
+   return PIPELET_NEXT;
+}

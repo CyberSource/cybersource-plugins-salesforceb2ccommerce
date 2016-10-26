@@ -1,0 +1,26 @@
+/**
+*	CreateCybersourceTaxationPurchaseTotalsObject.ds
+*	This script creates the Taxation Purchase Totals Object and set it to CybersourcePurchaseTotals output object.
+*
+*	 @input Basket : dw.order.LineItemCtnr	
+*    @output CybersourcePurchaseTotals : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+importPackage( dw.order);
+importPackage( dw.value);
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : LineItemCtnr = pdict.Basket;
+  
+    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
+	var amount : Money = basket.totalGrossPrice;
+	purchaseObject.setCurrency(basket.getCurrencyCode());
+
+    pdict.CybersourcePurchaseTotals = purchaseObject;
+    
+    return PIPELET_NEXT;
+}

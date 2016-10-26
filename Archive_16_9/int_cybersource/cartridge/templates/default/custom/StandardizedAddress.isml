@@ -1,0 +1,12 @@
+<!--- TEMPLATENAME: BillingAddress.isml --->
+<iscomment>
+	This template will populate the Unit Test result of Standardized Address 
+</iscomment>
+${pdict.StandardizedAddress.firstName} ${pdict.StandardizedAddress.lastName}<br/>
+${pdict.StandardizedAddress.address1}<br/>
+<isif condition="${!empty(pdict.StandardizedAddress.address2)}">
+	${pdict.StandardizedAddress.address2}<br/>
+</isif>
+${pdict.StandardizedAddress.city}, ${pdict.StandardizedAddress.state} ${pdict.StandardizedAddress.country}<br/>
+${pdict.StandardizedAddress.postalCode}<br/><br/>
+

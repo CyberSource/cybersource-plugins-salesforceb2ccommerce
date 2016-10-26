@@ -1,0 +1,28 @@
+/**
+*	CreateCybersourceShipToObject.ds
+*	This script creates the ShipTo data object and set it to CyberSourceShipTo output object.
+*
+*    @output CyberSourceShipTo : Object
+*
+*/
+importPackage( dw.system );
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+   var shipToObject : ShipTo_Object = new ShipTo_Object();
+	shipToObject.setTitle("This is the Title");
+	shipToObject.setFirstName("Donald");
+	shipToObject.setLastName("Rivard");
+	shipToObject.setStreet1("131 Dartmouth Streetd");
+	shipToObject.setCity("Boston");
+	shipToObject.setState("MA");
+	shipToObject.setPostalCode("02116");
+	shipToObject.setCountry("US");
+	shipToObject.setPhoneNumber("777-777-7777");
+	shipToObject.setEmail("drivard@demandware.com");
+	shipToObject.setShippingMethod("Bills Shipping");
+	pdict.CyberSourceShipTo = shipToObject;
+
+    return PIPELET_NEXT;
+}

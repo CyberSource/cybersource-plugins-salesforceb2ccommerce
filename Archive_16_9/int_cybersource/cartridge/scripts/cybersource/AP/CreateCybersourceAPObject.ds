@@ -1,0 +1,59 @@
+/**
+*	 CreateCybersourceAPObject.ds
+*	 This script creates the APObject data object and set it to CybersourceAP output object.
+*	 @input orderID : String
+*	 @input Basket : dw.order.LineItemCtnr
+*    @output CybersourceAPObject : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.util );
+importPackage( dw.value);
+importScript('cybersource/Cybersource_AP_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var apObject : AP_Object= new AP_Object();
+	var basket : LineItemCtnr = pdict.Basket;	
+	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return PIPELET_ERROR;
+	}
+	apObject.setCustomerRepresentativeID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
+	apObject.setOrderID(pdict.orderID);
+	var amount : Money = new Money(0,basket.currencyCode);
+    if(null != basket) {
+    	var ccPaymentInstruments = basket.getPaymentInstruments();						
+		/**
+		* Product ID required by AP InitiateService, Purchase ID is optional for APInitiateService.
+		**/	
+		var _pli : Collection = basket.getProductLineItems();
+		if(_pli != null && _pli.length>0) {	
+			apObject.setProductID(_pli[0].productID);
+		}
+		else
+		{
+			apObject.setProductID("test");
+		}
+		for each (var pi : PaymentInstrument in ccPaymentInstruments) {
+    	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
+    	{
+    		amount = amount.add(pi.paymentTransaction.amount);
+    	}	 
+    }
+	/**
+	* These fields are used for Vme confirm purchase service. not mandatory for other Vme services. 
+	**/	
+	apObject.setSubtotalAmount(amount.value);
+	/*apObject.setShippingHandlingAmount(basket.adjustedShippingTotalPrice.value);	
+	apObject.setTaxAmount(basket.totalTax.value);	
+	apObject.setDiscountAmount(basket.getAdjustedMerchandizeTotalPrice(false).subtract(basket.getAdjustedMerchandizeTotalPrice(true)).value);*/
+	}
+			
+	pdict.CybersourceAPObject = apObject;
+    return PIPELET_NEXT;
+}

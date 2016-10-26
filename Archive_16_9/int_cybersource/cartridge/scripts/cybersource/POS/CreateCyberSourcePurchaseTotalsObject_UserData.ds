@@ -1,0 +1,47 @@
+/**
+*	CreateCyberSourcePurchaseTotalsObject_UserData.ds
+*	This script creates the PurchaseTotalsObject user data object and set it to CyberSourcePurchaseTotal output object.
+*
+*	@input 	currency 					: String
+*	@input 	amount 						: String
+*
+*   @output	CyberSourcePurchaseTotal	: Object
+*   @output error 						: String
+*   @output errorCode					: String
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+
+importScript('int_cybersource:cybersource/Cybersource_PurchaseTotals_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{  
+	var currency : String = pdict.currency;
+	var amount : String = pdict.amount;
+		
+	var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
+	
+	if(empty(currency))
+		currency = Site.getCurrent().getDefaultCurrency();
+	
+	purchaseObject.setCurrency(currency);
+
+	var amount : Number = new Number(amount);
+	if(!empty(amount)){
+		if(isNaN(amount)){
+			pdict.errorCode = "102";
+			pdict.error = "Amount value is invalid";
+			return PIPELET_ERROR;
+		}
+		purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
+	}
+	else{
+		pdict.errorCode = "101";
+		pdict.error = "Amount value is missing";
+		return PIPELET_ERROR;
+	}
+    
+    pdict.CyberSourcePurchaseTotal = purchaseObject;
+    
+    return PIPELET_NEXT;
+}

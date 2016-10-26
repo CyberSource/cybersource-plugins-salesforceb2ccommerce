@@ -6,21 +6,12 @@
 *    @output CybersourcePurchaseTotals : Object
 *
 */
-importPackage( dw.system );
-importPackage( dw.util);
-importPackage( dw.order);
-importPackage( dw.value);
-importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+var TaxHelper = require('int_cybersource/cartridge/scripts/Helper/TaxHelper');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var basket : LineItemCtnr = pdict.Basket;
-  
-    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
-	var amount : Money = basket.totalGrossPrice;
-	purchaseObject.setCurrency(basket.getCurrencyCode());
-
-    pdict.CybersourcePurchaseTotals = purchaseObject;
+	
+    pdict.CybersourcePurchaseTotals = TaxHelper.CreateCybersourceTaxationPurchaseTotalsObject(pdict.Basket).CybersourcePurchaseTotals;
     
     return PIPELET_NEXT;
 }

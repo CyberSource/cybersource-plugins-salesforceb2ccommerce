@@ -11,10 +11,10 @@ td {
 <iscomment>
 	This template will populate the test result of delete subscription
 </iscomment>
-<label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br>
-<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.reasonCode}"><br>
-<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.requestID}"><br>
-<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.requestToken}"><br/><br/><br/>
+<label><b>CyberCource Decision :</b></label><isprint value="${pdict.serviceResponse.decision}"><br>
+<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.serviceResponse.reasonCode}"><br>
+<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.serviceResponse.requestID}"><br>
+<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.serviceResponse.requestToken}"><br/><br/><br/>
 
 <b>To check for Subscription details, please log in to following link with your CyberSource Merchant ID and Password:</b><br/>
 <a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">CyberSource Test Account</a>

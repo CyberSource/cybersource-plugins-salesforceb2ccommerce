@@ -1,0 +1,61 @@
+<iscomment>
+	This template will populate the Unit Test result of Taxation
+</iscomment>
+<h1>Test Tax Unit Test</h1>
+<h2>Input Shipping To Address:</h2>
+<isset name="shipto" value="${pdict.CybersourceShipTo}" scope="pdict"/>
+<p><isinclude template="custom/ShippingAddress" /></p>
+<h2>Input Shipping From Address:</h2>
+<isset name="shipto" value="${pdict.shipFrom}" scope="pdict"/>
+<p><isinclude template="custom/ShippingAddress" /></p>
+<h2>Input Billing Address:</h2>
+<isset name="billto" value="${pdict.CybersourceBillTo}" scope="pdict"/>
+<p><isinclude template="custom/BillingAddress" /></p>
+<h2>Decision:</h2>
+<p>${pdict.Decision}</p>
+<h2>Request ID:</h2>
+<p>${pdict.RequestID}</p>
+<h2>Request Token:</h2>
+<p>${pdict.RequestToken}</p>
+<isif condition="${!empty(pdict.DAVReasonCode)}">
+<h2>DAV ReasonCode:</h2>
+<p>${pdict.DAVReasonCode}</p>
+</isif>
+<isif condition="${!empty(pdict.DAVReasonCode)}">
+<h2>Tax ReasonCode:</h2>
+<p>${pdict.ReasonCode}</p>
+</isif>
+<isif condition="${!empty(pdict.MissingFieldsArray)}">
+	<h2>Missing Fields:</h2>
+	<p><isloop items="${pdict.MissingFieldsArray}" var="MissingField" status="loopStat">
+		${MissingField}<isif condition="${!loopStat.last}">, </isif>
+	</isloop></p>
+</isif>
+<isif condition="${!empty(pdict.InvalidFieldsArray)}">
+	<h2>Invalid Fields:</h2>
+	<p><isloop items="${pdict.InvalidFieldsArray}" var="InvalidField" status="loopStat">
+		${InvalidField}<isif condition="${!loopStat.last}">, </isif>
+	</isloop></p>
+</isif>
+<isif condition="${!empty(pdict.StandardizedAddress)}">
+	<h2>Corrected Shipping Address:</h2>
+	<p><isinclude template="custom/StandardizedAddress" /></p>
+</isif>
+<h2>Items</h2>
+<ul>
+<isloop items="${pdict.TaxReply.item}" var="resItem" status="item_stat">
+			${resItem};
+</isloop>
+</ul>
+
+<h3>Item Subtotal: ${new dw.value.Money(pdict.TaxReply.grandTotalAmount-pdict.TaxReply.totalTaxAmount,"USD")}</h3>
+
+<h2>Tax Breakdown</h2>
+<ul>
+	<li>Total District Taxes: ${new dw.value.Money(pdict.TaxReply.totalDistrictTaxAmount,"USD")}</li>
+	<li>Total City Taxes: ${new dw.value.Money(pdict.TaxReply.totalCityTaxAmount,"USD")}</li>
+	<li>Total County Taxes: ${new dw.value.Money(pdict.TaxReply.totalCountyTaxAmount,"USD")}</li>
+	<li>Total State Taxes: ${new dw.value.Money(pdict.TaxReply.totalStateTaxAmount,"USD")}</li>
+</ul>
+<h3>Total Taxes: ${new dw.value.Money(pdict.TaxReply.totalTaxAmount,"USD")}</h3>
+<h3>Grand Total: ${new dw.value.Money(pdict.TaxReply.grandTotalAmount,"USD")}</h3>

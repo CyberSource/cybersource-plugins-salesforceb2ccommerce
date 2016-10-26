@@ -13,7 +13,7 @@
 * @output ReasonCode 							: Number The global reason code returned by Cybersource (100 = Success)
 * @output PurchaseTotalsCurrency 				: String
 
-* @output AuthorizationReasonCode 				: Number The auth reason code returned by Cybersource (100 = Success)
+* @output AuthorizationReasonCode 				: String The auth reason code returned by Cybersource (100 = Success)
 * @output AuthorizationAmount 					: String the amount authorized by Cybersource
 * @output AuthorizationCode 					: String the authorizationCode by Cybersource
 * @output AVSCode 								: String
@@ -31,103 +31,70 @@
 
 * @output InvalidField 							: Array
 * @output MissingField 							: Array
-
+* @output posAuthResponse 						: Object
 *
 */
 importPackage( dw.system );
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.rpc );
-importPackage( dw.util );
-importPackage( dw.value);
-
-importScript('cybersource/Cybersource_BillTo_Object.ds');
-importScript('cybersource/Cybersource_ShipTo_Object.ds');
-importScript('cybersource/Cybersource_Card_Object.ds');
-importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
-importScript('cybersource/Cybersource_POS_Object.ds');
-importScript('cybersource/libCybersource.ds');
-var dwsvc		= require ("dw/svc");
-var numbersOnlyRegExp : RegExp = /\D/g;
+var TestFacade = require('int_cybersource/cartridge/scripts/Facade/TestFacade');
 function execute( pdict : PipelineDictionary ) : Number
 {
 
 	var location: String = pdict.location;
-	var cardObject: Card_Object = pdict.card;
-	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
-	var posObject: Pos_Object = pdict.pos;
+	var cardObject = pdict.card;
+	var purchaseObject = pdict.purchaseTotals;
+	var posObject = pdict.pos;
 	
 	
-	var CybersourceHelper = getCybersourceHelper();
+	var result = TestFacade.TestPOSAuth(cardObject, purchaseObject, posObject);
 	
 	
-	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
-	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
-	
-	CybersourceHelper.setEndpoint(service);
-	
-	if(!CybersourceHelper.createPosHeader(service, location)){
+	if (result.error && result.errorMsg) {
 		return PIPELET_ERROR;
-	}*/
+	} 
+	
+	//**************************************************************************//
+	// Process Response
+	//**************************************************************************//		
+	
+	pdict.posAuthResponse = result.serviceResponse;
+	pdict.RequestID 								= result.serviceResponse.RequestID;
+	pdict.MerchantReferenceCode						= result.serviceResponse.MerchantReferenceCode;
+	pdict.Decision									= result.serviceResponse.Decision;
+	pdict.ReasonCode								= result.serviceResponse.ReasonCode;
 
-	var request = new csReference.RequestMessage();
+	if(null != result.serviceResponse.purchaseTotals)
+		pdict.PurchaseTotalsCurrency				= result.serviceResponse.PurchaseTotalsCurrency;
 	
-	CybersourceHelper.addPOSAuthRequestInfo(request, location, purchaseObject,cardObject,"POS",false, posObject);
-		
-	var response = null;
-	// send request
-	try{
-		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.pos"); 
-	var requestObj = {location:location,requestObj:request};
-		response = service.call(requestObj);
-	}catch(e){
-		Logger.error("[Test POS transaction TestPosAuth.ds] Error in request: {0}",e.message);
-		return PIPELET_ERROR;
+	if(null != result.serviceResponse.ccAuthReply) {
+		pdict.AuthorizationReasonCode				= result.serviceResponse.AuthorizationReasonCode;
+		pdict.AuthorizationAmount					= result.serviceResponse.AuthorizationAmount;
+		pdict.AuthorizationCode 					= result.serviceResponse.AuthorizationCode;
+		pdict.AVSCode								= result.serviceResponse.AVSCode;
+		pdict.AVSCodeRaw 							= result.serviceResponse.AVSCodeRaw;
+		pdict.AuthReplyProcessorResponse			= result.serviceResponse.AuthReplyProcessorResponse;
+		pdict.AuthReplyReconciliationID 			= result.serviceResponse.AuthReplyReconciliationID;
+		pdict.AuthReplyPaymentNetworkTransactionID	= result.serviceResponse.AuthReplyPaymentNetworkTransactionID;
+		pdict.AuthReplyCardCategory					= result.serviceResponse.AuthReplyCardCategory;
+		pdict.AuthReplyCardGroup					= result.serviceResponse.AuthReplyCardGroup;
 	}
 	
-	if(empty(response) || response.status != "OK"){
-		return PIPELET_ERROR;
-	}
-	response = response.object;
-	pdict.RequestID 								= response.requestID;
-	pdict.MerchantReferenceCode						= response.merchantReferenceCode;
-	pdict.Decision									= response.decision;
-	pdict.ReasonCode								= response.reasonCode.get();
-
-	if(!empty(response.purchaseTotals))
-		pdict.PurchaseTotalsCurrency				= response.purchaseTotals.currency;
-	
-	if(!empty(response.ccAuthReply)){
-		pdict.AuthorizationReasonCode				= response.ccAuthReply.reasonCode.get();
-		pdict.AuthorizationAmount					= response.ccAuthReply.amount;
-		pdict.AuthorizationCode 					= response.ccAuthReply.authorizationCode;
-		pdict.AVSCode								= response.ccAuthReply.avsCode;
-		pdict.AVSCodeRaw 							= response.ccAuthReply.avsCodeRaw;
-		pdict.AuthReplyProcessorResponse			= response.ccAuthReply.processorResponse;
-		pdict.AuthReplyReconciliationID 			= response.ccAuthReply.reconciliationID;
-		pdict.AuthReplyPaymentNetworkTransactionID	= response.ccAuthReply.paymentNetworkTransactionID;
-		pdict.AuthReplyCardCategory					= response.ccAuthReply.cardCategory;
-		pdict.AuthReplyCardGroup					= response.ccAuthReply.cardGroup;
+	if(null != result.serviceResponse.ccCaptureReply){
+		pdict.CaptureReplyReasonCode				= result.serviceResponse.CaptureReplyReasonCode;
+		pdict.CaptureReplyAmount					= result.serviceResponse.CaptureReplyAmount;
+		pdict.CaptureReplyReconciliationID			= result.serviceResponse.CaptureReplyReconciliationID;
 	}
 	
-	if(!empty(response.ccCaptureReply)){
-		pdict.CaptureReplyReasonCode				= response.ccCaptureReply.reasonCode;
-		pdict.CaptureReplyAmount					= response.ccCaptureReply.amount;
-		pdict.CaptureReplyReconciliationID			= response.ccCaptureReply.reconciliationID;
+	if(!empty(result.serviceResponse.receiptNumber)){
+		pdict.ReceiptNumber							= result.serviceResponse.receiptNumber;
 	}
 	
-	if(!empty(response.receiptNumber)){
-		pdict.ReceiptNumber							= response.receiptNumber;
-	}
-	
-	if(!empty(response.invalidField)){
-		pdict.InvalidField							= response.invalidField;
+	if(!empty(result.serviceResponse.invalidField)){
+		pdict.InvalidField							= result.serviceResponse.invalidField;
 	}
 
-	if(!empty(response.missingField)){
-		pdict.MissingField							= response.missingField;
+	if(!empty(result.serviceResponse.missingField)){
+		pdict.MissingField							= result.serviceResponse.missingField;
 	}
-
+	
     return PIPELET_NEXT;
 }

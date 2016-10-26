@@ -7,24 +7,23 @@
 *   @output CyberSourcePurchaseTotals : Object
 *
 */
-importPackage( dw.system );
-importPackage( dw.util);
-importScript('int_cybersource:cybersource/Cybersource_PurchaseTotals_Object.ds');
+var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
+
 function execute( pdict : PipelineDictionary ) : Number
 {  
 	var currency : String = pdict.currency;
-	var amount : String = pdict.amount;
+	var amount : Money = pdict.amount;
 	
-    var purchaseObject : PurchaseTotals_Object = new PurchaseTotals_Object();
-    
-	purchaseObject.setCurrency(currency);
-	
-	var amount : Number = new Number(amount);
-	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
-	
-	
-    
-    pdict.CyberSourcePurchaseTotals = purchaseObject;
+		
+	var result = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
+		if(result.error)
+		{
+			pdict.errorCode = result.errorCode;
+			pdict.error = result.errorMsg;
+			return PIPELET_ERROR;
+		}
+
+			pdict.CyberSourcePurchaseTotals = result.purchaseTotals;
     
     return PIPELET_NEXT;
 }

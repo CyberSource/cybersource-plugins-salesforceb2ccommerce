@@ -1,0 +1,27 @@
+/**
+* 	AlipaySetProductParameters.ds
+* 	This script set the value of product name and product description which is require
+* 	as input to pass in initiate payment service request.
+*
+* 	@input Order : dw.order.LineItemCtnr
+* 	@output paymentInstrument : dw.order.PaymentInstrument
+*
+*/
+importPackage( dw.system );
+var cardHelper = require('int_cybersource/cartridge/scripts/Helper/CardHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//get the order lineitem from order object
+	var order : LineItemCtnr = pdict.Order;
+
+		var result = cardHelper.getNonGCPaymemtInstument(order);
+			if(result !== null)
+			{
+				//set the product data into an object
+				pdict.paymentInstrument = result;
+			}
+	
+		return PIPELET_NEXT;
+}
+

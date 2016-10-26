@@ -1,0 +1,13 @@
+<iscomment>
+	This template is used to populate list of Test Available for Vme.
+</iscomment>
+<h2><center><b><u>V.me API Test Suite</u></b></center></h2><br/><br/>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeConfirmPurchase')}" >Test Vme Confirm Purchase</a><br/>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeAuth')}" >Test Vme Authorize</a><br/>
+(If the purchase has not been confirmed the authorization will be declined)
+<br>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeGetCheckoutDetails')}">Test Vme Get Checkout Details API</a><br/>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeAuthReversalRequest')}" >Test Vme Authorization Reversal API</a><br/>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeCaptureRequest')}">Test Vme Capture API Request</a><br/>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeRefundRequest')}">Test Vme Refund API Request</a><br/>
+<a href="${URLUtils.http('CybersourceUnitTesting-TestVmeInitiateService')}">Test Vme Initiate Service API Request</a><br/>

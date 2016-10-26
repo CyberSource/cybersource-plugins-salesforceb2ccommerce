@@ -114,6 +114,7 @@
                                   <key-binding alias="storeLocation" key="location"/>
                                   <key-binding alias="receiptNumber" key="ReceiptNumber"/>
                                   <key-binding alias="CreditCardStatus" key="Status"/>
+                                  <key-binding alias="posAuthResponse" key="posAuthResponse"/>
                                 </pipelet-node>
                                 <node-display x="0" y="1"/>
                                 <branch basename="b2" source-connector="error">
@@ -400,6 +401,7 @@
                 <key-binding alias="receiptNumber" key="ReceiptNumber"/>
                 <key-binding alias="CurrentForms.pos.storeLocation.htmlValue" key="location"/>
                 <key-binding alias="CybersourcePaymentCard" key="card"/>
+                <key-binding alias="posAuthResponse" key="posAuthResponse"/>
               </pipelet-node>
               <node-display x="0" y="1"/>
               <branch basename="b4" source-connector="error">
@@ -662,7 +664,7 @@
   <branch basename="TestAuthorizePOS">
     <segment>
       <node>
-        <start-node call-mode="public" name="TestAuthorizePOS" secure="true"/>
+        <start-node call-mode="private" name="TestAuthorizePOS" secure="true"/>
         <node-display x="1" y="10"/>
       </node>
       <simple-transition/>

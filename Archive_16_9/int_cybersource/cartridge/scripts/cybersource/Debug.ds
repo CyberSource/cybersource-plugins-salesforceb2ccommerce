@@ -1,0 +1,236 @@
+/**
+*	 Debug.ds
+	 Performs debug on taxation request
+	 
+*    @input OrderNo : String
+*    @input request : Object
+*    @input response : Object
+* 	 @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated
+* 	 @input  billTo : Object
+* 	 @input  shipTo : Object
+* 	 @input  card : Object
+* 	 @input  shipFrom : Object
+*    @input  itemArray: Array
+*    @input  itemMap : dw.util.List
+*    @input  purchaseTotals : Object
+*    @input  taxService : Object
+
+*/
+importPackage( dw.system );
+importPackage( dw.object);
+importPackage( dw.util);
+importPackage( dw.order);
+importScript('cybersource/Cybersource_BillTo_Object.ds');
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+importScript('cybersource/Cybersource_ShipFrom_Object.ds');
+importScript('cybersource/Cybersource_Card_Object.ds');
+importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
+importScript('cybersource/Cybersource_TaxRequest_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	var billToObject: BillTo_Object = pdict.billTo;
+	var shipToObject: ShipTo_Object = pdict.shipTo;
+	var cardObject: Card_Object = pdict.card;
+	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+	var itemArray : Array = pdict.itemArray;
+	var itemMap : List = pdict.itemMap;
+	var shipFrom : ShipFrom_Object = pdict.shipFrom;
+	var taxService : TaxService_Object = pdict.taxService;
+	var basket : LineItemCtnr = pdict.Basket;	
+	var orderno : String = pdict.OrderNo;	
+    var debug : Boolean = Site.getCurrent().getCustomPreferenceValue("CsDebugCybersource");
+	
+    if(debug == true && orderno != null){
+     var co : CustomObject = CustomObjectMgr.getCustomObject("cybersourceDebug",orderno);
+     	if(co == null){
+     		co = CustomObjectMgr.createCustomObject("cybersourceDebug",orderno);
+     		var txrq : String = getRequestString(billToObject,shipToObject,purchaseObject,cardObject,shipFrom,taxService,itemArray,basket.UUID);
+     		var txrsp : String = getResponseString(pdict.response);
+     		co.custom.TaxRequest=txrq;
+     		co.custom.TaxResponse=txrsp;
+	   	}
+	   	
+    } 
+    return PIPELET_NEXT;
+}
+
+function getResponseString(obj : Object){
+	var ret : String = new String();
+	ret += "reasonCode: " + obj.reasonCode;
+	ret += "\n"
+	ret += "currency: " + obj.taxReply.currency;
+	ret += "\n"
+	ret += "grandTotalAmount: " + obj.taxReply.grandTotalAmount;
+	ret += "\n"
+	ret += "totalCityTaxAmount: " + obj.taxReply.totalCityTaxAmount;
+	ret += "\n"
+	ret += "city: " + obj.taxReply.city;
+	ret += "\n"
+	ret += "totalCountyTaxAmount: " + obj.taxReply.totalCountyTaxAmount;
+	ret += "\n"
+	ret += "county: " + obj.taxReply.county;
+	ret += "\n"
+	ret += "totalDistrictTaxAmount: " + obj.taxReply.totalDistrictTaxAmount;
+	ret += "\n"
+	ret += "totalStateTaxAmount: "  + obj.taxReply.totalStateTaxAmount;
+	ret += "\n"
+	ret += "state: " + obj.taxReply.state;
+	ret += "\n"
+	ret += "totalTaxAmount: " + obj.taxReply.totalTaxAmount;
+	ret += "\n"
+	ret += "postalCode: " + obj.taxReply.postalCode;
+	ret += "\n"
+	if(obj.decision == "ACCEPT"){
+		var resItem;
+		ret += "decision: ACCEPT";
+		ret += "\n"
+		ret += "------------Item Tax ------------";
+		ret += "\n"
+		for each(resItem in obj.taxReply.item){
+			ret += "	item id: " + resItem.id;
+			ret += "\n"
+			ret += "	item cityTaxAmount: " + resItem.cityTaxAmount;
+			ret += "\n"
+			ret += "	item countyTaxAmount: " + resItem.countyTaxAmount;
+			ret += "\n"
+			ret += "	item districtTaxAmount: " + resItem.districtTaxAmount;
+			ret += "\n"
+			ret += "	item stateTaxAmount: " + resItem.stateTaxAmount;
+			ret += "\n"
+			ret += "	item totalTaxAmount: " + resItem.totalTaxAmount;
+			ret += "\n"
+	}
+	}
+return ret
+}
+
+function getRequestString(billTo : BillTo_Object, shipTo : ShipTo_Object, purchase : PurchaseTotals_Object, card : Card_Object, shipFrom : ShipFrom_Object, taxService : TaxService_Object, items : Array, refCode : String){
+var ret : String = new String();
+ret = "Merchant Reference Code : " + refCode;
+ret += "\n";
+for(name in billTo){
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+				value = billTo[name];
+				if(value != ""){
+					ret += "billto." + name + " :" + value;
+					ret +="\n";
+				}
+			}
+		}
+for(name in shipTo){
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+				value = shipTo[name];
+				if(value != ""){
+					ret += "shipto." + name + " :" + value;
+					ret +="\n";
+				}
+			}
+		}
+
+for(name in purchase){
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+				value = purchase[name];
+				if(value != ""){
+					ret += "purchase." + name + " :" + value;
+					ret +="\n";
+				}
+			}
+		}
+for(name in card){
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+				value = card[name];
+				if(value != ""){
+					ret += "card." + name + " :" + value;
+					ret +="\n";
+				}
+			}
+		}
+for(name in shipFrom){
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+				value = shipFrom[name];
+				if(value != ""){
+					ret += "shipfrom." + name + " :" + value;
+					ret +="\n";
+				}
+			}
+		}
+for(name in taxService){
+		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+				value = taxService[name];
+				if(value != ""){
+					ret += "taxService." + name + " :" + value;
+					ret +="\n";
+				}
+			}
+		}
+return ret;
+}
+
+/*
+function getAvailableFunctions( stub : Stub ) : ArrayList
+{
+	// var ccc : ArrayList = ["ASD"];
+	var ret : ArrayList = new ArrayList();
+	var std = getStdAttributes();
+	var xx : String;
+	for ( xx in stub )
+	{
+		if ( !std.contains( xx ) )
+			ret.add( new ArrayList( typeof stub[xx], xx ) );
+	}
+	return ret;
+}
+
+function getStdAttributes() : ArrayList
+{
+	// quare bracket has to go in the same line otherwise 
+	// the plain return statement will be considered as complete!
+	return	new ArrayList(
+		"_createCall", 
+		"_getCall", 
+		"_getProperty", 
+		"_getPropertyNames", 
+		"_getService", 
+		"_setProperty", 
+		"addAttachment", 
+		"attachments", 
+		"class", 
+		"clearAttachments", 
+		"clearHeaders", 
+		"equals", 
+		"extractAttachments", 
+		"getAttachments", 
+		"getClass", 
+		"getHeader", 
+		"getHeaders", 
+		"getPassword", 
+		"getPortName", 
+		"getResponseHeader", 
+		"getResponseHeaders", 
+		"getTimeout", 
+		"getUsername", 
+		"hashCode", 
+		"header", 
+		"headers", 
+		"maintainSession", 
+		"notify", 
+		"notifyAll", 
+		"password", 
+		"portName", 
+		"removeProperty", 
+		"responseHeaders", 
+		"setHeader", 
+		"setMaintainSession", 
+		"setPassword", 
+		"setPortName", 
+		"setTimeout", 
+		"setUsername", 
+		"timeout", 
+		"toString", 
+		"username", 
+		"wait"
+	);
+}
+*/

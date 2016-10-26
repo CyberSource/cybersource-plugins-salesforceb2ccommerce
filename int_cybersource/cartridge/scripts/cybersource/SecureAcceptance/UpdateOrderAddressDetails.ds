@@ -1,0 +1,29 @@
+/**
+* UpdateOrder_AddressDetails.ds
+* To update billing and shipping details of an order based on Site preference selection:
+*
+*	@input  order : dw.order.LineItemCtnr
+*	@input responseParametermap :Object
+*	@input isOverrideBilling :Boolean
+*	@input isOverrideShipping :Boolean
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util);
+var logger = require('dw/system/Logger');
+var PaymentInstrumentUtils = require('int_cybersource/cartridge/scripts/utils/PaymentInstrumentUtils');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var Order = pdict.order;
+	var responseMap = pdict.responseParametermap;
+
+			if(null != Order && null != responseMap){
+				var result = PaymentInstrumentUtils.UpdateOrderBillingShippingDetails(Order,responseMap,pdict.isOverrideShipping,pdict.isOverrideBilling);
+					if(result.success){
+						return PIPELET_NEXT;
+					}
+			}
+		
+		return PIPELET_ERROR;
+}

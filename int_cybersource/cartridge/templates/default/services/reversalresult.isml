@@ -11,20 +11,20 @@ td {
 <iscomment>
 	This template will populate Test result of reversal.
 </iscomment>
-<label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br>
-<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.reasonCode}"><br>
-<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.requestID}"><br>
-<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.requestToken}"><br/>
-<label><b>Amount :</b></label><isprint value="${pdict.amount}"><br/>
-<label><b>Authorization Code :</b></label><isprint value="${pdict.authorizationCode}"><br/>
-<label><b>Processor Response :</b></label><isprint value="${pdict.processorResponse}"><br/><br/><br/>
+<label><b>CyberCource Decision :</b></label><isprint value="${pdict.reversalResponse.Decision}"><br>
+<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.reversalResponse.ReasonCode}"><br>
+<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.reversalResponse.RequestID}"><br>
+<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.reversalResponse.RequestToken}"><br/>
+<label><b>Amount :</b></label><isprint value="${pdict.reversalResponse.ReversalAmount}"><br/>
+<label><b>Authorization Code :</b></label><isprint value="${pdict.reversalResponse.authorizationCode}"><br/>
+<label><b>Processor Response :</b></label><isprint value="${pdict.reversalResponse.processorResponse}"><br/><br/><br/>
 <label><b>CyberSource Response for Invalid Field :</b></label>
-<isloop items="${pdict.invalidField}" alias="invalidField">									
+<isloop items="${pdict.reversalResponse.invalidField}" alias="invalidField">									
 	<isprint value="${invalidField}">,
 </isloop>
 <br>
 <label><b>CyberSource Response for Missing Field :</b></label>
-<isloop items="${pdict.missingField}" alias="missingField">									
+<isloop items="${pdict.reversalResponse.missingField}" alias="missingField">									
 	<isprint value="${missingField}">,
 </isloop>
 <br>

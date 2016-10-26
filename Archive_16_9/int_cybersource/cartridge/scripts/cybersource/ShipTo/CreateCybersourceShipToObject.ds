@@ -1,0 +1,91 @@
+/**
+*	CreateCybersourceShipToObject.ds
+*	This script creates the ShipTo data object and set it to CybersourceBillTo output object.
+*
+*    @input Basket : dw.order.LineItemCtnr
+*    @output CybersourceBillTo : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.order );
+importScript('cybersource/Cybersource_ShipTo_Object.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : LineItemCtnr = pdict.Basket;
+	
+	var shipToObject: ShipTo_Object = new ShipTo_Object();
+	var shippingAddress : OrderAddress = basket.defaultShipment.shippingAddress;
+	var shippingMethod : ShippingMethod = basket.defaultShipment.shippingMethod;
+	var it : Iterator = basket.getShipments().iterator();
+	// TODO: This code purposely does not handle the case of
+	// multiple shipments per order
+	if(shippingAddress == null){
+		while(it.hasNext()){
+			var shipment : Shipment = it.next();
+			shippingAddress = shipment.getShippingAddress();
+			shippingMethod = shipment.getShippingMethod();
+			if(shippingAddress != null){
+				break;
+			}
+		}
+	}
+	if( !empty(shippingAddress) && !empty(basket) ) {
+		shipToObject.setFirstName(shippingAddress.firstName);
+		shipToObject.setLastName(shippingAddress.lastName);
+		shipToObject.setStreet1(shippingAddress.address1);
+		shipToObject.setStreet2(shippingAddress.address2);
+		shipToObject.setCity(shippingAddress.city);
+		shipToObject.setState(shippingAddress.stateCode);
+		shipToObject.setPostalCode(shippingAddress.postalCode);
+		shipToObject.setCountry(shippingAddress.countryCode);
+		shipToObject.setPhoneNumber(shippingAddress.phone);
+		shipToObject.setEmail(basket.customerEmail);		
+		//*****************************************************//
+		// ShippingMethod custom attribute CybersourceShippingID is used to fetch Cybersource Shipping method i.e. oneday, sameday, twoday etc.
+		// if merchant does not specify Cybersource Shipping Id whilie creating shipping methods within Business Manager, the switch statement
+		// fetch default shipping method available in Demandware's Site Genesis.  
+		//*****************************************************//
+		if( !empty(shippingMethod) ) 
+		{
+			if ( !empty(shippingMethod.custom.CybersouceShippingID.value) ) 
+			{
+				shipToObject.setShippingMethod(shippingMethod.custom.CybersouceShippingID.value);
+			} 
+			else
+			{
+				switch (shippingMethod.displayName)
+					{									
+						case "Overnight":
+						shipToObject.setShippingMethod("oneday");						
+						break;
+						case "Next Day":
+						shipToObject.setShippingMethod("oneday");						
+						break;
+						case "2-Day Express":
+						shipToObject.setShippingMethod("twoday");						
+						break;	
+						case "Super Saver":
+						shipToObject.setShippingMethod("threeday");						
+						break;		
+						case "Ground":
+						shipToObject.setShippingMethod("other");						
+						break;			
+						case "None":
+						shipToObject.setShippingMethod("none");						
+						break;
+						default:
+						shipToObject.setShippingMethod("N/A");						
+						break;	
+					}				
+			}			
+		} 
+		else {
+			shipToObject.setShippingMethod("N/A");
+		}
+	}
+	pdict.CybersourceBillTo = shipToObject;
+
+    return PIPELET_NEXT;
+}

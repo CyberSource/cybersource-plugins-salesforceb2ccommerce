@@ -5,30 +5,16 @@
 * @output paEnabled: Boolean Whether to proceed for Payer Authentication or not
 *
 */
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.util );
-
+var CardHelper = require('int_cybersource/cartridge/scripts/Helper/CardHelper');
+var Logger = require('dw/system/Logger');
 function execute( pdict : PipelineDictionary ) : Number
 {
-	var paymentMethod : dw.order.PaymentMethod = dw.order.PaymentMgr.getPaymentMethod("CREDIT_CARD");
-	
-	if(null==paymentMethod)
-		return PIPLET_ERROR;
-	var paymentCardList : dw.util.List = paymentMethod.getActivePaymentCards();
-	var paymentCard : dw.order.PaymentCard = null;
-	iter = paymentCardList.iterator();
-	while(iter.hasNext())
-	{
-		paymentCard = iter.next();
-		if(paymentCard.cardType==pdict.cardType)
-			break;
+	if (empty(pdict.cardType)) {return PIPELET_ERROR;}
+	var result = CardHelper.PayerAuthEnable(pdict.cardType);
+	if (result.error) {
+		Logger.error("[PayerAuthEnable.ds] error "+ result.errorMsg + pdict.cardType);
+		return PIPELET_ERROR;
 	}
-	if(null==paymentCard)
-		return PIPLET_ERROR;
-	
-	pdict.paEnabled = paymentCard.custom.csEnablePayerAuthentication;
-	
-	
+	pdict.paEnabled = result.paEnabled;
     return PIPELET_NEXT;
 }

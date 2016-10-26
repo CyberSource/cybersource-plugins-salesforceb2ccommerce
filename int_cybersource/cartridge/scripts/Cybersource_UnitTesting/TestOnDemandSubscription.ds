@@ -18,67 +18,30 @@
 * 	@output missingField : Array
 *
 */
-importPackage( dw.system );
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.rpc );
-importPackage( dw.util );
-importPackage( dw.value);
+var Logger = dw.system.Logger.getLogger('Cybersource');
+var TestFacade = require('int_cybersource/cartridge/scripts/Facade/TestFacade');
 
-importScript('cybersource/Cybersource_BillTo_Object.ds');
-importScript('cybersource/Cybersource_Card_Object.ds');
-importScript('cybersource/Cybersource_PurchaseTotals_Object.ds');
-importScript('cybersource/libCybersource.ds');
-var dwsvc		= require ("dw/svc");
 function execute( pdict : PipelineDictionary ) : Number
 {
 
 	var subscriptionID : String = pdict.subscriptionID;
-	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
-	
-    var CybersourceHelper = getCybersourceHelper();
-	
-	
-	var csReference : WebReference = webreferences.CyberSourceTransaction;
-	/*var service : Stub = csReference.getService("TransactionProcessor", "portXML");
-	service.setTimeout(CybersourceHelper.getCsServiceRequestTimeout());
-	
-	CybersourceHelper.setEndpoint(service);
-	
-	if(!CybersourceHelper.createHeader(service)){
-		return null;
-	}*/
-
-	var request = new csReference.RequestMessage();
-
-	CybersourceHelper.addOnDemandSubscriptionInfo(subscriptionID, request, purchaseObject, "test");
-	request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();		
-	request.ccAuthService.run = true;	
-
+	var purchaseObject = pdict.purchaseTotals;
 	var response = null;
-	// send request
-	try{
-		var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		response = service.call(request);
-	}catch(e){
-		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+	var result = TestFacade.TestOnDemandSubscription(subscriptionID, purchaseObject);
+		if(result.error)
+		{
+			Logger.error("[TestFacade.ds] Error in subscription request ( {0} )",result.errorMsg);
 		return PIPELET_ERROR;
-	}
-	
-	if(empty(response) || response.status != "OK"){
-		return PIPELET_ERROR;
-	}
-	else
-	{
-		response = response.object;
+		}
+		response = result.response;
 		if(null!=response.ccAuthReply)
 		{
-			pdict.amount = response.ccAuthReply.amount;
-			pdict.authorizationCode = response.ccAuthReply.authorizationCode;
-			pdict.authorizedDateTime = response.ccAuthReply.authorizedDateTime;
-			pdict.processorResponse = response.ccAuthReply.processorResponse;
-			pdict.reasonCode = response.ccAuthReply.reasonCode;
-			pdict.reconciliationID = response.ccAuthReply.reconciliationID;
+			pdict.amount = response.amount;
+			pdict.authorizationCode = response.authorizationCode;
+			pdict.authorizedDateTime = response.authorizedDateTime;
+			pdict.processorResponse = response.processorResponse;
+			pdict.reasonCode = response.reasonCode;
+			pdict.reconciliationID = response.reconciliationID;
 			pdict.decision = response.decision;
 			pdict.requestID = response.requestID;
 			pdict.requestToken = response.requestToken;
@@ -92,7 +55,6 @@ function execute( pdict : PipelineDictionary ) : Number
 			pdict.invalidField = response.invalidField;
 			pdict.missingField = response.missingField;
 		}
-	}
 	return PIPELET_NEXT;
 }
 

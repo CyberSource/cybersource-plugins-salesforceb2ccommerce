@@ -35,7 +35,7 @@
   <branch basename="Start">
     <segment>
       <node>
-        <start-node call-mode="public" name="Start" secure="true"/>
+        <start-node call-mode="private" name="Start" secure="true"/>
         <node-display x="1" y="3"/>
       </node>
       <simple-transition>
@@ -64,7 +64,7 @@
   <branch basename="CreateSubscription">
     <segment>
       <node>
-        <start-node call-mode="public" name="CreateSubscription" secure="true"/>
+        <start-node call-mode="private" name="CreateSubscription" secure="true"/>
         <node-display x="3" y="3"/>
       </node>
       <simple-transition/>
@@ -112,7 +112,7 @@
           <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
           <key-binding alias="shipTo" key="CyberSourceShipTo"/>
           <key-binding alias="CurrentForms.subscription.ipAddress.htmlValue" key="ipAddress"/>
-          <key-binding alias="CurrentForms.subscription.city.htmlValue" key="city"/>
+          <key-binding alias="&quot;subscription&quot;" key="city"/>
           <key-binding alias="CurrentForms.subscription.country.htmlValue" key="country"/>
           <key-binding alias="CurrentForms.subscription.dob.htmlValue" key="dob"/>
           <key-binding alias="CurrentForms.subscription.email.htmlValue" key="email"/>
@@ -123,6 +123,7 @@
           <key-binding alias="CurrentForms.subscription.state.htmlValue" key="state"/>
           <key-binding alias="CurrentForms.subscription.street1.htmlValue" key="street1"/>
           <key-binding alias="CurrentForms.subscription.title.htmlValue" key="title"/>
+          <key-binding alias="&quot;subscription&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="1" y="2"/>
         <branch basename="b3" source-connector="error">
@@ -180,6 +181,7 @@
           <key-binding alias="CurrentForms.subscription.firstName.htmlValue" key="firstName"/>
           <key-binding alias="CurrentForms.subscription.lastName.htmlValue" key="lastName"/>
           <key-binding alias="CurrentForms.subscription.cvnNumber.htmlValue" key="cvnNumber"/>
+          <key-binding alias="&quot;subscription&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b5" source-connector="error">
@@ -226,6 +228,7 @@
           <key-binding alias="requestID" key="requestID"/>
           <key-binding alias="requestToken" key="requestToken"/>
           <key-binding alias="missingField" key="missingField"/>
+          <key-binding alias="subscriptionResponse" key="subscriptionResponse"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b6" source-connector="error">
@@ -291,7 +294,7 @@
   <branch basename="ViewSubscription">
     <segment>
       <node>
-        <start-node call-mode="public" name="ViewSubscription" secure="true"/>
+        <start-node call-mode="private" name="ViewSubscription" secure="true"/>
         <node-display x="7" y="3"/>
       </node>
       <simple-transition/>
@@ -443,7 +446,7 @@
   <branch basename="UpdateSubscription">
     <segment>
       <node>
-        <start-node call-mode="public" name="UpdateSubscription" secure="true">
+        <start-node call-mode="private" name="UpdateSubscription" secure="true">
           <description>Updates a Subscription ID (Profile) on Cybersource End with specific data</description>
         </start-node>
         <node-display x="10" y="3"/>
@@ -504,6 +507,7 @@
           <key-binding alias="CurrentForms.subscription.state.htmlValue" key="state"/>
           <key-binding alias="CurrentForms.subscription.street1.htmlValue" key="street1"/>
           <key-binding alias="CurrentForms.subscription.title.htmlValue" key="title"/>
+          <key-binding alias="&quot;subscription&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="1" y="1"/>
         <branch basename="b3" source-connector="error">
@@ -676,7 +680,7 @@
   <branch basename="DeleteSubscription">
     <segment>
       <node>
-        <start-node call-mode="public" name="DeleteSubscription" secure="true"/>
+        <start-node call-mode="private" name="DeleteSubscription" secure="true"/>
         <node-display x="13" y="3"/>
       </node>
       <simple-transition/>
@@ -767,7 +771,7 @@
           <key-binding alias="requestToken" key="requestToken"/>
           <key-binding alias="missingField" key="missingField"/>
           <key-binding alias="CurrentForms.subscription.subscriptionID.htmlValue" key="subscriptionID"/>
-          <key-binding alias="response" key="viewSubscriptionResponse"/>
+          <key-binding alias="serviceResponse" key="viewSubscriptionResponse"/>
         </pipelet-node>
         <node-display x="1" y="1"/>
         <branch basename="b3" source-connector="error">
@@ -837,7 +841,7 @@
   <branch basename="OnDemandPayment">
     <segment>
       <node>
-        <start-node call-mode="public" name="OnDemandPayment" secure="true"/>
+        <start-node call-mode="private" name="OnDemandPayment" secure="true"/>
         <node-display x="16" y="3"/>
       </node>
       <simple-transition/>
@@ -1283,6 +1287,7 @@
           <key-binding alias="&quot;&quot;+CurrentForms.billing.paymentMethods.creditCard.expiration.year.value" key="expiryYear"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.firstName.value" key="firstName"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.lastName.value" key="lastName"/>
+          <key-binding alias="&quot;billing&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
@@ -1304,7 +1309,6 @@
           <key-binding alias="card" key="CyberSourceCard"/>
           <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
           <key-binding alias="shipTo" key="CyberSourceShipTo"/>
-          <key-binding alias="CurrentRequest.httpRemoteAddress" key="ipAddress"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.city.value" key="city"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.country.value" key="country"/>
           <key-binding alias="&quot;&quot;" key="dob"/>
@@ -1316,6 +1320,7 @@
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.states.state.value" key="state"/>
           <key-binding alias="CurrentForms.billing.billingAddress.addressFields.address1.value" key="street1"/>
           <key-binding alias="&quot;&quot;" key="title"/>
+          <key-binding alias="&quot;billing&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b3" source-connector="error">
@@ -1406,6 +1411,7 @@
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.firstname.value" key="firstName"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.lastname.value" key="lastName"/>
           <key-binding alias="CybersourcePaymentCard" key="CyberSourceCard"/>
+          <key-binding alias="&quot;paymentinstruments&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
@@ -1431,7 +1437,6 @@
           <key-binding alias="card" key="CyberSourceCard"/>
           <key-binding alias="purchaseTotals" key="CyberSourcePurchaseTotals"/>
           <key-binding alias="shipTo" key="CyberSourceShipTo"/>
-          <key-binding alias="CurrentRequest.httpRemoteAddress" key="ipAddress"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.city.value" key="city"/>
           <key-binding alias="&quot;&quot;+CurrentForms.paymentinstruments.creditcards.address.country.value" key="country"/>
           <key-binding alias="&quot;&quot;" key="dob"/>
@@ -1443,6 +1448,7 @@
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.states.state.value" key="state"/>
           <key-binding alias="CurrentForms.paymentinstruments.creditcards.address.address1.value" key="street1"/>
           <key-binding alias="&quot;&quot;" key="title"/>
+          <key-binding alias="&quot;paymentinstruments&quot;" key="formType"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b3" source-connector="error">

@@ -8,22 +8,22 @@
 <h2>Input Billing Address:</h2>
 <p><isinclude template="custom/BillingAddress" /></p>
 <h2>Result:</h2>
-<p>${pdict.Result}</p>
+<p>${pdict.davResponse.Result}</p>
 <h2>DAV ReasonCode:</h2>
-<p>${pdict.DAVReasonCode}</p>
-<isif condition="${!empty(pdict.MissingFieldsArray)}">
+<p>${pdict.davResponse.DAVReasonCode}</p>
+<isif condition="${!empty(pdict.davResponse.MissingFieldsArray)}">
 	<h2>Missing Fields:</h2>
-	<p><isloop items="${pdict.MissingFieldsArray}" var="MissingField" status="loopStat">
+	<p><isloop items="${pdict.davResponse.MissingFieldsArray}" var="MissingField" status="loopStat">
 		${MissingField}<isif condition="${!loopStat.last}">, </isif>
 	</isloop></p>
 </isif>
-<isif condition="${!empty(pdict.InvalidFieldsArray)}">
+<isif condition="${!empty(pdict.davResponse.InvalidFieldsArray)}">
 	<h2>Invalid Fields:</h2>
-	<p><isloop items="${pdict.InvalidFieldsArray}" var="InvalidField" status="loopStat">
+	<p><isloop items="${pdict.davResponse.InvalidFieldsArray}" var="InvalidField" status="loopStat">
 		${InvalidField}<isif condition="${!loopStat.last}">, </isif>
 	</isloop></p>
 </isif>
-<isif condition="${!empty(pdict.StandardizedAddress)}">
+<isif condition="${!empty(pdict.davResponse.StandardizedAddress)}">
 	<h2>Corrected Shipping Address:</h2>
 	<p><isinclude template="custom/StandardizedAddress" /></p>
 </isif>

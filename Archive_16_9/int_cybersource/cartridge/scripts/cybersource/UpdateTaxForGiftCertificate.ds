@@ -1,0 +1,49 @@
+/**
+* UpdateTaxForGiftCertificate.ds
+* Performs the tax updation for giftcertificate lineitems in Basket. If basket is null it returns
+* with PIPELET_ERROR if not null, giftcertificate tax(0) will be updated into basket.   
+*
+* @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated
+*
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.value);
+importPackage( dw.util );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var basket : LineItemCtnr = pdict.Basket;	
+	if(basket == null) {	
+		return PIPELET_ERROR;
+	}
+	try{		
+		if( basket.getGiftCertificateLineItems().size() >0)
+		 {
+		 	var shipments : Iterator = basket.getShipments().iterator();
+				while(shipments.hasNext())
+				{
+					var shipment : Shipment = shipments.next();							
+					var shipmentLineItems : Iterator = shipment.getAllLineItems().iterator();
+					while(shipmentLineItems.hasNext())
+					{
+						var lineItem : LineItem = shipmentLineItems.next();	
+						if(lineItem.tax.value>0)
+						{						
+							continue;
+						} 
+						else
+						{
+							lineItem.updateTax(0);
+						}			
+					 }
+				}
+		 }			
+		basket.updateTotals();
+	}catch(e){			
+		Logger.error("[UpdateTaxForGiftCertificate.ds] Error in giftcertificate tax updation ( {0} )",e.message);
+		return PIPELET_ERROR;
+	}   
+
+    return PIPELET_NEXT;
+}

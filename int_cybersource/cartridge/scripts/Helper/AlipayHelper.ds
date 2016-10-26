@@ -1,0 +1,99 @@
+var Money = require('dw/value/Money');
+var Resource = require('dw/web/Resource');
+var Site = require('dw/system/Site');
+var StringUtils = require('dw/util/StringUtils');
+var PurchaseTotals_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
+
+
+/**
+* 	This script set the value of product name and product description which is require
+* 	as input to pass in initiate payment service request.
+**/
+function AlipaySetProductParameters(Order : dw.order.Order)
+{	
+	//get the order lineitem from order object
+	var order = Order;
+	var lineItems = order.allLineItems.iterator();
+	var productObject : Object = new Object();
+
+	while(lineItems.hasNext()) {
+		//set the product line item to get the product name and description 
+		var lineItem = lineItems.next();
+		var productData : Object = new Object();
+		//get the value of alipay payment type from site preference
+    	var alipayPaymentType : String = Site.getCurrent().getCustomPreferenceValue('apPaymentType');
+		//set the value of product name and description if the line item is an instance of product line item
+		if(lineItem instanceof dw.order.ProductLineItem && !empty(lineItem.product)) {
+			var prodName : String = lineItem.product.name;
+			var prodDesc : String = !empty(lineItem.product.shortDescription) ? lineItem.product.shortDescription.toString() : "";
+			/*get the substring of product name and description to 35 and 65 as required by alipay initiate payment service 
+			in reference with payment type as domestic or international*/
+			if(!empty(alipayPaymentType) && alipayPaymentType.value.equals(Resource.msg('alipaycheckout.internationalpaymenttype', 'checkout', null))) {
+				if(!empty(prodName) && prodName.length > 35){
+					productData.productName = prodName.substr(0, 35);
+				} else {
+					productData.productName = prodName;
+				}
+				if(!empty(prodDesc) && prodDesc.length > 65){
+					productData.productDescription = prodDesc.substr(0, 65);
+				} else {
+					productData.productDescription = prodDesc;
+				}
+			} else {
+				if(!empty(prodName) && prodName.length > 105){
+					productData.productName = prodName.substr(0, 105);
+				} else {
+					productData.productName = prodName;
+				}
+				if(!empty(prodDesc) && prodDesc.length > 255){
+					productData.productDescription = prodDesc.substr(0, 255);
+				} else {
+					productData.productDescription = prodDesc;
+				}
+			}
+			//set the product data into an object
+			return {success:true, productObject:productData};
+		}
+	}
+}
+
+/**
+*	This script creates the PurchaseTotalsObject data object and set it to CybersourcePurchaseTotals output object.
+*	This scripts also set the currency code based on alipay domestic and international payment type.
+*/
+function CreateCSPurchaseTotalForAlipay(Order : dw.order.Order)
+{
+	//get the order from pipeline dictionary
+	var order = Order;
+    var purchaseObject = new PurchaseTotals_Object();
+    var amount = new Money(0,order.currencyCode);
+    
+    //get the payment instrument from order object and set the amount value
+    var apPaymentInstruments = order.getPaymentInstruments();
+    for each (var pi in apPaymentInstruments) {
+    	if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
+	    	{
+	    		amount = amount.add(pi.paymentTransaction.amount);
+	    	}
+    }
+    
+    //get the value of alipay payment type from site preference
+    var alipayPaymentType : String = Site.getCurrent().getCustomPreferenceValue('apPaymentType');
+    
+    //set the currency code on basis of international and domestic payment type
+    if(!empty(alipayPaymentType) && alipayPaymentType.value.equals(Resource.msg('alipaycheckout.domesticpaymenttype', 'checkout', null)) 
+    	&& !(amount.currencyCode.equals(Resource.msg('alipaycheckout.currency', 'checkout', null)))) {
+		purchaseObject.setCurrency(Resource.msg('alipaycheckout.currency', 'checkout', null));
+    } else {
+    	purchaseObject.setCurrency(amount.currencyCode);
+    }
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));
+    
+    //set the value of purchase total object in pipeline dictionary
+    return {success:true,purchaseTotals:purchaseObject }
+}
+/** Exported functions **/
+module.exports = {
+    CreateCSPurchaseTotalForAlipay: CreateCSPurchaseTotalForAlipay,
+    AlipaySetProductParameters:AlipaySetProductParameters
+};

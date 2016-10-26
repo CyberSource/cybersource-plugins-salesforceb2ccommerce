@@ -1,0 +1,16 @@
+<!--- TEMPLATENAME: clickjackingPrevent.isml --->
+<iscomment>
+	This template contains the required client-side clickjacking prevention code. 
+	Place it within the <head> element of any HTML page that has a Visa Checkout button.
+</iscomment>
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod('VISA_CHECKOUT').isActive() && (undefined !== 'summarypage')}">
+	<style id="antiClickjack">body{display:none;}</style>
+	<script type="text/javascript">
+	if (self === top) {
+		var antiClickjack = document.getElementById("antiClickjack");
+		antiClickjack.parentNode.removeChild(antiClickjack);
+	} else {
+		top.location = self.location;
+	}
+	</script>
+</isif>

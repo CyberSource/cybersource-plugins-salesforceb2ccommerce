@@ -1,0 +1,402 @@
+
+/*********************************************************************************
+*
+* Description: 	Class for Cybersource SOAP Service Initialization, 
+*
+/*********************************************************************************/
+var dwsvc		= require ("dw/svc");
+var dwLogger	= require ("dw/system/Logger");
+var CustomObjectMgr =require("dw/object/CustomObjectMgr");
+importPackage( dw.net );
+importPackage( dw.util );
+importPackage( dw.rpc );
+importScript('cybersource/libCybersource.ds');
+
+/**
+ *
+ *	SOAP Services
+ *
+ */	 
+
+
+/*********************************************************************************
+* Service Name : cybersource.soap.transactionprocessor.generic
+* Input 	   : request object holds the input parameter for the respective service request(custom) Object 
+*
+/*********************************************************************************/
+
+dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic", {
+/*
+* Description  : Method to Initialize cybersource.soap.transactionprocessor service
+* Input 	   : None
+* output	   : Service Client
+*
+/***/
+	
+
+/**
+* Description  : Method to Create request for cybersource.soap.transactionprocessor.generic service
+* Input 	   : requestObj Object
+* output	   : service Request
+*
+/**/	
+	createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
+		var csReference  = webreferences.CyberSourceTransaction;
+		//var service = csReference.getService("TransactionProcessor", "portXML");
+		var service = csReference.getDefaultService();
+		svc.webReference = csReference;
+	    svc.serviceClient = service;
+	    	
+		if(requestObj) {
+			return requestObj;
+		} else {
+			return null;
+		}
+	 },
+/**
+* Description  : Method to Execute service request for cybersource.soap.transactionprocessor.generic 
+* Input 	   : Customer Object
+* output	   : None
+*
+/**/		
+	
+	execute : function(svc : dwsvc.SOAPService, parameter : Object) {
+		       var userName = svc.getConfiguration().getCredential().getUser();
+		       var password = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSecurityKey");//svc.getConfiguration().getCredential().getPassword();
+		       var secretsMap   : Map = new HashMap();
+		       secretsMap.put(userName, password); 
+		       var requestCfg   : Map = new HashMap();
+		       requestCfg.put(SOAPUtil.WS_ACTION,SOAPUtil.WS_USERNAME_TOKEN );
+		       requestCfg.put(SOAPUtil.WS_USER, userName);
+		       requestCfg.put(SOAPUtil.WS_PASSWORD_TYPE, SOAPUtil.WS_PW_TEXT);
+		       requestCfg.put(SOAPUtil.WS_SECRETS_MAP, secretsMap);
+		       
+		       var responseCfg : Map = new HashMap();
+		       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
+		     
+		       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
+		
+		return svc.serviceClient.runTransaction(parameter);
+	},
+/**
+* Description  : Method to get the response from cybersource.soap.transactionprocessor.generic service
+* Input 	   : response object
+* output	   : service response
+*
+/**/		
+	parseResponse : function(service : dwsvc.SOAPService, response : Object) : Object {
+		return response;
+	},
+/**
+* Description  : Method to Create Mock request for cybersource.soap.transactionprocessor.generic service
+* Input 	   : Customer Object
+* output	   : service Request
+*
+/**/		
+	mockCall : function(service : dwsvc.SOAPService, request : Object) : Object {
+		return {status:"Mocked"};
+	}
+});
+
+
+/*********************************************************************************
+* Service Name : cybersource.soap.transactionprocessor.bmlpromo
+* Input 	   : request object holds the input parameter for the respective service request(custom) Object 
+*
+/*********************************************************************************/
+
+dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.bmlpromo", {
+	/*
+	* Description  : Method to Initialize cybersource.soap.transactionprocessor service
+	* Input 	   : None
+	* output	   : Service Client
+	*
+	/***/
+		
+
+	/**
+	* Description  : Method to Create request for cybersource.soap.transactionprocessor.bmlpromo service
+	* Input 	   : requestObj Object
+	* output	   : service Request
+	*
+	/**/	
+		createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
+			var csReference  = webreferences.CyberSourceTransaction;
+			//var service = csReference.getService("TransactionProcessor", "portXML");
+			var service = csReference.getDefaultService();
+			svc.webReference = csReference;
+		    svc.serviceClient = service;
+		    	
+			if(requestObj) {
+				return requestObj;
+			} else {
+				return null;
+			}
+		 },
+	/**
+	* Description  : Method to Execute service request for cybersource.soap.transactionprocessor.bmlpromo 
+	* Input 	   : Customer Object
+	* output	   : None
+	*
+	/**/		
+		
+		execute : function(svc : dwsvc.SOAPService, parameter : Object) {
+			       var userName = svc.getConfiguration().getCredential().getUser();
+			       var password = dw.system.Site.getCurrent().getCustomPreferenceValue("CsBmlPromoMerchantPassword");//svc.getConfiguration().getCredential().getPassword();
+			       var secretsMap   : Map = new HashMap();
+			       secretsMap.put(userName, password); 
+			       var requestCfg   : Map = new HashMap();
+			       requestCfg.put(SOAPUtil.WS_ACTION,SOAPUtil.WS_USERNAME_TOKEN );
+			       requestCfg.put(SOAPUtil.WS_USER, userName);
+			       requestCfg.put(SOAPUtil.WS_PASSWORD_TYPE, SOAPUtil.WS_PW_TEXT);
+			       requestCfg.put(SOAPUtil.WS_SECRETS_MAP, secretsMap);
+			       
+			       var responseCfg : Map = new HashMap();
+			       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
+			     
+			       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
+	               //SOAPUtil.addSOAPHeader(svc.serviceClient, xml, mustUnderstand, actor);
+			
+			return svc.serviceClient.runTransaction(parameter);
+		},
+	/**
+	* Description  : Method to get the response from cybersource.soap.transactionprocessor.bmlpromo service
+	* Input 	   : response object
+	* output	   : service response
+	*
+	/**/		
+		parseResponse : function(service : dwsvc.SOAPService, response : Object) : Object {
+			return response;
+		},
+	/**
+	* Description  : Method to Create Mock request for cybersource.soap.transactionprocessor.bmlpromo service
+	* Input 	   : Customer Object
+	* output	   : service Request
+	*
+	/**/		
+		mockCall : function(service : dwsvc.SOAPService, request : Object) : Object {
+			return {status:"Mocked"};
+		}
+	});
+
+
+/*********************************************************************************
+* Service Name : cybersource.soap.transactionprocessor.bml
+* Input 	   : request object holds the input parameter for the respective service request(custom) Object 
+*
+/*********************************************************************************/
+
+dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.bml", {
+	/*
+	* Description  : Method to Initialize cybersource.soap.transactionprocessor service
+	* Input 	   : None
+	* output	   : Service Client
+	*
+	/***/
+		
+
+	/**
+	* Description  : Method to Create request for cybersource.soap.transactionprocessor.bml service
+	* Input 	   : requestObj Object
+	* output	   : service Request
+	*
+	/**/	
+		createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
+			var csReference  = webreferences.CyberSourceTransaction;
+			//var service = csReference.getService("TransactionProcessor", "portXML");
+			var service = csReference.getDefaultService();
+			svc.webReference = csReference;
+		    svc.serviceClient = service;
+		    	
+			if(requestObj) {
+				return requestObj;
+			} else {
+				return null;
+			}
+		 },
+	/**
+	* Description  : Method to Execute service request for cybersource.soap.transactionprocessor.bml 
+	* Input 	   : Customer Object
+	* output	   : None
+	*
+	/**/		
+		
+		execute : function(svc : dwsvc.SOAPService, parameter : Object) {
+			       var userName = svc.getConfiguration().getCredential().getUser();
+			       var password = dw.system.Site.getCurrent().getCustomPreferenceValue("CsBmlPassword");//svc.getConfiguration().getCredential().getPassword();
+			       var secretsMap   : Map = new HashMap();
+			       secretsMap.put(userName, password); 
+			       var requestCfg   : Map = new HashMap();
+			       requestCfg.put(SOAPUtil.WS_ACTION,SOAPUtil.WS_USERNAME_TOKEN );
+			       requestCfg.put(SOAPUtil.WS_USER, userName);
+			       requestCfg.put(SOAPUtil.WS_PASSWORD_TYPE, SOAPUtil.WS_PW_TEXT);
+			       requestCfg.put(SOAPUtil.WS_SECRETS_MAP, secretsMap);
+			       
+			       var responseCfg : Map = new HashMap();
+			       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
+			     
+			       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
+	               //SOAPUtil.addSOAPHeader(svc.serviceClient, xml, mustUnderstand, actor);
+			
+			return svc.serviceClient.runTransaction(parameter);
+		},
+	/**
+	* Description  : Method to get the response from cybersource.soap.transactionprocessor.bml service
+	* Input 	   : response object
+	* output	   : service response
+	*
+	/**/		
+		parseResponse : function(service : dwsvc.SOAPService, response : Object) : Object {
+			return response;
+		},
+	/**
+	* Description  : Method to Create Mock request for cybersource.soap.transactionprocessor.bml service
+	* Input 	   : Customer Object
+	* output	   : service Request
+	*
+	/**/		
+		mockCall : function(service : dwsvc.SOAPService, request : Object) : Object {
+			return {status:"Mocked"};
+		}
+	});
+
+/*********************************************************************************
+* Service Name : cybersource.soap.transactionprocessor.pos
+* Input 	   : request object holds the input parameter for the respective service request(custom) Object 
+*
+/*********************************************************************************/
+
+dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.pos", {
+/*
+* Description  : Method to Initialize cybersource.soap.transactionprocessor service
+* Input 	   : None
+* output	   : Service Client
+*
+/***/
+	
+
+/**
+* Description  : Method to Create request for cybersource.soap.transactionprocessor.pos service
+* Input 	   : requestObj Object
+* output	   : service Request
+*
+/**/	
+	createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
+		var csReference  = webreferences.CyberSourceTransaction;
+		//var service = csReference.getService("TransactionProcessor", "portXML");
+		var service = csReference.getDefaultService();
+		svc.webReference = csReference;
+	    svc.serviceClient = service;
+	    	
+		if(requestObj) {
+			return requestObj;
+		} else {
+			return null;
+		}
+	 },
+/**
+* Description  : Method to Execute service request for cybersource.soap.transactionprocessor.pos 
+* Input 	   : Customer Object
+* output	   : None
+*
+/**/		
+	
+	execute : function(svc : dwsvc.SOAPService, parameter : Object) {
+		
+				if (parameter==null){return null;}
+				var CybersourceHelper = getCybersourceHelper();
+				var merchantID : String = CybersourceHelper.getPosMerchantID(parameter.location);
+				var merchantPassword : String = null;
+				
+				var customObject = null;
+				var merchantKey : String = null;
+				
+				customObject = CustomObjectMgr.getCustomObject("POS_MerchantIDs", parameter.location);
+				if(customObject != null)
+					merchantPassword = customObject.custom.MerchantKey;
+				
+				if(empty(merchantID) || empty(merchantPassword)){
+					Logger.error("POS MerchantID and/or POS Merchant Key are missing.");	
+					return null;
+				}		
+		       var userName = merchantID;
+		       var password = merchantPassword;
+		       var secretsMap   : Map = new HashMap();
+		       secretsMap.put(userName, password); 
+		       var requestCfg   : Map = new HashMap();
+		       requestCfg.put(SOAPUtil.WS_ACTION,SOAPUtil.WS_USERNAME_TOKEN );
+		       requestCfg.put(SOAPUtil.WS_USER, userName);
+		       requestCfg.put(SOAPUtil.WS_PASSWORD_TYPE, SOAPUtil.WS_PW_TEXT);
+		       requestCfg.put(SOAPUtil.WS_SECRETS_MAP, secretsMap);
+		       
+		       var responseCfg : Map = new HashMap();
+		       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
+		     
+		       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
+  
+		
+		return svc.serviceClient.runTransaction(parameter.requestObj);
+	},
+/**
+* Description  : Method to get the response from cybersource.soap.transactionprocessor.pos service
+* Input 	   : response object
+* output	   : service response
+*
+/**/		
+	parseResponse : function(service : dwsvc.SOAPService, response : Object) : Object {
+		return response;
+	},
+/**
+* Description  : Method to Create Mock request for cybersource.soap.transactionprocessor.pos service
+* Input 	   : Customer Object
+* output	   : service Request
+*
+/**/		
+	mockCall : function(service : dwsvc.SOAPService, request : Object) : Object {
+		return {status:"Mocked"};
+	}
+});
+
+/*********************************************************************************
+* Service Name : ybersource.conversiondetailreport
+* Input 	   : request object holds the input parameter for the respective service request(custom) Object 
+*
+/*********************************************************************************/
+
+dwsvc.ServiceRegistry.configure("cybersource.conversiondetailreport", {
+                createRequest: function(svc:HTTPService, args){
+                                // Default request method is post
+                                 svc.setRequestMethod("POST");
+                                 svc.addHeader("Content-Type", "text/xml");
+              //svc.addHeader("Content-Type","application/json; charset=utf-8");
+              
+        var url = svc.getURL();    
+    	var CybersourceHelper = getCybersourceHelper();
+        var urlParms = url.match(/{[^{}]+}/g) || new Array();      
+                
+        //remove url parms with blank values
+        urlParms = (url + '&').match(/[\x3F&][^=&]*=(?=&)/g) || new Array();
+       
+        urlParms.forEach(function(value, index) {
+              url = url.replace(value.replace(/[\x3F&]/g, ''), ''); //1) strip away ? and & from parm 2) strip result from url
+        });
+        url = url.replace(/&{2,}/g, '&'); //replace && with &
+        url = url.replace(/\x3F&/g, '?'); //replace ?& with ?
+        url = url.replace(/&$/, ''); //replace & at the end with blank        
+        
+        //set timestamp parm
+         //merchantID={merchant_id}&username={username}&password={password}&startDate={startDate}&startTime={startTime}&endDate={endDate}&endTime={endTime}
+        url = url.replace(/{merchantID}/, CybersourceHelper.getMerchantID());
+        url = url.replace(/{userName}/, svc.getConfiguration().getCredential().getUser());
+        url = url.replace(/{password}/, svc.getConfiguration().getCredential().getPassword());
+        url = url.replace(/{startDate}/, args.startDate);
+        url = url.replace(/{startTime}/, args.startTime);
+        url = url.replace(/{endDate}/, args.endDate);
+        url = url.replace(/{endTime}/, args.endTime);
+              svc.setURL(url);                         
+       },
+        parseResponse: function(svc:HTTPService, client:HTTPClient) {   
+        return client.text;
+        }
+});
+

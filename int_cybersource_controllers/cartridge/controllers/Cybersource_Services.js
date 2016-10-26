@@ -39,13 +39,33 @@ function PaypalExpressCheckout(args) {
 }
 
 function Reversal(args) {
-	Pipeline.execute('Cybersource_Services-Reversal');
-	return;
+	if (empty(request.httpParameterMap.service.stringValue)) {
+		session.forms.subscription.clearFormElement();
+		app.getView().render('services/reversalform');
+		return;
+	} else {
+		var CardHelper = require('int_cybersource/cartridge/scripts/Helper/CardHelper');
+		var ServiceFacade = require('int_cybersource/cartridge/scripts/Facade/ServiceFacade');
+		var purchaseTotals;
+		var result = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(session.forms.subscription.amount.htmlValue, session.forms.subscription.currency.htmlValue);
+		purchaseTotals = result.purchaseTotals;
+		session.forms.subscription.authorizationID.htmlValue
+		result = ServiceFacade.CreateReversal(purchaseTotals, session.forms.subscription.authorizationID.htmlValue);
+		session.forms.subscription.clearFormElement();
+		if (result.success) {
+			app.getView({
+				reversalResponse : result.serviceResponse
+		    }).render('services/reversalresult');
+			return;
+		}
+		app.getView({
+	        log : !empty(result.errorMsg) ? result.errorMsg : 'System Exception occured contact administrator' 
+	    }).render('custom/scripterror');
+	}
 }
 
 function Start() {
-	Pipeline.execute('Cybersource_Services-Start');
-	return;
+	app.getView().render('services/services');
 }
 
 /*

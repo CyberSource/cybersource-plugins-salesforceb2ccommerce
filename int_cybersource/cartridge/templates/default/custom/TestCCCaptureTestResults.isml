@@ -1,21 +1,27 @@
 <iscomment>
 	This template will populate the Unit Test result of Capture CCAuth
 </iscomment>
+<isif condition="${emplty(pdict.CurrentHttpParameterMap.oid.stringValue)}">
+order number not passed as parameter
+<iselseif condition="${empty(pdict.Order)}">order not found with order id passed as ${pdict.CurrentHttpParameterMap.oid} or order is in PAID state<br>
+<iselseif condition="${!empty(pdict.ErrorMsg)}">
+<isprint value="${pdict.ErrorMsg}"><br>
+<iselse>
 Here is the Capture Amount
-<isprint value="${pdict.CaptureAmount}"><br>
+<isprint value="${pdict.CaptureResponse.CaptureAmount}"><br>
 
 Here is the Capture Reason Code
-<isprint value="${pdict.CaptureReasonCode}"><br>
+<isprint value="${pdict.CaptureResponse.CaptureReasonCode}"><br>
 
 Here is the Decision
-<isprint value="${pdict.Decision}"><br>
+<isprint value="${pdict.CaptureResponse.Decision}"><br>
 
 Here is the Reason Code
-<isprint value="${pdict.ReasonCode}"><br>
+<isprint value="${pdict.CaptureResponse.ReasonCode}"><br>
 
 Here is the RequestID
-<isprint value="${pdict.RequestID}"><br>
+<isprint value="${pdict.CaptureResponse.RequestID}"><br>
 
 Here is the Request Token
-<isprint value="${pdict.RequestToken}"><br>
-
+<isprint value="${pdict.CaptureResponse.RequestToken}"><br>
+</isif>

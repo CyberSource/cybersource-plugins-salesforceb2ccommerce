@@ -1,0 +1,6 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<script type="text/javascript">
+	window.onload = function() {
+		window.top.location.replace('<isprint value="${pdict.Location}" encoding="off"/>');
+	};
+</script>

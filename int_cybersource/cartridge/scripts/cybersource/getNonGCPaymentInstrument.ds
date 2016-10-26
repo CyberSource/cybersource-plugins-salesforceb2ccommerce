@@ -1,0 +1,15 @@
+/**
+* Demandware Script File
+* Get non gift certificate payment instrument
+*   @input Order : dw.order.LineItemCtnr
+*   @output PaymentInstrument : dw.order.PaymentInstrument The non Gift certificate Payment instrument.
+*
+*/
+importPackage( dw.system );
+var CardHelper = require('int_cybersource/cartridge/scripts/Helper/CardHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	pdict.PaymentInstrument = CardHelper.getNonGCPaymemtInstument(pdict.Order);
+    return PIPELET_NEXT;
+}

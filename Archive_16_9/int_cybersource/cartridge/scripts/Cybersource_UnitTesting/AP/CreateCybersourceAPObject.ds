@@ -1,0 +1,32 @@
+/**
+*	 CreateCybersourceAPObject.ds.ds
+*	 This script creates the APObject data object and set it to CybersourceAP output object.
+*	 @input orderID : String	
+*    @output CyberSourceAPObject : Object
+*
+*/
+importPackage( dw.system );
+importScript('cybersource/Cybersource_AP_Object.ds');
+importScript('int_visa_VME:DataObject/CheckoutDetailObject.ds');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var apObject : AP_Object= new AP_Object();	
+	/**
+	* OrderID mapped with V.me CallID.
+	**/	
+	apObject.setOrderID(pdict.orderID);
+	/**
+	* Product ID is required for AP InitiateService.
+	**/
+	apObject.setProductID("test");
+	apObject.setPurchaseID(Site.getCurrent().getCustomPreferenceValue('VmeCustomerRepresentativeID'));
+		
+	/**
+	*  Customer Representative ID is mandatory for all Vme services. if you do not include 
+	*  this value in your request, CyberSource uses the value in your CyberSource account
+	**/
+	//apObject.setCustomerRepresentativeID("12345678909087");			
+	pdict.CyberSourceAPObject = apObject;
+    return PIPELET_NEXT;
+}
