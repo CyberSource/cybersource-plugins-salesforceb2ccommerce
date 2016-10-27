@@ -1,0 +1,29 @@
+/**
+* Demandware Script File
+* Handle the Card ReasonCode. 
+*
+*   @input ReasonCode : String This is a sample comment.
+*   @output Decision : String
+*
+*/
+importPackage( dw.system );
+var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/Helper/SecureAcceptanceHelper');
+function execute( args : PipelineDictionary ) : Number
+{
+    // insert business logic here
+	var result = secureAcceptanceHelper.HandleDecision(args.ReasonCode);
+	
+    // write pipeline dictionary output parameter
+	if (result.declined) {
+		args.Decision = "DECLINE";
+	} else if (result.error) {
+		args.Decision = "ERROR";
+	} else if (result.review) {
+		args.Decision = "REVIEW";
+	} else if (result.authorized) {
+		args.Decision = "ACCEPT";
+	} else if (result.cancel) {
+		args.Decision = "CANCEL";
+	}
+   return PIPELET_NEXT;
+}

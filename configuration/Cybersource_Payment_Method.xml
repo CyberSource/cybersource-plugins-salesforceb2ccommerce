@@ -10,7 +10,7 @@
     <payment-method method-id="SA_SILENTPOST">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Silent Order POST</name>
         <enabled-flag>true</enabled-flag>
-        <processor-id>CYBERSOURCE_CREDIT</processor-id>
+        <processor-id>SECURE_ACCEPTANCE</processor-id>
     </payment-method>
 
     <payment-method method-id="CREDIT_CARD">

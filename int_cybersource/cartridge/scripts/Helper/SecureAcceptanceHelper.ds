@@ -8,6 +8,7 @@ var Logger = require('dw/system/Logger');
 var UUIDUtils = require('dw/util/UUIDUtils');
 var StringUtils = require('dw/util/StringUtils');
 var Transaction = require('dw/system/Transaction');
+var CardHelper = require('int_cybersource/cartridge/scripts/Helper/CardHelper');
 var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
 var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
 var PaymentInstrumentUtils = require('int_cybersource/cartridge/scripts/utils/PaymentInstrumentUtils');
@@ -117,7 +118,9 @@ function CreateHMACSignature(paymentInstrument,LineItemCtnr,responseParameterMap
 				var resposneSignature = responseParameterMap.signature.stringValue;
 				signature = CommonHelper.signedDataUsingHMAC256(dataToSign, secretKey);
 				if(signature.toString() == resposneSignature){
-				 		signatureAuthorize =true;
+				 	signatureAuthorize =true;
+					CommonHelper.LogResponse(responseParameterMap.req_reference_number.stringValue, responseParameterMap.transaction_id.stringValue, 
+						responseParameterMap.request_token.stringValue,	responseParameterMap.reason_code.stringValue, responseParameterMap.decision.stringValue);
 				}
 			}
 				return {success:true,requestData:null, signatureAuthorize:signatureAuthorize, formAction:null };
@@ -204,7 +207,6 @@ try{
 	if( null != sitePreferenceData){
 		var ignore_avs : Boolean = false;
 		var ignore_cvn : Boolean = false;
-		var device_fingerprint_id = null;
 		var authIndicatorRes;
 		transaction_type = "authorization";	
 		switch(paymentMethod){
@@ -244,10 +246,6 @@ try{
     			} else {
     				requestMap.put('skip_decision_manager',true);
     			}
-				if(sitePreferenceData.CsDeviceFingerprintEnabled && null!=lineItemCtnr){
-					signed_field_names = signed_field_names + ",device_fingerprint_id";
-					requestMap.put('device_fingerprint_id', lineItemCtnr.orderNo);	 
-				}								
 				if(null!=lineItemCtnr && !empty(lineItemCtnr.getCustomerNo())){
 					signed_field_names = signed_field_names + ",consumer_id";
 					requestMap.put('consumer_id', lineItemCtnr.getCustomerNo());	 
@@ -262,10 +260,6 @@ try{
 				if(null!=lineItemCtnr && !empty(lineItemCtnr.getCustomerNo())){
 					signed_field_names = signed_field_names + ",consumer_id";
 					requestMap.put('consumer_id', lineItemCtnr.getCustomerNo());	 
-				}								
-				if(sitePreferenceData.CsDeviceFingerprintEnabled && null!=lineItemCtnr){
-					signed_field_names = signed_field_names + ",device_fingerprint_id";
-					requestMap.put('device_fingerprint_id', lineItemCtnr.UUID);	 
 				}								
 				requestMap.put('ignore_avs',true);
     			requestMap.put('ignore_cvn',true);
@@ -534,6 +528,7 @@ function mapSecureAcceptanceResponse(httpParameterMap) {
 	
 	var responseObject = {};
 	if(null != httpParameterMap){
+		responseObject["MerchantReferenceCode"] = httpParameterMap.req_reference_number.stringValue;
 		responseObject["Decision"] = httpParameterMap.decision.stringValue;
 		responseObject["ReasonCode"] = httpParameterMap.reason_code.stringValue;
 		responseObject["RequestID"] = httpParameterMap.transaction_id.stringValue;
@@ -814,6 +809,17 @@ function jsonSecureAcceptanceResponse(httpParameterMap) {
 	return responseJSON;
 }
 
+/**
+ * Handle the Card ReasonCode. 
+ * @param ResponseObject
+ * @returns response as authorized, error, declined
+ */
+function HandleDecision(ReasonCode) {
+	var serviceResponse = {};
+	serviceResponse.ReasonCode = ReasonCode;
+	return CardHelper.HandleCardResponse(serviceResponse);
+}
+
 /** Exported functions **/
 module.exports = {
     CreateHMACSignature: CreateHMACSignature,
@@ -824,5 +830,6 @@ module.exports = {
     isSAMatchProfileForPost:isSAMatchProfileForPost,
     validateSAMerchantPostRequest:validateSAMerchantPostRequest,
     saveSAMerchantPostRequest:saveSAMerchantPostRequest,
-    jsonSecureAcceptanceResponse:jsonSecureAcceptanceResponse
+    jsonSecureAcceptanceResponse:jsonSecureAcceptanceResponse,
+    HandleDecision:HandleDecision
 };

@@ -169,7 +169,7 @@ function SAResponse() {
 						app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','saconfirm','order_token',order.getOrderToken())}).render('common/saredirect');
 						return;
 					}
-					app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','safail','order_token',order.getOrderToken())}).render('common/saredirect');
+					app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','safail','SecureAcceptanceError','true','order_token',order.getOrderToken())}).render('common/saredirect');
 					return;
 				} else if(order.status!=dw.order.Order.ORDER_STATUS_FAILED && request.httpParameterMap.provider.stringValue=='saiframe') {
 					session.privacy.order_id = orderNo;
@@ -199,12 +199,21 @@ function SAResponse() {
 				    });
 				}
 				if (failResult) {
+					var PlaceOrderError=null;
+					var result = secureAcceptanceHelper.HandleDecision(responseObject.ReasonCode);
+					if (result.error) {
+						PlaceOrderError = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.technical");
+					}
 					if (request.httpParameterMap.provider.stringValue=='saiframe') {
 						session.privacy.order_id = orderNo;
-						app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','safail','order_token',order.getOrderToken())}).render('common/saredirect');
+						if (empty(PlaceOrderError)) {
+							app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','safail','order_token',order.getOrderToken())}).render('common/saredirect');
+							return;
+						}
+						app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','safail','SecureAcceptanceError','true','order_token',order.getOrderToken())}).render('common/saredirect');
 						return;
 					} else {
-						app.getController('COSummary').Start({PlaceOrderError:new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined")});
+						app.getController('COSummary').Start({PlaceOrderError:!empty(PlaceOrderError)?PlaceOrderError:new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined")});
 						return;
 					}
 				}
@@ -434,11 +443,9 @@ exports.OpenIframe=guard.ensure(['https'], OpenIframe);
 exports.GetRequestDataForSilentPost=guard.ensure(['https', 'post'], GetRequestDataForSilentPost);
 exports.SilentPostResponse=guard.ensure(['https'], SilentPostResponse);
 exports.SAResponse=SAResponse;
-exports.MerchantPost=guard.ensure(['https', 'post'], MerchantPost);
-
 //exports.TestSATokenCreate=guard.ensure(['https'], TestSATokenCreate);
 //exports.TestSATokenCreateResponse=guard.ensure(['https'], TestSATokenCreateResponse);
-
+exports.MerchantPost=guard.ensure(['https', 'post'], MerchantPost);
 
 exports.TestSATokenCreate=TestSATokenCreate;
 exports.TestSATokenCreateResponse=TestSATokenCreateResponse;

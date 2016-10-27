@@ -106,51 +106,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo)
 	}
 	/* End of DAV response processing */
 	
-	//**************************************************************************//
-	//Log response code specific data for further processing
-	//**************************************************************************//
-	var logTransactionData : String = " Order No = " +serviceResponse.merchantReferenceCode;
-	logTransactionData += ", Cybersource Request ID = " +serviceResponse.requestID;
-	logTransactionData += ", Cybersource Request Token = " +serviceResponse.requestToken;
-	logTransactionData += ", Cybersource Reason Code = " +serviceResponse.reasonCode.get();
-	logTransactionData += ", Cybersource Decision = " +serviceResponse.decision;
-	 
-	switch ( serviceResponse.reasonCode.get() )
-	{
-		case 100:	
-			Logger.info("[CCAuthRequest] [Cybersource Reson Code: 100] [INFO] " + logTransactionData + ", Successful transaction.");
-			break;	
-		case 101:	
-			Logger.getRootLogger().fatal("[CCAuthRequest] [Cybersource Reson Code: 101] [FATAL] " + logTransactionData + " Error Message = The request is missing one or more required fields in the request to CyberSource. The could be due to coding error since all required fields should be set by the COSubmit pipeline.");
-			break;	
-		case 102:								
-			Logger.getRootLogger().fatal("[CCAuthRequest] [Cybersource Reson Code: 102] [FATAL] " + logTransactionData + " Error Message = One or more fields in the request to cybersource contains invalid data. The could be due to coding error since all required fields should be first validated by the COSubmit pipeline.");
-			break;	
-		case 150:
-			Logger.getRootLogger().fatal("[CCAuthRequest] [Cybersource Reson Code: 150] [FATAL] " + logTransactionData + " Error Message = Error: General system failure.");
-			break;				
-		case 151:
-			Logger.getRootLogger().fatal("[CCAuthRequest] [Cybersource Reson Code: 151] [FATAL] " + logTransactionData + " Error Message = Error: The request was received but there was a server time-out. This error does not include time-outs between the client and the server. ");
-			break;				
-		case 152:
-			Logger.getRootLogger().fatal("[CCAuthRequest] [Cybersource Reson Code: 152] [FATAL] " + logTransactionData + " Error Message = Error: The request was received but there was a service time-out. - ");
-			break;	
-		case 234:
-			Logger.getRootLogger().fatal("[CCAuthRequest] [Cybersource Reson Code: 234] [FATAL] " + logTransactionData + " Error Message = There is a problem with your CyberSource merchant configuration. - Please verify the Cybersource Custom preference in the Business Manager");
-			break;
-		case 400:
-			Logger.warn("[CCAuthRequest] [Cybersource Reson Code: 400] [WARN] " + logTransactionData + " Error Message = The fraud score exceeds your threshold. - Customer support to handle the order. ");
-			break;
-		case 480:
-			Logger.warn("[CCAuthRequest] [Cybersource Reson Code: 480] [WARN] " + logTransactionData + " Error Message = The order is marked for review by Decision Manager. - ");
-			break;						
-		case 481:
-			Logger.warn("[CCAuthRequest] [Cybersource Reson Code: 481] [WARN] " + logTransactionData + " Error Message = The order is rejected by Decision Manager. - Customer support to handle the order. ");
-			break;			
-		default:
-			Logger.warn("[CCAuthRequest] [Cybersource Reson Code:" + serviceResponse.reasonCode.get() +"] [WARN] " + logTransactionData + ", Error Message = Authorization Denied - ");
-			break;
-	}
+	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, serviceResponse.reasonCode.get(), serviceResponse.decision);
 	
 	return {success:true, responseObject:responseObject};
 }
@@ -164,7 +120,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo)
 function HandleCardResponse(ResponseObject)
 {
 	Logger.debug("[CardHelper.ds] HandleDAVResponse ReasonCode : " + ResponseObject.ReasonCode);
-	switch(ResponseObject.ReasonCode)
+	switch(Number(ResponseObject.ReasonCode))
 	{
 		case 100:
 			return {authorized: true};
