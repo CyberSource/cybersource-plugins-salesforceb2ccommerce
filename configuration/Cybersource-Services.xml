@@ -38,26 +38,6 @@
         <credential-id>conversiondetailreport</credential-id>
     </service>
 
-    <service service-id="cybersource.soap.transactionprocessor.bml">
-        <service-type>SOAP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>cybersourceprofile</profile-id>
-        <credential-id>cybersourcegeneric</credential-id>
-    </service>
-
-    <service service-id="cybersource.soap.transactionprocessor.bmlpromo">
-        <service-type>SOAP</service-type>
-        <enabled>true</enabled>
-        <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
-        <mock-mode-enabled>false</mock-mode-enabled>
-        <profile-id>cybersourceprofile</profile-id>
-        <credential-id>cybersourcegeneric</credential-id>
-    </service>
-
     <service service-id="cybersource.soap.transactionprocessor.generic">
         <service-type>SOAP</service-type>
         <enabled>true</enabled>
