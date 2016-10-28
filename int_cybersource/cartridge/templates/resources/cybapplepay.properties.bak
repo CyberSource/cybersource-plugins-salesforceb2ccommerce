@@ -7,8 +7,6 @@ cyb.applepay.errorcode.nonqualifiedorder=NON_QUALIFIED_ORDER
 cyb.applepay.errorcode.systemfailure=SYSTEM_FAILURE
 cyb.applepay.errorcode.invalidrequestcredential=INVALID_REQUEST_CREDENTIALS
 cyb.applepay.errorcode.invalidjson=INVALID_INPUT_JSON
-cyb.applepay.errorcode.servicenotavailable=SERVICE_NOT_ACCESSIBLE
-cyb.applepay.errorcode.servicestatus=SERVICE_STATUS_NOT_OK
 
 
 cyb.applepay.errormsg.ordernotfound=You are not having prevelige to access order or order not available in merchant site with order id {0}
@@ -30,4 +28,3 @@ cyb.applepay.errormsg.missingcryptogram=Request Parameter cryptogram is missing
 cyb.applepay.errormsg.invalidmastercardcryptogram=Request Parameter cryptogram exceed 32 char length for mastercard
 cyb.applepay.errormsg.invalidcryptogram=Request Parameter cryptogram exceed 40 char length
 cyb.applepay.errormsg.invalidtokenexpiry=Request Parameter tokenExpirationDate is expired
-cyb.applepay.errormsg.invalidApplePayAPIAuthRequest= empty or error in ApplePayAPIAuthRequest response:

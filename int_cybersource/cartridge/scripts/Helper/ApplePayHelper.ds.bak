@@ -121,7 +121,7 @@ function PrepareAuthRequestObjects(lineItemCtnr : dw.order.LineItemCtnr)
 	//**************************************************************************//
 	if(lineItemCtnr == null){
 		Logger.error("Please provide a order or basket!");
-		return {error:true, errorCode:Resource.msg('cyb.applepay.errorcode.ordernotfound', 'cybapplepay', null)};
+		return {error:true, errorCode:"ORDER_OR_BASKET_NOT_FOUND"};
 	}
 
 	//Objects to set in the Service Request inside facade

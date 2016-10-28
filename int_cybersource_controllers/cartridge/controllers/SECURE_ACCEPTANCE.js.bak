@@ -53,6 +53,10 @@ function Authorize(args) {
 	var order = OrderMgr.getOrder(orderNo);
 	var paymentInstrument = args.PaymentInstrument;
 	var paymentMethod = paymentInstrument.paymentMethod;
+	var paymentProcessor = PaymentMgr.getPaymentMethod(paymentMethod).getPaymentProcessor();
+    Transaction.wrap(function () {
+    	paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+    });
 	var saveCard = session.forms.billing.paymentMethods.creditCard.saveCard.value;
 	if (saveCard) {
 		Transaction.wrap(function () {
@@ -278,11 +282,7 @@ function GetRequestDataForSilentPost() {
 		var httpParameterMap = request.httpParameterMap;
 		if(null != httpParameterMap) {
 			session.forms.billing.billingAddress.email.emailAddress.value =  httpParameterMap.custemail.stringValue;
-			if (!empty(httpParameterMap.savecc.stringValue) && httpParameterMap.savecc.stringValue=="true") {
-				session.forms.billing.paymentMethods.creditCard.saveCard.value = true;
-			} else {
-				session.forms.billing.paymentMethods.creditCard.saveCard.value = false;
-			}
+			session.forms.billing.paymentMethods.creditCard.saveCard.value = httpParameterMap.savecc.stringValue;
 			session.forms.billing.billingAddress.addressFields.firstName.value = httpParameterMap.firstname.stringValue;
 			session.forms.billing.billingAddress.addressFields.lastName.value = httpParameterMap.lastname.stringValue;
 			session.forms.billing.billingAddress.addressFields.address1.value =  httpParameterMap.address1.stringValue;
@@ -335,7 +335,7 @@ function GetRequestDataForSilentPost() {
 			}
 		}
 		} else {
-			result.errorMsg = Resource.msg('silentpost.invalidRequestData.error', 'checkout', null);
+			result.errorMsg = 'missing request parameters';
 		}
 	}
 	}
@@ -421,7 +421,7 @@ function TestSATokenCreate(args) {
 		}
 	}
 	app.getView({
-		log : !empty(result.errorMsg) ? result.errorMsg : Resource.msg('silentpost.testCreateToken.error', 'checkout', null)
+        log : !empty(result.errorMsg) ? result.errorMsg : 'System Exception occured contact administrator' 
     }).render('custom/scripterror');
 }
 

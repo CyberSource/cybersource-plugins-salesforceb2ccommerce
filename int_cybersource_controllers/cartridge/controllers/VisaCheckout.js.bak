@@ -189,7 +189,7 @@ function shippingUpdate(cart, decryptedPaymentData) {
 			return {error:true, errorMsg:err.message};
 		}
 	} else {
-		return {error:true, errorMsg: Resource.msg('visaCheckout.shippingUpdate.prepareShipments', 'checkout', null)};
+		return {error:true, errorMsg:'PrepareShipments failed'};
 	}
 }
 

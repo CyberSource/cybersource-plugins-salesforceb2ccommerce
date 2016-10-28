@@ -482,8 +482,7 @@ function CreateCartStateString(Basket : dw.order.LineItemCtnr)
 	// If the strings are the same, then the cart has not changed and tax calculation will be skipped
 	Logger.debug("CartStateStrings: ( {0}----{1} )",session.custom.cartStateString,cartStateString);
 	if( !empty(session.custom.cartStateString) && session.custom.cartStateString == cartStateString && !surcharge){
-		session.custom.SkipTaxCalculation = true;
-		return {error:true,CartStateString:cartStateString};
+		return {error:true};
 	}
 
     return {success:true, CartStateString:cartStateString};

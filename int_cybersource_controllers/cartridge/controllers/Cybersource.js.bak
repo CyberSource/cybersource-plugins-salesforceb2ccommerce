@@ -334,6 +334,7 @@ function CalculateTaxes(args) {
 		result = CommonHelper.CreateCartStateString(Basket);
 		if(result.success && !empty(result.CartStateString)){
 			cartStateString = result.CartStateString;
+			
 			if(empty(session.custom.SkipTaxCalculation)||!session.custom.SkipTaxCalculation){
 						ReadFromBasket = true;
 						result = CommonHelper.CreateCyberSourceBillToObject(Basket, ReadFromBasket);
@@ -361,7 +362,7 @@ function CalculateTaxes(args) {
 								logger.debug('CalculateTaxes response Decision {1} ReasonCode {2} totalTaxAmount {3}', taxationResponse.response.Decision, taxationResponse.response.ReasonCode, taxationResponse.response.totalTaxAmount);
 								result = CommonHelper.Debug(null, request,result.response, Basket, billTo, shipTo, card, shipFrom,itemArray, itemMap, purchaseTotal, taxService);
 								session.custom.cartStateString = cartStateString;
-								session.custom.SkipTaxCalculation = true;
+								session.custom.SkipTaxCalculation = false;
 								card = null;
 								return {success: true};	
 						}
@@ -571,7 +572,7 @@ function ProcessPaypalExpress(args) {
 		  var billingAddress = cart.getBillingAddress();
 		  var  defaultShipment = cart.getDefaultShipment();
 		  var shippingAddress =defaultShipment.getShippingAddress();
-		  if(!billingAddress || !shippingAddress){
+		  if(!billingAddress && !shippingAddress){
 			  if (!billingAddress) {
 				   Transaction.wrap(function () {
 		            billingAddress = cart.createBillingAddress();

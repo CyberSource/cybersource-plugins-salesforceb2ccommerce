@@ -91,13 +91,13 @@ function ApplePayAPIObjectAuthRequest(billTo, shipTo, purchaseObject, items, ord
 	catch(e)
 	{
 		Logger.getRootLogger().getRootLogger().fatal("[ApplePayFacade.ds] Error in ApplePayAPIAuthRequest ( {0} )", e.message);
-		return {error:true, errorMsg:e.message, errorCode:Resource.msg('cyb.applepay.errorcode.servicenotavailable', 'cybapplepay', null)};
+		return {error:true, errorMsg:e.message, errorCode:"SERVICE_NOT_ACCESSIBLE"};
 	}
 	
 	if(empty(serviceResponse) || serviceResponse.status != "OK")
 	{
 		Logger.getRootLogger().getRootLogger().fatal("[ApplePayFacade.ds] ApplePayAPIAuthRequest Error : null response");
-		return {error:true, errorMsg:Resource.msg('cyb.applepay.errormsg.invalidApplePayAPIAuthRequest', 'cybapplepay', null) +serviceResponse, errorCode:Resource.msg('cyb.applepay.errorcode.servicestatus', 'cybapplepay', null)};
+		return {error:true, errorMsg:"empty or error in ApplePayAPIAuthRequest response: "+serviceResponse, errorCode:"SERVICE_STATUS_NOT_OK"};
 	}
 	serviceResponse = serviceResponse.object;	
 	Logger.error("[ApplePayFacade.ds] ApplePayAPIAuthRequest response : "+serviceResponse);
@@ -224,13 +224,13 @@ function ApplePayInAppObjectAuthRequest(billTo, shipTo, purchaseObject, items, o
 	catch(e)
 	{
 		Logger.getRootLogger().getRootLogger().fatal("[ApplePayFacade.ds] Error in ApplePayInAppAuthRequest ( {0} )", e.message);
-		return {error:true, errorMsg:e.message, errorCode:Resource.msg('cyb.applepay.errorcode.servicenotavailable', 'cybapplepay', null)};
+		return {error:true, errorMsg:e.message, errorCode:"SERVICE_NOT_ACCESSIBLE"};
 	}
 	
 	if(empty(serviceResponse) || serviceResponse.status != "OK")
 	{
 		Logger.getRootLogger().getRootLogger().fatal("[ApplePayFacade.ds] ApplePayInAppAuthRequest Error : null response");
-		return {error:true, errorMsg:Resource.msg('cyb.applepay.errormsg.invalidApplePayAPIAuthRequest', 'cybapplepay', null)+serviceResponse, errorCode:Resource.msg('cyb.applepay.errorcode.servicestatus', 'cybapplepay', null)};
+		return {error:true, errorMsg:"empty or error in ApplePayInAppAuthRequest response: "+serviceResponse, errorCode:"SERVICE_STATUS_NOT_OK"};
 	}
 	serviceResponse = serviceResponse.object;	
 	Logger.error("[ApplePayFacade.ds] ApplePayInAppAuthRequest response : "+serviceResponse);

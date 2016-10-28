@@ -12,8 +12,17 @@ var Transaction = require('dw/system/Transaction');
  * basic credit card validation pipeline from processor CYBERSOURCE_CREDIT.
  */
 function Handle(args) {
-	var Cybersource = require('int_cybersource_controllers/cartridge/controllers/Cybersource')
-	return Cybersource.HandleCard(args);
+	var PaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
+	if (empty(PaymentMethod)) {
+		return {error: true};
+	}
+	if (!PaymentMethod.equals('SA_IFRAME') && !PaymentMethod.equals('SA_REDIRECT') && !PaymentMethod.equals('SA_SILENTPOST')) {
+		var Cybersource = require('int_cybersource_controllers/cartridge/controllers/Cybersource');
+		return Cybersource.HandleCard(args);
+	} else {
+		var SECURE_ACCEPTANCE = require('int_cybersource_controllers/cartridge/controllers/SECURE_ACCEPTANCE');
+		return SECURE_ACCEPTANCE.Handle(args);
+	}
 }
 
 
@@ -31,13 +40,21 @@ function Authorize(args) {
 	var orderNo = args.OrderNo;
 	var Order = OrderMgr.getOrder(orderNo);
 	var PaymentInstrument = args.PaymentInstrument;
-	    var paymentProcessor = PaymentMgr.getPaymentMethod("CREDIT_CARD").getPaymentProcessor();
+	var paymentMethod = PaymentInstrument.getPaymentMethod();
+	if (empty(paymentMethod)) {
+		return {error:true};
+	}
+	var paymentProcessor = PaymentMgr.getPaymentMethod(paymentMethod).getPaymentProcessor();
     Transaction.wrap(function () {
     	PaymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
-	var Cybersource = require('int_cybersource_controllers/cartridge/controllers/Cybersource')
-	
-    return Cybersource.AuthorizeCreditCard({PaymentInstrument:PaymentInstrument, Order:Order, Basket:Order});
+    if (!paymentMethod.equals('SA_IFRAME') && !paymentMethod.equals('SA_REDIRECT') && !paymentMethod.equals('SA_SILENTPOST')) {
+    	var Cybersource = require('int_cybersource_controllers/cartridge/controllers/Cybersource');
+    	return Cybersource.AuthorizeCreditCard({PaymentInstrument:PaymentInstrument, Order:Order, Basket:Order});
+    } else {
+		var SECURE_ACCEPTANCE = require('int_cybersource_controllers/cartridge/controllers/SECURE_ACCEPTANCE');
+		return SECURE_ACCEPTANCE.Authorize(args);
+    }
 }
 
 /*

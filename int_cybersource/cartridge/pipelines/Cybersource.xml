@@ -6686,7 +6686,7 @@ General Error</description>
                           </transition-display>
                         </simple-transition>
                         <node>
-                          <decision-node condition-key="!empty(Basket) &amp;&amp; empty(Basket.billingAddress.address1) &amp;&amp; empty(Basket.defaultShipment.shippingAddress.address1)" condition-operator="expr"/>
+                          <decision-node condition-key="!empty(Basket) &amp;&amp; empty(Basket.billingAddress.address1) || (empty(Basket.defaultShipment.shippingAddress.address1))" condition-operator="expr"/>
                           <node-display x="0" y="1"/>
                           <branch basename="b3" source-connector="yes">
                             <transition target-connector="in">
