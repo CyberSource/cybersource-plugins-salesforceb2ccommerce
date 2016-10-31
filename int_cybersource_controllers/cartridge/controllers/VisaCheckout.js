@@ -117,7 +117,7 @@ function decryptPayload() {
         		CommonHelper.removeExistingPaymentInstruments(cart);
                 cart.removeExistingPaymentInstruments('VISA_CHECKOUT');
             });
-        	var result = VisaCheckoutFacade.VCDecryptRequest(basketUUID, encryptedPaymentWrappedKey, encryptedPaymentData);
+        	var result = VisaCheckoutFacade.VCDecryptRequest(basketUUID, encryptedPaymentWrappedKey, encryptedPaymentData, callId);
     		// check reason code in result
     		if (result.success && result.serviceResponse.ReasonCode == 100) {
     			var decryptedPaymentData = result.serviceResponse;

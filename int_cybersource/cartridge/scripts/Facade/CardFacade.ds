@@ -171,7 +171,10 @@ function CCCaptureRequest(Order : dw.order.LineItemCtnr)
 
 	var serviceRequest = new csReference.RequestMessage();
 	CybersourceHelper.addCCCaptureRequestInfo(serviceRequest, order);
-
+	if (!empty(order.getPaymentInstruments("VISA_CHECKOUT"))) {
+		CybersourceHelper.addVCOrderID(serviceRequest,paymentinstr.custom.callId);
+	}
+	
 	var serviceResponse = null;
 	// send request
 	try{

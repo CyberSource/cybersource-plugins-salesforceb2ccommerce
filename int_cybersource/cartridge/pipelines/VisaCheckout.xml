@@ -437,6 +437,7 @@
                             <key-binding alias="encryptedPaymentData" key="EncryptedPaymentData"/>
                             <key-binding alias="VisaCheckoutAPIResponse" key="VisaCheckoutAPIResponse"/>
                             <key-binding alias="DecryptedPaymentData" key="VisaCheckoutDecryptedPaymentData"/>
+                            <key-binding alias="callId" key="CallID"/>
                           </pipelet-node>
                           <node-display x="0" y="1"/>
                           <branch basename="b3" source-connector="error">

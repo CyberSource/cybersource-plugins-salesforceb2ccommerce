@@ -23,6 +23,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 
 	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
 	var data = session.forms.visacheckout.encryptedPaymentData.value;
+	var callID = session.forms.visacheckout.callId.value;
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
@@ -72,6 +73,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	/* Visa checkout-related WebService setup */
 	/********************************/	
 	CybersourceHelper.addVCAuthRequestInfo(serviceRequest, orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
 	/********************************/
 	/* DAV-related WebService setup */
 	/********************************/	
@@ -134,13 +136,14 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
  * @param orderNo : String
  */
 
-function VCDecryptRequest(orderNo : String, wrappedKey, data)
+function VCDecryptRequest(orderNo : String, wrappedKey, data, callID)
 {
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	CybersourceHelper.addVCDecryptRequestInfo(serviceRequest,orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
 	var serviceResponse = null;
 	// send request
 	try{
@@ -271,6 +274,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,Am
 
 	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
 	var data = session.forms.visacheckout.encryptedPaymentData.value;
+	var callID = session.forms.visacheckout.callId.value;
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
@@ -300,6 +304,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,Am
 	//**************************************************************************//	
 	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billTo,shipTo,purchaseObject,null,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 	CybersourceHelper.addVCAuthRequestInfo(serviceRequest, orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
 	/********************************/
 	/* DAV-related WebService setup */
 	/********************************/	
@@ -373,8 +378,9 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	//**************************************************************************//	
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
-	wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
-	data = session.forms.visacheckout.encryptedPaymentData.value;
+	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
+	var data = session.forms.visacheckout.encryptedPaymentData.value;
+	var callID = session.forms.visacheckout.callId.value;
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
@@ -403,6 +409,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	//**************************************************************************//	
 	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billTo,shipTo,purchaseObject,null,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 	CybersourceHelper.addVCAuthRequestInfo(serviceRequest, orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
 	
 	var serviceResponse = null;
 	// send request

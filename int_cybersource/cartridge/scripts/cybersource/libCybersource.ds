@@ -322,6 +322,16 @@ var CybersourceHelper = {
 	},
 	/*****************************************************************************	
 	 * request  : Object, 
+	 * vc_orderID  : String   - visa checkout  callID
+	 *****************************************************************************/	
+	addVCOrderID : function(request : Object, vc_orderID : String)
+	{
+		var request_vc : Object = new CybersourceHelper.csReference.VC();
+		request_vc.orderID = vc_orderID;
+		request.vc = request_vc;
+	},
+	/*****************************************************************************	
+	 * request  : Object, 
 	 * refCode  : String   - Basket.UUID
 	 * wrappedKey  : String   - wrappedKey
 	 * refCode  : Blob   - large blob object
