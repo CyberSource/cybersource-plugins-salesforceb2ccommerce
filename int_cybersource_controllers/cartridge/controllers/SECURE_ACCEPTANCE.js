@@ -10,7 +10,7 @@ var Resource = require('dw/web/Resource');
 var Status = require('dw/system/Status');
 var Transaction = require('dw/system/Transaction');
 var URLUtils = require('dw/web/URLUtils');
-var logger = dw.system.Logger.getLogger('Cybersource');
+var Logger = require('dw/system/Logger');
 var guard = require('app_storefront_controllers/cartridge/scripts/guard');	
 var app = require('app_storefront_controllers/cartridge/scripts/app');
 var PaymentInstrumentUtils = require('int_cybersource/cartridge/scripts/utils/PaymentInstrumentUtils');
@@ -96,9 +96,6 @@ function CreateSignature(paymentInstrument,lineItemCtnr,cardUUID) {
 	  		         app.getView({requestData:data, formAction:formAction}).render('services/secureAcceptanceRequestForm');
 			 		 return {end:true};
 	  		 }
-	  		 else if(response.signatureAuthorize){
-	  			 signatureAuthorize = true;
-	  		 }
 		 }
 	  	return {error:true};
 }
@@ -165,6 +162,7 @@ function SAResponse() {
 						app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','saconfirm','order_token',order.getOrderToken())}).render('common/saredirect');
 						return;
 					}
+					Logger.error('[SECURE_ACCEPTANCE] SAResponse function Error in order failure even if order got ACCEPT for order '+orderNo);
 					app.getView({Location : dw.web.URLUtils.https('COPlaceOrder-Submit','provider','safail','SecureAcceptanceError','true','order_token',order.getOrderToken())}).render('common/saredirect');
 					return;
 				} else if(order.status!=dw.order.Order.ORDER_STATUS_FAILED && request.httpParameterMap.provider.stringValue=='saiframe') {
@@ -216,8 +214,10 @@ function SAResponse() {
 			break;
 			default :
 				break;
-		}		
+		}
+		Logger.error('[SECURE_ACCEPTANCE] SAResponse function Error in response process for order '+orderNo+ ' decision arrived '+ responseObject.Decision);
 	}
+	Logger.error('[SECURE_ACCEPTANCE] SAResponse function Error in response process does not expect to go to cart page in ideal case');
 	if (request.httpParameterMap.provider.stringValue=='saiframe') {
 		session.privacy.order_id = orderNo;
 		app.getView({Location : dw.web.URLUtils.https('Cart-Show','saerror','true')}).render('common/saredirect');

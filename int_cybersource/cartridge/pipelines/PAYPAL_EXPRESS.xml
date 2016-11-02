@@ -247,14 +247,37 @@
               <join-node/>
               <node-display x="2" y="1"/>
             </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="new dw.system.Status(dw.system.Status.ERROR, &quot;confirm.error.technical&quot;)" key="From_0"/>
+                <key-binding alias="PlaceOrderError" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="0" y="1"/>
+            </node>
+            <simple-transition/>
             <node>
               <end-node name="error"/>
-              <node-display x="0" y="1"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
             </node>
           </segment>
         </branch>
@@ -354,7 +377,7 @@
                     </transition-display>
                   </simple-transition>
                   <node>
-                    <end-node name="error"/>
+                    <end-node name="declined"/>
                     <node-display x="0" y="1"/>
                   </node>
                 </segment>

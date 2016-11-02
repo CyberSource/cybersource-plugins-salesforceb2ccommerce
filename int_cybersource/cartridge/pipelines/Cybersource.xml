@@ -30,13 +30,44 @@
         <branch basename="b2" source-connector="error">
           <transition target-connector="in">
             <transition-display>
-              <bend-point relative-to="target" x="-1" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
             </transition-display>
           </transition>
           <segment>
             <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="new dw.system.Status(dw.system.Status.ERROR, &quot;confirm.error.technical&quot;)" key="From_0"/>
+                <key-binding alias="PlaceOrderError" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="1" y="2"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
               <end-node name="error"/>
-              <node-display orientation="horizontal" x="1" y="2"/>
+              <node-display x="0" y="1"/>
             </node>
           </segment>
         </branch>
@@ -441,7 +472,7 @@
         </transition-display>
       </simple-transition>
       <node>
-        <decision-node condition-key="!empty(Basket)&amp;&amp;!empty(Basket.defaultShipment)&amp;&amp;!empty(Basket.defaultShipment.shippingAddress)" condition-operator="expr"/>
+        <decision-node condition-key="!empty(Basket)&amp;&amp;!empty(Basket.getAllProductLineItems())&amp;&amp;!empty(Basket.defaultShipment)&amp;&amp;!empty(Basket.defaultShipment.shippingAddress)" condition-operator="expr"/>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="yes">
           <transition target-connector="in">

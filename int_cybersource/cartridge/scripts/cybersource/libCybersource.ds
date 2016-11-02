@@ -1292,7 +1292,10 @@ function __setClientData( request : Object, refCode : String , fingerprint : Str
 {
 	request.merchantReferenceCode = refCode; 
 	request.partnerSolutionID=getCybersourceHelper().getPartnerSolutionID();
-	request.developerID=getCybersourceHelper().getDeveloperID();
+	var developerID=getCybersourceHelper().getDeveloperID();
+	if (!empty(developerID)) {
+		request.developerID=developerID;
+	}
 	request.clientLibrary='Demandware';
 	request.clientLibraryVersion='16.9.0';
 	request.clientEnvironment='Linux';

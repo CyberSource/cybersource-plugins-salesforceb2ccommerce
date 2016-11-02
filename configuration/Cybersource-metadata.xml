@@ -570,7 +570,7 @@
             <attribute-definition attribute-id="CsDeveloperID">
                 <display-name xml:lang="x-default">CsDeveloperID</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <field-length>8</field-length>

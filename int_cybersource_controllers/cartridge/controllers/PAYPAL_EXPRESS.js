@@ -52,8 +52,9 @@ function Authorize(args) {
 			orderSetupRequestToken:pdict.orderSetupRequestToken,
 			orderSetupTransactionId:pdict.orderSetupTransactionId});
 		if (paypalResult.review){
-			var PlaceOrderError = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.review");			
-			return {error: true, PlaceOrderError : PlaceOrderError};
+			//var PlaceOrderError = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.review");			
+			//return {error: true, PlaceOrderError : PlaceOrderError};
+			return {review: true};
 		} else if (paypalResult.declined) {
 			var PlaceOrderError = new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined");			
 			return {declined: true, PlaceOrderError : PlaceOrderError};

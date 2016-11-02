@@ -265,8 +265,10 @@ function updatePaymentInstumenSACard(paymentInstrument, expiryDateString : Strin
 		|| empty(paymentInstrument.getCreditCardNumber()) || empty(paymentInstrument.getCreditCardHolder())) {
 		Transaction.wrap(function () {
 			paymentInstrument.setCreditCardType(cardtype);
-			if(dateFieldsArr.length > 0 ) {
-				paymentInstrument.setCreditCardExpirationMonth(parseInt(dateFieldsArr[0]));
+			if(dateFieldsArr.length == 2 ) {
+				var mon = dateFieldsArr[0];
+				if (mon.charAt(0).equals("0")) {mon = mon.substr(1);}
+				paymentInstrument.setCreditCardExpirationMonth(parseInt(mon));
 				paymentInstrument.setCreditCardExpirationYear(parseInt(dateFieldsArr[1]));
 			}
 			if (empty(paymentInstrument.getCreditCardNumber())) {

@@ -329,8 +329,8 @@ function CalculateTaxes(args) {
 	var shipFrom = null;
 	var result,cartStateString, billTo, shipTo, card, purchaseTotal,itemArray,itemMap, taxService,taxationResponse ;
 	
-	if(!empty(Basket)&&!empty(Basket.defaultShipment)&&!empty(Basket.defaultShipment.shippingAddress)){
-		
+	if(!empty(Basket)&&!empty(Basket.getAllProductLineItems())&&!empty(Basket.defaultShipment)&&!empty(Basket.defaultShipment.shippingAddress))
+		{
 		result = CommonHelper.CreateCartStateString(Basket);
 		if(result.success && !empty(result.CartStateString)){
 			cartStateString = result.CartStateString;
