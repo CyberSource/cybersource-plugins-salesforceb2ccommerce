@@ -207,11 +207,15 @@ try{
 	if( null != sitePreferenceData){
 		var ignore_avs : Boolean = false;
 		var ignore_cvn : Boolean = false;
-		var authIndicatorRes;
+		var authIndicatorRes, providerVal;
 		transaction_type = "authorization";	
 		switch(paymentMethod){
 			case "SA_REDIRECT":
+				providerVal = 'saredirect';
 			case "SA_IFRAME":
+				if (paymentMethod.equals("SA_IFRAME")) {
+					providerVal = 'saiframe';
+				}
 				if(sitePreferenceData.CsTokenizationEnable == "YES"){
 					if(!empty(subscriptionToken)){
 						transaction_type = transaction_type;
@@ -249,7 +253,14 @@ try{
 				if(null!=lineItemCtnr && !empty(lineItemCtnr.getCustomerNo())){
 					signed_field_names = signed_field_names + ",consumer_id";
 					requestMap.put('consumer_id', lineItemCtnr.getCustomerNo());	 
-				}								
+				}
+				signed_field_names = signed_field_names + ",override_custom_cancel_page";
+				signed_field_names = signed_field_names + ",override_custom_receipt_page";
+				signed_field_names = signed_field_names + ",override_backoffice_post_url";
+				requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal));
+				requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal));
+				requestMap.put('override_backoffice_post_url', dw.web.URLUtils.https('SECURE_ACCEPTANCE-MerchantPost'));
+							
 			break;
 			case "SA_SILENTPOST":
 				transaction_type = "create_payment_token";	
@@ -264,6 +275,8 @@ try{
 				requestMap.put('ignore_avs',true);
     			requestMap.put('ignore_cvn',true);
     			requestMap.put('skip_decision_manager',true);
+				signed_field_names = signed_field_names + ",override_custom_receipt_page";
+				requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('SECURE_ACCEPTANCE-SilentPostResponse'));
 			break;
 			default:
 					transaction_type = "authorization";

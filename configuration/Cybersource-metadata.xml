@@ -771,6 +771,14 @@ false - Allow a consumer prompt</description>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonOnCart">
+                <display-name xml:lang="x-default">Cybersource Visa Button display on minicart and cart</display-name>
+                <description xml:lang="x-default">Cybersource Visa Button display on minicart and cart</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>true</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="CsSAOverrideBillingAddress">
                 <display-name xml:lang="x-default">Cybersource Secure Acceptance Override Billing Address</display-name>
                 <type>boolean</type>
@@ -795,105 +803,105 @@ false - Allow a consumer prompt</description>
             <attribute-definition attribute-id="SA_Redirect_AccessKey">
                 <display-name xml:lang="x-default">Secure Acceptance Redirect Access Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="SA_Redirect_ProfileID">
                 <display-name xml:lang="x-default">Secure Aceeptance Redirect Profile ID</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="SA_Redirect_SecretKey">
                 <display-name xml:lang="x-default">Secure Acceptance Redirect Secret Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
 			<attribute-definition attribute-id="SA_Redirect_CreateToken_AccessKey">
                 <display-name xml:lang="x-default">Secure Acceptance Redirect Create Token Access Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="SA_Redirect_CreateToken_ProfileID">
                 <display-name xml:lang="x-default">Secure Aceeptance Redirect Create Token Profile ID</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="SA_Redirect_CreateToken_SecretKey">
                 <display-name xml:lang="x-default">Secure Acceptance Redirect Create Token Secret Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
 			<attribute-definition attribute-id="SA_Iframe_AccessKey">
                 <display-name xml:lang="x-default">Secure Acceptance Iframe Access Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
 			<attribute-definition attribute-id="SA_Iframe_ProfileID">
                 <display-name xml:lang="x-default">Secure Acceptance Iframe Profile ID</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
 			<attribute-definition attribute-id="SA_Iframe_SecretKey">
                 <display-name xml:lang="x-default">Secure Acceptance Iframe secret key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
 			<attribute-definition attribute-id="SA_Silent_AccessKey">
                 <display-name xml:lang="x-default">Secure Acceptance Silent Post Access Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="SA_Silent_ProfileID">
                 <display-name xml:lang="x-default">Secure Aceeptance Silent Post Profile ID</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="SA_Silent_SecretKey">
                 <display-name xml:lang="x-default">Secure Acceptance Silent Post Secret Key</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
 			<attribute-definition attribute-id="CsSARedirectFormAction">
                 <display-name xml:lang="x-default">Cybersource secure acceptance redirect form action</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>	
 			<attribute-definition attribute-id="CsSARedirectCreateTokenFormAction">
                 <display-name xml:lang="x-default">Cybersource secure acceptance redirect Create Token form action</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>	
 			<attribute-definition attribute-id="CsSAIframetFormAction">
                 <display-name xml:lang="x-default">Cybersource secure acceptance Iframe form action</display-name>
                 <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>	
@@ -1513,6 +1521,7 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="cybVisaSecretKey"/>
                 <attribute attribute-id="cybVisaAPIKey"/>
                 <attribute attribute-id="cybVisaThreeDSActive"/>
+				<attribute attribute-id="cybVisaButtonOnCart"/>
             </attribute-group>
             <attribute-group group-id="Cybersource_SecureAcceptance">
                 <display-name xml:lang="x-default">Cybersource SecureAcceptance</display-name>

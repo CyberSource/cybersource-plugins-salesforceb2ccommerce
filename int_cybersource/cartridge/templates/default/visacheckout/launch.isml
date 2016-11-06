@@ -15,7 +15,7 @@
 						$("#dwfrm_visacheckout_postalCode").val(payment['partialShippingAddress']['postalCode']);
 					}
 					if (${pdict.Basket != null}) {
-						$("#dwfrm_visacheckout_basketUUID").val('${pdict.Basket.getUUID()}');
+						$("#dwfrm_visacheckout_basketUUID").val('${pdict.Signature}');
 					}
 					$(".visaCheckoutDecrypt").submit();
 				}

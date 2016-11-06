@@ -5,7 +5,7 @@
 *   @input Basket : dw.order.LineItemCtnr The existing basket object
 *   @input IsDeliveryAddress : Boolean Indicate Delivery Address to be collected from visa checkout.
 *   @output VInitFormattedString : String The formatted string to be passed in v.init of function onVisaCheckoutReady
-*
+*   @output Signature : String The basketUUID signed signature
 */
 var Logger = require('dw/system/Logger');
 var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/Helper/VisaCheckoutHelper');
@@ -15,7 +15,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		var result = VisaCheckoutHelper.GetButtonInitializeSettings(pdict.Basket, pdict.IsDeliveryAddress);
 	    pdict.VInitFormattedString = result.VInitFormattedString;
-
+		pdict.Signature = result.signature;
 	   	return PIPELET_NEXT;
 	}
 	catch(err) 

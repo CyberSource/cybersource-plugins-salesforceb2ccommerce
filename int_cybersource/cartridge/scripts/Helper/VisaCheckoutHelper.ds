@@ -1,5 +1,9 @@
 'use strict';
 var logger = dw.system.Logger.getLogger('Cybersource');
+var app = require('app_storefront_controllers/cartridge/scripts/app');
+var PaymentMgr = require('dw/order/PaymentMgr');
+var CommonHelper = require('int_cybersource/cartridge/scripts/Helper/CommonHelper');
+var Countries = require('app_storefront_core/cartridge/scripts/util/Countries');
 /**
 * Create or update basket ShippingAddress Visa Checkout decrypted payment data from cybersource
 * @param lineItemCtnrAddress : dw.order.OrderAddress
@@ -82,6 +86,19 @@ function createLineItemCtnrBillingAddress(lineItemCtnrAddress : dw.order.OrderAd
 */
 function getButtonDisplaySettings()
 {
+	var cart = app.getModel('Cart').get();
+    var paymentAmount = cart.getNonGiftCertificateAmount();
+	var countryCode = Countries.getCurrent({
+        CurrentRequest: {
+            locale: request.locale
+        }
+    }).countryCode;
+	var applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(customer, countryCode, paymentAmount.value);
+	var method = PaymentMgr.getPaymentMethod('VISA_CHECKOUT');
+	var isVisaCheckout = (!empty(applicablePaymentMethods) && method && applicablePaymentMethods.contains(method)) ? true : false;
+	if (!isVisaCheckout) {
+		return {error:true};
+	}
 	// get the current site
 	var currentSite = dw.system.Site.getCurrent();
     
@@ -182,7 +199,8 @@ function getButtonInitializeSettings(cart, requireDeliveryAddress)
 			} else {
 		    	vinitObject.paymentRequest.total = cart.merchandizeTotalNetPrice.value.toFixed(2);
 			}
-		    return {success:true, VInitFormattedString:convertObjectToString(vinitObject, '', 0)};
+			var signature = CommonHelper.signedDataUsingHMAC256(cart.getUUID(), dw.system.Site.getCurrent().getCustomPreferenceValue("cybVisaSecretKey"));
+		    return {success:true, signature:signature, VInitFormattedString:convertObjectToString(vinitObject, '', 0)};
 		} else {   
 		    //logger.error('vinit string formation error : empty basket found');
 			return {error:true, errorMsg:'vinit string formation error : empty basket found'};

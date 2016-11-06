@@ -14,14 +14,17 @@ function execute( pdict : PipelineDictionary ) : Number
 		response.addHttpHeader("X-FRAME-OPTIONS","SAMEORIGIN");
 		
 		var result = VisaCheckoutHelper.GetButtonDisplaySettings();
+		if (result.success) {
 	    pdict.VisaCheckoutButtonQueryString = result.ButtonDisplayURL;
 	    pdict.VisaCheckoutTellMeMoreActive = result.TellMeMoreActive;
-	
+		
 	    return PIPELET_NEXT;
+		}
 	}
 	catch(err)
 	{
 		Logger.error("Error retriveing Visa Checkout button settings: {0}", err.message);
 		return PIPELET_ERROR;	
 	}
+	return PIPELET_ERROR;
 }

@@ -36,12 +36,14 @@ function buttonDisplay() {
 		response.addHttpHeader("X-FRAME-OPTIONS","SAMEORIGIN");
 		//Visa Checkout Button settings query string from site preferences
 		var result = VisaCheckoutHelper.GetButtonDisplaySettings();
-	    app.getView('VisaCheckout', {
-	    	buttonsource : buttonsource,
-	    	VisaCheckoutButtonQueryString : result.ButtonDisplayURL,
-	    	VisaCheckoutTellMeMoreActive : result.TellMeMoreActive
-	    }).render('visacheckout/buttondisplay');
-	    return;
+		if (result.success) {
+		    app.getView('VisaCheckout', {
+		    	buttonsource : buttonsource,
+		    	VisaCheckoutButtonQueryString : result.ButtonDisplayURL,
+		    	VisaCheckoutTellMeMoreActive : result.TellMeMoreActive
+		    }).render('visacheckout/buttondisplay');
+		    return;
+		}
     }
     app.getView('VisaCheckout').render('util/pt_empty');
 }
@@ -66,15 +68,15 @@ function getInitializeSettings(requireDeliveryAddress) {
 function visaCheckoutError() {
 	var cart = app.getModel('Cart').get();
 	//basket uuid check for security handling
-	if (null == session.forms.visacheckout.basketUUID.htmlValue || 
-			cart.getUUID() != session.forms.visacheckout.basketUUID.htmlValue || 
-			!empty(cart.getPaymentInstruments('VISA_CHECKOUT'))) {
+	if (empty(cart.getPaymentInstruments('VISA_CHECKOUT'))) {
 	    session.custom.SkipTaxCalculation=false;
 	    session.custom.cartStateString=null;
 	    var VInitFormattedString='';
-	  	var result = getInitializeSettings();
+	  	var signature='';
+  		var result = getInitializeSettings();
 	    if (result.success) {
 	    	VInitFormattedString = result.VInitFormattedString;
+	    	signature= result.signature;
 	    }
 	    Transaction.wrap(function () {
             cart.calculate();
@@ -83,7 +85,8 @@ function visaCheckoutError() {
 	        cart: cart,
 	        RegistrationStatus: false,
 	        BasketStatus: new dw.system.Status(dw.system.Status.ERROR, "VisaCheckoutError"),
-	        VInitFormattedString:VInitFormattedString
+	        VInitFormattedString:VInitFormattedString,
+	        Signature:signature
 	    }).render('checkout/cart/cart');
 	    return;
     } else {
@@ -112,26 +115,32 @@ function decryptPayload() {
     	var postalCode = session.forms.visacheckout.postalCode.htmlValue;
     	var basketUUID = session.forms.visacheckout.basketUUID.htmlValue;
     	var cart = app.getModel('Cart').get();
-        if (null!==cart && basketUUID!=null && encryptedPaymentData!=null && encryptedPaymentWrappedKey!=null && callId!=null && basketUUID == cart.getUUID()) {
+    	var signature = CommonHelper.signedDataUsingHMAC256(cart.getUUID(), dw.system.Site.getCurrent().getCustomPreferenceValue("cybVisaSecretKey"));
+		
+        if (null!==cart && basketUUID!=null && encryptedPaymentData!=null && encryptedPaymentWrappedKey!=null && callId!=null && basketUUID == signature) {
         	Transaction.wrap(function () {
         		CommonHelper.removeExistingPaymentInstruments(cart);
                 cart.removeExistingPaymentInstruments('VISA_CHECKOUT');
             });
-        	var result = VisaCheckoutFacade.VCDecryptRequest(basketUUID, encryptedPaymentWrappedKey, encryptedPaymentData, callId);
+        	var result = VisaCheckoutFacade.VCDecryptRequest(cart.getUUID(), encryptedPaymentWrappedKey, encryptedPaymentData, callId);
     		// check reason code in result
     		if (result.success && result.serviceResponse.ReasonCode == 100) {
     			var decryptedPaymentData = result.serviceResponse;
-        		result = billingUpdate(cart.object, callId, decryptedPaymentData);
-    			if (result.success) {
-    				result = shippingUpdate(cart.object, decryptedPaymentData);
+    			if (!empty(cart) && !empty(decryptedPaymentData.MerchantReferenceCode) && cart.getUUID().equals(decryptedPaymentData.MerchantReferenceCode)) {
+        			result = billingUpdate(cart.object, callId, decryptedPaymentData);
     				if (result.success) {
+    					result = shippingUpdate(cart.object, decryptedPaymentData);
+    					if (result.success) {
     					//calculate cart and redirect to summary page
     					Transaction.wrap(function () {
     		                cart.calculate();
     		            });
     					response.redirect(URLUtils.https('COSummary-Start'));
     					return {};
+    					}
     				}
+    			} else {
+    			logger.error('Error decrypting Visa Checkout MerchantReferenceCode not match with basketUUID');
     			}
     		} else {
     			logger.error("Error decrypting Visa Checkout payment: reason code not 100");

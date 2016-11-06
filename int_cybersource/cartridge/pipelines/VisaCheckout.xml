@@ -157,6 +157,7 @@
                 <key-binding alias="noshipping" key="VisaCheckoutCollectShipping"/>
                 <key-binding alias="VInitFormattedString" key="VInitFormattedString"/>
                 <key-binding alias="IsDeliveryAddress" key="IsDeliveryAddress"/>
+                <key-binding alias="Signature" key="Signature"/>
               </pipelet-node>
               <node-display x="0" y="1"/>
               <branch basename="b3" source-connector="error">
@@ -235,51 +236,41 @@
       </node>
       <simple-transition/>
       <node>
-        <decision-node condition-key="null !=CurrentForms.visacheckout.basketUUID.htmlValue &amp;&amp; Basket.getUUID() == CurrentForms.visacheckout.basketUUID.htmlValue" condition-operator="expr"/>
+        <decision-node condition-key="!empty(Basket.getPaymentInstruments('VISA_CHECKOUT'))" condition-operator="expr"/>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="yes">
-          <transition target-connector="in"/>
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
           <segment>
             <node>
-              <decision-node condition-key="!empty(Basket.getPaymentInstruments('VISA_CHECKOUT'))" condition-operator="expr"/>
+              <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
+                <key-binding alias="Basket.getPaymentInstruments('VISA_CHECKOUT')[0]" key="PaymentInstrument"/>
+                <key-binding alias="null" key="PaymentInstruments"/>
+              </pipelet-node>
               <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="yes">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="source" x="0" y="1"/>
-                  </transition-display>
-                </transition>
-                <segment>
-                  <node>
-                    <pipelet-node pipelet-name="RemoveBasketPaymentInstrument" pipelet-set-identifier="bc_api">
-                      <key-binding alias="Basket.getPaymentInstruments('VISA_CHECKOUT')[0]" key="PaymentInstrument"/>
-                      <key-binding alias="null" key="PaymentInstruments"/>
-                    </pipelet-node>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition/>
-                  <node>
-                    <call-node start-name-ref="COShipping-PrepareShipments"/>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition/>
-                  <node>
-                    <call-node start-name-ref="Cart-Calculate"/>
-                    <node-display x="0" y="1"/>
-                  </node>
-                  <simple-transition>
-                    <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
-                    </transition-display>
-                  </simple-transition>
-                  <node>
-                    <jump-node start-name-ref="COBilling-ReturnToForm"/>
-                    <node-display x="0" y="1"/>
-                  </node>
-                </segment>
-              </branch>
             </node>
-            <transition target-connector="in2" target-path="../+2"/>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="COShipping-PrepareShipments"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="Cart-Calculate"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <jump-node start-name-ref="COBilling-ReturnToForm"/>
+              <node-display x="0" y="1"/>
+            </node>
           </segment>
         </branch>
       </node>
@@ -289,13 +280,6 @@
       <node>
         <join-node/>
         <node-display x="2" y="0"/>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
       </node>
       <simple-transition/>
       <node>
@@ -412,16 +396,35 @@
                   </node>
                   <simple-transition/>
                   <node>
-                    <decision-node condition-key="basketUUID == Basket.getUUID()" condition-operator="expr"/>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="visacheckout/GetSignatureVisaCheckout.ds"/>
+                      <key-binding alias="log" key="ScriptLog"/>
+                      <key-binding alias="Signature" key="Signature"/>
+                      <key-binding alias="Basket" key="Basket"/>
+                    </pipelet-node>
                     <node-display x="0" y="1"/>
-                    <branch basename="b3" source-connector="yes">
-                      <transition target-connector="in"/>
+                    <branch basename="b3" source-connector="error">
+                      <transition target-connector="in2" target-path="../../+3"/>
+                    </branch>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <decision-node condition-key="basketUUID.equals(Signature)" condition-operator="expr"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b4" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
                       <segment>
                         <node>
                           <call-node start-name-ref="CybersourceData-RemovePaymentInstrument"/>
                           <node-display x="0" y="1"/>
                           <branch basename="b2" source-connector="error">
-                            <transition target-connector="in1" target-path="../../../+4"/>
+                            <transition target-connector="in1" target-path="../../../+5"/>
                           </branch>
                         </node>
                         <simple-transition/>
@@ -441,7 +444,7 @@
                           </pipelet-node>
                           <node-display x="0" y="1"/>
                           <branch basename="b3" source-connector="error">
-                            <transition target-connector="in2" target-path="../../../+5"/>
+                            <transition target-connector="in2" target-path="../../../+6"/>
                           </branch>
                         </node>
                         <simple-transition>
@@ -453,7 +456,7 @@
                           <call-node start-name-ref="VisaCheckout-BillingUpdate"/>
                           <node-display x="0" y="1"/>
                           <branch basename="b4" source-connector="error">
-                            <transition target-connector="in2" target-path="../../../+6"/>
+                            <transition target-connector="in2" target-path="../../../+7"/>
                           </branch>
                         </node>
                         <simple-transition>
@@ -465,7 +468,7 @@
                           <call-node start-name-ref="VisaCheckout-ShippingUpdate"/>
                           <node-display x="0" y="1"/>
                           <branch basename="b5" source-connector="error">
-                            <transition target-connector="in2" target-path="../../../+7"/>
+                            <transition target-connector="in2" target-path="../../../+8"/>
                           </branch>
                         </node>
                         <simple-transition/>
@@ -518,7 +521,7 @@
                       </segment>
                     </branch>
                   </node>
-                  <transition target-connector="in2" target-path="../../+3"/>
+                  <transition target-connector="in2" target-path="../../+4"/>
                 </segment>
               </branch>
             </node>
@@ -536,6 +539,13 @@
       <node>
         <join-node/>
         <node-display x="1" y="2"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
       </node>
       <transition target-connector="in1" target-path="./+1"/>
     </segment>

@@ -16,12 +16,15 @@ function execute( pdict : PipelineDictionary ) : Number
 		var visa = pdict.VisaCheckoutPaymentData;
 		var visaCheckoutCallId = pdict.VisaCheckoutCallId;
 		var basket = pdict.Basket;
-		
-		PaymentInstrumentUtils.UpdatePaymentInstrumentVisaDecrypt( basket, visa, visaCheckoutCallId );
-		return PIPELET_NEXT;
+		if (!empty(basket) && !empty(visa.MerchantReferenceCode) && basket.getUUID().equals(visa.MerchantReferenceCode)) {
+			PaymentInstrumentUtils.UpdatePaymentInstrumentVisaDecrypt( basket, visa, visaCheckoutCallId );
+			return PIPELET_NEXT;
+		}
 	}
 	catch(err) {
 		logger.error('Error creating Visa Checkout payment instrument: {0}', err.message);
 		return PIPELET_ERROR;	
 	}
+	logger.error('Error creating Visa Checkout MerchantReferenceCode not match with basketUUID');
+	return PIPELET_ERROR;
 }

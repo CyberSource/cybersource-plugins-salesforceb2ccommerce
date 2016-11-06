@@ -163,6 +163,7 @@ function VCDecryptRequest(orderNo : String, wrappedKey, data, callID)
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
 	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["MerchantReferenceCode"] = serviceResponse.merchantReferenceCode;
 	if(null !== serviceResponse.purchaseTotals){
 	responseObject["PurchaseTotalsCurrency"] = serviceResponse.purchaseTotals.currency;
 	}
