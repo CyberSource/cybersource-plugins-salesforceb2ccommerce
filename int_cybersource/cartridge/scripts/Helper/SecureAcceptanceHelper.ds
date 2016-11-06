@@ -256,10 +256,10 @@ try{
 				}
 				signed_field_names = signed_field_names + ",override_custom_cancel_page";
 				signed_field_names = signed_field_names + ",override_custom_receipt_page";
-				signed_field_names = signed_field_names + ",override_backoffice_post_url";
+				//signed_field_names = signed_field_names + ",override_backoffice_post_url";
 				requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal));
 				requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal));
-				requestMap.put('override_backoffice_post_url', dw.web.URLUtils.https('SECURE_ACCEPTANCE-MerchantPost'));
+				//requestMap.put('override_backoffice_post_url', dw.web.URLUtils.https('SECURE_ACCEPTANCE-MerchantPost'));
 							
 			break;
 			case "SA_SILENTPOST":
