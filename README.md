@@ -15,4 +15,4 @@
 
 ### Contact ###
 
-* Lindsey Rodgers: demandware@cybersource.com
+* Lindsey Rodgers: <demandware@cybersource.com>
