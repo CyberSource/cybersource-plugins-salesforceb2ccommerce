@@ -6,6 +6,7 @@
 * **Categories:** Payment Processing, Fraud Detection, Address Validation, Tax Computation
 * **Version:** 16.1.0
 * **Last Certification Date:** 10-JUN-2016
+* **JavaScript Controllers Friendly:** **YES**
 * [Installation Documentation](https://bitbucket.org/demandware/link_cybersource/src/5cbd17fc049cd8ec0041a91c4c170abd0b5289a3/configuration/?at=master)
 
 ### Contribution guidelines ###
