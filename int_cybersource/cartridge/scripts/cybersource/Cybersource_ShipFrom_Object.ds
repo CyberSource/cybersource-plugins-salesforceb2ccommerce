@@ -5,176 +5,127 @@
 function ShipFrom_Object() {
 
 	this.title = "";
-	this.setTitle = setTitle;
-	this.getTitle = getTitle;
-
 	this.firstName = "";
-	this.setFirstName = setFirstName;
-	this.getFirstName = getFirstName;
-	
 	this.middleName = "";
-	this.setMiddleName = setMiddleName;
-	this.getMiddleName = getMiddleName;
-	
 	this.lastName = "";
-	this.setLastName = setLastName;
-	this.getLastName = getLastName;
-	
 	this.suffix = "";
-	this.setSuffix = setSuffix;
-	this.getSuffix = getSuffix;
-	
 	this.street1 = "";
-	this.setStreet1 = setStreet1;
-	this.getStreet1 = getStreet1;
-	
 	this.street2 = "";
-	this.setStreet2 = setStreet2;
-	this.getStreet2 = getStreet2;
-	
 	this.street3 = "";
-	this.setStreet3 = setStreet3;
-	this.getStreet3 = getStreet3;
-	
 	this.street4 = "";
-	this.setStreet4 = setStreet4;
-	this.getStreet4 = getStreet4;
-	
 	this.city = "";
-	this.setCity = setCity;
-	this.getCity = getCity;
-	
 	this.county = "";
-	this.setCounty = setCounty;
-	this.getCounty = getCounty;
-	
 	this.state = "";
-	this.setState = setState;
-	this.getState = getState;
-	
 	this.postalCode = "";
-	this.setPostalCode = setPostalCode;
-	this.getPostalCode = getPostalCode;
-	
 	this.country = "";
-	this.setCountry = setCountry;
-	this.getCountry = getCountry;
-	
 	this.company = "";
-	this.setCompany = setCompany;
-	this.getCompany = getCompany;
-	
 	this.phoneNumber = "";
-	this.setPhoneNumber = setPhoneNumber;
-	this.getPhoneNumber = getPhoneNumber;
-	
 	this.email = "";
-	this.setEmail = setEmail;
-	this.getEmail = getEmail;
-
-	
+}
+ShipFrom_Object.prototype = 
+{
+		setTitle : function(value){
+			this.title = value;
+		},
+		getTitle : function(){
+			return this.title;
+		},
+		setFirstName : function(value){
+			this.firstName = value;
+		},
+		getFirstName : function(){
+			return this.firstName;
+		},
+		setMiddleName : function(value){
+			this.middleName = value;
+		},
+		getMiddleName : function(){
+			return this.middleName;
+		},
+		setLastName : function(value){
+			this.lastName = value;
+		},
+		getLastName : function(){
+			return this.lastName;
+		},
+		setSuffix : function(value){
+			this.suffix = value;
+		},
+		getSuffix : function(){
+			return this.suffix;
+		},
+		setStreet1 : function(value){
+			this.street1 = value;
+		},
+		getStreet1 : function(){
+			return this.street1;
+		},								
+		setStreet2 : function(value){
+			this.street2 = value;
+		},
+		getStreet2 : function(){
+			return this.street2;
+		},
+		setStreet3 : function(value){
+			this.street3 = value;
+		},
+		getStreet3 : function(){
+			return this.street3;
+		},
+		setStreet4 : function(value){
+			this.street4 = value;
+		},
+		getStreet4 : function(){
+			return this.street4;
+		},					
+		setCity : function(value){
+			this.city = value;
+		},
+		getCity : function(){
+			return this.city;
+		},
+		setCounty : function(value){
+			this.county = value;
+		},
+		getCounty : function(){
+			return this.county;
+		},																		
+		setState : function(value){
+			this.state = value;
+		},
+		getState : function(){
+			return this.state;
+		},
+		setPostalCode : function(value){
+			this.postalCode = value;
+		},
+		getPostalCode : function(){
+			return this.postalCode;
+		},
+		setCountry : function(value){
+			this.country = value;
+		},
+		getCountry : function(){
+			return this.country;
+		},
+		setCompany : function(value){
+			this.company = value;
+		},
+		getCompany : function(){
+			return this.company;
+		},
+		setPhoneNumber : function(value){
+			this.phoneNumber = value;
+		},
+		getPhoneNumber : function(){
+			return this.phoneNumber;
+		},					
+		setEmail : function(value){
+			this.email = value;
+		},
+		getEmail : function(){
+			return this.email;
+		}
 }
 
-function setTitle(value){
-	this.title = value;
-	}
-function getTitle(){
-	return this.title;
-	}
-function setFirstName(value){
-	this.firstName = value;
-	}
-function getFirstName(){
-	return this.firstName;
-	}
-function setMiddleName(value){
-	this.middleName = value;
-	}
-function getMiddleName(){
-	return this.middleName;
-	}
-function setLastName(value){
-	this.lastName = value;
-	}
-function getLastName(){
-	return this.lastName;
-	}
-function setSuffix(value){
-	this.suffix = value;
-	}
-function getSuffix(){
-	return this.suffix;
-	}
-function setStreet1(value){
-	this.street1 = value;
-	}
-function getStreet1(){
-	return this.street1;
-	}								
-function setStreet2(value){
-	this.street2 = value;
-	}
-function getStreet2(){
-	return this.street2;
-	}
-function setStreet3(value){
-	this.street3 = value;
-	}
-function getStreet3(){
-	return this.street3;
-	}
-function setStreet4(value){
-	this.street4 = value;
-	}
-function getStreet4(){
-	return this.street4;
-	}					
-function setCity(value){
-	this.city = value;
-	}
-function getCity(){
-	return this.city;
-	}
-function setCounty(value){
-	this.county = value;
-	}
-function getCounty(){
-	return this.county;
-	}																		
-function setState(value){
-	this.state = value;
-	}
-function getState(){
-	return this.state;
-	}
-function setPostalCode(value){
-	this.postalCode = value;
-	}
-function getPostalCode(){
-	return this.postalCode;
-	}
-function setCountry(value){
-	this.country = value;
-	}
-function getCountry(){
-	return this.country;
-	}
-function setCompany(value){
-	this.company = value;
-	}
-function getCompany(){
-	return this.company;
-	}
-function setPhoneNumber(value){
-	this.phoneNumber = value;
-	}
-function getPhoneNumber(){
-	return this.phoneNumber;
-	}					
-function setEmail(value){
-	this.email = value;
-	}
-function getEmail(){
-	return this.email;
-	}					
-	
+module.exports = ShipFrom_Object;

@@ -5,327 +5,232 @@
 function BillTo_Object() {
 
 	this.title = "";
-	this.setTitle = setTitle;
-	this.getTitle = getTitle;
-	
 	this.firstName = "";
-	this.setFirstName = setFirstName;
-	this.getFirstName = getFirstName;
-	
 	this.middleName = "";
-	this.setMiddleName = setMiddleName;
-	this.getMiddleName = getMiddleName;
-	
 	this.lastName = "";
-	this.setLastName = setLastName;
-	this.getLastName = getLastName;
-	
 	this.suffix = "";
-	this.setSuffix = setSuffix;
-	this.getSuffix = getSuffix;
-	
 	this.street1 = "";
-	this.setStreet1 = setStreet1;
-	this.getStreet1 = getStreet1;
-	
 	this.street2 = "";
-	this.setStreet2 = setStreet2;
-	this.getStreet2 = getStreet2;
-	
 	this.street3 = "";
-	this.setStreet3 = setStreet3;
-	this.getStreet3 = getStreet3;
-	
 	this.street4 = "";
-	this.setStreet4 = setStreet4;
-	this.getStreet4 = getStreet4;
-	
 	this.city = "";
-	this.setCity = setCity;
-	this.getCity = getCity;
-	
 	this.county = "";
-	this.setCounty = setCounty;
-	this.getCounty = getCounty;
-	
 	this.state = "";
-	this.setState = setState;
-	this.getState = getState;
-	
 	this.postalCode = "";
-	this.setPostalCode = setPostalCode;
-	this.getPostalCode = getPostalCode;
-	
 	this.country = "";
-	this.setCountry = setCountry;
-	this.getCountry = getCountry;
-	
 	this.company = "";
-	this.setCompany = setCompany;
-	this.getCompany = getCompany;
-	
 	this.companyTaxID ="";
-	this.setCompanyTaxID = setCompanyTaxID;
-	this.getCompanyTaxID = getCompanyTaxID;
-	
 	this.phoneNumber = "";
-	this.setPhoneNumber = setPhoneNumber;
-	this.getPhoneNumber = getPhoneNumber;
-	
 	this.email = "";
-	this.setEmail = setEmail;
-	this.getEmail = getEmail;
-	
 	this.ipAddress = "";
-	this.setIpAddress = setIpAddress;
-	this.getIpAddress = getIpAddress;
-	
 	this.ipNetworkAddress = "";
-	this.setIpNetworkAddress = setIpNetworkAddress;
-	this.getIpNetworkAddress = getIpNetworkAddress;
-	
 	this.hostname = "";
-	this.setHostName = setHostName;
-	this.getHostName = getHostName;
-	
 	this.domainName = "";
-	this.setDomainName = setDomainName;
-	this.getDomainName = getDomainName;
-	
 	this.dateOfBirth = "";
-	this.setDateOfBirth = setDateOfBirth;
-	this.getDateOfBirth = getDateOfBirth;
-	
 	this.driversLicenseNumber = "";
-	this.setDriversLicenseNumber = setDriversLicenseNumber;
-	this.getDriversLicenseNumber = getDriversLicenseNumber;
-	
 	this.driversLicenseState = "";
-	this.setDriversLicenseState = setDriversLicenseState;
-	this.getDriversLicenseState = getDriversLicenseState;
-	
 	this.ssn = "";
-	this.setSsn = setSsn;
-	this.getSsn = getSsn;
-	
 	this.customerID = "";
-	this.setCustomerID = setCustomerID;
-	this.getCustomerID = getCustomerID;
-	
 	this.httpBrowserType = "";
-	this.setHttpBrowserType = setHttpBrowserType;
-	this.getHttpBrowserType = getHttpBrowserType;
-	
 	this.httpBrowserEmail = "" ;
-	this.setHttpBrowserEmail = setHttpBrowserEmail;
-	this.getHttpBrowserEmail = getHttpBrowserEmail;
-	
 	this.httpBrowserCookiesAccepted = true;
-	this.setHttpBrowserCookiesAccepted = setHttpBrowserCookiesAccepted;
-	this.getHttpBrowserCookiesAccepted = getHttpBrowserCookiesAccepted;
-	
 	this.nif = "";
-	this.setNif = setNif;
-	this.getNif = getNif;
-	
 	this.personalID = "";
-	this.setPersonalID = setPersonalID;
-	this.getPersonalID = getPersonalID;
-	
 }
 
-function setTitle(value){
+BillTo_Object.prototype = 
+{
+	setTitle : function(value){
 	this.title = value;
-	}
-function getTitle(){
+	},
+	getTitle : function(){
 	return this.title;
-	}
-function setFirstName(value){
+	},
+	setFirstName : function(value){
 	this.firstName = value;
-	}
-function getFirstName(){
+	},
+	getFirstName : function(){
 	return this.firstName;
-	}
-function setMiddleName(value){
+	},
+	setMiddleName : function(value){
 	this.middleName = value;
-	}
-function getMiddleName(){
+	},
+	getMiddleName : function(){
 	return this.middleName;
-	}
-function setLastName(value){
+	},
+	setLastName : function(value){
 	this.lastName = value;
-	}
-function getLastName(){
+	},
+	getLastName : function(){
 	return this.lastName;
-	}
-function setSuffix(value){
+	},
+	setSuffix : function(value){
 	this.suffix = value;
-	}
-function getSuffix(){
+	},
+	getSuffix : function(){
 	return this.suffix;
-	}
-function setStreet1(value){
+	},
+	setStreet1 : function(value){
 	this.street1 = value;
-	}
-function getStreet1(){
+	},
+	getStreet1 : function(){
 	return this.street1;
-	}								
-function setStreet2(value){
+	},								
+	setStreet2 : function(value){
 	this.street2 = value;
-	}
-function getStreet2(){
+	},
+	getStreet2 : function(){
 	return this.street2;
-	}
-function setStreet3(value){
+	},
+	setStreet3 : function(value){
 	this.street3 = value;
-	}
-function getStreet3(){
+	},
+	getStreet3 : function(){
 	return this.street3;
-	}
-function setStreet4(value){
+	},
+	setStreet4 : function(value){
 	this.street4 = value;
-	}
-function getStreet4(){
+	},
+	getStreet4 : function(){
 	return this.street4;
-	}					
-function setCity(value){
+	},					
+	setCity : function(value){
 	this.city = value;
-	}
-function getCity(){
+	},
+	getCity : function(){
 	return this.city;
-	}
-function setCounty(value){
+	},
+	setCounty : function(value){
 	this.county = value;
-	}
-function getCounty(){
+	},
+	getCounty : function(){
 	return this.county;
-	}																		
-function setState(value){
+	},																		
+	setState : function(value){
 	this.state = value;
-	}
-function getState(){
+	},
+	getState : function(){
 	return this.state;
-	}
-function setPostalCode(value){
+	},
+	setPostalCode : function(value){
 	this.postalCode = value;
-	}
-function getPostalCode(){
+	},
+	getPostalCode : function(){
 	return this.postalCode;
-	}
-function setCountry(value){
+	},
+	setCountry : function(value){
 	this.country = value;
-	}
-function getCountry(){
+	},
+	getCountry : function(){
 	return this.country;
-	}
-function setCompany(value){
+	},
+	setCompany : function(value){
 	this.company = value;
-	}
-function getCompany(){
+	},
+	getCompany : function(){
 	return this.company;
-	}
-function setCompanyTaxID(value){
+	},
+	setCompanyTaxID : function(value){
 	this.companyTaxID = value;
-	}
-function getCompanyTaxID(){
+	},
+	getCompanyTaxID : function(){
 	return this.companyTaxID;
-	}
-function setPhoneNumber(value){
+	},
+	setPhoneNumber : function(value){
 	this.phoneNumber = value;
-	}
-function getPhoneNumber(){
+	},
+	getPhoneNumber : function(){
 	return this.phoneNumber;
-	}					
-function setEmail(value){
+	},					
+	setEmail : function(value){
 	this.email = value;
-	}
-function getEmail(){
+	},
+	getEmail : function(){
 	return this.email;
-	}					
-function setIpAddress(value){
+	},					
+	setIpAddress : function(value){
 	this.ipAddress = value;
-	}
-function getIpAddress(){
+	},
+	getIpAddress : function(){
 	return this.ipAddress;
-	}
-function setIpNetworkAddress(value){
+	},
+	setIpNetworkAddress : function(value){
 	this.ipNetworkAddress = value;
-	}
-function getIpNetworkAddress(){
+	},
+	getIpNetworkAddress : function(){
 	return this.ipNetworkAddress;
-	}
-function setHostName(value){
+	},
+	setHostName : function(value){
 	this.hostName = value;
-	}
-function getHostName(){
+	},
+	getHostName : function(){
 	return this.hostName;
-	}					
-function setDomainName(value){
+	},					
+	setDomainName : function(value){
 	this.domainName = value;
-	}
-function getDomainName(){
+	},
+	getDomainName : function(){
 	return this.domainName;
-	}
-function setDateOfBirth(value){
+	},
+	setDateOfBirth : function(value){
 	this.dateOfBirth = value;
-	}
-function getDateOfBirth(){
+	},
+	getDateOfBirth : function(){
 	return this.dateOfBirth;
-	}					
-function setDriversLicenseNumber(value){
+	},					
+	setDriversLicenseNumber : function(value){
 	this.driversLicenseNumber = value;
-	}
-function getDriversLicenseNumber(){
+	},
+	getDriversLicenseNumber : function(){
 	return this.driversLicenseNumber;
-	}	
-function setDriversLicenseState(value){
+	},	
+	setDriversLicenseState : function(value){
 	this.driversLicenseState = value;
-	}
-function getDriversLicenseState(){
+	},
+	getDriversLicenseState : function(){
 	return this.driversLicenseState;
-	}
-function setSsn(value){
+	},
+	setSsn : function(value){
 	this.ssn = value;
-	}
-function getSsn(){
+	},
+	getSsn : function(){
 	return this.ssn;
-	}										
-function setCustomerID(value){
+	},										
+	setCustomerID : function(value){
 	this.customerID = value;
-	}
-function getCustomerID(){
+	},
+	getCustomerID : function(){
 	return this.customerID;
-	}	
-function setHttpBrowserType(value){
+	},	
+	setHttpBrowserType : function(value){
 	this.httpBrowserType = value;
-	}
-function getHttpBrowserType(){
+	},
+	getHttpBrowserType : function(){
 	return this.httpBrowserType;
-	}	
-function setHttpBrowserEmail(value){
+	},	
+	setHttpBrowserEmail : function(value){
 	this.httpBrowserEmail = value;
-	}
-function getHttpBrowserEmail(){
+	},
+	getHttpBrowserEmail : function(){
 	return this.httpBrowserEmail;
-	}	
-function setHttpBrowserCookiesAccepted(value){
+	},	
+	setHttpBrowserCookiesAccepted : function(value){
 	this.httpBrowserCookiesAccepted = value;
-	}
-function getHttpBrowserCookiesAccepted(){
+	},
+	getHttpBrowserCookiesAccepted : function(){
 	return this.httpBrowserCookiesAccepted;
-	}
-function setNif(value){
+	},
+	setNif : function(value){
 	this.nif = value;
-	}
-function getNif(){
+	},
+	getNif : function(){
 	return this.nif;
-	}																
-function setPersonalID(value){
+	},																
+	setPersonalID : function(value){
 	this.personalID = value;
-	}
-function getPersonalID(){
+	},
+	getPersonalID : function(){
 	return this.personalID;
 	}							
-						
-						
-																																		
+}
+module.exports = BillTo_Object;

@@ -1,24 +1,17 @@
-<style type="text/css">
-label {
-	width:150px;    /*Or however much space you need for the form’s labels*/
-    float:left;
-}
-td {
-	border-width: medium; 
-	border-style: outset;
-}
-</style>
 <iscomment>
 	This template will populate the input fields of view subscription
 </iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
 <isinclude template="util/modules"/>
-<h2><center><b><u>Subscription Test Page</u></b></center></h2><br/><br/>
+<h2 class="main-title">${Resource.msg('test.cybupdatesubstestpage','cybersource',null)}</h2><br/><br/>
+<div class="sample-card-form">
 <form action="${pdict.subscriptionaction}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
 	<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
 	<div class="form-row form-row-button">
 		<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
 			${Resource.msg('global.submit','locale',null)}
 		</button>
-		<INPUT TYPE="button" onClick="parent.location='${URLUtils.https('Cybersource_Subscription-Start')}'" value="BACK"/>
+		<INPUT TYPE="button" onClick="parent.location='${URLUtils.https('CybersourceUnitTesting-StartSubscription')}'" value="BACK"/>
 	</div>
 </form>
+</div>

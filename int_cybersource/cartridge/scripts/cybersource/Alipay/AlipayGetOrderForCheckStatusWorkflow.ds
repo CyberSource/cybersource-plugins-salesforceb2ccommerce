@@ -6,12 +6,14 @@
 *   @output orderList : dw.util.ArrayList
 *
 */
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.util );
+var ArrayList = require('dw/util/ArrayList');
+var Order = require('dw/order/Order');
+var Logger = require('dw/system/Logger');
+var Transaction = require('dw/system/Transaction');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
+	var OrderMgr = require('dw/order/OrderMgr');
 	//get query variable by passing different order status
     var query : String = "exportStatus =" + Order.EXPORT_STATUS_NOTEXPORTED + "d";
 		query += " and (status =" + Order.ORDER_STATUS_NEW + "d";
@@ -22,23 +24,49 @@ function execute( pdict : PipelineDictionary ) : Number
 	//var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
 	/*comment above queryOrders code to avoid quota exception*/
 	var orderIterator : Iterator = OrderMgr.searchOrders(query, "orderNo asc", null);
-	var orderList : ArrayList = new ArrayList();
+	var orderList = new ArrayList();
+	var alipayHelper = require('int_cybersource/cartridge/scripts/helper/AlipayHelper');
+	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants.ds');
 	if (!empty(orderIterator))
 	{
 		while (orderIterator.hasNext())
 		{
-			var order : Order = orderIterator.next();
-		 	var pIs: Collection=	order.getPaymentInstruments();
+			var order = orderIterator.next();
+		 	var pIs = order.getPaymentInstruments();
+		 	
 		 	//add orders in order list for ALIPAY payment method and with non empty Initiate Request ID
-			for each(var pi : PaymentInstrument in pIs ){
-			   if(pi.paymentMethod.equals("ALIPAY") && !empty(order.getPaymentInstruments("ALIPAY")[0].paymentTransaction.custom.apInitiatePaymentRequestID)){
-			   		orderList.add(order);
-			   		break;
-			  	}
+			for each(var pi in pIs ){
+				
+			   if(pi.paymentMethod.equals(CybersourceConstants.METHOD_ALIPAY) && !empty(order.getPaymentInstruments(CybersourceConstants.METHOD_ALIPAY)[0].paymentTransaction.custom.apInitiatePaymentRequestID)){
+			   				   		
+			   		// New Code Migration started here
+			   
+   				Transaction.wrap(function () {
+   					var paymentResponse = alipayHelper.CheckAlipayPaymentStatus({Order:order});   					
+			   		if(paymentResponse.submit){
+			   			var orderStatus = OrderMgr.placeOrder(order);
+			   			if(orderStatus.code == 'OK'){
+							order.setExportStatus(Order.EXPORT_STATUS_READY);									
+							order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+			   			}else{
+			   				Logger.error('[AlipayGetOrderForCheckStatusWorkflow.ds] DECISION ACCEPT -  Placeorder Error for order:', order.OrderNo);
+			   			}
+			  		}
+			  		else if(paymentResponse.summaryconfirmation){
+			  			//only ay,ent instrument update
+			   		}
+			   		else if(paymentResponse.error){
+			  			var orderStatus = OrderMgr.failOrder(order);									
+						if(orderStatus.code =='ERROR'){											
+							Logger.error('[AlipayGetOrderForCheckStatusWorkflow.ds] DECISION REJECT -  FailOrder Called for order:', order.OrderNo);
+						}										 
+			   		}
+			   	});
 			}
 		}
 		//set the order list in pipeline dictionary variable
-		pdict.orderList = orderList;
+		//pdict.orderList = orderList;
+	 }   
 	}
-    return PIPELET_NEXT;
+return PIPELET_NEXT;
 }

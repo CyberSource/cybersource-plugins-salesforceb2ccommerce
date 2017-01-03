@@ -1,22 +1,22 @@
 <iscomment>
 	This template will populate the error log/message 
 </iscomment>
-
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
 <isif condition="${!empty(pdict.log)}">
-	<div style="border:1px gray solid">
-		<b>Log:</b>
-		Here is the log:<br/>
+	<div class="border-gray">
+		<strong>${Resource.msg('pos_label_log','cybersource','')}</strong>
+		${Resource.msg('pos_label_logheading','cybersource','')}<br/>
 		<isprint value="${pdict.log}" />
 	</div>
 </isif>
 
 <isif condition="${!empty(pdict.errorCode)}">
-	<div style="border:1px gray solid">
-		<b>Error:</b>
-		Here is the Error:<br/>
-		Code: <isprint value="${pdict.errorCode}" /><br/>
-		Error Message: <isprint value="${pdict.cybersource_error}" />
+	<div class="border-gray">
+		<strong>${Resource.msg('pos_label_error','cybersource','')}</strong>
+		${Resource.msg('pos_label_errorheading','cybersource','')}<br/>
+		${Resource.msg('pos_label_code','cybersource','')} <isprint value="${pdict.errorCode}" /><br/>
+		${Resource.msg('pos_label_errormsg','cybersource','')} <isprint value="${pdict.cybersource_error}" />
 	</div>
 </isif>
 
-<a href="${dw.web.URLUtils.http('CybersourceUnitTesting-StartPOS')}">Back to Test Page</a>
+<a href="${dw.web.URLUtils.http('CybersourceUnitTesting-StartPOS')}">${Resource.msg('pos_resultpage_back','cybersource','')}</a>

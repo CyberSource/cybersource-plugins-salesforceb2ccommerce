@@ -3,6 +3,7 @@
 	<name>int_cybersource</name>
 	<comment></comment>
 	<projects>
+		<project>DemandwareServer</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

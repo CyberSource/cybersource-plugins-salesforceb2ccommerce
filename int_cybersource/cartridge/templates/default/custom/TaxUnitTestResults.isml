@@ -1,61 +1,61 @@
 <iscomment>
 	This template will populate the Unit Test result of Taxation
 </iscomment>
-<h1>Test Tax Unit Test</h1>
-<h2>Input Shipping To Address:</h2>
-<isset name="shipto" value="${pdict.CybersourceShipTo}" scope="pdict"/>
+<h1>${Resource.msg('test.taxunittest','cybersource',null)}</h1>
+<h2>${Resource.msg('test.inpshipaddress','cybersource',null)}</h2>
+<isset name="shipto" value="${pdict.taxResponse.CybersourceShipTo}" scope="pdict"/>
 <p><isinclude template="custom/ShippingAddress" /></p>
-<h2>Input Shipping From Address:</h2>
-<isset name="shipto" value="${pdict.shipFrom}" scope="pdict"/>
+<h2>${Resource.msg('test.inpshipfromaddress','cybersource',null)}</h2>
+<isset name="shipto" value="${pdict.taxResponse.shipFrom}" scope="pdict"/>
 <p><isinclude template="custom/ShippingAddress" /></p>
-<h2>Input Billing Address:</h2>
-<isset name="billto" value="${pdict.CybersourceBillTo}" scope="pdict"/>
+<h2>${Resource.msg('test.inpbillingaddress','cybersource',null)}</h2>
+<isset name="billto" value="${pdict.taxResponse.CybersourceBillTo}" scope="pdict"/>
 <p><isinclude template="custom/BillingAddress" /></p>
-<h2>Decision:</h2>
-<p>${pdict.Decision}</p>
-<h2>Request ID:</h2>
-<p>${pdict.RequestID}</p>
-<h2>Request Token:</h2>
-<p>${pdict.RequestToken}</p>
-<isif condition="${!empty(pdict.DAVReasonCode)}">
-<h2>DAV ReasonCode:</h2>
-<p>${pdict.DAVReasonCode}</p>
+<h2>${Resource.msg('DECISION','cybersource',null)}</h2>
+<p>${pdict.taxResponse.Decision}</p>
+<h2>${Resource.msg('REQUEST_ID','cybersource',null)}</h2>
+<p>${pdict.taxResponse.RequestID}</p>
+<h2>${Resource.msg('REQUEST_TOKEN','cybersource',null)}</h2>
+<p>${pdict.taxResponse.RequestToken}</p>
+<isif condition="${!empty(pdict.taxResponse.DAVReasonCode)}">
+<h2>${Resource.msg('test.davreasoncode','cybersource',null)}</h2>
+<p>${pdict.taxResponse.DAVReasonCode}</p>
 </isif>
-<isif condition="${!empty(pdict.DAVReasonCode)}">
-<h2>Tax ReasonCode:</h2>
-<p>${pdict.ReasonCode}</p>
+<isif condition="${!empty(pdict.taxResponse.DAVReasonCode)}">
+<h2>${Resource.msg('test.taxreasoncode','cybersource',null)}</h2>
+<p>${pdict.taxResponse.ReasonCode}</p>
 </isif>
-<isif condition="${!empty(pdict.MissingFieldsArray)}">
-	<h2>Missing Fields:</h2>
-	<p><isloop items="${pdict.MissingFieldsArray}" var="MissingField" status="loopStat">
+<isif condition="${!empty(pdict.taxResponse.MissingFieldsArray)}">
+	<h2>${Resource.msg('test.missingfields','cybersource',null)}</h2>
+	<p><isloop items="${pdict.taxResponse.MissingFieldsArray}" var="MissingField" status="loopStat">
 		${MissingField}<isif condition="${!loopStat.last}">, </isif>
 	</isloop></p>
 </isif>
-<isif condition="${!empty(pdict.InvalidFieldsArray)}">
-	<h2>Invalid Fields:</h2>
-	<p><isloop items="${pdict.InvalidFieldsArray}" var="InvalidField" status="loopStat">
+<isif condition="${!empty(pdict.taxResponse.InvalidFieldsArray)}">
+	<h2>${Resource.msg('test.invalidfields','cybersource',null)}</h2>
+	<p><isloop items="${pdict.taxResponse.InvalidFieldsArray}" var="InvalidField" status="loopStat">
 		${InvalidField}<isif condition="${!loopStat.last}">, </isif>
 	</isloop></p>
 </isif>
-<isif condition="${!empty(pdict.StandardizedAddress)}">
-	<h2>Corrected Shipping Address:</h2>
+<isif condition="${!empty(pdict.taxResponse.StandardizedAddress)}">
+	<h2>${Resource.msg('test.correctshipaddress','cybersource',null)}</h2>
 	<p><isinclude template="custom/StandardizedAddress" /></p>
 </isif>
-<h2>Items</h2>
+<h2>${Resource.msg('test.taxitems','cybersource',null)}</h2>
 <ul>
-<isloop items="${pdict.TaxReply.item}" var="resItem" status="item_stat">
+<isloop items="${pdict.taxResponse.TaxReply.item}" var="resItem" status="item_stat">
 			${resItem};
 </isloop>
 </ul>
 
-<h3>Item Subtotal: ${new dw.value.Money(pdict.TaxReply.grandTotalAmount-pdict.TaxReply.totalTaxAmount,"USD")}</h3>
+<h3>${Resource.msg('test.itemsubtotal','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.grandTotalAmount-pdict.taxResponse.TaxReply.totalTaxAmount,"USD")}</h3>
 
-<h2>Tax Breakdown</h2>
+<h2>${Resource.msg('test.taxbreakdown','cybersource',null)}</h2>
 <ul>
-	<li>Total District Taxes: ${new dw.value.Money(pdict.TaxReply.totalDistrictTaxAmount,"USD")}</li>
-	<li>Total City Taxes: ${new dw.value.Money(pdict.TaxReply.totalCityTaxAmount,"USD")}</li>
-	<li>Total County Taxes: ${new dw.value.Money(pdict.TaxReply.totalCountyTaxAmount,"USD")}</li>
-	<li>Total State Taxes: ${new dw.value.Money(pdict.TaxReply.totalStateTaxAmount,"USD")}</li>
+	<li>${Resource.msg('test.totdistricttax','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.totalDistrictTaxAmount,"USD")}</li>
+	<li>${Resource.msg('test.totcitytax','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.totalCityTaxAmount,"USD")}</li>
+	<li>${Resource.msg('test.totcountytax','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.totalCountyTaxAmount,"USD")}</li>
+	<li>${Resource.msg('test.totstattax','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.totalStateTaxAmount,"USD")}</li>
 </ul>
-<h3>Total Taxes: ${new dw.value.Money(pdict.TaxReply.totalTaxAmount,"USD")}</h3>
-<h3>Grand Total: ${new dw.value.Money(pdict.TaxReply.grandTotalAmount,"USD")}</h3>
+<h3>${Resource.msg('test.tottax','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.totalTaxAmount,"USD")}</h3>
+<h3>${Resource.msg('test.grandtotal','cybersource',null)} ${new dw.value.Money(pdict.taxResponse.TaxReply.grandTotalAmount,"USD")}</h3>

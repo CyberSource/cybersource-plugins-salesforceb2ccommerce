@@ -1,9 +1,9 @@
 <iscomment>
 	This template will populate the hyperlinks for create, view, update, delete subscriotion
 </iscomment>
-<h2><center><b><u>Subscription Test Suite</u></b></center></h2><br/><br/>
-<a href="${URLUtils.https('Cybersource_Subscription-CreateSubscription')}" >Create Subscription</a><br/>
-<a href="${URLUtils.https('Cybersource_Subscription-ViewSubscription')}">View Subscription</a><br/>
-<a href="${URLUtils.https('Cybersource_Subscription-UpdateSubscription')}">Update Subscription</a><br/>
-<a href="${URLUtils.https('Cybersource_Subscription-DeleteSubscription')}">Delete Subscription</a><br/>
-<a href="${URLUtils.https('Cybersource_Subscription-OnDemandPayment')}">Make On Demand Payment</a><br/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<h2 class="main-title">${Resource.msg('subscription_label_testsuite','cybersource','')}</h2><br/><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-CreateSubscription')}" >${Resource.msg('subscription_label_create','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-ViewSubscription')}">${Resource.msg('subscription_label_view','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-UpdateSubscription')}">${Resource.msg('subscription_label_update','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-DeleteSubscription')}">${Resource.msg('subscription_label_delete','cybersource','')}</a><br/>

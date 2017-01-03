@@ -2,16 +2,18 @@
 * This script is used to retrieve the detailed conversion report from HttpClient.
 *
 */
-importPackage( dw.system );
-importPackage( dw.net );
-importPackage( dw.order );
-importPackage( dw.util );
-importScript('cybersource/libCybersource.ds');
+var HashMap = require('dw/util/HashMap');
+var Logger = require('dw/system/Logger');
+var Order = require('dw/order/Order');
+var OrderMgr = require('dw/order/OrderMgr');
+var StringUtils = require('dw/util/StringUtils');
+var System = require('dw/system/System');
 var dwsvc		= require ("dw/svc");
+var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
 function execute( pdict : PipelineDictionary ) : Number
 {
 
-var CybersourceHelper = getCybersourceHelper();
+	//var CybersourceHelper = libCybersource.getCybersourceHelper();
 	Logger.debug("ConversionDetailReport---------------- -");
 	//var httpClient : HTTPClient = new HTTPClient();
 	
@@ -26,15 +28,16 @@ var CybersourceHelper = getCybersourceHelper();
 	
 	//var orderIterator : Iterator = OrderMgr.queryOrders(query, "orderNo asc", null);
 	/*comment above queryOrders code to avoid quota exception*/
-	var orderIterator : Iterator = OrderMgr.searchOrders(query, "orderNo asc", null);
-	var orderHashMap : HashMap = new HashMap();
+	var orderIterator = OrderMgr.searchOrders(query, "orderNo asc", null);
+	var orderHashMap = new HashMap();
 	if (!empty(orderIterator))
 	{
 		while (orderIterator.hasNext())
 		{
-			var order : Order = orderIterator.next();
+			var order = orderIterator.next();
+			var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants.ds');
 			
-			if( order != null && empty(order.getPaymentInstruments('ALIPAY'))){
+			if( order != null && empty(order.getPaymentInstruments(CybersourceConstants.METHOD_ALIPAY))){
 			//if( order.paymentTransaction != null && order.paymentTransaction.transactionID != null){
 			//var transactionID : String = order.paymentTransaction.transactionID;
 			//orderHashMap.put(transactionID, order);
@@ -57,7 +60,7 @@ var CybersourceHelper = getCybersourceHelper();
 		var startDate = StringUtils.formatCalendar(currentDate, "yyyy-MM-dd");
 		var startTime = StringUtils.formatCalendar(currentDate, "HH:mm:ss");
 		
-		Logger.error("postValues sent to CyberSource for On Demand Conversion report :: ");
+		Logger.debug("postValues sent to CyberSource for On Demand Conversion report :: ");
 		
 		var responseObj = null;
 		// mapping request object with correct parameter
@@ -69,49 +72,54 @@ var CybersourceHelper = getCybersourceHelper();
 			
 		try{
           
-          var service : dwsvc.Service = dwsvc.ServiceRegistry.get("cybersource.conversiondetailreport");
+          var service = dwsvc.ServiceRegistry.get("cybersource.conversiondetailreport");
               responseObj = service.call(requestObj);
 		}catch(e){
                 Logger.error("Error in conversion detail report request ( {0} )",e.message);
                 return PIPELET_ERROR;
 		}
-
-		var errorCode = "";
-		var errorMessage = "";
-		if(empty(responseObj)){                              
-                errorCode = "RESPONSE_EMPTY";            
-                errorMessage = "Empty Response";
-        return {error : true, errorCode : errorCode ,errorMessage : errorMessage}; 
+		
+		if(empty(responseObj)){ 
+			 Logger.error("Error in conversion detail report request :","RESPONSE_EMPTY");                              
         } 
         else if("status" in  responseObj && responseObj.getStatus().equals("SERVICE_UNAVAILABLE")){
-                errorCode = "SERVICE_UNAVAILABLE";
-                errorMessage = responseObj.getErrorMessage();
-       return {error : true, errorCode : errorCode ,errorMessage : errorMessage}; 
-       // else if(responseObj.status == "OK" && responseObj.object ==" Invalid login credentials." ){handle case for "Invalid login credentials."
-       }
+                 Logger.error("Error in conversion detail report request ( {0} )","service unavailable"); 
+                 return PIPELET_ERROR;
+        }
+        else if(responseObj.status == "OK" && responseObj.object ==" Invalid login credentials."){
+               Logger.error("Error in conversion detail report request ( {0} )",responseObj.object);
+               return PIPELET_ERROR;
+        }
+         else if(responseObj.status == "OK" && responseObj.object =="No merchant found for username."){
+               Logger.error("Error in conversion detail report request ( {0} )",responseObj.object);
+               return PIPELET_ERROR;
+        }
+       
 		message = responseObj.object;
 	
 	if (!empty(message))
 	{
 		Logger.debug("Got the report....");
 		Logger.debug("Message - " + message);
-	    var xmlDocument : XML = new XML(message);
+	    var xmlDocument  = new XML(message);
 	    var ns = new Namespace("http://reports.cybersource.com/reports/cmos/1.0");
 
 		Logger.debug("Processing daily conversion report xml ......");
-		for each (var xmlConversion:XML in xmlDocument..*::["Conversion"]) 
+		for each (var xmlConversion in xmlDocument..*::["Conversion"]) 
 		{
 			var orderNumber = xmlConversion.attribute("MerchantReferenceNumber").toString();
-			var order : Order = orderHashMap.get(orderNumber);
+			var order = orderHashMap.get(orderNumber);
 			Logger.debug("Order Id - " + xmlConversion.@RequestID.toString());
 			if (order != null) {
 				//new decision ACCEPT decision applied to order
 				if (xmlConversion..*::["NewDecision"].toString() == 'ACCEPT') {
 					order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-					OrderMgr.placeOrder(order)	
+					OrderMgr.placeOrder(order);	
+					 Logger.info("Order number: ( {0} ) is successfully placed  ",orderNumber);
 				//new decision REJECT decision applied to order
 				} else if (xmlConversion..*::["NewDecision"].toString() == 'REJECT') {  
 						OrderMgr.failOrder(order);
+						 Logger.info("Order number: ( {0} ) is failed   ",orderNumber);
 				} else {
 					//do nothing
 				}
@@ -122,7 +130,7 @@ var CybersourceHelper = getCybersourceHelper();
 	}
 		 else {
 		    // error handling
-		    pdict.sendErrorMail = true;
+		   // pdict.sendErrorMail = true;
 		}
 		
 	}

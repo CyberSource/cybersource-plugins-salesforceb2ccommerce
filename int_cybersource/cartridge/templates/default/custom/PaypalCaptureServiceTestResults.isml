@@ -2,38 +2,38 @@
 <iscomment>
 	This template will populate the Unit Test result of Paypal Capture Service call
 </iscomment>
-Here is the Reason
+${Resource.msg('test.reasoncode','cybersource',null)}
 <isprint value="${pdict.ReasonCode}"><br>
 
-Here is the Descision
+${Resource.msg('test.decision','cybersource',null)}
 <isprint value="${pdict.Decision}"><br>
 
-Here is the Request ID
+${Resource.msg('test.requestid','cybersource',null)}
 <isprint value="${pdict.RequestID}"><br>
 
-Here is the Request Token
+${Resource.msg('test.requesttoken','cybersource',null)}
 <isprint value="${pdict.RequestToken}"><br>
 
-Here is the Authorization ID
+${Resource.msg('test.AuthorizationID','cybersource',null)}
 <isprint value="${pdict.AuthorizationId}"><br>
 
-Here is the Capture Amount
+${Resource.msg('test.CaptureAmount','cybersource',null)}
 <isprint value="${pdict.CaptureAmount}"><br>
 
-Here is the Capture Reason Code
+${Resource.msg('test.CaptureReasonCode','cybersource',null)}
 <isprint value="${pdict.CaptureReasonCode}"><br>
 
-Here is the Capture Transaction ID
+${Resource.msg('test.CaptureTransactionID','cybersource',null)}
 <isprint value="${pdict.CaptureTransactionID}"><br>
 
-Here is the Parent Transaction ID
+${Resource.msg('test.ParentTransactionID','cybersource',null)}
 <isprint value="${pdict.ParentTransactionId}"><br>
 
-Here is the Payment Status
+${Resource.msg('test.paymentstatus','cybersource',null)}
 <isprint value="${pdict.PaymentStatus}"><br>
 
-Here is the Capture Correlation ID
+${Resource.msg('test.CaptureCorrelationID','cybersource',null)}
 <isprint value="${pdict.CaptureCorrelationID}"><br>
 
-Here is the Capture Fee Amount
+${Resource.msg('test.CaptureFeeAmount','cybersource',null)}
 <isprint value="${pdict.CaptureFeeAmount}"><br>

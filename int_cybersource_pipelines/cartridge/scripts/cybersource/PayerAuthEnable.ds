@@ -1,0 +1,20 @@
+/**
+* Identifies whether to proceed for Payer Authorization or not in checkout flow
+*
+* @input cardType: String Credit Card selected by used before proceeding for checkout
+* @output paEnabled: Boolean Whether to proceed for Payer Authentication or not
+*
+*/
+var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
+var Logger = require('dw/system/Logger');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	if (empty(pdict.cardType)) {return PIPELET_ERROR;}
+	var result = CardHelper.PayerAuthEnable(pdict.cardType);
+	if (result.error) {
+		Logger.error("[PayerAuthEnable.ds] error "+ result.errorMsg + pdict.cardType);
+		return PIPELET_ERROR;
+	}
+	pdict.paEnabled = result.paEnabled;
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,452 @@
+'use strict';
+var dwsvc = require ("dw/svc");
+var Logger = require('dw/system/Logger');
+
+/**
+ * This method create the input for the cybersource visa checkout payment method, It validates the data and the card details.
+ * Create the billto,shipto,purchase object for cyb request input, calls the service with avs,cvn details and send the result back.
+ * @param LineItemCtnrObj : dw.order.LineItemCtnr
+ * @param IPAddress : Client Ip address
+ * @param orderNo : String
+ */
+
+function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddress : String)
+{
+    var basket = Basket;
+    var orderNo = OrderNo;
+
+	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
+	var data = session.forms.visacheckout.encryptedPaymentData.value;
+	var callID = session.forms.visacheckout.callId.value;
+	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	//**************************************************************************//
+	// Set WebReference & Stub
+	//**************************************************************************//	
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var csReference  = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	//**************************************************************************//
+	// Check if Basket exists
+	//**************************************************************************//
+	if(basket == null){
+		Logger.error("Please provide a Basket!");
+		return {error:true};
+	}
+
+	//Objects to set in the Service Request inside facade
+	var shipTo, billTo, purchaseObject;
+	var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+	var result = CommonHelper.CreateCyberSourceBillToObject(basket);
+	billTo = result.billTo;
+	result = CommonHelper.CreateCybersourceShipToObject(basket);
+	shipTo = result.shipTo;
+	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
+	purchaseObject = result.purchaseTotals;
+	result = CommonHelper.CreateCybersourceItemObject(basket);
+	var items : dw.util.List = result.items;
+
+	/********************************/
+	/* TOKEN-related WebService setup */
+	/********************************/
+	var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+	if(enableTokenization=='YES')
+	{
+		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest,billTo,purchaseObject,null,OrderNo);
+	}
+	
+	//**************************************************************************//
+	// the request object holds the input parameter for the AUTH request
+	//**************************************************************************//	
+	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billTo,shipTo,purchaseObject,null,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+	
+	/********************************/
+	/* Visa checkout-related WebService setup */
+	/********************************/	
+	CybersourceHelper.addVCAuthRequestInfo(serviceRequest, orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
+	/********************************/
+	/* DAV-related WebService setup */
+	/********************************/	
+	var enableDAV = CybersourceHelper.getDavEnable();
+	var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+	
+	if( enableDAV=='YES' ) {
+		var ignoreDAVResult = false;
+		if( approveDAV=='APPROVE' ) {
+			ignoreDAVResult = true;
+		}
+		CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
+	}
+	/* End of DAV WebService setup */
+	
+	/* AVS Service setup */
+	var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+	var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+	
+	CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+	/* End of AVS Service setup */
+	var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
+	CardHelper.writeOutDebugLog(serviceRequest,orderNo);
+	
+	//**************************************************************************//
+	// Execute Request
+	//**************************************************************************//	
+	var serviceResponse = null;
+	try
+	{
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}
+	catch(e)
+	{
+		Logger.fatal("[VisaCheckoutFacade.ds] Error in CCAuthRequest ( {0} )", e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	Logger.debug(response);
+	
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK")
+	{
+		Logger.fatal("[VisaCheckoutFacade.ds] CCAuthRequest Error : null response");
+		return {error:true, errorMsg:"empty or error in test CCAuthRequest response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;	
+	CardHelper.protocolResponse( serviceResponse );
+	//**************************************************************************//
+	// Process Response
+	//**************************************************************************//		
+	result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
+	return {success:true, serviceResponse:result.responseObject};
+}
+
+/**
+ * This method decrypt the data for the visa checkout functionality.
+ * @param wrappedKey : Object
+ * @param data : Object
+ * @param orderNo : String
+ */
+
+function VCDecryptRequest(orderNo : String, wrappedKey, data, callID)
+{
+	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	CybersourceHelper.addVCDecryptRequestInfo(serviceRequest,orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.fatal("[VisaCheckoutFacade.ds] Error in VCDecryptRequest request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		Logger.fatal("[VisaCheckoutFacade.ds] response in VCDecryptRequest response ( {0} )",serviceResponse);
+		return {error:true, errorMsg:"empty or error in VCDecryptRequest response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	//set response values in local variables
+	var responseObject = {};
+	responseObject["RequestID"] = serviceResponse.requestID;
+	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["Decision"] = serviceResponse.decision;
+	responseObject["MerchantReferenceCode"] = serviceResponse.merchantReferenceCode;
+	if(null !== serviceResponse.purchaseTotals){
+	responseObject["PurchaseTotalsCurrency"] = serviceResponse.purchaseTotals.currency;
+	}
+	responseObject["decryptVisaCheckoutDataReply"] = (null !== serviceResponse.decryptVisaCheckoutDataReply) ? "exists" : null;
+	if(null !== serviceResponse.decryptVisaCheckoutDataReply){
+		responseObject["VCDecryptReasonCode"] = serviceResponse.decryptVisaCheckoutDataReply.reasonCode.get();
+	}
+	responseObject["vcReply"] = (null !== serviceResponse.vcReply) ? "exists" : null;
+	if(null !== serviceResponse.vcReply){
+		responseObject["VCXID"] = serviceResponse.vcReply.xid;
+		responseObject["VCParesTimeStamp"] = serviceResponse.vcReply.paresTimeStamp;
+		responseObject["VCParesStatus"] = serviceResponse.vcReply.paresStatus;
+		responseObject["VCVeresTimeStamp"] = serviceResponse.vcReply.veresTimeStamp;
+		responseObject["VCVeresEnrolled"] = serviceResponse.vcReply.veresEnrolled;
+		responseObject["VCCAVV"] = serviceResponse.vcReply.cavv;
+		responseObject["VCEciRaw"] = serviceResponse.vcReply.eciRaw;
+		responseObject["VCAvsCodeRaw"] = serviceResponse.vcReply.avsCodeRaw;
+		responseObject["VCAccountEmail"] = serviceResponse.vcReply.vcAccountEmail;
+		responseObject["VCShippingHandlingAmount"] = serviceResponse.vcReply.shippingHandlingAmount;
+		responseObject["VCSubtotalAmount"] = serviceResponse.vcReply.subtotalAmount;
+		responseObject["VCTaxAmount"] = serviceResponse.vcReply.taxAmount;
+		responseObject["VCTotalPurchaseAmount"] = serviceResponse.vcReply.totalPurchaseAmount;
+		responseObject["VCRiskScore"] = serviceResponse.vcReply.riskScore;
+		responseObject["VCRiskAdvice"] = serviceResponse.vcReply.riskAdvice;
+		responseObject["VCPromotionCode"] = serviceResponse.vcReply.promotionCode;
+		responseObject["VCNameOnCard"] = serviceResponse.vcReply.nameOnCard;
+		responseObject["VCECI"] = serviceResponse.vcReply.eci;
+		responseObject["VCPaymentInstrumentID"] = serviceResponse.vcReply.paymentInstrumentID;
+		responseObject["VCCardVerificationStatus"] = serviceResponse.vcReply.cardVerificationStatus;
+		responseObject["VCCardType"] = serviceResponse.vcReply.cardType;
+		responseObject["cardArt"] = (null !== serviceResponse.vcReply.cardArt) ? "exists" : null;
+		if(null !== serviceResponse.vcReply.cardArt){
+			responseObject["VCCardArtFileName"] = serviceResponse.vcReply.cardArt.fileName;
+			responseObject["VCCardArtHeight"] = serviceResponse.vcReply.cardArt.height;
+			responseObject["VCCardArtWidth"] = serviceResponse.vcReply.cardArt.width;
+		}
+	}
+	responseObject["card"] = (null !== serviceResponse.card) ? "exists" : null;
+	if(null !== serviceResponse.card){
+		responseObject["ExpirationMonth"] = serviceResponse.card.expirationMonth;
+		responseObject["ExpirationYear"] = serviceResponse.card.expirationYear;
+		responseObject["CardSuffix"] = serviceResponse.card.suffix;
+	}
+	responseObject["shipTo"] = (null !== serviceResponse.shipTo) ? "exists" : null;
+	if(null !== serviceResponse.shipTo){
+		responseObject["shipTo_Address1"] = serviceResponse.shipTo.street1;
+		var address2 = serviceResponse.shipTo.street2!=null?serviceResponse.shipTo.street2:"";
+		address2 = serviceResponse.shipTo.street3!=null?", "+serviceResponse.shipTo.street3:address2;
+		address2 = serviceResponse.shipTo.street4!=null?", "+serviceResponse.shipTo.street4:address2;
+		responseObject["shipTo_Address2"] = address2;
+		responseObject["shipTo_City"] = serviceResponse.shipTo.city;
+		responseObject["shipTo_StateCode"] = serviceResponse.shipTo.state;
+		responseObject["shipTo_County"] = serviceResponse.shipTo.county;
+		responseObject["shipTo_PostalCode"] = serviceResponse.shipTo.postalCode;
+		responseObject["shipTo_CountryCode"] = serviceResponse.shipTo.country;
+		responseObject["shipTo_Company"] = serviceResponse.shipTo.company;
+		responseObject["shipTo_Phone"] = serviceResponse.shipTo.phoneNumber;
+		responseObject["shipTo_Email"] = serviceResponse.shipTo.email;
+		responseObject["shipTo_ShippingMethod"] = serviceResponse.shipTo.shippingMethod;
+		responseObject["shipTo_AddressVerificationStatus"] = serviceResponse.shipTo.addressVerificationStatus;
+		var firstName = serviceResponse.shipTo.firstName==null ? serviceResponse.shipTo.name.split(' ')[0] : serviceResponse.shipTo.firstName;
+		var lastName = serviceResponse.shipTo.lastName!=null ? serviceResponse.shipTo.lastName : null;
+		lastName = lastName==null && serviceResponse.shipTo.name.indexOf(' ') >= 0 ? serviceResponse.shipTo.name.substring(serviceResponse.shipTo.name.indexOf(' ')) : '';
+		responseObject["shipTo_FirstName"] = firstName;
+		responseObject["shipTo_LastName"] = lastName;
+	}
+	responseObject["billTo"] = (null !== serviceResponse.billTo) ? "exists" : null;
+	if(null !== serviceResponse.billTo){
+		responseObject["billTo_Address1"] = serviceResponse.billTo.street1;
+		var address2 = serviceResponse.billTo.street2!=null?serviceResponse.billTo.street2:"";
+		address2 = serviceResponse.billTo.street3!=null?", "+serviceResponse.billTo.street3:address2;
+		address2 = serviceResponse.billTo.street4!=null?", "+serviceResponse.billTo.street4:address2;
+		responseObject["billTo_Address2"] = address2;
+		responseObject["billTo_City"] = serviceResponse.billTo.city;
+		responseObject["billTo_StateCode"] = serviceResponse.billTo.state;
+		responseObject["billTo_County"] = serviceResponse.billTo.county;
+		responseObject["billTo_PostalCode"] = serviceResponse.billTo.postalCode;
+		responseObject["billTo_CountryCode"] = serviceResponse.billTo.country;
+		responseObject["billTo_Company"] = serviceResponse.billTo.company;
+		responseObject["billTo_Phone"] = serviceResponse.billTo.phoneNumber;
+		responseObject["billTo_Email"] = serviceResponse.billTo.email;
+		var firstName = serviceResponse.billTo.firstName==null ? serviceResponse.billTo.name.split(' ')[0] : serviceResponse.billTo.firstName;
+		var lastName = serviceResponse.billTo.lastName!=null ? serviceResponse.billTo.lastName : null;
+		lastName = lastName==null && serviceResponse.billTo.name.indexOf(' ') >= 0 ? serviceResponse.billTo.name.substring(serviceResponse.billTo.name.indexOf(' ')) : '';
+		responseObject["billTo_FirstName"] = firstName;
+		responseObject["billTo_LastName"] = lastName;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+
+/**
+ * This method is called when payer authorization is required along with CC validation.Service response is send to the calling method.
+ * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
+ * @param Amount : Money
+ * @param orderNo : String
+ */
+
+function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : dw.value.Money,OrderNo : String)
+{
+    var lineItemCtnrObj = LineItemCtnrObj;
+    var amount = Amount;
+    var orderNo : String = OrderNo;
+    
+	if(lineItemCtnrObj == null){
+		Logger.error("[VisaCheckoutFacade.ds] Please provide a Basket!");
+		return {error:true};
+	}
+
+	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
+	var data = session.forms.visacheckout.encryptedPaymentData.value;
+	var callID = session.forms.visacheckout.callId.value;
+	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var csReference  = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,null,null,amount, null);
+
+	//Objects to set in the Service Request inside facade
+	var shipTo, billTo, purchaseObject;
+	var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+	var result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnrObj);
+	shipTo = result.shipTo;
+	result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
+	billTo = result.billTo;
+	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnrObj);
+	purchaseObject = result.purchaseTotals;
+	result = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
+	var items : dw.util.List = result.items;
+	/********************************/
+	/* TOKEN-related WebService setup */
+	/********************************/
+	var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+	if(enableTokenization=='YES')
+	{
+		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest,billTo,purchaseObject,null,OrderNo);
+	}
+	//**************************************************************************//
+	// the request object holds the input parameter for the AUTH request
+	//**************************************************************************//	
+	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billTo,shipTo,purchaseObject,null,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+	CybersourceHelper.addVCAuthRequestInfo(serviceRequest, orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
+	/********************************/
+	/* DAV-related WebService setup */
+	/********************************/	
+	var enableDAV = CybersourceHelper.getDavEnable();
+	var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+	
+	if( enableDAV=='YES' ) {
+		var ignoreDAVResult = false;
+		if( approveDAV=='APPROVE' ) {
+			ignoreDAVResult = true;
+		}
+		CybersourceHelper.addDAVRequestInfo(serviceRequest, null, shipTo, ignoreDAVResult);
+	}
+	/* End of DAV WebService setup */
+	
+	/* AVS Service setup */
+	var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+	var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+	
+	CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.fatal("[VisaCheckoutFacade.ds] Error in PayerAuthEnrollCheck request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		Logger.fatal("[VisaCheckoutFacade.ds] response in PayerAuthEnrollCheck response ( {0} )",serviceResponse);
+		return {error:true, errorMsg:"empty or error in PayerAuthEnrollCheck response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	//set response values in local variables
+	var responseObject = {};
+	var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
+	result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
+	responseObject = result.responseObject;
+	responseObject["payerAuthEnrollReply"] = (null !== serviceResponse.payerAuthEnrollReply) ? "exists" : null;
+	if(null !== serviceResponse.payerAuthEnrollReply){
+		responseObject["PAReasonCode"] = serviceResponse.payerAuthEnrollReply.reasonCode.get();
+		responseObject["PACommerceIndicator"] = serviceResponse.payerAuthEnrollReply.commerceIndicator;
+		responseObject["UCAFCollectionIndicator"] = serviceResponse.payerAuthEnrollReply.ucafCollectionIndicator;
+		responseObject["ProofXML"] = serviceResponse.payerAuthEnrollReply.proofXML;
+		responseObject["AcsURL"] = serviceResponse.payerAuthEnrollReply.acsURL;
+		responseObject["PAXID"] = serviceResponse.payerAuthEnrollReply.xid;
+		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
+		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+
+/**
+ * This method is called when payer authorization and validation is done and CC validation is also done .Service response is send to the calling method.
+ * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
+ * @param PaRes : String
+ * @param Amount : Money
+ * @param orderNo : String
+ */
+function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,PaRes : String,Amount : dw.value.Money,OrderNo : String)
+{
+	var lineItemCtnrObj = LineItemCtnrObj;
+    var orderNo = OrderNo;
+    var amount = Amount;
+    var signedPaRes = dw.util.StringUtils.trim(PaRes);
+	//var signedPaRes : String =PaRes;
+	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
+	//**************************************************************************//
+	// Set WebReference & Stub
+	//**************************************************************************//	
+	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	
+	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
+	var data = session.forms.visacheckout.encryptedPaymentData.value;
+	var callID = session.forms.visacheckout.callId.value;
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,null,amount, null);
+
+	//Objects to set in the Service Request inside facade
+	var shipTo, billTo, purchaseObject;
+	var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+	var result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnrObj);
+	shipTo = result.shipTo;
+	result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
+	billTo = result.billTo;
+	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnrObj);
+	purchaseObject = result.purchaseTotals;
+	result = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
+	var items : dw.util.List = result.items;
+	/********************************/
+	/* TOKEN-related WebService setup */
+	/********************************/
+	var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+	if(enableTokenization=='YES')
+	{
+		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest,billTo,purchaseObject,null,OrderNo);
+	}
+	//**************************************************************************//
+	// the request object holds the input parameter for the AUTH request
+	//**************************************************************************//	
+	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billTo,shipTo,purchaseObject,null,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+	CybersourceHelper.addVCAuthRequestInfo(serviceRequest, orderNo, wrappedKey, data);
+	CybersourceHelper.addVCOrderID(serviceRequest,callID);
+	
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		serviceResponse = service.call(serviceRequest);
+	}catch(e){
+		Logger.fatal("[VisaCheckoutFacade.ds] Error in PayerAuthValidation request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+		Logger.fatal("[VisaCheckoutFacade.ds] response in PayerAuthValidation response ( {0} )",serviceResponse);
+		return {error:true, errorMsg:"empty or error in PayerAuthValidation response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	//set response values in local variables
+	var responseObject = {};
+	var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
+	result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
+	responseObject = result.responseObject;
+	responseObject["payerAuthValidateReply"] = (null !== serviceResponse.payerAuthValidateReply) ? "exists" : null;
+	if(null !== serviceResponse.payerAuthValidateReply){
+		responseObject["AuthenticationResult"] = serviceResponse.payerAuthValidateReply.authenticationResult;
+		responseObject["AuthenticationStatusMessage"] = serviceResponse.payerAuthValidateReply.authenticationStatusMessage;
+		responseObject["CAVV"] = serviceResponse.payerAuthValidateReply.cavv;
+		responseObject["UCAFAuthenticationData"] = serviceResponse.payerAuthValidateReply.ucafAuthenticationData;
+		responseObject["UCAFCollectionIndicator"] = serviceResponse.payerAuthValidateReply.ucafCollectionIndicator;
+		responseObject["PAVCommerceIndicator"] = serviceResponse.payerAuthValidateReply.commerceIndicator;
+		responseObject["PAVXID"] = serviceResponse.payerAuthValidateReply.xid;
+		responseObject["ECIRaw"] = serviceResponse.payerAuthValidateReply.eciRaw;
+		responseObject["ParesStatus"] = serviceResponse.payerAuthValidateReply.paresStatus;
+	}
+	return {success:true, serviceResponse:responseObject};
+}
+module.exports = {
+		VCDecryptRequest:VCDecryptRequest,
+		PayerAuthValidationCCAuthRequest : PayerAuthValidationCCAuthRequest,
+		PayerAuthEnrollCCAuthRequest:PayerAuthEnrollCCAuthRequest,
+		CCAuthRequest:CCAuthRequest
+	};

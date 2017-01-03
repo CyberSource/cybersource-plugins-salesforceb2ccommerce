@@ -2,8 +2,9 @@
 	This template will submit the form on page onload
 </iscomment>
 <iscontent type="text/html" charset="UTF-8" compact="true">
-
-<div class="payerauth">
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/js/cybersource-custom.js')}"></script>
+<div class="payerauth" id="cyb_unitTest_payerauthsubmit">
 	<div class=processing>
 		${Resource.msg('cart.payerauthentication.001','cart','')}
 	</div>
@@ -16,12 +17,4 @@
 		<input type="hidden" name="PaReq" value="${pdict.PAReq}">
 		<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
 	</form>
-	<script language="javascript">
-		var loaded = false;
-		function load(){
-			document.PAInfoForm.submit();
-			loaded = true;
-		}
-		load();
-	</script>
 </div>

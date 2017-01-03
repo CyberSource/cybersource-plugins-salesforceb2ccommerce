@@ -1,0 +1,26 @@
+/**
+ * Remove a payment instruments except gift certificate and payment method ID passed
+ *
+ * @input Basket : dw.order.Basket The basket.
+ * @input PaymentType : String the type of the payment instrument.
+ */
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    var basket = pdict.Basket;
+	var paymentType = pdict.PaymentType;
+
+
+	// verify that we have a basket and a valid credit card form
+	if( basket == null || paymentType == null)
+	{
+		return PIPELET_ERROR;
+	}
+
+	// remove existing credit cards from the basket
+	CommonHelper.removeExistingPaymentInstrumentsExceptPaymentType(basket, paymentType);
+	
+    return PIPELET_NEXT;
+}
+

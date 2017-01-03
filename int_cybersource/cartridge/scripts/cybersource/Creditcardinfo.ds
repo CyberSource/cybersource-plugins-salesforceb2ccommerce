@@ -2,10 +2,6 @@
 * Creditcardinfo.ds
 * This script has declaration of its variables and methods.  
 */
-importPackage( dw.system );
-importPackage( dw.order );
-importPackage( dw.rpc );
-importPackage( dw.util );
 
 var accountNumber : String;
 var cvNumber : String;
@@ -73,9 +69,4 @@ getCardType : function (){
 		return cardType;
 	},	
 
-}
-
-// Helper method to export the helper
-function getCreditCardInfoHelper(){
-	return CreditCardInfoHelper;
 }

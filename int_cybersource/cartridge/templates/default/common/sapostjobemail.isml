@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<subject><isif condition="${!empty(pdict.MailSubject)}">${pdict.MailSubject}<iselse/></isif></subject>
+<html>
+<head>
+<title>${Resource.msg('email.secureacceptancepostjob','cybersource',null)}</title>
+</head>
+<body>
+Total records picked for job processing <isprint value="${pdict.COResultCount}" />
+<isif condition="${!empty(pdict.alreadyUpdated)}">
+${Resource.msg('sa.updatedorders','cybersource',null)} <br/>  ${pdict.alreadyUpdated.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.reviewOrders)}">
+${Resource.msg('sa.revieworders','cybersource',null)}<br/> ${pdict.reviewOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.errorOccured)}">
+${Resource.msg('sa.manualorders','cybersource',null)} <br/> ${pdict.errorOccured.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.failOrders)}">
+${Resource.msg('sa.failedorders','cybersource',null)} <br/> ${pdict.failOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.cancelOrders)}">
+${Resource.msg('sa.cancelledorders','cybersource',null)} <br/> ${pdict.cancelOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.authorizeOrders)}">
+${Resource.msg('sa.authorizedorders','cybersource',null)} <br/> ${pdict.authorizeOrders.join('<br/>')}
+</isif>
+<isif condition="${!empty(pdict.declineOrders)}">
+${Resource.msg('sa.declinedorders','cybersource',null)} <br/>  ${pdict.declineOrders.join('<br/>')}
+</isif>
+</body>
+</html>

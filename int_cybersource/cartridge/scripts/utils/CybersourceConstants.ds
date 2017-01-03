@@ -1,0 +1,25 @@
+/*********************************************************************************
+*@file 		  : File Name - CybersourceConstants.ds
+*@description : This script file is used to define the payment method names used 	
+* 				in this cartridge .
+*
+*@author	  :	Vibhore Jain
+*@created On  : 27 Dec 2016
+**********************************************************************************
+*@copyright  (C) 2015-2016 Cybersource.  All Rights Reserved.
+**********************************************************************************/
+
+
+function CybersourceConstants() {
+}
+
+
+CybersourceConstants.METHOD_ALIPAY = "ALIPAY";
+CybersourceConstants.METHOD_ALIPAY_returnURLValue = "alipay";
+CybersourceConstants.METHOD_PAYPAL = "PayPal";
+CybersourceConstants.METHOD_SA_REDIRECT = "SA_REDIRECT";
+CybersourceConstants.METHOD_SA_IFRAME = "SA_IFRAME";
+CybersourceConstants.METHOD_SA_SILENTPOST = "SA_SILENTPOST";
+CybersourceConstants.METHOD_VISA_CHECKOUT = "VISA_CHECKOUT";
+	
+module.exports = CybersourceConstants;

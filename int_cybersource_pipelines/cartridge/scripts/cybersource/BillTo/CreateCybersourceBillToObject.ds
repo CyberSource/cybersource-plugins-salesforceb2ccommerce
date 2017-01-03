@@ -1,0 +1,22 @@
+/**
+*	CreateCybersourceBillToObject.ds
+*	This script creates the BillToObject data object and set it to CyberSourceBillTo output object.
+*
+*	@input ipAddress : String
+*	@input Basket : dw.order.LineItemCtnr
+*	@input ReadFromBasket : Boolean
+*	@output CyberSourceBillTo : Object
+*
+*/
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var result = CommonHelper.CreateCyberSourceBillToObject(pdict.Basket, pdict.ReadFromBasket);
+	
+	if(null !== result && result.success)
+	{
+		pdict.CyberSourceBillTo = result.billTo;
+	}
+    	return PIPELET_NEXT;
+}

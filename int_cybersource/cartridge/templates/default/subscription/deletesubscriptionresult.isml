@@ -1,21 +1,14 @@
-<style type="text/css">
-label {
-	width:300px;    /*Or however much space you need for the form’s labels*/
-    float:left;
-}
-td {
-	border-width: medium; 
-	border-style: outset;
-}
-</style>
 <iscomment>
 	This template will populate the test result of delete subscription
 </iscomment>
-<label><b>CyberCource Decision :</b></label><isprint value="${pdict.decision}"><br>
-<label><b>CyberSource Reason Code :</b></label><isprint value="${pdict.reasonCode}"><br>
-<label><b>CyberSource RequestId :</b></label><isprint value="${pdict.requestID}"><br>
-<label><b>CyberSource Request Token :</b></label><isprint value="${pdict.requestToken}"><br/><br/><br/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="delete-subscription">
+<label><strong>${Resource.msg('test.cybdecision','cybersource',null)}</strong></label><isprint value="${pdict.serviceResponse.decision}"><br>
+<label><strong>${Resource.msg('test.cybreasoncode','cybersource',null)}</strong></label><isprint value="${pdict.serviceResponse.reasonCode}"><br>
+<label><strong>${Resource.msg('test.cybrequestid','cybersource',null)}</strong></label><isprint value="${pdict.serviceResponse.requestID}"><br>
+<label><strong>${Resource.msg('test.cybrequesttoken','cybersource',null)}</strong></label><isprint value="${pdict.serviceResponse.requestToken}"><br/><br/><br/>
 
-<b>To check for Subscription details, please log in to following link with your CyberSource Merchant ID and Password:</b><br/>
-<a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">CyberSource Test Account</a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.https('Cybersource_Subscription-Start')}" >BACK</a>
+<strong>${Resource.msg('test.cybsubscriptiondetails','cybersource',null)}</strong><br/>
+<a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">${Resource.msg('test.cybtestaccount','cybersource',null)}</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.https('CybersourceUnitTesting-StartSubscription')}" >${Resource.msg('test.cybbackbutton','cybersource',null)}</a>
+</div>

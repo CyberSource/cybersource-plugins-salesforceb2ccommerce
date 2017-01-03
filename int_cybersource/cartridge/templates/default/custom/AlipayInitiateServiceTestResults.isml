@@ -2,18 +2,18 @@
 <iscomment>
 	This template will populate the Unit Test result of Alipay Initiate Service
 </iscomment>
-Here is the Reason
-<isprint value="${pdict.ReasonCode}"><br>
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.alipayInitiateResponse.ReasonCode}"><br>
 
-Here is the Descision
-<isprint value="${pdict.Decision}"><br>
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.alipayInitiateResponse.Decision}"><br>
 
-Here is the Request ID
-<isprint value="${pdict.RequestID}"><br>
+${Resource.msg('test.requestid','cybersource',null)}
+<isprint value="${pdict.alipayInitiateResponse.RequestID}"><br>
 
-Here is the Request Token
-<isprint value="${pdict.RequestToken}"><br>
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.alipayInitiateResponse.RequestToken}"><br>
 
-Here is the Reconciliation ID
-<isprint value="${pdict.ReconciliationID}"><br>
+${Resource.msg('test.reconciliationid','cybersource',null)}
+<isprint value="${pdict.alipayInitiateResponse.ReconciliationID}"><br>
 

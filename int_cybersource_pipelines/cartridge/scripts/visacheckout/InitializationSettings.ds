@@ -1,0 +1,27 @@
+/**
+* InitializationSettings.ds
+* Retrieve Visa Checkout Initialization string for the v.init event handler function defined in onVisaCheckoutReady function.
+*
+*   @input Basket : dw.order.LineItemCtnr The existing basket object
+*   @input IsDeliveryAddress : Boolean Indicate Delivery Address to be collected from visa checkout.
+*   @output VInitFormattedString : String The formatted string to be passed in v.init of function onVisaCheckoutReady
+*   @output Signature : String The basketUUID signed signature
+*/
+                
+var Logger = require('dw/system/Logger');
+var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/helper/VisaCheckoutHelper');
+function execute( pdict : PipelineDictionary ) : Number
+{
+	try 
+	{
+		var result = VisaCheckoutHelper.GetButtonInitializeSettings(pdict.Basket, pdict.IsDeliveryAddress);
+	    pdict.VInitFormattedString = result.VInitFormattedString;
+		pdict.Signature = result.signature;
+	   	return PIPELET_NEXT;
+	}
+	catch(err) 
+	{
+		Logger.error("Visa Checkout initialization failed: {0}", err.message);
+		return PIPELET_ERROR;
+	}
+}

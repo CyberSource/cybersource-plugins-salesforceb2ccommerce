@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<payment-processors xmlns="http://www.demandware.com/xml/impex/paymentprocessor/2007-03-31">
+    <payment-processor processor-id="BASIC_CREDIT">
+        <description>Internal credit card handling with simple card number check only.</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+    <payment-processor processor-id="BASIC_GIFT_CERTIFICATE">
+        <description>Internal gift certificate handling.</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+
+    <payment-processor processor-id="CYBERSOURCE_ALIPAY">
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+    <payment-processor processor-id="CYBERSOURCE_CREDIT">
+        <description>Cybersource online credit card authorization (test and production systems).</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+
+    <payment-processor processor-id="PAYPAL_EXPRESS">
+        <description>Paypal Express Checkout (test and production systems).</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+	 <payment-processor processor-id="VERISIGN_CREDIT">
+        <description>Verisign online credit card authorization (test and production systems).</description>
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+</payment-processors>

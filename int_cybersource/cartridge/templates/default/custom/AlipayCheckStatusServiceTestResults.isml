@@ -1,25 +1,25 @@
-<!--- TEMPLATENAME: AlipayInitiateServiceTestResults.isml --->
+<!--- TEMPLATENAME: AlipayCheckStatusServiceTestResults.isml --->
 <iscomment>
 	This template will populate the Unit Test result of Alipay Check Status Service
 </iscomment>
-Here is the Reason
-<isprint value="${pdict.ReasonCode}"><br>
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.ReasonCode}"><br>
 
-Here is the Descision
-<isprint value="${pdict.Decision}"><br>
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.Decision}"><br>
 
-Here is the Request ID
-<isprint value="${pdict.CheckStatusRequestID}"><br>
+${Resource.msg('test.requestid','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.RequestID}"><br>
 
-Here is the Request Token
-<isprint value="${pdict.RequestToken}"><br>
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.RequestToken}"><br>
 
-Here is the Reconciliation ID
-<isprint value="${pdict.ReconciliationID}"><br>
+${Resource.msg('test.reconciliationid','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.ReconciliationID}"><br>
 
-Here is the Payment Status
-<isprint value="${pdict.PaymentStatus}"><br>
+${Resource.msg('test.paymentstatus','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.PaymentStatus}"><br>
 
-Here is the Processor Transaction ID
-<isprint value="${pdict.ProcessorTransactionId}"><br>
+${Resource.msg('test.transactionid','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.ProcessorTransactionId}"><br>
 

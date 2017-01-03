@@ -9,6 +9,6 @@ ${pdict.billto.street1}<br/>
 </isif>
 ${pdict.billto.city}, ${pdict.billto.state} ${pdict.shipto.country}<br/>
 ${pdict.billto.postalCode}<br/><br/>
-Phone: ${pdict.billto.phoneNumber}<br/>
-Email: ${pdict.billto.email}<br/>
-IP Address: ${pdict.billto.ipAddress}
+${Resource.msg('test.phoneNumber','cybersource',null)} ${pdict.billto.phoneNumber}<br/>
+${Resource.msg('test.email','cybersource',null)} ${pdict.billto.email}<br/>
+${Resource.msg('test.ipAddress','cybersource',null)} ${pdict.billto.ipAddress}

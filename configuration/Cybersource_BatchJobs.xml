@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="AlipayCheckStatusService" priority="0">
+        <description>Job Scheduler to check the status of Ali Pay Initiate Payment request status.</description>
+        <flow>
+            <context site-id="SiteGenesis"/>
+            <step step-id="CYBERSOURCE_ALIPAY_JOB" type="ExecutePipeline" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExecutePipeline.Pipeline">CYBERSOURCE_ALIPAY_JOB-AlipayCheckPaymentStatusWorkflow</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+                <send-mail>
+                    <from>nsiddiqui@sapient.com</from>
+                    <to>nsiddiqui@sapient.com</to>
+                </send-mail>
+            </on-running>
+            <on-retry enabled="false">
+                <send-mail>
+                    <from>nsiddiqui@sapient.com</from>
+                    <to>nsiddiqui@sapient.com</to>
+                </send-mail>
+            </on-retry>
+            <on-exit status="ERROR" enabled="false">
+                <send-mail>
+                    <from>nsiddiqui@sapient.com</from>
+                    <to>nsiddiqui@sapient.com</to>
+                </send-mail>
+            </on-exit>
+        </rules>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>21:43:11.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="CyberSourceConversionReport" priority="0">
+        <description>CyberSource conversion detail report</description>
+        <flow>
+            <context site-id="SiteGenesis"/>
+            <step step-id="CONVERSION_DETAIL_REPORT_JOB" type="ExecutePipeline" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExecutePipeline.Pipeline">CONVERSION_DETAIL_REPORT_JOB-CoversionDetailReport</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>11:30:03.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="SecureAcceptanceMerchantPostJob" priority="0">
+        <description>Secure Acceptance Merhcant Post Notification Job</description>
+        <flow>
+            <context site-id="SiteGenesis"/>
+            <step step-id="SECURE_ACCEPTANCE_JOB" type="ExecutePipeline" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExecutePipeline.Pipeline">SECURE_ACCEPTANCE_JOB-MerchantPostJob</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>11:40:27.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+</jobs>

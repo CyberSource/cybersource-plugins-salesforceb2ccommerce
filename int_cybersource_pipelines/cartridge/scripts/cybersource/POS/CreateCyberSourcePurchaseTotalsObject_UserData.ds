@@ -1,0 +1,30 @@
+/**
+*	CreateCyberSourcePurchaseTotalsObject_UserData.ds
+*	This script creates the PurchaseTotalsObject user data object and set it to CyberSourcePurchaseTotal output object.
+*
+*	@input 	currency 					: String
+*	@input 	amount 						: String
+*
+*   @output	CyberSourcePurchaseTotal	: Object
+*   @output error 						: String
+*   @output errorCode					: String
+*/
+var POSHelper = require('int_cybersource/cartridge/scripts/helper/POSHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{  
+	var currency : String = pdict.currency;
+	var amount : String = pdict.amount;
+	
+	var result = POSHelper.CreateCyberSourcePurchaseTotalsObject_UserData(amount,currency);
+		if(result.error)
+		{
+			pdict.errorCode = result.errorCode;
+			pdict.error = result.errorMsg;
+			return PIPELET_ERROR;
+		}
+
+			pdict.CyberSourcePurchaseTotal = result.purchaseObject;
+    
+    return PIPELET_NEXT;
+}

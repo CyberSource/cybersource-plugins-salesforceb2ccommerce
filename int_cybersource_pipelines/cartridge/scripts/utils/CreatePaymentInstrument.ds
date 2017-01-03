@@ -1,0 +1,99 @@
+/**
+ * Creates a payment instrument specific for the given payment type (payment method)
+ * for the given basket. If any error occurs the pipelet returns PIPELET_ERROR with
+ * no payment instrument being created. If the creation succeeded the script returns 
+ * the newly created payment instrument.
+ *
+ * If only one payment instrument is allowed, any existing payment instrument may be
+ * removed by using the RemoveExisting input parameter and passing a Boolean true.
+ *
+ * PJP-2000: Modified logic to reference LineItemCtnr (to work for both Order and Basket)
+ *
+ * @input LineItemCtnr : dw.order.LineItemCtnr The basket.
+ * @input PaymentType : String the payment method of the payment instrument to create.
+ * @input RemoveExisting : Boolean if true, removes any other payment instruments of the same payment method
+ * @output PaymentInstrument : dw.order.PaymentInstrument The created payment instrument.
+ */
+var Money = require('dw/value/Money');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    var lineItemCtnr = pdict.LineItemCtnr;
+	var paymentType : String = pdict.PaymentType;
+	var removeExisting : Boolean = pdict.RemoveExisting;
+
+	// validate pipelet input parameters
+	if( lineItemCtnr == null || paymentType == null || removeExisting == null)
+	{
+		return PIPELET_ERROR;
+	}
+
+	// remove existing payment instruments from the basket
+	if (removeExisting)
+	{
+		removeExistingPaymentInstruments( lineItemCtnr,  paymentType );
+	}
+
+	// calculate the amount to be reflected by this payment instrument
+	var amount = calculateNonGiftCertificateAmount( lineItemCtnr );
+
+	// create a payment instrument
+	var paymentInstr = lineItemCtnr.createPaymentInstrument( paymentType, amount );
+
+	pdict.PaymentInstrument = paymentInstr;
+    return PIPELET_NEXT;
+}
+
+/**
+ * Calculates the amount to be payed by a non-gift certificate payment instrument based 
+ * on the given basket. The method subtracts the amount of all redeemed gift certificates 
+ * from the order total and returns this value.
+ *
+ * PJP-2000: Modified logic to use LineItemCtnr (to support both Basket and Order)
+ */
+function calculateNonGiftCertificateAmount( lineItemCtnr ) 
+{
+	// the total redemption amount of all gift certificate payment instruments in the basket
+	var giftCertTotal = new Money( 0.0, lineItemCtnr.currencyCode );
+
+	// get the list of all gift certificate payment instruments 
+	var gcPaymentInstrs = lineItemCtnr.getGiftCertificatePaymentInstruments();
+	var iter = gcPaymentInstrs.iterator();
+	var orderPI = null;
+
+	// sum the total redemption amount
+	while( iter.hasNext() )
+	{
+		orderPI = iter.next();
+		giftCertTotal = giftCertTotal.add( orderPI.getPaymentTransaction().getAmount() );
+	}
+
+	// get the order total
+	var orderTotal = lineItemCtnr.totalGrossPrice;
+
+	// calculate the amount to charge for the payment instrument
+	// this is the remaining open order total which has to be paid
+	var amountOpen = orderTotal.subtract( giftCertTotal );
+
+	// return the open amount
+	return amountOpen;
+}
+
+/** 
+ * Determines if the basket already contains payment 
+ * instruments of the given payment method and removes them from the basket.
+ */
+function removeExistingPaymentInstruments( lineItemCtnr : dw.order.LineItemCtnr, method : String )
+{
+	// get all credit card payment instruments
+	var ccPaymentInstrs = lineItemCtnr.getPaymentInstruments( method );
+	var iter = ccPaymentInstrs.iterator();
+	var existingPI = null;
+
+	// remove them
+	while( iter.hasNext() )
+	{
+		existingPI = iter.next();
+		lineItemCtnr.removePaymentInstrument( existingPI );
+	}
+}

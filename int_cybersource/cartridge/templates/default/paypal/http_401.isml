@@ -1,2 +1,4 @@
 <isstatus value="401">
-<!--- 401 Unauthorized --->
+<iscomment>
+401 Unauthorized
+</iscomment>

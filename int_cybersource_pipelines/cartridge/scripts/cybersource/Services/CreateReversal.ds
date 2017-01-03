@@ -1,0 +1,47 @@
+/**
+* CreateReversal.ds
+* Performs the reversal service on provided input parameters authId and purchase object.
+*
+* @input currency : String
+* @input amount : String
+* @input	authorizationID : String
+* @output SubscriptionIDToken :String
+* @output decision :String
+* @output invalidField : Array;
+* @output missingField : Array
+* @output reasonCode : Object
+* @output requestID : Object
+* @output requestToken : Object
+* @output reversalResponse : Object
+*/
+var ServiceFacade = require('int_cybersource/cartridge/scripts/facade/ServiceFacade');
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var result = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(pdict.currency, pdict.amount);
+	if (result.error) {
+		return PIPELET_ERROR;
+	}
+	var purchaseObject = result.purchaseTotals;
+    
+    var authorizationID: String = pdict.authorizationID;
+
+	var result = ServiceFacade.CreateReversal(purchaseObject, authorizationID);
+	if (result.error) {
+		return PIPELET_ERROR;
+	}
+	var serviceResponse = result.serviceResponse;
+	if (!empty(serviceResponse.SubscriptionID))
+	{
+		pdict.SubscriptionIDToken = serviceResponse.subscriptionID;
+	}
+	pdict.decision = serviceResponse.Decision;
+	pdict.invalidField = serviceResponse.invalidField;
+	pdict.missingField = serviceResponse.missingField;
+	pdict.reasonCode = serviceResponse.ReasonCode;
+	pdict.requestID = serviceResponse.RequestID;
+	pdict.requestToken = serviceResponse.RequestToken;
+	pdict.reversalResponse = serviceResponse;
+	return PIPELET_NEXT;
+}

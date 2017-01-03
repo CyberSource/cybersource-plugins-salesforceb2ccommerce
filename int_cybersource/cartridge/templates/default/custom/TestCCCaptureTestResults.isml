@@ -1,21 +1,27 @@
 <iscomment>
 	This template will populate the Unit Test result of Capture CCAuth
 </iscomment>
-Here is the Capture Amount
-<isprint value="${pdict.CaptureAmount}"><br>
+<isif condition="${empty(pdict.CurrentHttpParameterMap.oid.stringValue)}">
+${Resource.msg('test.ordernumparameter','cybersource',null)}
+<iselseif condition="${empty(pdict.Order)}">${Resource.msg('test.ordernotfound','cybersource',null)} ${pdict.CurrentHttpParameterMap.oid} ${Resource.msg('test.orderpaidstate','cybersource',null)}<br>
+<iselseif condition="${!empty(pdict.ErrorMsg)}">
+<isprint value="${pdict.ErrorMsg}"><br>
+<iselse>
+${Resource.msg('test.CaptureAmount','cybersource',null)}
+<isprint value="${pdict.CaptureResponse.CaptureAmount}"><br>
 
-Here is the Capture Reason Code
-<isprint value="${pdict.CaptureReasonCode}"><br>
+${Resource.msg('test.CaptureReasonCode','cybersource',null)}
+<isprint value="${pdict.CaptureResponse.CaptureReasonCode}"><br>
 
-Here is the Decision
-<isprint value="${pdict.Decision}"><br>
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.CaptureResponse.Decision}"><br>
 
-Here is the Reason Code
-<isprint value="${pdict.ReasonCode}"><br>
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.CaptureResponse.ReasonCode}"><br>
 
 Here is the RequestID
-<isprint value="${pdict.RequestID}"><br>
+<isprint value="${pdict.CaptureResponse.RequestID}"><br>
 
-Here is the Request Token
-<isprint value="${pdict.RequestToken}"><br>
-
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.CaptureResponse.RequestToken}"><br>
+</isif>

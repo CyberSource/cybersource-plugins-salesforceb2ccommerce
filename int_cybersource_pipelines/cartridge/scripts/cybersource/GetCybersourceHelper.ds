@@ -1,0 +1,14 @@
+/**
+*	GetCybersourceHelper.ds
+	This script is used to get the CyberSourceHerlper method
+*   @output CybersourceHelper : Object
+*
+*/
+var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	args.CybersourceHelper = libCybersource.getCybersourceHelper();
+	 
+    return PIPELET_NEXT;
+}

@@ -1,32 +1,32 @@
-<!--- TEMPLATENAME: TestDAVCheckResults.isml --->
 <iscomment>
+	TEMPLATENAME: TestDAVCheckResults.isml
 	This template will populate the Unit Test result of DAV
 </iscomment>
-<h1>Test DAVCheck Results</h1>
-<h2>Input Shipping Address:</h2>
+<h1>${Resource.msg('test.testDAVresult','cybersource',null)}</h1>
+<h2>${Resource.msg('test.inpshipaddress','cybersource',null)}</h2>
 <p><isinclude template="custom/ShippingAddress" /></p>
-<h2>Input Billing Address:</h2>
+<h2>${Resource.msg('test.inpbillingaddress','cybersource',null)}</h2>
 <p><isinclude template="custom/BillingAddress" /></p>
-<h2>Result:</h2>
-<p>${pdict.Result}</p>
-<h2>DAV ReasonCode:</h2>
-<p>${pdict.DAVReasonCode}</p>
-<isif condition="${!empty(pdict.MissingFieldsArray)}">
-	<h2>Missing Fields:</h2>
-	<p><isloop items="${pdict.MissingFieldsArray}" var="MissingField" status="loopStat">
+<h2>${Resource.msg('test.result','cybersource',null)}</h2>
+<p>${pdict.davResponse.Result}</p>
+<h2>${Resource.msg('test.davreasoncode','cybersource',null)}</h2>
+<p>${pdict.davResponse.DAVReasonCode}</p>
+<isif condition="${!empty(pdict.davResponse.MissingFieldsArray)}">
+	<h2>${Resource.msg('test.missingfields','cybersource',null)}</h2>
+	<p><isloop items="${pdict.davResponse.MissingFieldsArray}" var="MissingField" status="loopStat">
 		${MissingField}<isif condition="${!loopStat.last}">, </isif>
 	</isloop></p>
 </isif>
-<isif condition="${!empty(pdict.InvalidFieldsArray)}">
-	<h2>Invalid Fields:</h2>
-	<p><isloop items="${pdict.InvalidFieldsArray}" var="InvalidField" status="loopStat">
+<isif condition="${!empty(pdict.davResponse.InvalidFieldsArray)}">
+	<h2>${Resource.msg('test.invalidfields','cybersource',null)}</h2>
+	<p><isloop items="${pdict.davResponse.InvalidFieldsArray}" var="InvalidField" status="loopStat">
 		${InvalidField}<isif condition="${!loopStat.last}">, </isif>
 	</isloop></p>
 </isif>
-<isif condition="${!empty(pdict.StandardizedAddress)}">
-	<h2>Corrected Shipping Address:</h2>
+<isif condition="${!empty(pdict.davResponse.StandardizedAddress)}">
+	<h2>${Resource.msg('test.correctshipaddress','cybersource',null)}</h2>
 	<p><isinclude template="custom/StandardizedAddress" /></p>
 </isif>
-<h2>Script Log:</h2>
+<h2>${Resource.msg('test.scriptlog','cybersource',null)}</h2>
 <p>${pdict.ScriptLog}</p>
 

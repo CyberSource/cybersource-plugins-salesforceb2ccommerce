@@ -1,0 +1,55 @@
+var Money = require('dw/value/Money');
+/**
+ * Calculates the amount to be payed by a non-gift certificate payment instrument based 
+ * on the given basket. The method subtracts the amount of all redeemed gift certificates 
+ * from the order total and returns this value.
+ *
+ * 
+ */
+function calculateNonGiftCertificateAmount( lineItemCtnr : dw.order.LineItemCtnr ) 
+{
+	var productTotal = lineItemCtnr.getAdjustedMerchandizeTotalPrice();
+	var shippingTotal = lineItemCtnr.getAdjustedShippingTotalPrice();
+	var shippingTax  = lineItemCtnr.getAdjustedShippingTotalTax();
+	var totalTax     = lineItemCtnr.getAdjustedMerchandizeTotalTax();
+	var totalAmount  = new Money(0,lineItemCtnr.currencyCode);
+	
+	totalAmount=totalAmount.add(productTotal);
+	if(shippingTotal.value!=0){
+    	totalAmount=totalAmount.add(shippingTotal);
+	}
+	if(shippingTax.value !=0){
+		totalAmount=totalAmount.add(shippingTax);
+	}
+	if(totalTax.value !=0){
+   		totalAmount=totalAmount.add(totalTax);
+	}
+	
+	// the total redemption amount of all gift certificate payment instruments in the basket
+	var giftCertTotal = new Money( 0.0, lineItemCtnr.currencyCode );
+
+	// get the list of all gift certificate payment instruments 
+	var gcPaymentInstrs = lineItemCtnr.getGiftCertificatePaymentInstruments();
+	var iter : Iterator = gcPaymentInstrs.iterator();
+	var orderPI = null;
+
+	// sum the total redemption amount
+	while( iter.hasNext() )
+	{
+		orderPI = iter.next();
+		giftCertTotal = giftCertTotal.add( orderPI.getPaymentTransaction().getAmount() );
+	}
+
+	// get the order total
+	var orderTotal = totalAmount;
+
+	// calculate the amount to charge for the payment instrument
+	// this is the remaining open order total which has to be paid
+	var amountOpen = orderTotal.subtract( giftCertTotal );
+
+	// return the open amount
+	return amountOpen;
+}
+module.exports = {
+		calculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount
+	};

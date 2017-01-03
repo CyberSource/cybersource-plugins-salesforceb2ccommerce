@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="view">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>This pipeline will call from job scheduler to change the status of demandware placed orders through Alipay after getting response from check status service call response. If paymentStatus from  service call is COMPLETED demandware order status will be New, Created for PENDING paymentStatus and Failed for ABANDONED and TRADE_NOT_EXIST paymentStatus of service call response.</description>
+        </text-node>
+        <node-display width="3" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AlipayCheckPaymentStatusWorkflow">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AlipayCheckPaymentStatusWorkflow" secure="false"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/Alipay/AlipayGetOrderForCheckStatusWorkflow.ds"/>
+          <config-property key="Timeout" value="900"/>
+          <key-binding alias="scriptlog" key="ScriptLog"/>
+          <key-binding alias="orderList" key="orderList"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

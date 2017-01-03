@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline>
+  <branch basename="Authorize">
+    <segment>
+      <node>
+        <start-node name="Authorize" secure="true"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="&quot;&quot;" key="From_0"/>
+          <key-binding alias="ERRORCODE" key="To_0"/>
+          <key-binding alias="&quot;&quot;" key="From_1"/>
+          <key-binding alias="ERRORMSG" key="To_1"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="cybersource/ApplePay/ValidateApplePayRequest.ds"/>
+          <key-binding alias="logs" key="ScriptLog"/>
+          <key-binding alias="OrderNo" key="OrderNo"/>
+          <key-binding alias="ERRORCODE" key="ErrorCode"/>
+          <key-binding alias="CardType" key="CardType"/>
+          <key-binding alias="Cryptogram" key="Cryptogram"/>
+          <key-binding alias="NetworkToken" key="NetworkToken"/>
+          <key-binding alias="TokenExpirationMonth" key="TokenExpirationMonth"/>
+          <key-binding alias="TokenExpirationYear" key="TokenExpirationYear"/>
+          <key-binding alias="ERRORMSG" key="ErrorMsg"/>
+          <key-binding alias="PaymentData" key="PaymentData"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in1"/>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="2" y="0"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Determine single order by its UUID" pipelet-name="SearchSystemObject" pipelet-set-identifier="bc_api">
+          <config-property key="ObjectType" value="Order"/>
+          <config-property key="SearchExpression" value="orderNo={1}"/>
+          <key-binding alias="Orders" key="SearchResult"/>
+          <key-binding alias="null" key="Search3Key"/>
+          <key-binding alias="null" key="Search4Key"/>
+          <key-binding alias="null" key="Search4Value"/>
+          <key-binding alias="null" key="Search5Key"/>
+          <key-binding alias="null" key="Search5Value"/>
+          <key-binding alias="null" key="SortBy2"/>
+          <key-binding alias="null" key="SortBy2Direction"/>
+          <key-binding alias="null" key="SortBy3"/>
+          <key-binding alias="null" key="SortBy3Direction"/>
+          <key-binding alias="OrderNo" key="Search1Value"/>
+          <key-binding alias="null" key="Search1Key"/>
+          <key-binding alias="ordersCount" key="SearchResultCount"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="ordersCount&gt;0" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <key-binding alias="Orders.next()" key="From_0"/>
+                <key-binding alias="Order" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="!empty(Order.getPaymentInstruments('DW_APPLE_PAY'))" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="Order.status==dw.order.Order.ORDER_STATUS_CREATED" condition-operator="expr"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in"/>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="utils/GetIPAddress.ds"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="IPAddress" key="IPAddress"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+4"/>
+                          </branch>
+                        </node>
+                        <simple-transition/>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="ScriptFile" value="cybersource/ApplePay/ApplePayAuthRequest.ds"/>
+                            <config-property key="Transactional" value="true"/>
+                            <config-property key="Timeout" value="30"/>
+                            <key-binding alias="ScriptLog" key="ScriptLog"/>
+                            <key-binding alias="Order" key="Order"/>
+                            <key-binding alias="IPAddress" key="IPAddress"/>
+                            <key-binding alias="PaymentData" key="PaymentData"/>
+                            <key-binding alias="NetworkToken" key="NetworkToken"/>
+                            <key-binding alias="TokenExpirationMonth" key="TokenExpirationMonth"/>
+                            <key-binding alias="TokenExpirationYear" key="TokenExpirationYear"/>
+                            <key-binding alias="Cryptogram" key="Cryptogram"/>
+                            <key-binding alias="CardType" key="CardType"/>
+                            <key-binding alias="ServiceResponse" key="ServiceResponse"/>
+                            <key-binding alias="Decision" key="Decision"/>
+                            <key-binding alias="ErrorCode" key="ErrorCode"/>
+                            <key-binding alias="OrderNo" key="OrderNo"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b3" source-connector="error">
+                            <transition target-connector="in">
+                              <transition-display>
+                                <bend-point relative-to="source" x="1" y="0"/>
+                              </transition-display>
+                            </transition>
+                            <segment>
+                              <node>
+                                <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                                  <config-property key="Transactional" value="false"/>
+                                  <key-binding alias="ErrorCode" key="From_0"/>
+                                  <key-binding alias="ERRORCODE" key="To_0"/>
+                                  <key-binding alias="dw.web.Resource.msgf('cyb.applepay.errormsg.servicefailure', 'cybapplepay', null, orderNo)" key="From_1"/>
+                                  <key-binding alias="ERRORMSG" key="To_1"/>
+                                  <key-binding alias="null" key="From_2"/>
+                                  <key-binding alias="null" key="To_2"/>
+                                  <key-binding alias="null" key="From_3"/>
+                                  <key-binding alias="null" key="To_3"/>
+                                  <key-binding alias="null" key="From_4"/>
+                                  <key-binding alias="null" key="To_4"/>
+                                  <key-binding alias="null" key="From_5"/>
+                                  <key-binding alias="null" key="To_5"/>
+                                  <key-binding alias="null" key="From_6"/>
+                                  <key-binding alias="null" key="To_6"/>
+                                  <key-binding alias="null" key="From_7"/>
+                                  <key-binding alias="null" key="To_7"/>
+                                  <key-binding alias="null" key="From_8"/>
+                                  <key-binding alias="null" key="To_8"/>
+                                  <key-binding alias="null" key="From_9"/>
+                                  <key-binding alias="null" key="To_9"/>
+                                </pipelet-node>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                              </node>
+                              <transition target-connector="in2" target-path="../../../../+5"/>
+                            </segment>
+                          </branch>
+                        </node>
+                        <simple-transition/>
+                        <node>
+                          <decision-node condition-key="Decision.equalsIgnoreCase('ACCEPT')" condition-operator="expr"/>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b4" source-connector="yes">
+                            <transition target-connector="in">
+                              <transition-display>
+                                <bend-point relative-to="source" x="0" y="1"/>
+                                <bend-point relative-to="target" x="0" y="-1"/>
+                              </transition-display>
+                            </transition>
+                            <segment>
+                              <node>
+                                <call-node start-name-ref="COPlaceOrder-PlaceOrder"/>
+                                <node-display x="-1" y="1"/>
+                                <branch basename="b2" source-connector="error">
+                                  <transition target-connector="in">
+                                    <transition-display>
+                                      <bend-point relative-to="source" x="1" y="0"/>
+                                    </transition-display>
+                                  </transition>
+                                  <segment>
+                                    <node>
+                                      <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                                        <config-property key="Transactional" value="false"/>
+                                        <key-binding alias="dw.web.Resource.msg('cyb.applepay.errorcode.systemfailure', 'cybapplepay', null)" key="From_0"/>
+                                        <key-binding alias="ERRORCODE" key="To_0"/>
+                                        <key-binding alias="dw.web.Resource.msgf('cyb.applepay.errormsg.systemfailure', 'cybapplepay', null, orderNo)" key="From_1"/>
+                                        <key-binding alias="ERRORMSG" key="To_1"/>
+                                        <key-binding alias="null" key="From_2"/>
+                                        <key-binding alias="null" key="To_2"/>
+                                        <key-binding alias="null" key="From_3"/>
+                                        <key-binding alias="null" key="To_3"/>
+                                        <key-binding alias="null" key="From_4"/>
+                                        <key-binding alias="null" key="To_4"/>
+                                        <key-binding alias="null" key="From_5"/>
+                                        <key-binding alias="null" key="To_5"/>
+                                        <key-binding alias="null" key="From_6"/>
+                                        <key-binding alias="null" key="To_6"/>
+                                        <key-binding alias="null" key="From_7"/>
+                                        <key-binding alias="null" key="To_7"/>
+                                        <key-binding alias="null" key="From_8"/>
+                                        <key-binding alias="null" key="To_8"/>
+                                        <key-binding alias="null" key="From_9"/>
+                                        <key-binding alias="null" key="To_9"/>
+                                      </pipelet-node>
+                                      <node-display orientation="horizontal" x="1" y="0"/>
+                                    </node>
+                                    <transition target-connector="in2" target-path="../../+1"/>
+                                  </segment>
+                                </branch>
+                              </node>
+                              <transition target-connector="in1" target-path="./+1"/>
+                            </segment>
+                            <segment>
+                              <node>
+                                <join-node/>
+                                <node-display x="0" y="2"/>
+                              </node>
+                              <transition target-connector="in1" target-path="../../../../+9"/>
+                            </segment>
+                          </branch>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="1" y="0"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <decision-node condition-key="Decision.equalsIgnoreCase('REVIEW')" condition-operator="expr"/>
+                          <node-display orientation="horizontal" x="1" y="0"/>
+                          <branch basename="b5" source-connector="yes">
+                            <transition target-connector="in2" target-path="../../../+6"/>
+                          </branch>
+                        </node>
+                        <transition target-connector="in1" target-path="./+1"/>
+                      </segment>
+                      <segment>
+                        <node>
+                          <join-node/>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <pipelet-node pipelet-name="FailOrder" pipelet-set-identifier="bc_api">
+                            <key-binding alias="Order" key="Order"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+7"/>
+                          </branch>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+9"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="dw.web.Resource.msg('cyb.applepay.errorcode.nonqualifiedorder', 'cybapplepay', null)" key="From_0"/>
+                      <key-binding alias="ERRORCODE" key="To_0"/>
+                      <key-binding alias="dw.web.Resource.msgf('cyb.applepay.errormsg.nonqualifiedorder', 'cybapplepay', null, orderNo)" key="From_1"/>
+                      <key-binding alias="ERRORMSG" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in2" target-path="../../+3"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="dw.web.Resource.msg('cyb.applepay.errorcode.nonapplepayorder', 'cybapplepay', null)" key="From_0"/>
+                <key-binding alias="ERRORCODE" key="To_0"/>
+                <key-binding alias="dw.web.Resource.msgf('cyb.applepay.errormsg.nonapplepayorder', 'cybapplepay', null, orderNo)" key="From_1"/>
+                <key-binding alias="ERRORMSG" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+            <transition target-connector="in2" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="dw.web.Resource.msg('cyb.applepay.errorcode.ordernotfound', 'cybapplepay', null)" key="From_0"/>
+          <key-binding alias="ERRORCODE" key="To_0"/>
+          <key-binding alias="dw.web.Resource.msgf('cyb.applepay.errormsg.ordernotfound', 'cybapplepay', null, orderNo)" key="From_1"/>
+          <key-binding alias="ERRORMSG" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="-1" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <interaction-node transaction-required="false">
+          <template buffered="true" dynamic="false" name="applepay/applepayjson"/>
+        </interaction-node>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

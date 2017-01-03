@@ -1,0 +1,177 @@
+/**
+*	 CreateCybersourceItemForPaypal.ds
+*	 This script creates the ItemObject data object and set it to CyberSourceItem output object.
+*
+*	@input Basket : dw.order.LineItemCtnr
+*   @output CyberSourceItem : Array
+*
+*/
+var Money = require('dw/value/Money');
+var StringUtils = require('dw/util/StringUtils');
+var Item_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_Item_Object');
+var Utils = require('~/cartridge/scripts/utils/Utils');
+var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	//pdict.CybersourceHelper = libCybersource.getCybersourceHelper();
+	var basket = pdict.Basket;
+	var lineItems = basket.allLineItems.iterator();
+	var itemObjects : Array = new Array();
+	var count : Number = 1;
+		
+	// START adjust order level promos	
+	var basketSubTotalPrice = basket.getAdjustedMerchandizeTotalPrice();
+				
+	var orderDiscount	= new Money(0,basket.currencyCode);
+	
+	var subTotal = basket.adjustedMerchandizeTotalPrice;
+	
+	for each( var promo in basket.priceAdjustments ) {
+		orderDiscount	= orderDiscount.add(promo.price);
+		if(promo.price.value < 0) {
+			basketSubTotalPrice	= subTotal.add(promo.price.multiply(-1));
+		}
+	}
+	
+	if(basket.getGiftCertificatePaymentInstruments().size() > 0){
+		itemObjects.push(getGiftCertificateLineItem(basket));
+	}	
+	var orderLevelAdjustment = basket.getPriceAdjustments();
+	
+	var orderLevelIterator = orderLevelAdjustment.iterator();
+	var orderLevelAdjustmentPrice = null;
+	var orderLevelTaxAdjustment = null;
+	while( orderLevelIterator.hasNext() ) {
+	    var oLevelPriceAdjustment = orderLevelIterator.next();
+	    orderLevelAdjustmentPrice = oLevelPriceAdjustment.price;
+	    orderLevelTaxAdjustment=oLevelPriceAdjustment.tax;
+	}			
+	// END adjust order level promos
+	var adjustedLineItemFinalPrice;
+	var adjustedLineItemTaxPrice;
+	while(lineItems.hasNext())
+	{
+		var lineItem = lineItems.next();
+		var itemObject = new Item_Object();
+			var actualQuantity : Number = 0;
+		if(lineItem instanceof dw.order.ProductLineItem)
+		{
+			actualQuantity = lineItem.quantity.value;
+			
+			if( orderLevelAdjustmentPrice!=null ){
+         		orderLevelAdjustmentPrice = orderLevelAdjustmentPrice.multiply(-1);
+	        }
+	        if(orderLevelTaxAdjustment !=null){
+	        	orderLevelTaxAdjustment = orderLevelTaxAdjustment.multiply(-1);
+	        }
+			if( orderLevelAdjustmentPrice != null && !empty(orderLevelAdjustmentPrice) ) {		
+				adjustedLineItemFinalPrice = getOrderLevelAdjustedLineItemPrice(lineItem.adjustedPrice,orderLevelAdjustmentPrice,basketSubTotalPrice,basket.currencyCode,actualQuantity);
+			} else {	
+				adjustedLineItemFinalPrice = lineItem.getAdjustedPrice().divide(actualQuantity);		
+			}
+			
+			itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(adjustedLineItemFinalPrice.getValue()),"000000.00","en_US"));
+			itemObject.setQuantity(lineItem.quantityValue);
+			itemObject.setProductCode("default");
+			
+			if( orderLevelTaxAdjustment != null && !empty(orderLevelTaxAdjustment)  && orderLevelAdjustmentPrice.value > 0 ) {
+				adjustedLineItemTaxPrice=lineItem.adjustedTax.subtract(orderLevelTaxAdjustment);
+			}
+			else{
+				adjustedLineItemTaxPrice=lineItem.adjustedTax;
+			}
+			itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(adjustedLineItemTaxPrice.getValue()),"000000.00","en_US"));
+			itemObject.setProductName(lineItem.productName);
+			itemObject.setProductSKU(lineItem.productID);
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.GiftCertificateLineItem)
+		{
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.grossPrice.value,"000000.00","en_US"));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode("GIFT_CERTIFICATE");
+			itemObject.setProductName("GIFT_CERTIFICATE");
+			itemObject.setProductSKU("GIFT_CERTIFICATE");
+			itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00","en_US"));
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.ShippingLineItem)
+		{
+		   		
+		   		if(lineItem.adjustedPrice.value > 0){
+		   		
+		   		itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00","en_US"));
+				itemObject.setQuantity(1);
+				itemObject.setProductCode(lineItem.ID);
+				itemObject.setProductName(lineItem.ID);
+				itemObject.setProductSKU(lineItem.ID);
+				itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+				itemObject.setId(count);
+		   		}else{
+		   		continue;
+		   		}
+		}
+		else if(lineItem instanceof dw.order.ProductShippingLineItem)
+		{
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00","en_US"));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode("SHIPPING_SURCHARGE");
+			itemObject.setProductName("SHIPPING_SURCHARGE");
+			itemObject.setProductSKU("SHIPPING_SURCHARGE");
+			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setId(count);
+		}
+	
+		if(!(lineItem instanceof dw.order.PriceAdjustment))
+		{
+			count = count+1;
+			itemObjects.push(itemObject);	
+		}
+		
+
+	}
+	pdict.CyberSourceItem = itemObjects;
+	
+    return PIPELET_NEXT;
+}
+
+function getOrderLevelAdjustedLineItemPrice(lineItemPrice : dw.value.Money, orderLevelAdjustmentPrice : dw.value.Money, basketSubTotalPrice : dw.value.Money, currencyCode : String, quantity : Number) {
+	var price = 0;
+
+	if( lineItemPrice!=null && orderLevelAdjustmentPrice!=null && basketSubTotalPrice!=null && !empty(currencyCode) ) {
+	   var ratioDivided = lineItemPrice.divide(basketSubTotalPrice.getValue());
+
+	   var ratioAdjustment : Number = (ratioDivided * (Math.abs(orderLevelAdjustmentPrice.getValue())));
+
+	   var adjustedPrice = new Money(ratioAdjustment,currencyCode);
+	   
+	   price = lineItemPrice.subtract(adjustedPrice);
+	 	   
+	   if( !empty(quantity) && quantity>1 ) {
+	      price = price.divide(quantity);
+	   }	   
+	}
+
+	return price;
+}
+
+function getGiftCertificateLineItem(lineItemCtnr : dw.order.LineItemCtnr){
+	var itemObject = new Item_Object();
+	// get the order total
+	var orderTotal = lineItemCtnr.totalGrossPrice;
+	
+	var nonGCAmount =  Utils.calculateNonGiftCertificateAmount(lineItemCtnr);
+	var giftAmount = orderTotal.subtract(nonGCAmount);
+	//	giftAmount=giftAmount.multiply(-1);
+	itemObject.setUnitPrice(StringUtils.formatNumber(giftAmount.value,"000000.00","en_US"));
+	itemObject.setQuantity(1);
+	itemObject.setProductCode("coupon");
+	itemObject.setProductName("GIFT_CERTIFICATE");
+	itemObject.setProductSKU("GIFT_CERTIFICATE");
+	
+	itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00","en_US"));
+	itemObject.setId("GIFT");
+	return itemObject;
+}

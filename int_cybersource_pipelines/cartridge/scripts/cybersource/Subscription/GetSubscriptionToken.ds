@@ -1,0 +1,16 @@
+/**
+* Demandware Script File
+* To find token of CardUUID for loggedin user
+*
+*   @input CardUUID : String This is CardUUID whose token is requested for loggedin user
+*   @input CustomerObj : dw.customer.Customer This is loggedin user
+*   @output SubscriptionToken : String This is card Token
+*
+*/
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	args.SubscriptionToken = CommonHelper.GetSubscriptionToken( args.CardUUID, args.CustomerObj);
+	return PIPELET_NEXT;
+}

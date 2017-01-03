@@ -1,68 +1,70 @@
 <iscomment>
 	This template will populate the PA Unit Test Results 
 </iscomment>
-Here is the AcsURL:
-<isprint value="${pdict.AcsURL}"><br>
+${Resource.msg('test.AcsURL','cybersource',null)}
+<isprint value="${pdict.PAResponse.AcsURL}"><br>
 
-Here is the CommerceIndicator:
-<isprint value="${pdict.CommerceIndicator}"><br>
+${Resource.msg('test.CommerceIndicator','cybersource',null)}
+<isprint value="${pdict.PAResponse.CommerceIndicator}"><br>
 
-Here is the PADecission:
-<isprint value="${pdict.PADecission}"><br>
+${Resource.msg('test.PADecision','cybersource',null)}
+<isprint value="${pdict.PAResponse.PADecision}"><br>
 
-Here is the ProofXML:
-<isprint value="${pdict.ProofXML}"><br>
+${Resource.msg('test.ProofXML','cybersource',null)}
+<isprint value="${pdict.PAResponse.ProofXML}"><br>
 
-Here is the ProxyPAN:
-<isprint value="${pdict.ProxyPAN}"><br>
+${Resource.msg('test.ProxyPAN','cybersource',null)}
+<isprint value="${pdict.PAResponse.ProxyPAN}"><br>
 
-Here is the PAReasonCode:
-<isprint value="${pdict.PAReasonCode}"><br>
+${Resource.msg('test.PAReasonCode','cybersource',null)}
+<isprint value="${pdict.PAResponse.PAReasonCode}"><br>
 
-Here is the PARequestID:
-<isprint value="${pdict.PARequestID}"><br>
+${Resource.msg('test.PARequestID','cybersource',null)}
+<isprint value="${pdict.PAResponse.PARequestID}"><br>
 
-Here is the PARequestToken:
-<isprint value="${pdict.PARequestToken}"><br>
+${Resource.msg('test.PARequestToken','cybersource',null)}
+<isprint value="${pdict.PAResponse.PARequestToken}"><br>
 
-Here is the PAXID:
-<isprint value="${pdict.PAXID}"><br>
+${Resource.msg('test.PAXID','cybersource',null)}
+<isprint value="${pdict.PAResponse.PAXID}"><br>
 
-Here is the PAVResult:
-<isprint value="${pdict.PAVResult}"><br>
+${Resource.msg('test.PAVReasonCode','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVReasonCode}"><br>
 
-Here is the PAVStatusMessage:
-<isprint value="${pdict.PAVStatusMessage}"><br>
+${Resource.msg('test.PAVRequestID','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVRequestID}"><br>
 
-Here is the CAVV:
-<isprint value="${pdict.CAVV}"><br>
+${Resource.msg('test.PAVRequestToken','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVRequestToken}"><br>
 
-Here is the PAVCommerceIndicator:
-<isprint value="${pdict.PAVCommerceIndicator}"><br>
+${Resource.msg('test.PAVDecision','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVDecision}"><br>
 
-Here is the PAVDecision:
-<isprint value="${pdict.PAVDecision}"><br>
+<isif condition="${pdict.PAVResponse.payerAuthValidateReply!=null}">
+${Resource.msg('test.PAVResult','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVResult}"><br>
 
-Here is the ECIRaw:
-<isprint value="${pdict.ECIRaw}"><br>
+${Resource.msg('test.PAVStatusMessage','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVStatusMessage}"><br>
 
-Here is the ParesStatus:
-<isprint value="${pdict.ParesStatus}"><br>
+${Resource.msg('test.CAVV','cybersource',null)}
+<isprint value="${pdict.PAVResponse.CAVV}"><br>
 
-Here is the PAVReasonCode:
-<isprint value="${pdict.PAVReasonCode}"><br>
+${Resource.msg('test.PAVCommerceIndicator','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVCommerceIndicator}"><br>
 
-Here is the PAVRequestID:
-<isprint value="${pdict.PAVRequestID}"><br>
+${Resource.msg('test.ECIRaw','cybersource',null)}
+<isprint value="${pdict.PAVResponse.ECIRaw}"><br>
 
-Here is the PAVRequestToken:
-<isprint value="${pdict.PAVRequestToken}"><br>
+${Resource.msg('test.ParesStatus','cybersource',null)}
+<isprint value="${pdict.PAVResponse.ParesStatus}"><br>
 
-Here is the UCAFAuthenticationData:
-<isprint value="${pdict.UCAFAuthenticationData}"><br>
+${Resource.msg('test.UCAFAuthenticationData','cybersource',null)}
+<isprint value="${pdict.PAVResponse.UCAFAuthenticationData}"><br>
 
-Here is the UCAFCollectionIndicator:
-<isprint value="${pdict.UCAFCollectionIndicator}"><br>
+${Resource.msg('test.UCAFCollectionIndicator','cybersource',null)}
+<isprint value="${pdict.PAVResponse.UCAFCollectionIndicator}"><br>
 
-Here is the PAVXID:
-<isprint value="${pdict.PAVXID}"><br>
+${Resource.msg('test.PAVXID','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVXID}"><br>
+</isif>

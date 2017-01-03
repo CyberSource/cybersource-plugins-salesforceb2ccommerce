@@ -1,6 +1,19 @@
 <iscomment>
-	This template will populate hyperlink for make auth reversal and subscription test suit
+       This template will populate hyperlink for make auth reversal and subscription test suit
 </iscomment>
-<h2><center><b><u>Services Test Suite</u></b></center></h2><br/><br/>
-<a href="${URLUtils.https('Cybersource_Services-Reversal')}" >Make Auth Reversal</a><br/>
-<a href="${URLUtils.https('Cybersource_Subscription-Start')}">Subscription Test Suite</a>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<h2 class="main-title">${Resource.msg('services_label_testsuite','cybersource','')}</h2><br/><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestCCAuth')}" >${Resource.msg('services_label_testccauth','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestTax')}" >${Resource.msg('services_label_testtax','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestFingerprint')}" >${Resource.msg('services_label_testfingerprint','cybersource','')}</a><br/> 
+<a href="${URLUtils.https('CybersourceUnitTesting-TestPA')}" >${Resource.msg('services_label_testpa','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestAlipayInitiateService')}" >${Resource.msg('services_label_testalipayinitiateservice','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestAlipayCheckStatusService','requestID',null)}" >${Resource.msg('services_label_testalipaycheckstatus','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestDAVCheck')}" >${Resource.msg('services_label_testdavcheck','cybersource','')}</a><br/> 
+<a href="${URLUtils.https('CybersourceUnitTesting-StartPOS')}" >${Resource.msg('services_label_teststartpos','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-StartSubscription')}" >${Resource.msg('subscription_label_testsuite','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-Reversal')}" >${Resource.msg('services_label_makeauthreversal','cybersource','')}</a><br/> 
+<a href="${URLUtils.https('CybersourceUnitTesting-TestCaptureCard','oid',null)}" >${Resource.msg('services_label_testcapturecard','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-TestSATokenCreate')}" >${Resource.msg('services_label_testsatokencreate','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-OnDemandPayment')}" >${Resource.msg('services_label_testOndemandpayment','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CybersourceUnitTesting-OnDemandPaymentAccount')}" >${Resource.msg('services_label_testOndemandpaymentaccount','cybersource','')}</a><br/> 

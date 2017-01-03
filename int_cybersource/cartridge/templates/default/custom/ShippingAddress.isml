@@ -1,5 +1,5 @@
-<!--- TEMPLATENAME: BillingAddress.isml --->
 <iscomment>
+TEMPLATENAME: ShippingAddress.isml
 	This template will populate the Unit Test result of Shipping Address 
 </iscomment>
 ${pdict.shipto.firstName} ${pdict.shipto.lastName}<br/>
@@ -9,6 +9,6 @@ ${pdict.shipto.street1}<br/>
 </isif>
 ${pdict.shipto.city}, ${pdict.shipto.state} ${pdict.shipto.country}<br/>
 ${pdict.shipto.postalCode}<br/><br/>
-Phone: ${pdict.shipto.phoneNumber}<br/>
-Email: ${pdict.shipto.email}<br/>
-Shipping Method: ${pdict.shipto.shippingMethod}
+${Resource.msg('test.phoneNumber','cybersource',null)} ${pdict.shipto.phoneNumber}<br/>
+${Resource.msg('test.email','cybersource',null)} ${pdict.shipto.email}<br/>
+${Resource.msg('test.shippingMethod','cybersource',null)} ${pdict.shipto.shippingMethod}

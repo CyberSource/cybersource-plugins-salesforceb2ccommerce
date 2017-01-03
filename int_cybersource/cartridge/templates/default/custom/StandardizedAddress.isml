@@ -1,5 +1,5 @@
-<!--- TEMPLATENAME: BillingAddress.isml --->
 <iscomment>
+	TEMPLATENAME: BillingAddress.isml
 	This template will populate the Unit Test result of Standardized Address 
 </iscomment>
 ${pdict.StandardizedAddress.firstName} ${pdict.StandardizedAddress.lastName}<br/>

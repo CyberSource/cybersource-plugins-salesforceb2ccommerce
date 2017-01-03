@@ -3,6 +3,9 @@
 	<name>int_cybersource_controllers</name>
 	<comment></comment>
 	<projects>
+		<project>app_storefront_controllers</project>
+		<project>DemandwareServer</project>
+		<project>int_cybersource</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
