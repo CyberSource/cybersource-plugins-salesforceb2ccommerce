@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <payment-settings xmlns="http://www.demandware.com/xml/impex/paymentsettings/2009-09-15">
-    <payment-method method-id="GIFT_CERTIFICATE">
-        <name xml:lang="x-default">Gift Certificate</name>
-        <name xml:lang="fr-FR">Chèque-cadeau</name>
-        <name xml:lang="it-IT">Certificato regalo</name>
-        <name xml:lang="ja-JP">ギフト券</name>
-        <name xml:lang="zh-CN">礼券</name>
-        <enabled-flag>true</enabled-flag>
-        <processor-id>BASIC_GIFT_CERTIFICATE</processor-id>
-    </payment-method>
-
     <payment-method method-id="CREDIT_CARD">
         <name xml:lang="x-default">Credit Card</name>
         <name xml:lang="fr-FR">Carte de crédit</name>
@@ -19,13 +9,11 @@
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
-
     <payment-method method-id="ALIPAY">
         <name xml:lang="x-default">Alipay</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_ALIPAY</processor-id>
     </payment-method>
-
     <payment-method method-id="PayPal">
         <name xml:lang="x-default">Pay Pal</name>
         <name xml:lang="fr-FR">Pay Pal</name>
@@ -35,38 +23,32 @@
         <enabled-flag>false</enabled-flag>
         <processor-id>PAYPAL_EXPRESS</processor-id>
     </payment-method>
-
     <payment-method method-id="DW_APPLE_PAY">
         <name xml:lang="x-default">Apple Pay</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>BASIC_CREDIT</processor-id>
     </payment-method>
-
     <payment-method method-id="VISA_CHECKOUT">
         <name xml:lang="x-default">Visa Checkout</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
-
     <payment-method method-id="SA_REDIRECT">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Redirect)</name>
         <description xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Redirect)</description>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
-
     <payment-method method-id="SA_SILENTPOST">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Silent Order POST</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
-
     <payment-method method-id="SA_IFRAME">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Iframe)</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
-
     <payment-card card-type="DinersClub">
         <name xml:lang="x-default">Diners Club International</name>
         <name xml:lang="fr-FR">Diners Club International</name>
@@ -90,7 +72,6 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">false</custom-attribute>
         </custom-attributes>
     </payment-card>
-
     <payment-card card-type="Visa">
         <name xml:lang="x-default">Visa</name>
         <name xml:lang="fr-FR">Visa</name>
@@ -114,7 +95,6 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
-
     <payment-card card-type="Amex">
         <name xml:lang="x-default">American Express</name>
         <name xml:lang="fr-FR">American Express</name>
@@ -137,7 +117,6 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
-
     <payment-card card-type="Discover">
         <name xml:lang="x-default">Discover</name>
         <name xml:lang="fr-FR">Discover</name>
@@ -170,7 +149,6 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
-
     <payment-card card-type="MasterCard">
         <name xml:lang="x-default">MasterCard</name>
         <name xml:lang="fr-FR">Master Card</name>
@@ -192,7 +170,6 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
-
     <payment-card card-type="Maestro">
         <name xml:lang="x-default">Maestro</name>
         <enabled-flag>true</enabled-flag>
@@ -220,5 +197,4 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
-
 </payment-settings>

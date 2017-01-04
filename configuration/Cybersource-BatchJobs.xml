@@ -15,20 +15,20 @@
             <on-running runtime-threshold="60m" enabled="false">
                 <mark-job-as-hanging/>
                 <send-mail>
-                    <from>nsiddiqui@sapient.com</from>
-                    <to>nsiddiqui@sapient.com</to>
+                    <from>demo@sapient.com</from>
+                    <to>demo@sapient.com</to>
                 </send-mail>
             </on-running>
             <on-retry enabled="false">
                 <send-mail>
-                    <from>nsiddiqui@sapient.com</from>
-                    <to>nsiddiqui@sapient.com</to>
+                    <from>demo@sapient.com</from>
+                    <to>demo@sapient.com</to>
                 </send-mail>
             </on-retry>
             <on-exit status="ERROR" enabled="false">
                 <send-mail>
-                    <from>nsiddiqui@sapient.com</from>
-                    <to>nsiddiqui@sapient.com</to>
+                    <from>demo@sapient.com</from>
+                    <to>demo@sapient.com</to>
                 </send-mail>
             </on-exit>
         </rules>

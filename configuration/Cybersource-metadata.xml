@@ -591,15 +591,6 @@
                 <min-length>0</min-length>
                 <field-length>8</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="SAPostCustomerServiceEmail">
-                <display-name xml:lang="x-default">SAPostCustomerServiceEmail</display-name>
-                <description xml:lang="x-default">Secure Acceptance Post Job Customer Service Email</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>100</field-length>
-            </attribute-definition>
             <attribute-definition attribute-id="cybVisaAPIKey">
                 <display-name xml:lang="x-default">cybVisaAPIKey</display-name>
                 <description xml:lang="x-default">The Visa Checkout account API key specified in cybersource business center (Alphanumeric; maximum 100 characters)</description>
@@ -1512,12 +1503,8 @@ Undefined authorization:omit authIndicator field from the request message</descr
 				<attribute attribute-id="cybVisaButtonOnCart"/>
             </attribute-group>
             <attribute-group group-id="Cybersource_SecureAcceptance">
-                <display-name xml:lang="x-default">Cybersource SecureAcceptance</display-name>
-				<attribute attribute-id="SAPostCustomerServiceEmail"/>
-                <attribute attribute-id="SA_Redirect_CreateToken_ProfileID"/>
-                <attribute attribute-id="SA_Redirect_CreateToken_SecretKey"/>
-                <attribute attribute-id="SA_Redirect_CreateToken_AccessKey"/>
-                <attribute attribute-id="SA_Redirect_ProfileID"/>
+                <display-name xml:lang="x-default">Cybersource Secure Acceptance</display-name>
+				<attribute attribute-id="SA_Redirect_ProfileID"/>
                 <attribute attribute-id="SA_Redirect_SecretKey"/>
                 <attribute attribute-id="SA_Redirect_AccessKey"/>
 				<attribute attribute-id="SA_Silent_ProfileID"/>
@@ -1526,7 +1513,6 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="CsSAOverrideBillingAddress"/>
                 <attribute attribute-id="CsSAOverrideShippingAddress"/>
 				<attribute attribute-id="CsSARedirectFormAction"/>
-				<attribute attribute-id="CsSARedirectCreateTokenFormAction"/>
 				<attribute attribute-id="CsSAIframetFormAction"/>
 				<attribute attribute-id="SA_Iframe_AccessKey"/>
                 <attribute attribute-id="SA_Iframe_ProfileID"/>
@@ -1541,7 +1527,7 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="CsApplePayPassword"/>
             </attribute-group>
 			<attribute-group group-id="Cybersource_paypal">
-                <display-name xml:lang="x-default">Cybersource_paypal</display-name>
+                <display-name xml:lang="x-default">Cybersource Paypal</display-name>
                 <attribute attribute-id="CsEnableExpressPaypal"/>
                 <attribute attribute-id="CsPaypalSandboxURL"/>
                 <attribute attribute-id="CsPaypalLc"/>
@@ -1599,24 +1585,6 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="csCardDecisionManagerEnable"/>
                 <attribute attribute-id="csMasterCardAuthIndicator"/>
                 <attribute attribute-id="CsDeveloperID"/>
-            </attribute-group>
-			<attribute-group group-id="Cybersource_paypal">
-                <display-name xml:lang="x-default">Cybersource_paypal</display-name>
-                <attribute attribute-id="CsEnableExpressPaypal"/>
-                <attribute attribute-id="CsPaypalSandboxURL"/>
-                <attribute attribute-id="CsPaypalLc"/>
-                <attribute attribute-id="CsPaypalPayflowcolor"/>
-                <attribute attribute-id="CsPaypalReqconfirmshipping"/>
-                <attribute attribute-id="CsPaypalHdrbordercolor"/>
-                <attribute attribute-id="CsPaypalPagestyle"/>
-                <attribute attribute-id="CsPaypalHdrbackcolor"/>
-                <attribute attribute-id="CsPaypalAddressOverride"/>
-                <attribute attribute-id="CsPaypalNoshipping"/>
-                <attribute attribute-id="CsPaypalLogoimg"/>
-                <attribute attribute-id="CsPaypalHdrimg"/>
-                <attribute attribute-id="CsRequestBillingAddress"/>
-                <attribute attribute-id="CsPaypalPaymentOption"/>
-				<attribute attribute-id="isDecisionManagerEnable"/>
             </attribute-group>
 		</group-definitions>
 	</type-extension>
@@ -1686,106 +1654,4 @@ Undefined authorization:omit authIndicator field from the request message</descr
             </attribute-group>
         </group-definitions>
     </type-extension>
-    <custom-type type-id="POS_MerchantIDs">
-        <staging-mode>no-staging</staging-mode>
-        <storage-scope>site</storage-scope>
-        <key-definition attribute-id="ID">
-            <display-name xml:lang="x-default">POS Location</display-name>
-            <description xml:lang="x-default">State Code or Zip code or city name</description>
-            <type>string</type>
-            <min-length>0</min-length>
-            <field-length>0</field-length>
-        </key-definition>
-        <attribute-definitions>
-            <attribute-definition attribute-id="MerchantID">
-                <display-name xml:lang="x-default">POS Merchant ID</display-name>
-                <description xml:lang="x-default">POS Merchant ID configured to use at a store</description>
-                <type>string</type>
-                <localizable-flag>false</localizable-flag>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="MerchantKey">
-                <display-name xml:lang="x-default">POS Merchant Security Key</display-name>
-                <type>string</type>
-                <localizable-flag>false</localizable-flag>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-        </attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="POS">
-                <display-name xml:lang="x-default">POS</display-name>
-                <attribute attribute-id="ID"/>
-                <attribute attribute-id="MerchantID"/>
-                <attribute attribute-id="MerchantKey"/>
-            </attribute-group>
-        </group-definitions>
-    </custom-type>
-    <custom-type type-id="POS_TerminalMapping">
-        <display-name xml:lang="x-default">Serial ID</display-name>
-        <description xml:lang="x-default">Mapping of POS device's serial number to Terminal ID</description>
-        <staging-mode>no-staging</staging-mode>
-        <storage-scope>site</storage-scope>
-        <key-definition attribute-id="serialID">
-            <display-name xml:lang="x-default">Serial Number</display-name>
-            <description xml:lang="x-default">Serial number of POS device</description>
-            <type>string</type>
-            <min-length>0</min-length>
-            <field-length>0</field-length>
-        </key-definition>
-        <attribute-definitions>
-            <attribute-definition attribute-id="terminalID">
-                <display-name xml:lang="x-default">Terminal ID</display-name>
-                <description xml:lang="x-default">Terminal ID configured for POS device</description>
-                <type>string</type>
-                <localizable-flag>false</localizable-flag>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-        </attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="POS">
-                <display-name xml:lang="x-default">POS</display-name>
-                <attribute attribute-id="serialID"/>
-                <attribute attribute-id="terminalID"/>
-            </attribute-group>
-        </group-definitions>
-    </custom-type>
-    <custom-type type-id="SA_MerchantPost">
-        <display-name xml:lang="x-default">SA_MerchantPost</display-name>
-        <staging-mode>no-staging</staging-mode>
-        <storage-scope>site</storage-scope>
-        <key-definition attribute-id="OrderID">
-            <type>string</type>
-            <min-length>0</min-length>
-        </key-definition>
-        <attribute-definitions>
-            <attribute-definition attribute-id="postParams">
-                <display-name xml:lang="x-default">postParams</display-name>
-                <type>text</type>
-                <localizable-flag>false</localizable-flag>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="processed">
-                <display-name xml:lang="x-default">processed</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-        </attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="secureacceptance">
-                <attribute attribute-id="postParams"/>
-                <attribute attribute-id="processed"/>
-                <attribute attribute-id="OrderID"/>
-            </attribute-group>
-        </group-definitions>
-    </custom-type>
-
-
 </metadata>

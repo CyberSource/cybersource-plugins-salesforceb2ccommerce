@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="CsApplePayPassword">MezxckIL+4P/1XuHIXVJGY/VQu3brqk/2OjYxnfD5+iFa9hYMKsxS/WiWe5IdEKS</preference>
+            <preference preference-id="CsApplePayUser">anuj</preference>
+            <preference preference-id="CsAvsDeclineFlags">A,B,C,E,G,I,K,N,O,R,S,1,2,X</preference>
+            <preference preference-id="CsAvsIgnoreResult">true</preference>
+            <preference preference-id="CsCorrectShipState">true</preference>
+            <preference preference-id="CsCvnDeclineFlags">false</preference>
+            <preference preference-id="CsDavEnable">YES</preference>
+            <preference preference-id="CsDavOnAddressVerificationFailure">APPROVE</preference>
+            <preference preference-id="CsDebugCybersource">true</preference>
+            <preference preference-id="CsDeviceFingerprintEnabled">true</preference>
+            <preference preference-id="CsDeviceFingerprintJetmetrixLocation">https://h.online-metrix.net</preference>
+            <preference preference-id="CsDeviceFingerprintOrgId">1snn5n9w</preference>
+            <preference preference-id="CsDeviceFingerprintRedirectionType">none</preference>
+            <preference preference-id="CsEnableExpressPaypal">true</preference>
+            <preference preference-id="CsEndpoint">Test</preference>
+            <preference preference-id="CsMerchantId">sapient_nitro</preference>
+            <preference preference-id="CsPaEnableProofXML">true</preference>
+            <preference preference-id="CsPaMerchantId">sapient_nitro</preference>
+            <preference preference-id="CsPaMerchantName">sapient_nitro</preference>
+            <preference preference-id="CsPaMerchantPassword">Wz/S0jZi10wezu7TJuXAixkAjmaqnlD1LxGfDnQaLq2LB9z6/mrHT2VpW/vaSNNosD/00dZrf82sC89F7gxmfVaz9jyMGN92/KaTTZjvjSRObEnYk1++z0PJAHc30hlDreiFIERN62joHdQ2SnaXwZoIdSl90HLuGviL+Bz+pJNw5ndztvDY3+xUgKEpqGiwCNgMzmRuL9qMsLng9TpDI3zqcz1M8n5gbeUGDS9pFhetJTMo3JVVk9xyT5oG3U5FoVy3zVqchFdeHnpD041wnJrvU9HuzzOcRc6WlaqQ5wLxh50tdD4jgqwiZCs4XZtL9Lzeb4qR1VqU2n90pS/Z7A==</preference>
+            <preference preference-id="CsPaSaveParesStatus">true</preference>
+            <preference preference-id="CsPaypalAddressOverride">true</preference>
+            <preference preference-id="CsPaypalHdrbackcolor">00FFFF</preference>
+            <preference preference-id="CsPaypalNoshipping">true</preference>
+            <preference preference-id="CsPaypalPayflowcolor">00ff80</preference>
+            <preference preference-id="CsPaypalPaymentOption">AuthorizeAndCapture</preference>
+            <preference preference-id="CsPaypalReqconfirmshipping">true</preference>
+            <preference preference-id="CsPaypalSandboxURL">https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout</preference>
+            <preference preference-id="CsPoaCity">Maryland</preference>
+            <preference preference-id="CsPoaCountryCode">USA</preference>
+            <preference preference-id="CsPoaStateCode">MA</preference>
+            <preference preference-id="CsPoaZipCode">01862</preference>
+            <preference preference-id="CsPooCity">Maryland</preference>
+            <preference preference-id="CsPooCountryCode">USA</preference>
+            <preference preference-id="CsPooStateCode">MA</preference>
+            <preference preference-id="CsPooZipCode">01862</preference>
+            <preference preference-id="CsRequestBillingAddress">true</preference>
+            <preference preference-id="CsSAIframetFormAction">https://testsecureacceptance.cybersource.com/embedded/pay</preference>
+            <preference preference-id="CsSAOverrideBillingAddress">true</preference>
+            <preference preference-id="CsSAOverrideShippingAddress">true</preference>
+            <preference preference-id="CsSARedirectFormAction">https://testsecureacceptance.cybersource.com/pay</preference>
+            <preference preference-id="CsSecurityKey">Wz/S0jZi10wezu7TJuXAixkAjmaqnlD1LxGfDnQaLq2LB9z6/mrHT2VpW/vaSNNosD/00dZrf82sC89F7gxmfVaz9jyMGN92/KaTTZjvjSRObEnYk1++z0PJAHc30hlDreiFIERN62joHdQ2SnaXwZoIdSl90HLuGviL+Bz+pJNw5ndztvDY3+xUgKEpqGiwCNgMzmRuL9qMsLng9TpDI3zqcz1M8n5gbeUGDS9pFhetJTMo3JVVk9xyT5oG3U5FoVy3zVqchFdeHnpD041wnJrvU9HuzzOcRc6WlaqQ5wLxh50tdD4jgqwiZCs4XZtL9Lzeb4qR1VqU2n90pS/Z7A==</preference>
+            <preference preference-id="CsTokenizationEnable">YES</preference>
+            <preference preference-id="SA_Iframe_AccessKey">adf237c8ccb238e0b89cbf86c94a9975</preference>
+            <preference preference-id="SA_Iframe_ProfileID">00AA82CD-B1B9-4C15-9772-8BF425CE71BE</preference>
+            <preference preference-id="SA_Iframe_SecretKey">b69771da68724b439afe0bcfc9ea8a376e7abdefe31045908af6bae1e47839f134a2e161aafe4cd3bda176786e05b0cccb615712958b4d4189557543f2bdb015701ca1207ab743ea94d9e41875c70c0802950f61a8b74499a056c1c2ded6e924feef099f26c74835a2d928e1e586677aff00f70c38aa47669d65de22797800ee</preference>
+            <preference preference-id="SA_Redirect_AccessKey">e0ae7f5bf469321892f5549a3f7248dc</preference>
+            <preference preference-id="SA_Redirect_ProfileID">B6D0DA91-DF4F-4FC8-BFC5-C6851698A452</preference>
+            <preference preference-id="SA_Redirect_SecretKey">023ad2d6731a485d98220f7a1c09a955169a78beca5b4e7fac32d67ad22606d94f92a264b04e47b786435451d7b46e2e18cf07a65a74464da606c930e5a261466a46a3446ebf4d698df23142ca791766c0edc4fb9bba4514aa0041e1dd67e9acb72f96a0789c42a687d563a61690521e768e0db1ecf14040afe8c06b1b4d6295</preference>
+            <preference preference-id="SA_Silent_AccessKey">a8b2c94df04b3e63a1c79919ca0a1c31</preference>
+            <preference preference-id="SA_Silent_ProfileID">2E714D8B-E7BE-4A02-9A48-6BAA65406D3C</preference>
+            <preference preference-id="SA_Silent_SecretKey">a57a860d7f0f450bb1d870ffd3b2f24e7349974617334708bdb2f7cbb0229dc77d68db2aecd0491b9e036c83f41e18e8935d7a32e8594bbc80addf3af190ee5d7acf7434e2dc4b9d946329a342da806cbedffddd624b4d16af27ff82928edb6063d6d8c334154a98aaf171b0f79443278ce3c11a71ee4255b767a9759d9005c4</preference>
+            <preference preference-id="Secure_Acceptance_Token_Create_Endpoint">https://testsecureacceptance.cybersource.com/silent/token/create</preference>
+            <preference preference-id="Secure_Acceptance_Token_Update_Endpoint">https://testsecureacceptance.cybersource.com/silent/token/update</preference>
+            <preference preference-id="apPaymentType">APD</preference>
+            <preference preference-id="apTestReconciliationID">666666666725</preference>
+            <preference preference-id="csCardDecisionManagerEnable">true</preference>
+            <preference preference-id="csMasterCardAuthIndicator">0</preference>
+            <preference preference-id="customerServiceEmail">donotreply@demandware.com</preference>
+            <preference preference-id="cybVisaAPIKey">V6UQMSAHOH0QC83PWWIG13sqiNEYQyKSOkkessnfGmlGaEVZE</preference>
+            <preference preference-id="cybVisaButtonColor">standard</preference>
+            <preference preference-id="cybVisaButtonHeight">34</preference>
+            <preference preference-id="cybVisaButtonImgUrl">https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png</preference>
+            <preference preference-id="cybVisaButtonSize">154</preference>
+            <preference preference-id="cybVisaButtonWidth">154</preference>
+            <preference preference-id="cybVisaCardBrands">
+                <value>VISA</value>
+                <value>MASTERCARD</value>
+                <value>AMEX</value>
+                <value>DISCOVER</value>
+            </preference>
+            <preference preference-id="cybVisaExternalProfileId">anujcyb</preference>
+            <preference preference-id="cybVisaSdkJsLibrary">https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</preference>
+            <preference preference-id="cybVisaSecretKey">NwgPVZAcGknQZuTq+6$hnisrzdacw1c3lQ3uH+HQ</preference>
+            <preference preference-id="cybVisaTellMeMoreLinkActive">true</preference>
+            <preference preference-id="cybVisaThreeDSActive">true</preference>
+            <preference preference-id="cybVisaThreeDSSuppressChallenge">false</preference>
+            <preference preference-id="isDecisionManagerEnable">true</preference>
+        </development>
+        <production/>
+    </custom-preferences>
+</preferences>
+
