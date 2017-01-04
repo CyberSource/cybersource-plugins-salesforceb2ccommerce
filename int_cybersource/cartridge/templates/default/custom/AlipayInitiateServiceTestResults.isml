@@ -1,3 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
 <!--- TEMPLATENAME: AlipayInitiateServiceTestResults.isml --->
 <iscomment>
 	This template will populate the Unit Test result of Alipay Initiate Service
@@ -16,4 +23,4 @@ ${Resource.msg('test.requesttoken','cybersource',null)}
 
 ${Resource.msg('test.reconciliationid','cybersource',null)}
 <isprint value="${pdict.alipayInitiateResponse.ReconciliationID}"><br>
-
+</body></html>

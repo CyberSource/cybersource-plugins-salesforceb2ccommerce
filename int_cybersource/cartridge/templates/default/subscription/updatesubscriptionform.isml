@@ -1,3 +1,9 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
 <iscomment>
 	This template will populate the input fields of update subscription
 </iscomment>
@@ -80,7 +86,6 @@
 				${Resource.msg('global.submit','locale',null)}
 			</button>
 			<INPUT TYPE="button" onClick="parent.location='${URLUtils.https('CybersourceUnitTesting-StartSubscription')}'" value="BACK"/>
-		</div>
-	
-	
+		</div>	
 </form>
+</body></html>

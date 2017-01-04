@@ -2,11 +2,8 @@
 	This template will redirect location based off the varaible that is set
 </iscomment>
 <iscontent type="text/html" charset="UTF-8" compact="true">
-
 <isset name="location" value="${pdict.DeviceFingerprintJetmetrixLocation}" scope="page" />
 <isset name="session_id" value="${pdict.MerchantId + pdict.SessionId}" scope="page" />
-
-
 <isscript>
   var url = [];
   var selectedLink = null;
@@ -41,4 +38,3 @@
   </isscript>
   <isredirect location="${newUrl}" permanent="true"/>
 </isif>
-

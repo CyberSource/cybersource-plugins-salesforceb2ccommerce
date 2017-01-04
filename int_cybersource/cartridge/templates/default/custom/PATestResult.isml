@@ -1,3 +1,10 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
 <iscomment>
 	This template will populate the PA Unit Test Results 
 </iscomment>
@@ -59,6 +66,7 @@ ${Resource.msg('test.ECIRaw','cybersource',null)}
 ${Resource.msg('test.ParesStatus','cybersource',null)}
 <isprint value="${pdict.PAVResponse.ParesStatus}"><br>
 
+
 ${Resource.msg('test.UCAFAuthenticationData','cybersource',null)}
 <isprint value="${pdict.PAVResponse.UCAFAuthenticationData}"><br>
 
@@ -68,3 +76,4 @@ ${Resource.msg('test.UCAFCollectionIndicator','cybersource',null)}
 ${Resource.msg('test.PAVXID','cybersource',null)}
 <isprint value="${pdict.PAVResponse.PAVXID}"><br>
 </isif>
+</body></html>

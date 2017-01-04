@@ -9,9 +9,10 @@
 <script src="${URLUtils.staticURL('/js/cybersource-custom.js')}"></script>
 <head>
 <title>${Resource.msg('payerauthenticationredirect.title','cybersource',null)}</title>
+</head>
 <body class="cyb_unitTest_payerauth">
 	<form action="${URLUtils.https('CybersourceUnitTesting-TestPA')}" method="POST" name="RedirectForm" target="_parent">
 	<input type="hidden" name="PAResponseMD" value="${pdict.PAResponseMD}">
 	<input type="hidden" name="PAResponsePARes" value="${pdict.PAResponsePARes}">
 	</form>
-</body>
+</body></html>

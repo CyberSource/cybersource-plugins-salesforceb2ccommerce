@@ -1,3 +1,9 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
 <iscomment>
        This template will populate hyperlink for make auth reversal and subscription test suit
 </iscomment>
@@ -16,4 +22,6 @@
 <a href="${URLUtils.https('CybersourceUnitTesting-TestCaptureCard','oid',null)}" >${Resource.msg('services_label_testcapturecard','cybersource','')}</a><br/>
 <a href="${URLUtils.https('CybersourceUnitTesting-TestSATokenCreate')}" >${Resource.msg('services_label_testsatokencreate','cybersource','')}</a><br/>
 <a href="${URLUtils.https('CybersourceUnitTesting-OnDemandPayment')}" >${Resource.msg('services_label_testOndemandpayment','cybersource','')}</a><br/>
-<a href="${URLUtils.https('CybersourceUnitTesting-OnDemandPaymentAccount')}" >${Resource.msg('services_label_testOndemandpaymentaccount','cybersource','')}</a><br/> 
+<a href="${URLUtils.https('CybersourceUnitTesting-OnDemandPaymentAccount')}" >${Resource.msg('services_label_testOndemandpaymentaccount','cybersource','')}</a><br/>
+
+</body></html> 
