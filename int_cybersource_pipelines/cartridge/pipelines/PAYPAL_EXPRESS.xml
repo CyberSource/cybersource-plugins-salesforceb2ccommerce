@@ -729,7 +729,7 @@
   <branch basename="External_AuthorizePaypal">
     <segment>
       <node>
-        <start-node name="External_AuthorizePaypal" secure="false"/>
+        <start-node call-mode="private" name="External_AuthorizePaypal" secure="false"/>		
         <node-display x="17" y="1"/>
       </node>
       <simple-transition>
@@ -2521,7 +2521,7 @@
   <branch basename="ProcessPendingOrders">
     <segment>
       <node>
-        <start-node name="ProcessPendingOrders" secure="false"/>
+        <start-node call-mode="private" name="ProcessPendingOrders" secure="false"/>		
         <node-display x="14" y="21"/>
       </node>
       <simple-transition>
