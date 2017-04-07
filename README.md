@@ -2,10 +2,10 @@
 ](https://bitbucket.org/repo/rpazMa/images/1904757579-DwpUtxd.jpg)
 ### Cybersource LINK Cartridge ###
 
-* **Description:** We are more than a global payment gateway â€” weâ€™re an Integrated payment management platform for the digital economy, built on secure Visa infrastructure, with the payment reach and fraud insights of a $350B+ global processing network.
+* **Description:** We are more than a global payment gateway — we’re an Integrated payment management platform for the digital economy, built on secure Visa infrastructure, with the payment reach and fraud insights of a $350B+ global processing network.
 * **Categories:** Payment Processing, Fraud Detection, Address Validation, Tax Computation
 * **Version:** 17.1.0
-* **Last Certification Date:** 18-JAN-2016
+* **Last Certification Date:** 18-JAN-2017
 * **JavaScript Controllers Friendly:** **YES**
 * [Installation Documentation](https://bitbucket.org/demandware/link_cybersource/src/5cbd17fc049cd8ec0041a91c4c170abd0b5289a3/configuration/?at=master)
 
