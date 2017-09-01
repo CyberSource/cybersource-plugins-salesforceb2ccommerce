@@ -1,3 +1,0 @@
-<!--- TEMPLATENAME: paypalredirection.isml --->
-<!-- This template will redirect the customer to paypal for authication -->
-	<isredirect location="${pdict.RedirectURL}">
