@@ -4,7 +4,7 @@
 	Place it within the <head> element of any HTML page that has a Visa Checkout button.
 </iscomment>
 <isscript>
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 </isscript>
 <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive() && (undefined !== pdict.summarypage)}">
 	<style id="antiClickjack">body{display:none;}</style>

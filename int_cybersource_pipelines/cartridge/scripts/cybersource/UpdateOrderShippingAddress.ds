@@ -12,7 +12,6 @@ function execute( pdict : PipelineDictionary ) : Number
 	var stdAddress : Object = pdict.StandardizedAddress;	
 	shippingAddress.setAddress1(stdAddress.address1);				
 	shippingAddress.setAddress2(stdAddress.address2);			
-	//shippingAddress.setPhone(stdAddress.phone);			
 	shippingAddress.setCity(stdAddress.city);			
 	shippingAddress.setStateCode(stdAddress.state);			
 	shippingAddress.setCountryCode(stdAddress.country);			
@@ -20,7 +19,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	shippingAddress.setFirstName(stdAddress.firstName);			
 	shippingAddress.setLastName(stdAddress.lastName);
 	
-	if(pdict.useAsBillingAddress == true)
+	if(pdict.useAsBillingAddress === true)
 	{
 		var billingAddress = pdict.Basket.billingAddress;
 		billingAddress.setAddress1(stdAddress.address1);

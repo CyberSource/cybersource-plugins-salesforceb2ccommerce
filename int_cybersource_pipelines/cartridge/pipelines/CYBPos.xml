@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="process">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>Main sub-pipeline to integrate for Retail POS transaction</description>
+        </text-node>
+        <node-display x="0" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="AuthorizePOS">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="AuthorizePOS" secure="false"/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="accountNumber" key="From_0"/>
+          <key-binding alias="null" key="To_0"/>
+          <key-binding alias="cardType" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="cvnNumber" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="expiryMonth" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="expiryYear" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="amount" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="currency" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="cardPresent" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="catLevel" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="entryMode" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="terminalCapability" key="From_0"/>
+          <key-binding alias="null" key="To_0"/>
+          <key-binding alias="terminalID" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="trackData" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="storeLocation" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="entryMode" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="ScriptFile" value="cybersource/POSAuthRequest.ds"/>
+          <config-property key="Transactional" value="true"/>
+          <config-property key="Timeout" value="30"/>
+          <key-binding alias="ScriptLog" key="ScriptLog"/>
+          <key-binding alias="decision" key="Decision"/>
+          <key-binding alias="reasonCode" key="ReasonCode"/>
+          <key-binding alias="requestID" key="RequestID"/>
+          <key-binding alias="authAmount" key="AuthorizationAmount"/>
+          <key-binding alias="authCode" key="AuthorizationCode"/>
+          <key-binding alias="authReasonCode" key="AuthorizationReasonCode"/>
+          <key-binding alias="card" key="card"/>
+          <key-binding alias="pos" key="pos"/>
+          <key-binding alias="null" key="orderNo"/>
+          <key-binding alias="authCardCategory" key="AuthReplyCardCategory"/>
+          <key-binding alias="authCardGroup" key="AuthReplyCardGroup"/>
+          <key-binding alias="authPaymentTransID" key="AuthReplyPaymentNetworkTransactionID"/>
+          <key-binding alias="authProcessorResponse" key="AuthReplyProcessorResponse"/>
+          <key-binding alias="authReconciliationID" key="AuthReplyReconciliationID"/>
+          <key-binding alias="avsCode" key="AVSCode"/>
+          <key-binding alias="avsCodeRaw" key="AVSCodeRaw"/>
+          <key-binding alias="captureAmount" key="CaptureReplyAmount"/>
+          <key-binding alias="captureResonCode" key="CaptureReplyReasonCode"/>
+          <key-binding alias="captureReconciliationID" key="CaptureReplyReconciliationID"/>
+          <key-binding alias="invalidField" key="InvalidField"/>
+          <key-binding alias="merchantRefCode" key="MerchantReferenceCode"/>
+          <key-binding alias="missingField" key="MissingField"/>
+          <key-binding alias="purchaseTotalCurrency" key="PurchaseTotalsCurrency"/>
+          <key-binding alias="location" key="location"/>
+          <key-binding alias="receiptNumber" key="ReceiptNumber"/>
+          <key-binding alias="CreditCardStatus" key="Status"/>
+          <key-binding alias="posAuthResponse" key="posAuthResponse"/>
+          <key-binding alias="accountNumber" key="accountNumber"/>
+          <key-binding alias="amount" key="amount"/>
+          <key-binding alias="cardPresent" key="cardPresent"/>
+          <key-binding alias="cardType" key="cardType"/>
+          <key-binding alias="catLevel" key="catLevel"/>
+          <key-binding alias="currency" key="currency"/>
+          <key-binding alias="cvnNumber" key="cvnNumber"/>
+          <key-binding alias="expiryMonth" key="expiryMonth"/>
+          <key-binding alias="expiryYear" key="expiryYear"/>
+          <key-binding alias="storeLocation" key="storeLocation"/>
+          <key-binding alias="entryMode" key="entryMode"/>
+          <key-binding alias="terminalID" key="terminalID"/>
+          <key-binding alias="trackData" key="trackData"/>
+          <key-binding alias="terminalCapability" key="terminalCapability"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="authorized"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

@@ -14,8 +14,9 @@
 */
 
 var Resource = require('dw/web/Resource');
-var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/helper/SecureAcceptanceHelper');
-var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
 
 
 function execute( pdict : PipelineDictionary ) : Number
@@ -39,7 +40,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		}
 		return PIPELET_NEXT;
 	}
-	var errorMsg : Array = new Array();
+	var errorMsg  = [];
 	errorMsg.push(Resource.msg('checkout.getsignature.service.problem', 'cybersource', null));
 	pdict.ERRORCODE = errorMsg;
 	return PIPELET_ERROR;

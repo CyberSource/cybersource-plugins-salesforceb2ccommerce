@@ -15,9 +15,10 @@
 *
 */
 var Logger = dw.system.Logger;
-var SubscriptionFacade = require('int_cybersource/cartridge/scripts/facade/SubscriptionFacade');
-var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper'); 
-var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper'); 
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var SubscriptionFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'facade/SubscriptionFacade');
+var CardHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CardHelper'); 
+var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper'); 
 
 function execute( pdict : PipelineDictionary ) : Number
 {
@@ -41,7 +42,7 @@ function execute( pdict : PipelineDictionary ) : Number
               pdict.decision = response.decision;
               pdict.invalidField = response.invalidField;
               pdict.missingField = response.missingField;
-              if(null != response.NewSubscriptionID){
+              if(null !== response.NewSubscriptionID){
                      pdict.NewSubscriptionID = response.NewSubscriptionID;
               }
        

@@ -2,20 +2,20 @@
 <services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
     <service-credential service-credential-id="CybersourceService">
         <url>https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor</url>
-        <user-id></user-id>
-        <password></password>
+        <user-id>sapient_nitro</user-id>
+        <password encrypted="true" encryption-type="common.export">w8toRpvj1ZMn8lUygf3Q0NMifiH3ZDia8kcsmVJRbUM=</password>
     </service-credential>
 
     <service-credential service-credential-id="conversiondetailreport">
         <url>https://ebctest.cybersource.com/ebctest/ConversionDetailReportRequest.do?merchantID={merchantID}&amp;username={username}&amp;password={password}&amp;startDate={startDate}&amp;startTime={startTime}&amp;endDate={endDate}&amp;endTime={endTime}</url>
-        <user-id></user-id>
-        <password ></password>
+        <user-id>anujjain</user-id>
+        <password encrypted="true" encryption-type="common.export">NDo+vVOthH04Ty8Mz12zz8oQIB9ishqNclalOEHm1/ksKOv9i1AN/WNGRPr0s6hM</password>
     </service-credential>
 
     <service-credential service-credential-id="cybersourcegeneric">
         <url>https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor</url>
-        <user-id></user-id>
-        <password></password>
+        <user-id>sapient_nitro</user-id>
+        <password encrypted="true" encryption-type="common.export">j1cGVgUoORDp/tBE5uGJIiXZ9kJ1xJyfWEkQDoRmlIQ=</password>
     </service-credential>
 
     <service-profile service-profile-id="cybersourceprofile">
@@ -32,7 +32,7 @@
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
         <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>false</comm-log-enabled>
+        <comm-log-enabled>true</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>cybersourceprofile</profile-id>
         <credential-id>conversiondetailreport</credential-id>
@@ -42,7 +42,7 @@
         <service-type>SOAP</service-type>
         <enabled>true</enabled>
         <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>false</comm-log-enabled>
+        <comm-log-enabled>true</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>cybersourceprofile</profile-id>
         <credential-id>cybersourcegeneric</credential-id>
@@ -52,7 +52,7 @@
         <service-type>SOAP</service-type>
         <enabled>true</enabled>
         <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>false</comm-log-enabled>
+        <comm-log-enabled>true</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>cybersourceprofile</profile-id>
         <credential-id>cybersourcegeneric</credential-id>

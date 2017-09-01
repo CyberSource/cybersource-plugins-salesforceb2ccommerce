@@ -8,10 +8,10 @@
 	<h1 class="title-center">${Resource.msg('sa.redirect.form.waitmessage','cybersource',null)}</h1>
 </head> 
 	<body class="cyb_sa_request_form">
-		<form method="post" name="ePayment" action="${pdict.formAction}" target="_parent">
-			<isif condition="${!empty(pdict.requestData)}"> 
-				<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
-					<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="off"/>' />
+		<form method="post" name="ePayment" action="${pdict.FormAction}" target="_parent">
+			<isif condition="${!empty(pdict.Data)}"> 
+				<isloop items="${pdict.Data.keySet().iterator()}" var="addresskey">
+					<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.Data.get(addresskey)}" encoding="off"/>' />
 				</isloop>
 			</isif>
 			<input type="hidden" value="Proceed with Payment" name="Submit">

@@ -36,6 +36,8 @@ function BillTo_Object() {
 	this.httpBrowserCookiesAccepted = true;
 	this.nif = "";
 	this.personalID = "";
+	this.language = "";
+	this.district = "";
 }
 
 BillTo_Object.prototype = 
@@ -231,6 +233,18 @@ BillTo_Object.prototype =
 	},
 	getPersonalID : function(){
 	return this.personalID;
+	},
+	setLanguage : function(value){
+	this.language = value;
+	},
+	getLanguage : function(){
+	return this.language;
+	},
+	setDistrict : function(value){
+	this.district = value;
+	},
+	getDistrict : function(){
+	return this.district;
 	}							
 }
 module.exports = BillTo_Object;

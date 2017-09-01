@@ -33,7 +33,9 @@
 *
 */
 
-var VisaCheckoutFacade = require('int_cybersource/cartridge/scripts/facade/VisaCheckoutFacade');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/facade/VisaCheckoutFacade');
+
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var basket = pdict.Basket;
@@ -79,7 +81,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	/**********************************************/
 	/* DAV-related WebService response processing */
 	/**********************************************/
-	if(null != result.serviceResponse.davReply){
+	if(!empty(result.serviceResponse.davReply)){
 		pdict.DAVReasonCode = result.serviceResponse.DAVReasonCode;
 		pdict.StandardizedAddress = result.serviceResponse.StandardizedAddress;
 	}

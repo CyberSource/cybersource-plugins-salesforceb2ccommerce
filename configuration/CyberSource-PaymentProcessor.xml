@@ -26,4 +26,44 @@
             <production/>
         </preferences>
     </payment-processor>
+	<payment-processor processor-id="KLARNA_CREDIT">
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+	<payment-processor processor-id="BANK_TRANSFER">
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+	<payment-processor processor-id="PAYPAL_CREDIT">
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+	<payment-processor processor-id="Cybersource_ApplePay">
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
+	<payment-processor processor-id="Cybersource_AndroidPay">
+        <preferences>
+            <all-instances/>
+            <development/>
+            <staging/>
+            <production/>
+        </preferences>
+    </payment-processor>
 </payment-processors>

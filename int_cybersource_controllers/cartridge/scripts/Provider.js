@@ -7,82 +7,228 @@
  */
 
 /* API Includes */
-var app = require('app_storefront_controllers/cartridge/scripts/app');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var app = require(CybersourceConstants.APP);
+var Cybersource = require('~/cartridge/scripts/Cybersource');
 
 /**
  * Process redirect url response of secure acceptance redirect
  */
 function saredirect(args) {
-	var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/helper/SecureAcceptanceHelper');
-	return secureAcceptanceHelper.SAResponse();
+	var secureAcceptanceAdapter =  require(CybersourceConstants.CS_CORE+'/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
+	var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
+	var returnVariable;
+	session.privacy.order_id = request.httpParameterMap.req_reference_number.stringValue;
+	switch(secureAcceptanceResponse.nextStep){
+	case CybersourceConstants.SA_SUBMITORDER: returnVariable = {submit : true, Order:secureAcceptanceResponse.data};
+											break;
+	case CybersourceConstants.SA_REVIEWORDER :returnVariable = {pending : true, Order:secureAcceptanceResponse.data};
+											break;
+	case CybersourceConstants.SA_SUMMARY : var PlaceOrderError = secureAcceptanceResponse.data;
+											returnVariable = {
+													cancelfail : true,
+													PlaceOrderError : !empty(PlaceOrderError)?PlaceOrderError:new Status(Status.ERROR, "confirm.error.declined")
+											};
+											break;
+	case CybersourceConstants.SA_GOTO : returnVariable = {
+												redirect : true,
+												location : secureAcceptanceResponse.location,
+												render : secureAcceptanceResponse.render
+										};
+										break;
+	default : break;
+	}
+	return returnVariable;
 }
 
 /**
  * Process redirect url response of secure acceptance iframe
  */
 function saiframe(args) {
-	var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/helper/SecureAcceptanceHelper');
-	return secureAcceptanceHelper.SAResponse();
+	var secureAcceptanceAdapter =  require(CybersourceConstants.CS_CORE+'/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
+	var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
+	var returnVariable;
+	session.privacy.order_id = request.httpParameterMap.req_reference_number.stringValue;
+	switch(secureAcceptanceResponse.nextStep){
+	case CybersourceConstants.SA_SUBMITORDER: returnVariable = {submit : true, Order:secureAcceptanceResponse.data};
+											break;
+	case CybersourceConstants.SA_REVIEWORDER :returnVariable = {pending : true, Order:secureAcceptanceResponse.data};
+											break;
+	case CybersourceConstants.SA_SUMMARY : var PlaceOrderError = secureAcceptanceResponse.data;
+											returnVariable = {
+													cancelfail : true,
+													PlaceOrderError : !empty(PlaceOrderError)?PlaceOrderError:new Status(Status.ERROR, "confirm.error.declined")
+											};
+											break;
+	case CybersourceConstants.SA_GOTO : returnVariable = {
+															redirect : true,
+															location : secureAcceptanceResponse.location,
+															render : secureAcceptanceResponse.render
+														};
+										break;
+	default : break;
+	}
+	return returnVariable;
 }
+
 
 /**
  * Process redirect url response of alipay
  */
 function alipay(args) {
 	
-	var Cybersource = require('int_cybersource_controllers/cartridge/scripts/Cybersource');
-	var alipayHelper = require('int_cybersource/cartridge/scripts/helper/AlipayHelper');
+	var commonHelper = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/helper/CommonHelper');
     var orderResult = Cybersource.GetOrder({Order:args.Order});
-    var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants.ds');
-	if (orderResult.error || empty(orderResult.Order.getPaymentInstruments(CybersourceConstants.METHOD_ALIPAY))) {
-		app.getController('Cart').Show();
-        return;
+	if (orderResult.error) {
+		return {carterror : true};
 	}
 	var order = orderResult.Order;
-	var alipayResult = alipayHelper.CheckAlipayPaymentStatus({Order:order});
-	if (alipayResult.summaryconfirmation) {
-		app.getController('COPlaceOrder').ReviewOrder({Order:order});
-		return;
+	//call check status service
+	var alipayResult = commonHelper.CheckStatusServiceRequest({Order:order});
+	/*show confirmation if check status service response is still pending,
+	 * for success, place the order and fail the order in case of failed response
+	 */
+	if (alipayResult.pending) {
+		return {pending : true, Order:order};
 	} else if (alipayResult.submit) {
-		app.getController('COPlaceOrder').SubmitOrder({Order:order});
-		return;
+		return {submit : true, Order:order};
 	} else if (alipayResult.error)
 	{
-		app.getController('COPlaceOrder').Fail({Order:order});
-        return;
+		return {error : true, Order:order};
 	}
+}
+
+/**
+ * Process redirect url response of bank transfer
+ */
+function banktransfer(args) {
+	
+	var bankAdaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
+	// get the order
+    var orderResult = Cybersource.GetOrder({Order:args.Order});
+    //check if payment method is not specific to bank transfer
+	if (orderResult.error) {
+		return {carterror : true};
+	}
+	var order = orderResult.Order;
+	//call check status service
+	var bankTransferResult = bankAdaptor.CheckStatusServiceRequest(order);
+	
+	/*show confirmation if check status service response is still pending,
+	 * for success, place the order and fail the order in case of failed response
+	 */
+	if (bankTransferResult.pending) {
+		return {pending : true, Order:order};
+	} else if (bankTransferResult.submit) {
+		return {submit : true, Order:order};
+	} else if (bankTransferResult.error || bankTransferResult.declined) {
+		return {error : true, Order:order};
+	}
+}
+
+/**
+ * Process redirect url response of bank transfer
+ */
+function klarna(args) {
+	
+	var klarnaAdaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
+	var PaymentInstrument = require('dw/order/PaymentInstrument');
+	// get the order
+    var orderResult = klarnaAdaptor.GetKlarnaOrder({Order:args.Order});
+    //check if payment method is not specific to bank transfer
+	if (orderResult.error) {
+		return {carterror : true};
+	}
+	var order = orderResult.Order;
+	
+	/*show confirmation if check status service response is still pending,
+	 * for success, place the order and fail the order in case of failed response
+	 */
+	for each(var paymentInstrument in order.paymentInstruments){
+		if(!paymentInstrument.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)){
+			if(paymentInstrument.paymentTransaction.custom.apPaymentStatus !== null 
+					&& CybersourceConstants.AUTHORIZED === paymentInstrument.paymentTransaction.custom.apPaymentStatus){
+					return {submit : true, Order:order};
+			} else if(paymentInstrument.paymentTransaction.custom.apPaymentStatus !== null 
+					&& CybersourceConstants.PENDING === paymentInstrument.paymentTransaction.custom.apPaymentStatus){
+				//call check status service
+				var klarnaResult = klarnaAdaptor.CheckStatusServiceRequest(order);
+				/*show confirmation if check status service response is still pending,
+				 * for success, place the order and fail the order in case of failed response
+				 */
+				if (klarnaResult.pending) {
+					return {pending : true, Order:order};
+				} else if (klarnaResult.submit) {
+					return {submit : true, Order:order};
+				} else if (klarnaResult.error || klarnaResult.declined) {
+					return {error : true, Order:order};
+				} else if (klarnaResult.review) {
+					return {review : true, Order:order};
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Process cancel or fail response from bank transfer
+ */
+function cancelfail(args) {
+	
+	var orderResult = {};
+	if(!request.httpParameterMap.cfk.booleanValue){
+		orderResult = Cybersource.GetOrder({Order:args.Order});
+	} else {
+		var klarnaAdaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
+		orderResult = klarnaAdaptor.GetKlarnaOrder({Order:args.Order});
+	}
+	var order = orderResult.Order;
+	if (orderResult.error) {
+		return {carterror : true};
+	} 
+	session.custom.SkipTaxCalculation=false;
+	var Transaction = require('dw/system/Transaction');
+	var OrderMgr = require('dw/order/OrderMgr');
+	var failResult = Transaction.wrap(function () {
+	       OrderMgr.failOrder(order);
+	       return {
+	           error: true,
+	           PlaceOrderError: orderResult.PlaceOrderError
+	       };
+	   });
+	if (failResult.error){
+		return {cancelfail : true, PlaceOrderError:failResult.PlaceOrderError};
+	}
+    return;
 }
 
 /**
  * Process redirect url response of card 3d payer auth
  */
 function card(args) {
-	var Cybersource = require('int_cybersource_controllers/cartridge/scripts/Cybersource');
     var orderResult = Cybersource.GetOrder({Order:args.Order});
 	if (orderResult.error) {
-		app.getController('Cart').Show();
-        return;
+		return {carterror:true};
 	}
 	var order = orderResult.Order;
 	if (session.privacy.process3DRequest) {
-		Cybersource.Process3DRequest({Order:order});
-		return;
+		session.privacy.process3DRequest = false;
+		session.privacy.process3DRequestParent = true;
+		session.privacy.order_id = order.orderNo;
+		return {load3DRequest:true,Order:order};
 	} else if (session.privacy.process3DRequestParent) {
 		var process3DResult = Cybersource.Process3DRequestParent({Order:order});
 		if (process3DResult.fail)
 		{
-			app.getController('COPlaceOrder').Fail({Order:order,PlaceOrderError:process3DResult.PlaceOrderError});
-			return;
+			return {error:true,Order:order};
 		} else if (process3DResult.review)
 		{
-			app.getController('COPlaceOrder').ReviewOrder({Order:order,skipOrderPlacement:false});
-			return;
+			return {pending:true,Order:order};
 		} else if (process3DResult.home) {
-			app.getController('Home').Show();
-			return;
+			return {carterror:true,Order:order};
 		}
 	}
-    app.getController('COPlaceOrder').SubmitOrder({Order:order,skipOrderPlacement:args.skipOrderPlacement});
+    return {submit:true,Order:order};
 }
 
 /**
@@ -90,29 +236,22 @@ function card(args) {
  */
 
 function saconfirm(args) {
-	var Cybersource = require('int_cybersource_controllers/cartridge/scripts/Cybersource');
     var orderResult = Cybersource.GetOrder({Order:args.Order});
 	if (orderResult.error) {
-		app.getController('Cart').Show();
-        return;
+		return {carterror:true};
 	}
-	var order = orderResult.Order;
-	app.getController('COPlaceOrder').ReviewOrder({Order:order});
+	return {pending:true,Order:orderResult.Order};
 }
 
 /**
  * User is redirected to summary page with the error message, if order is not there then to cart page. 
  */
 function safail(args) {
-	var Cybersource = require('int_cybersource_controllers/cartridge/scripts/Cybersource');
     var orderResult = Cybersource.GetOrder({Order:args.Order});
 	if (orderResult.error) {
-		app.getController('Cart').Show();
-        return;
+		return {carterror:true};
 	}
-	var order = orderResult.Order;
-	var Status = require('dw/system/Status');
-	app.getController('COSummary').Start({Order:order, PlaceOrderError:new Status(Status.ERROR, "confirm.error.declined")});
+	return {cancelfail:true};
 }
 
 /**
@@ -121,33 +260,43 @@ function safail(args) {
 
 function check(args) {
 	var providerParam = request.httpParameterMap.provider.stringValue;
+	var result={};
 	switch (providerParam) {
 		case 'saredirect':
-			return saredirect(args);
+			result= saredirect(args);
+			break;
 		case 'saiframe':
-			return saiframe(args);
+			result= saiframe(args);
+		   break;
 		case 'card':
-			return card(args);
+			result= card(args);
+			break;
 		case 'alipay':
-			return alipay(args);
+			result = alipay(args);
+			break;
 		case 'saconfirm':
-			return saconfirm(args);
+			result = saconfirm(args);
+			break;
 		case 'safail':
-			return safail(args);
+			result =  safail(args);
+			break;
+		case 'banktransfer':
+			result = banktransfer(args);
+			break;
+		case 'klarna':
+			result = klarna(args);
+			break;
+		case 'cancelfail':
+			result = cancelfail(args);
+			break;
 		default:
-			app.getController('Cart').Show();
+			result ={carterror:true};
 			break;
 	}
-	return;
+	return result;
 }
 
 /*
 * Module exports
 */
-exports.card=card;
-exports.alipay=alipay;
-exports.saredirect=saredirect;
-exports.saiframe=saiframe;
-exports.saconfirm=saconfirm;
-exports.safail=safail;
 exports.Check=check;

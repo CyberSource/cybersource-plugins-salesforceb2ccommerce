@@ -1,0 +1,43 @@
+/**
+* ProcessAlipayOrder.ds.ds
+* This file is getting used to call Alipay authorize service 
+* and redirect user to intermediate/merchant site to authorize
+* and complete the payment
+* Also used to call checkpaymentstatus service for Alipay and order
+* and update payment details
+*
+* @input Order : dw.order.Order
+* @input paymentFlow : String
+*
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @output Result : Object
+* @output alipayReturnUrl : Object
+* @output RedirectURL : Object
+*
+*
+/*
+* This method is used to process Alipay order, authorize order 
+* and process response and return URLS's along with cheching payment status using APCheckstatus service
+*/
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//declare variable for cybersource constant
+    var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var result = {};
+	//check if payment flow is authorization then call authorization service else check status service
+	if(!empty(pdict.paymentFlow) && CybersourceConstants.AUTHORIZED.equals(pdict.paymentFlow)){
+		var adaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/alipay/adaptor/AlipayAdaptor');	
+			result = adaptor.AuthorizeAlipay({Order:pdict.Order, orderNo:pdict.Order.orderNo, PaymentInstrument: pdict.PaymentInstrument});
+			pdict.alipayReturnUrl = result.alipayReturnUrl;
+			pdict.RedirectURL = result.RedirectURL;
+			pdict.Result = result;
+	}
+	else if(!empty(pdict.paymentFlow) && CybersourceConstants.CHECK_STATUS.equals(pdict.paymentFlow)){
+		var commonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
+			result = commonHelper.CheckStatusServiceRequest({Order:pdict.Order});
+			pdict.Result = result;
+   		}
+	//set the result into pipeline dictionary
+	
+    return PIPELET_NEXT;
+}

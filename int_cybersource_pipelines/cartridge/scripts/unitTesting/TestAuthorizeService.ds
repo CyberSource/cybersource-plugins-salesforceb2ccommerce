@@ -1,0 +1,20 @@
+/**
+* TestSaleService.ds
+*
+* The file is used to test CyberSource Sale service to send request to test facade
+* and handle the response.
+*
+*   @output Result : Object
+*
+*/
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+	response = TestFacade.TestAuthorizeService();
+	pdict.Result = response;
+	
+   return PIPELET_NEXT;
+}

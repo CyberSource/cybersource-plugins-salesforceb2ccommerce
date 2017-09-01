@@ -2,6 +2,8 @@
 /* API includes */
 var Logger = dw.system.Logger.getLogger('Cybersource');
 var Site = require('dw/system/Site');
+var StringUtils = require('dw/util/StringUtils');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 /**
  * Sets the purchasable item amount, does not includes the gift card amount.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
@@ -9,6 +11,7 @@ var Site = require('dw/system/Site');
  
 function CreateCybersourcePurchaseTotalsObject(Basket : dw.order.LineItemCtnr) {
 	var basket = Basket;
+	var locale = GetRequestLocale();
 	//**************************************************************************//
 	// Check if Basket exists
 	//**************************************************************************//
@@ -16,11 +19,13 @@ function CreateCybersourcePurchaseTotalsObject(Basket : dw.order.LineItemCtnr) {
 		Logger.error("Please provide a Basket!");
 		return {error:true};
 	}
-	var PurchaseTotals_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
+	var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
 	var purchaseObject = new PurchaseTotals_Object();
 	var Money = require('dw/value/Money');
 	var amount = new Money(0,basket.currencyCode);
 	var ccPaymentInstruments = basket.getPaymentInstruments();
+	var selectedPaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
+	var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
 	for each (var pi in ccPaymentInstruments) {
 		if(!pi.paymentMethod.equals("GIFT_CERTIFICATE"))
     	{
@@ -28,12 +33,39 @@ function CreateCybersourcePurchaseTotalsObject(Basket : dw.order.LineItemCtnr) {
     	}
 	}
 	purchaseObject.setCurrency(amount.currencyCode);
-	var StringUtils = require('dw/util/StringUtils');
-	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00","en_US"));
+	//set the discount amount for Klarna
+	setKlarnaDiscountAmount(processor,purchaseObject,basket,locale);
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00",locale));
 	
 	return {success:true, purchaseTotals: purchaseObject};
 }
 
+/**
+ * This function set the discount amount for Klarna when product, shipping
+ * order level promotion has been applied along with gift card certificate
+ */
+function setKlarnaDiscountAmount(processor,purchaseObject,basket,locale){
+	//set the local variable
+	var discountAmount = 0;
+	//check if payment processor is Klarna, get the adjustment amount
+	if(CybersourceConstants.KLARNA_PROCESSOR.equals(processor)){
+		for each(var lineItem in basket.allLineItems){
+			if(lineItem instanceof dw.order.PriceAdjustment) {
+				//set the adjustment amount
+				discountAmount = discountAmount + Math.abs(lineItem.grossPrice.value);
+			}	
+		}
+		//iterate each gift certificate applied and set into discount amount
+		for each(var giftCertificate in basket.giftCertificatePaymentInstruments){
+			discountAmount = discountAmount + Math.abs(giftCertificate.paymentTransaction.amount.value);
+		}
+		//set discount amount into purchase object when amount is not zero
+		if(discountAmount !== 0) {
+			purchaseObject.setDiscountAmount(StringUtils.formatNumber(discountAmount,"000000.00",locale));
+		}
+	}
+	return;
+}
 /**
  * On basis of boolean variable , bill to address object is populated either from basket or shipping address
  * @param formType : String variable can hold value like subscription,billing,paymentinstruments.
@@ -42,9 +74,10 @@ function CreateCybersourcePurchaseTotalsObject(Basket : dw.order.LineItemCtnr) {
 
 function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromBasket : Boolean)
 {
-	var BillTo_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
+	var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
 	var billToObject = new BillTo_Object();
-	
+	var paymentInstruments = Basket.getPaymentInstruments();
+	var language = GetRequestLocale();
 	if(ReadFromBasket)
 	{
 		var basket = Basket;
@@ -62,6 +95,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 				billToObject.setStreet2    ( billingAddress.address2 );
 				billToObject.setCity       ( billingAddress.city );
 				billToObject.setState      ( billingAddress.stateCode );
+				billToObject.setDistrict   ( billingAddress.stateCode );
 				billToObject.setPostalCode ( billingAddress.postalCode );
 				billToObject.setCountry    ( billingAddress.countryCode );
 				billToObject.setPhoneNumber( billingAddress.phone );
@@ -73,6 +107,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 				billToObject.setStreet2    ( shippingAddress.address2 );
 				billToObject.setCity       ( shippingAddress.city );
 				billToObject.setState      ( shippingAddress.stateCode );
+				billToObject.setDistrict   ( shippingAddress.stateCode );
 				billToObject.setPostalCode ( shippingAddress.postalCode );
 				billToObject.setCountry    ( shippingAddress.countryCode );
 				billToObject.setPhoneNumber( shippingAddress.phone );
@@ -94,6 +129,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 			billToObject.setStreet2    ( shippingAddress.address2 );
 			billToObject.setCity       ( shippingAddress.city );
 			billToObject.setState      ( shippingAddress.stateCode );
+			billToObject.setDistrict   ( shippingAddress.stateCode );
 			billToObject.setPostalCode ( shippingAddress.postalCode );
 			billToObject.setCountry    ( shippingAddress.countryCode );
 			billToObject.setPhoneNumber( shippingAddress.phone );
@@ -126,6 +162,11 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 	
 	}
 	billToObject.setIpAddress(GetIPAddress());
+	for each(var paymentInstrument in paymentInstruments){
+		if(CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)){
+			billToObject.setLanguage(language);
+		}
+	}
 
     return {success:true, billTo:billToObject};
 }
@@ -184,7 +225,7 @@ function CreateCyberSourceBillToObject_UserData(formType : String)
 					ipAddress = GetIPAddress();
 			break;
 		}
-		var BillTo_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
+		var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
 		var billToObject = new BillTo_Object();
 		billToObject.setTitle(title);
 		billToObject.setFirstName(firstName);
@@ -253,6 +294,22 @@ function removeExistingPaymentInstrumentsExceptPaymentType( basket : dw.order.Li
 	}
 }
 
+/* Common function to get payment type from payment method 
+  custom attribute and value of payment processor */
+  
+function GetPaymentType(selectedPaymentMethod){
+	//declare variable
+	var paymentObject = {};
+	var PaymentMgr = require('dw/order/PaymentMgr');
+	//get the payment method object from payment manager
+	var paymentMethod = PaymentMgr.getPaymentMethod(selectedPaymentMethod);
+	//set and return the value of payment type if exist at payment method level
+	if(paymentMethod.custom !== null && 'paymentType' in paymentMethod.custom){
+		paymentObject.paymentType = paymentMethod.custom.paymentType.value;
+	}
+	paymentObject.paymentProcessor = paymentMethod.paymentProcessor.ID;
+	return paymentObject;
+}
 /**
  * Sets cybersource item object using lineitem, having data related to product, product price,quantity.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
@@ -261,54 +318,63 @@ function removeExistingPaymentInstrumentsExceptPaymentType( basket : dw.order.Li
 function CreateCybersourceItemObject(Basket : dw.order.LineItemCtnr)
 {
 	var basket = Basket;
+	var locale = GetRequestLocale();
+	var PaymentMgr = require('dw/order/PaymentMgr');
+	var selectedPaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
+	var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
 	var lineItems = basket.allLineItems.iterator();
 	var ArrayList = require('dw/util/ArrayList');
 	var itemObjects = new ArrayList();
 	var count = 1;
-	var StringUtils = require('dw/util/StringUtils');
 	while(lineItems.hasNext())
 	{
 		var lineItem = lineItems.next();
-		var Item_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_Item_Object');
+		var Item_Object = require('~/cartridge/scripts/cybersource/Cybersource_Item_Object');
 		var itemObject = new Item_Object();
 		if(lineItem instanceof dw.order.ProductLineItem)
 		{
-			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.proratedPrice.value,"000000.00","en_US"));
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.proratedPrice.value,"000000.00",locale));
 			itemObject.setQuantity(lineItem.quantityValue);
 			itemObject.setProductCode("default");
 			itemObject.setProductName(lineItem.productName);
 			itemObject.setProductSKU(lineItem.productID);
-			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00",locale));
+			setTotalAmount(processor,itemObject,lineItem.adjustedGrossPrice.value,locale);
 			itemObject.setId(count);
 		}
 		else if(lineItem instanceof dw.order.GiftCertificateLineItem)
 		{
-			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.grossPrice.value,"000000.00","en_US"));
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.grossPrice.value,"000000.00",locale));
 			itemObject.setQuantity(1);
 			itemObject.setProductCode("GIFT_CERTIFICATE");
 			itemObject.setProductName("GIFT_CERTIFICATE");
 			itemObject.setProductSKU("GIFT_CERTIFICATE");
-			itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00","en_US"));
+			itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00",locale));
+			setTotalAmount(processor,itemObject,lineItem.grossPrice.value,locale);
 			itemObject.setId(count);
 		}
 		else if(lineItem instanceof dw.order.ShippingLineItem)
 		{
-			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00","en_US"));
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00",locale));
 			itemObject.setQuantity(1);
 			itemObject.setProductCode(lineItem.ID);
 			itemObject.setProductName(lineItem.ID);
 			itemObject.setProductSKU(lineItem.ID);
-			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			if(lineItem.adjustedTax.available && lineItem.adjustedTax.value >0){
+				itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00",locale));
+			}
+			setTotalAmount(processor,itemObject,lineItem.adjustedGrossPrice.value,locale);
 			itemObject.setId(count);
 		}
 		else if(lineItem instanceof dw.order.ProductShippingLineItem)
 		{
-			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00","en_US"));
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value,"000000.00",locale));
 			itemObject.setQuantity(1);
 			itemObject.setProductCode("SHIPPING_SURCHARGE");
 			itemObject.setProductName("SHIPPING_SURCHARGE");
 			itemObject.setProductSKU("SHIPPING_SURCHARGE");
-			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00","en_US"));
+			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00",locale));
+			setTotalAmount(processor,itemObject,lineItem.adjustedGrossPrice.value,locale);
 			itemObject.setId(count);
 		}
 		if(!(lineItem instanceof dw.order.PriceAdjustment))
@@ -320,7 +386,96 @@ function CreateCybersourceItemObject(Basket : dw.order.LineItemCtnr)
 	
     return {success:true, items:itemObjects};
 }
+/**
+ * Set tax amount for Klarna
+ */
+function setKlarnaTaxAmount(itemObject,taxvalue,locale){
+	/*check if taxation policy is net, set the tax amount else set the tax
+	 amount to zero for gross policy*/
+	if (dw.order.TaxMgr.taxationPolicy===dw.order.TaxMgr.TAX_POLICY_NET) {
+		//set the tax value for net taxation policy
+		itemObject.setTaxAmount(StringUtils.formatNumber(taxvalue,"000000.00",locale));
+	} else {
+		//set the tax for gross taxation policy
+		itemObject.setTaxAmount(StringUtils.formatNumber(0,"000000.00",locale));
+	}
+}
+/**
+ * Set total amount for Bank Transfer and Klarna
+ */
+function setTotalAmount(processor,itemObject,lineItemValue,locale){
+	if(CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(processor) || CybersourceConstants.KLARNA_PROCESSOR.equals(processor)){
+		itemObject.setTotalAmount(StringUtils.formatNumber(lineItemValue,"000000.00",locale));
+	}
+	return;
+}
 
+/**
+ * Set Klarna item object by passing basket as input
+ */
+function CreateKlarnaItemObject(Basket : dw.order.LineItemCtnr)
+{
+	//declare the local variables
+	var basket = Basket;
+	var locale = GetRequestLocale();
+	var PaymentMgr = require('dw/order/PaymentMgr');
+	var selectedPaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
+	var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
+	var lineItems = basket.allLineItems.iterator();
+	var ArrayList = require('dw/util/ArrayList');
+	var itemObjects = new ArrayList();
+	var count = 1;
+	while(lineItems.hasNext())
+	{
+		//set the different items into item level object
+		var lineItem = lineItems.next();
+		var Item_Object = require('~/cartridge/scripts/cybersource/Cybersource_Item_Object');
+		var itemObject = new Item_Object();
+		if(lineItem instanceof dw.order.ProductLineItem)
+		{
+			//set product line item
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value,"000000.00",locale));
+			itemObject.setQuantity(lineItem.quantityValue);
+			itemObject.setProductCode("default");
+			itemObject.setProductName(lineItem.productName);
+			itemObject.setProductSKU(lineItem.productID);
+			setKlarnaTaxAmount(itemObject,lineItem.tax.value,locale);
+			setTotalAmount(processor,itemObject,lineItem.grossPrice.value,locale);
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.ShippingLineItem)
+		{
+			//set shipping line item
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value,"000000.00",locale));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode(lineItem.ID);
+			itemObject.setProductName(lineItem.ID);
+			itemObject.setProductSKU(lineItem.ID);
+			setKlarnaTaxAmount(itemObject,lineItem.tax.value,locale);
+			setTotalAmount(processor,itemObject,lineItem.grossPrice.value,locale);
+			itemObject.setId(count);
+		}
+		else if(lineItem instanceof dw.order.ProductShippingLineItem)
+		{
+			//set surcharge added on shipping item
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value,"000000.00",locale));
+			itemObject.setQuantity(lineItem.quantity.value);
+			itemObject.setProductCode("SHIPPING_SURCHARGE");
+			itemObject.setProductName("SHIPPING_SURCHARGE");
+			itemObject.setProductSKU("SHIPPING_SURCHARGE");
+			setKlarnaTaxAmount(itemObject,lineItem.tax.value,locale);
+			setTotalAmount(processor,itemObject,lineItem.grossPrice.value,locale);
+			itemObject.setId(count);
+		}
+		if(!(lineItem instanceof dw.order.PriceAdjustment))
+		{
+			count = count+1;
+			itemObjects.add(itemObject);	
+		}
+	}
+	
+    return {success:true, items:itemObjects};
+}
 /**
  * Sets currency and amount in purchase object.
  * @param currency : Currency of the site
@@ -330,21 +485,20 @@ function CreateCybersourceItemObject(Basket : dw.order.LineItemCtnr)
  
 function CreateCyberSourcePurchaseTotalsObject_UserData(currency:String,amount:String)
 {  
-	var PurchaseTotals_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
+	var locale = GetRequestLocale();
+	var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
 	var purchaseObject = new PurchaseTotals_Object();
-	var StringUtils = require('dw/util/StringUtils');
-	
 	if(empty(currency))
 		currency = Site.getCurrent().getDefaultCurrency();
 	
 	purchaseObject.setCurrency(currency);
 
-	var amount = new Number(amount);
+	var amount = parseFloat(amount);
 	if(!empty(amount)){
 		if(isNaN(amount)){
 			return {error:true, errorCode : "102", errorMsg : "Amount value is invalid"};
 		}
-		purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00","en_US"));
+		purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(),"000000.00",locale));
 	}
 	else{
 		return {error:true, errorCode : "101", errorMsg : "Amount value is missing"};
@@ -360,7 +514,7 @@ function CreateCyberSourcePurchaseTotalsObject_UserData(currency:String,amount:S
 
 function CreateCybersourceShipFromObject()
 {
-	var ShipFrom_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_ShipFrom_Object');
+	var ShipFrom_Object = require('~/cartridge/scripts/cybersource/Cybersource_ShipFrom_Object');
 	var shipFrom = new ShipFrom_Object();
 
 	shipFrom.setCity(Site.getCurrent().getCustomPreferenceValue("CsShipFromCity"));
@@ -381,7 +535,7 @@ function CreateCybersourceShipToObject(Basket : dw.order.LineItemCtnr)
 {
 	var basket = Basket;
 	
-	var ShipTo_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
+	var ShipTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
 	var shipToObject = new ShipTo_Object();
 	var shippingAddress = basket.defaultShipment.shippingAddress;
 	var shippingMethod = basket.defaultShipment.shippingMethod;
@@ -405,6 +559,7 @@ function CreateCybersourceShipToObject(Basket : dw.order.LineItemCtnr)
 		shipToObject.setStreet2(shippingAddress.address2);
 		shipToObject.setCity(shippingAddress.city);
 		shipToObject.setState(shippingAddress.stateCode);
+		shipToObject.setDistrict(shippingAddress.stateCode);
 		shipToObject.setPostalCode(shippingAddress.postalCode);
 		shipToObject.setCountry(shippingAddress.countryCode);
 		shipToObject.setPhoneNumber(shippingAddress.phone);
@@ -472,7 +627,7 @@ function CreateCartStateString(Basket : dw.order.LineItemCtnr)
 	while(productLineItems.hasNext())
 	{
 		var productLineItem = productLineItems.next();	
-		if(null !== productLineItem.shippingLineItem && productLineItem.shippingLineItem.surcharge && basket.adjustedShippingTotalTax.value==0)
+		if(null !== productLineItem.shippingLineItem && productLineItem.shippingLineItem.surcharge && basket.adjustedShippingTotalTax.value===0)
 		{
 			surcharge = true;
 		}
@@ -486,7 +641,7 @@ function CreateCartStateString(Basket : dw.order.LineItemCtnr)
 	// Check if the cartStateString in session is the same as the newly calculated cartStateString. 
 	// If the strings are the same, then the cart has not changed and tax calculation will be skipped
 	Logger.debug("CartStateStrings: ( {0}----{1} )",session.custom.cartStateString,cartStateString);
-	if( !empty(session.custom.cartStateString) && session.custom.cartStateString == cartStateString && !surcharge){
+	if( !empty(session.custom.cartStateString) && session.custom.cartStateString === cartStateString && !surcharge){
 		session.custom.SkipTaxCalculation = true;
 		return {error:true,CartStateString:cartStateString};
 	}
@@ -523,7 +678,7 @@ function Debug(OrderNo : String,request : Object,response : Object,Basket : dw.o
 	var orderno : String = OrderNo;	
     var debug : Boolean = Site.getCurrent().getCustomPreferenceValue("CsDebugCybersource");
 	
-    if(debug == true && orderno != null){
+    if(debug === true && orderno !== null){
     	var CustomObjectMgr =require("dw/object/CustomObjectMgr");
      	var co = CustomObjectMgr.getCustomObject("cybersourceDebug",orderno);
      	if(co == null){
@@ -544,32 +699,29 @@ function Debug(OrderNo : String,request : Object,response : Object,Basket : dw.o
  */ 
  
 function getResponseString(obj){
-	var ret  = new String();
-	ret += "reasonCode: " + obj.reasonCode;
-	ret += "\n";
-	ret += "currency: " + obj.taxReply.currency;
+	var ret  = '';
+	ret += "reasonCode: " + obj.reasonCode;totalDistrictTaxAmount;
 	ret += "\n";
 	ret += "grandTotalAmount: " + obj.taxReply.grandTotalAmount;
 	ret += "\n";
 	ret += "totalCityTaxAmount: " + obj.taxReply.totalCityTaxAmount;
 	ret += "\n";
-	ret += "city: " + obj.taxReply.city;
-	ret += "\n";
 	ret += "totalCountyTaxAmount: " + obj.taxReply.totalCountyTaxAmount;
-	ret += "\n";
-	ret += "county: " + obj.taxReply.county;
-	ret += "\n";
-	ret += "totalDistrictTaxAmount: " + obj.taxReply.totalDistrictTaxAmount;
 	ret += "\n";
 	ret += "totalStateTaxAmount: "  + obj.taxReply.totalStateTaxAmount;
 	ret += "\n";
-	ret += "state: " + obj.taxReply.state;
-	ret += "\n";
 	ret += "totalTaxAmount: " + obj.taxReply.totalTaxAmount;
 	ret += "\n";
-	ret += "postalCode: " + obj.taxReply.postalCode;
+	ret += "totalTaxableAmount: " + obj.taxReply.totalTaxableAmount;
 	ret += "\n";
-	if(obj.decision == "ACCEPT"){
+	ret += "totalExemptAmount: " + obj.taxReply.totalExemptAmount;
+	ret += "\n";
+	ret += "totalSpecialTaxAmount: " + obj.taxReply.totalSpecialTaxAmount;
+	ret += "\n";
+	ret += "totalCountryTaxAmount: " + obj.taxReply.totalCountryTaxAmount;
+	ret += "\n";
+	
+	if(obj.decision === "ACCEPT"){
 		var resItem;
 		ret += "decision: ACCEPT";
 		ret += "\n";
@@ -582,15 +734,28 @@ function getResponseString(obj){
 			ret += "\n";
 			ret += "	item countyTaxAmount: " + resItem.countyTaxAmount;
 			ret += "\n";
-			ret += "	item districtTaxAmount: " + resItem.districtTaxAmount;
-			ret += "\n";
 			ret += "	item stateTaxAmount: " + resItem.stateTaxAmount;
 			ret += "\n";
 			ret += "	item totalTaxAmount: " + resItem.totalTaxAmount;
 			ret += "\n";
+			ret += "	item countryTaxAmount: " + resItem.countryTaxAmount;
+			ret += "\n";
+			ret += "	item specialTaxAmount: " + resItem.specialTaxAmount;
+			ret += "\n";
+			ret += "	item exemptAmount: " + resItem.exemptAmount;
+			ret += "\n";
 	}
+		for each(resItem in obj.taxReply.item.jurisdiction)
+		{
+			ret += "	item id: " + resItem.jurisId;
+			ret += "\n";
+			ret += "	taxAmount: " + resItem.taxAmount;
+			ret += "\n";
+			ret += "	taxName: " + resItem.taxName;
+			ret += "\n";
+		}
 	}
-return ret
+return ret;
 }
 
 /**
@@ -606,22 +771,22 @@ return ret
  */
 
 function getRequestString(billTo, shipTo, purchase, card, shipFrom, taxService, items : Array, refCode : String){
-var ret : String = new String();
+var ret = '',value;
 ret = "Merchant Reference Code : " + refCode;
 ret += "\n";
 for(var name in billTo){
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
-				var value = billTo[name];
-				if(value != ""){
+		if(name.indexOf("set") === -1 && name.indexOf("get") === -1){
+				value = billTo[name];
+				if(value !== ""){
 					ret += "billto." + name + " :" + value;
 					ret +="\n";
 				}
 			}
 		}
 for(var name in shipTo){
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
-				var value = shipTo[name];
-				if(value != ""){
+		if(name.indexOf("set") === -1 && name.indexOf("get") === -1){
+				value = shipTo[name];
+				if(value !== ""){
 					ret += "shipto." + name + " :" + value;
 					ret +="\n";
 				}
@@ -629,36 +794,36 @@ for(var name in shipTo){
 		}
 
 for(var name in purchase){
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
-				var value = purchase[name];
-				if(value != ""){
+		if(name.indexOf("set") === -1 && name.indexOf("get") === -1){
+				value = purchase[name];
+				if(value !== ""){
 					ret += "purchase." + name + " :" + value;
 					ret +="\n";
 				}
 			}
 		}
 for(var name in card){
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
-				var value = card[name];
-				if(value != ""){
+		if(name.indexOf("set") === -1 && name.indexOf("get") === -1){
+				value = card[name];
+				if(value !== ""){
 					ret += "card." + name + " :" + value;
 					ret +="\n";
 				}
 			}
 		}
 for(var name in shipFrom){
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+		if(name.indexOf("set") === -1 && name.indexOf("get") === -1){
 				var value = shipFrom[name];
-				if(value != ""){
+				if(value !== ""){
 					ret += "shipfrom." + name + " :" + value;
 					ret +="\n";
 				}
 			}
 		}
 for(var name in taxService){
-		if(name.indexOf("set") == -1 && name.indexOf("get") == -1){
+		if(name.indexOf("set") === -1 && name.indexOf("get") === -1){
 				var value = taxService[name];
-				if(value != ""){
+				if(value !== ""){
 					ret += "taxService." + name + " :" + value;
 					ret +="\n";
 				}
@@ -681,7 +846,6 @@ function UpdateOrderShippingAddress(StandardizedAddress : Object,Basket : dw.ord
 	Transaction.wrap(function () {
 		shippingAddress.setAddress1(stdAddress.address1);				
 		shippingAddress.setAddress2(stdAddress.address2);			
-		//shippingAddress.setPhone(stdAddress.phone);			
 		shippingAddress.setCity(stdAddress.city);			
 		shippingAddress.setStateCode(stdAddress.state);			
 		shippingAddress.setCountryCode(stdAddress.country);			
@@ -689,7 +853,7 @@ function UpdateOrderShippingAddress(StandardizedAddress : Object,Basket : dw.ord
 		shippingAddress.setFirstName(stdAddress.firstName);			
 		shippingAddress.setLastName(stdAddress.lastName);
 		
-		if(useAsBillingAddress == true)
+		if(useAsBillingAddress === true)
 		{
 			var billingAddress : OrderAddress = Basket.billingAddress;
 			billingAddress.setAddress1(stdAddress.address1);
@@ -713,7 +877,7 @@ function UpdateOrderShippingAddress(StandardizedAddress : Object,Basket : dw.ord
 function UpdateTaxForGiftCertificate(Basket)
 {
 	var basket = Basket;	
-	if(basket == null) {	
+	if(basket === null) {	
 		return {error:true};
 	}
 	try{		
@@ -752,53 +916,81 @@ function UpdateTaxForGiftCertificate(Basket)
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
  */
  
-function calculateNonGiftCertificateAmount( lineItemCtnr : dw.order.LineItemCtnr ) 
+function calculatePurchaseTotal( lineItemCtnr  ) 
 {
+	var locale = GetRequestLocale();
+	var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
+	var purchaseObject  = new PurchaseTotals_Object(),shippingAmount;
+		purchaseObject.setCurrency(lineItemCtnr.currencyCode);
+	var subTotal  = lineItemCtnr.getAdjustedMerchandizeTotalPrice();
+	var shipment = lineItemCtnr.defaultShipment;
 	
-	var productTotal = lineItemCtnr.getAdjustedMerchandizeTotalPrice();
-	var shippingTotal = lineItemCtnr.getAdjustedShippingTotalPrice();
-	var shippingTax   = lineItemCtnr.getAdjustedShippingTotalTax();
-	var totalTax      = lineItemCtnr.getAdjustedMerchandizeTotalTax();
-	var Money = require('dw/value/Money');
-	var totalAmount   = new Money(0,lineItemCtnr.currencyCode);
-	
-	totalAmount=totalAmount.add(productTotal);
-	if(shippingTotal.value!=0){
-    	totalAmount=totalAmount.add(shippingTotal);
+	var  isGiftCertificate = false;
+	if(lineItemCtnr.getGiftCertificatePaymentInstruments().size() > 0){
+		isGiftCertificate =true;
 	}
-	if(shippingTax.value !=0){
-		totalAmount=totalAmount.add(shippingTax);
+	if(!isGiftCertificate){
+		if(lineItemCtnr.shippingTotalPrice.available && lineItemCtnr.shippingTotalPrice.value >0){
+			purchaseObject.setShippingAmount(StringUtils.formatNumber(lineItemCtnr.shippingTotalPrice.value,"#.00",locale));
+		}else{
+			purchaseObject.setShippingAmount(StringUtils.formatNumber(0,"0.00",locale));
+		}
+		var shippingAdjustmentItr = shipment.getShippingPriceAdjustments().iterator();
+		while (shippingAdjustmentItr.hasNext()) {
+			var priceAdj  = shippingAdjustmentItr.next();
+			if (priceAdj != null){
+				purchaseObject.setShippingDiscountAmount(StringUtils.formatNumber(priceAdj.price.value,"0.00",locale));
+			}
+		}
+		
+		if (dw.order.TaxMgr.taxationPolicy===dw.order.TaxMgr.TAX_POLICY_NET) {
+			if(lineItemCtnr.totalTax.available && lineItemCtnr.totalTax.value>0){
+				purchaseObject.setTaxAmount(StringUtils.formatNumber(lineItemCtnr.totalTax.value,"#.00",locale));
+			}else{
+		   		purchaseObject.setTaxAmount(StringUtils.formatNumber(0,"0.00",locale));
+			}
+		}
+		purchaseObject.setSubtotalAmount(StringUtils.formatNumber(subTotal.value,"#.00",locale));
 	}
-	if(totalTax.value !=0){
-   		totalAmount=totalAmount.add(totalTax);
-	}
-	
-	// the total redemption amount of all gift certificate payment instruments in the basket
-	var giftCertTotal = new Money( 0.0, lineItemCtnr.currencyCode );
+	var amountOpen = calculateNonGiftCertificateAmount(lineItemCtnr);
+	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amountOpen.value,"#.00",locale));
+	return purchaseObject;
+}
 
+/**
+ * Calculates amount which customer needs to pay this amount does not include Gift certificate/card amount. 
+ * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
+ */
+function calculateNonGiftCertificateAmount(lineItemCtnr){
+	
+	//declare variable
+	var totalAmount;
+	var Money = require('dw/value/Money');
+	//set the total amount
+	if(lineItemCtnr.totalGrossPrice.available){
+		totalAmount = lineItemCtnr.totalGrossPrice;
+	}else{
+		totalAmount = lineItemCtnr.adjustedMerchandizeTotalPrice;
+	}
+	var giftCertTotal = new Money( 0.0, lineItemCtnr.currencyCode );
 	// get the list of all gift certificate payment instruments 
 	var gcPaymentInstrs = lineItemCtnr.getGiftCertificatePaymentInstruments();
 	var iter = gcPaymentInstrs.iterator();
 	var orderPI = null;
-
 	// sum the total redemption amount
 	while( iter.hasNext() )
 	{
 		orderPI = iter.next();
 		giftCertTotal = giftCertTotal.add( orderPI.getPaymentTransaction().getAmount() );
 	}
-
 	// get the order total
 	var orderTotal = totalAmount;
-
 	// calculate the amount to charge for the payment instrument
 	// this is the remaining open order total which has to be paid
 	var amountOpen = orderTotal.subtract( giftCertTotal );
-
-	// return the open amount
+	
 	return amountOpen;
 }
-
 /**
 *Get Request IP Address
 */
@@ -822,9 +1014,8 @@ function validateBillingAddress() {
 	var postalCode = (session.forms.billing.billingAddress.addressFields.postal.value);
 	var state = (session.forms.billing.billingAddress.addressFields.states.state.value);
 	var street1 = (session.forms.billing.billingAddress.addressFields.address1.value);
-	var errorMsg : Array = new Array();
+	var errorMsg  = [];
 	var Resource = require('dw/web/Resource');
-					
 	if(!validFieldData(firstName,0,50)) {
 		errorMsg.push(Resource.msg("address.firstname.missing", "forms", null));
 	}
@@ -865,7 +1056,7 @@ function validateBillingAddress() {
 				postalCodeVal = postalCode;
 				break;
 		} 
-		if (empty(postalCodeVal) || postalCodeVal == '') {
+		if (empty(postalCodeVal) || postalCodeVal === '') {
 			errorMsg.push(Resource.msg("resource.errorzip", "forms", null));
 		}
 	}
@@ -877,7 +1068,7 @@ function validateBillingAddress() {
 	}
 	if(validFieldData(email,0,50)) {
 		var emailVal = email.match(/^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$/gi);
-		if (empty(emailVal) || emailVal == '') {
+		if (empty(emailVal) || emailVal === '') {
 			errorMsg.push(Resource.msg("address.email.invalid", "forms", null));
 		}
 	}
@@ -886,7 +1077,7 @@ function validateBillingAddress() {
 	}
 	if(errorMsg.length > 0 ) {
 	 var errormsg = errorMsg.join();
-	 result = {error : true , errorMsg : errormsg }
+	 result = {error : true , errorMsg : errormsg };
 	}
 	return result;
 }
@@ -949,6 +1140,177 @@ function signedDataUsingHMAC256(dataToSign:String, secretKey:String){
    return signature;
 }
 
+/** 
+*  Function to create request object for Cybersource Session service
+*  param
+*/
+function getInitSessionRequest(sessionRequest,lineItemCntr){
+var CybersourceHelper = require('/cartridge/scripts/cybersource/libCybersource');
+sessionRequest.merchantID = CybersourceHelper.getMerchantID();
+request.purchaseTotals = __copyPurchaseTotals( purchase );
+
+}
+
+/**
+*  Function to create purchase total object
+*/
+function getPurchaseTotal(lineItemCntr){
+	
+	var purchaseObject =  calculatePurchaseTotal(lineItemCntr);
+	return 	purchaseObject;
+}
+/**
+* Function to create Item for Session request
+*
+*/
+function getItemObject(basket){
+	var Money = require('dw/value/Money');
+	var Item_Object = require('~/cartridge/scripts/cybersource/Cybersource_Item_Object');
+	var lineItems = basket.allLineItems.iterator();
+	var itemObjects  = [];
+	var count : Number = 1;
+	var locale = GetRequestLocale();
+	// START adjust order level promos	
+	var basketSubTotalPrice = basket.getAdjustedMerchandizeTotalPrice();
+	
+	var orderDiscount	= new Money(0,basket.currencyCode);
+	var subTotal = basket.adjustedMerchandizeTotalPrice;
+	for each( var promo in basket.priceAdjustments ) {
+		orderDiscount	= orderDiscount.add(promo.price);
+		if(promo.price.value < 0) {
+			basketSubTotalPrice	= subTotal.add(promo.price.multiply(-1));
+		}
+	}
+	if(basket.getGiftCertificatePaymentInstruments().size() > 0){
+		//itemObjects.push(getGiftCertificateLineItem(basket));
+	}	
+	var orderLevelAdjustment = basket.getPriceAdjustments();
+	var orderLevelIterator = orderLevelAdjustment.iterator();
+	var orderLevelAdjustmentPrice = null;
+	var orderLevelTaxAdjustment = null;
+	while( orderLevelIterator.hasNext() ) {
+	    var oLevelPriceAdjustment = orderLevelIterator.next();
+	    orderLevelAdjustmentPrice = oLevelPriceAdjustment.price;
+	    orderLevelTaxAdjustment=oLevelPriceAdjustment.tax;
+	}			
+	// END adjust order level promos
+	var adjustedLineItemFinalPrice;
+	var adjustedLineItemTaxPrice;
+	while(lineItems.hasNext())
+	{
+		var lineItem = lineItems.next();
+		var itemObject = new Item_Object();
+			var actualQuantity : Number = 0;
+		if(lineItem instanceof dw.order.ProductLineItem)
+		{
+			actualQuantity = lineItem.quantity.value;
+			if( orderLevelAdjustmentPrice!=null ){
+         		orderLevelAdjustmentPrice = orderLevelAdjustmentPrice.multiply(-1);
+	        }
+	        if(orderLevelTaxAdjustment !=null){
+	        	orderLevelTaxAdjustment = orderLevelTaxAdjustment.multiply(-1);
+	        }
+			if( orderLevelAdjustmentPrice != null && !empty(orderLevelAdjustmentPrice) ) {		
+				adjustedLineItemFinalPrice = getOrderLevelAdjustedLineItemPrice(lineItem);
+			} else {	
+				adjustedLineItemFinalPrice = lineItem.getAdjustedPrice().divide(actualQuantity);		
+			}
+			itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(adjustedLineItemFinalPrice.getValue()),"#.00",locale));
+			itemObject.setQuantity(lineItem.quantityValue);
+			itemObject.setProductCode("default");
+			if( orderLevelTaxAdjustment != null && !empty(orderLevelTaxAdjustment)  && orderLevelAdjustmentPrice.value > 0 ) {
+				adjustedLineItemTaxPrice=lineItem.adjustedTax.subtract(orderLevelTaxAdjustment);
+			}
+			else{
+				adjustedLineItemTaxPrice=lineItem.adjustedTax;
+			}
+			if (dw.order.TaxMgr.taxationPolicy===dw.order.TaxMgr.TAX_POLICY_NET) {
+			itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(adjustedLineItemTaxPrice.getValue()),"#.00",locale));
+			}
+			itemObject.setProductName(lineItem.productName);
+			itemObject.setProductSKU(lineItem.productID);
+			itemObject.setId(count);
+		}
+		
+		else if(lineItem instanceof dw.order.ShippingLineItem)
+		{
+		   	continue;
+		}
+		else if(lineItem instanceof dw.order.ProductShippingLineItem)
+		{
+			continue;
+		}
+		if(!(lineItem instanceof dw.order.PriceAdjustment) && lineItem.adjustedPrice.value > 0)
+		{
+			count = count+1;
+			itemObjects.push(itemObject);	
+		}
+	}
+	return itemObjects;
+}
+/*
+* Function to get order level adjustment
+*/
+function getOrderLevelAdjustedLineItemPrice(lineItem){
+ var price = 0,quantity,proratedPrice;
+ quantity = lineItem.quantity.value;
+ proratedPrice = lineItem.proratedPrice;	
+ price = proratedPrice.divide(quantity);
+ return price;
+}
+
+
+/*
+*  Function to add address in basket from 3rd party payment provider 
+*/
+
+function addAddressToCart(lineItemCntr,responseObj,overrideShipping){
+	var billTo = responseObj.billTo;
+	var shipTo = responseObj.shipTo;
+	var billingAddress = lineItemCntr.getBillingAddress();
+	if(empty(billingAddress)){
+		billingAddress = lineItemCntr.createBillingAddress();
+	}
+	if(!empty(billTo.street1) && !empty(billTo.city) && !empty(billTo.state) 
+		&& !empty(billTo.postalCode) && !empty(billTo.country)){
+	    billingAddress.setFirstName(billTo.firstName);
+		billingAddress.setLastName(billTo.lastName) 
+	    billingAddress.setAddress1( billTo.street1 );
+		billingAddress.setAddress2( billTo.street2 );
+		billingAddress.setCity( billTo.city);
+		billingAddress.setPostalCode( billTo.postalCode);
+		billingAddress.setCountryCode( billTo.country);
+		billingAddress.setStateCode( billTo.state);
+		lineItemCntr.setCustomerEmail(billTo.email);		
+	}else{
+		billingAddress.setFirstName ( billTo.firstName);
+		billingAddress.setLastName   ( billTo.lastName );
+		billingAddress.setAddress1   ( "1295 Charleston Rd" );
+		billingAddress.setAddress2    ( "" );
+		billingAddress.setCity       ( "Mountain View" );
+		billingAddress.setStateCode      ( "CA" );
+		billingAddress.setPostalCode ( "94043" );
+		billingAddress.setCountryCode    ( "US" );
+		billingAddress.setPhone( "" );
+	}
+	var defaultShipment, shippingAddress;
+        defaultShipment = lineItemCntr.getDefaultShipment();
+        shippingAddress = defaultShipment.getShippingAddress();
+  		if (shippingAddress === null) {
+  			 shippingAddress = defaultShipment.createShippingAddress();
+  			 overrideShipping = true;
+  		}
+  		if(overrideShipping){
+  			shippingAddress.setFirstName(shipTo.firstName);
+			shippingAddress.setLastName(shipTo.lastName);
+			shippingAddress.setAddress1(shipTo.street1);
+			shippingAddress.setAddress2(shipTo.street2);
+			shippingAddress.setCity( shipTo.city);
+			shippingAddress.setPostalCode( shipTo.postalCode);
+			shippingAddress.setCountryCode( shipTo.country);
+			shippingAddress.setStateCode( shipTo.state);
+  		}
+}
 /**
 * Log response based on reason code
 */
@@ -968,22 +1330,22 @@ function signedDataUsingHMAC256(dataToSign:String, secretKey:String){
 			Logger.info("[CommonHelper] [Cybersource Reason Code: 100] [INFO] " + logTransactionData + ", Successful transaction.");
 			break;	
 		case 101:	
-			Logger.fatal("[CommonHelper] [Cybersource Reason Code: 101] [FATAL] " + logTransactionData + " Error Message = The request is missing one or more required fields in the request to CyberSource. The could be due to coding error since all required fields should be set by the COSubmit pipeline.");
+			Logger.error("[CommonHelper] [Cybersource Reason Code: 101] [error] " + logTransactionData + " Error Message = The request is missing one or more required fields in the request to CyberSource. The could be due to coding error since all required fields should be set by the COSubmit pipeline.");
 			break;	
 		case 102:								
-			Logger.fatal("[CommonHelper] [Cybersource Reason Code: 102] [FATAL] " + logTransactionData + " Error Message = One or more fields in the request to cybersource contains invalid data. The could be due to coding error since all required fields should be first validated by the COSubmit pipeline.");
+			Logger.error("[CommonHelper] [Cybersource Reason Code: 102] [error] " + logTransactionData + " Error Message = One or more fields in the request to cybersource contains invalid data. The could be due to coding error since all required fields should be first validated by the COSubmit pipeline.");
 			break;	
 		case 150:
-			Logger.fatal("[CommonHelper] [Cybersource Reason Code: 150] [FATAL] " + logTransactionData + " Error Message = Error: General system failure.");
+			Logger.error("[CommonHelper] [Cybersource Reason Code: 150] [error] " + logTransactionData + " Error Message = Error: General system failure.");
 			break;				
 		case 151:
-			Logger.fatal("[CommonHelper] [Cybersource Reason Code: 151] [FATAL] " + logTransactionData + " Error Message = Error: The request was received but there was a server time-out. This error does not include time-outs between the client and the server. ");
+			Logger.error("[CommonHelper] [Cybersource Reason Code: 151] [error] " + logTransactionData + " Error Message = Error: The request was received but there was a server time-out. This error does not include time-outs between the client and the server. ");
 			break;				
 		case 152:
-			Logger.fatal("[CommonHelper] [Cybersource Reason Code: 152] [FATAL] " + logTransactionData + " Error Message = Error: The request was received but there was a service time-out. - ");
+			Logger.error("[CommonHelper] [Cybersource Reason Code: 152] [error] " + logTransactionData + " Error Message = Error: The request was received but there was a service time-out. - ");
 			break;	
 		case 234:
-			Logger.fatal("[CommonHelper] [Cybersource Reason Code: 234] [FATAL] " + logTransactionData + " Error Message = There is a problem with your CyberSource merchant configuration. - Please verify the Cybersource Custom preference in the Business Manager");
+			Logger.error("[CommonHelper] [Cybersource Reason Code: 234] [error] " + logTransactionData + " Error Message = There is a problem with your CyberSource merchant configuration. - Please verify the Cybersource Custom preference in the Business Manager");
 			break;
 		case 400:
 			Logger.warn("[CommonHelper] [Cybersource Reason Code: 400] [WARN] " + logTransactionData + " Error Message = The fraud score exceeds your threshold. - Customer support to handle the order. ");
@@ -999,6 +1361,130 @@ function signedDataUsingHMAC256(dataToSign:String, secretKey:String){
 			break;
 	}
 }
+
+/*
+ * 	This method check the payment status of initiated payment request through alipay and change the status in demandware for placed order to NEW, CREATED, FAILED
+ *  after getting from service call response in relation to Alipay payment status such as COMPLETED, PENDING, ABANDONED and TRADE_NOT_EXIST.
+ *  */
+function CheckStatusServiceRequest(args) {
+	
+	var Order = args.Order;
+	var	paymentType;
+	var PaymentInstrument = require('dw/order/PaymentInstrument');
+	for each(var paymentInstrument in Order.paymentInstruments){
+		if(!paymentInstrument.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)){
+			paymentType = paymentInstrument.paymentTransaction.custom.apPaymentType;
+		}
+	}
+	var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+	var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+		
+	var response = commonFacade.CheckPaymentStatusRequest(Order);
+	if (!empty(response)) {
+		PaymentInstrumentUtils.checkStatusOrderUpdate(Order,response,paymentType);
+		if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+			switch(response.apCheckStatusReply.paymentStatus)
+			{
+				case 'COMPLETED':
+				case 'authorized':
+				case 'settled':
+					return {submit: true};
+					
+				case 'PENDING':
+				case 'pending':
+					return {pending: true};
+					
+				case 'ABANDONED':
+				case 'TRADE_NOT_EXIST':
+				case 'failed':
+				case 'abandoned':
+					return {error: true};
+			}
+		} else if (response.decision === 'REJECT' || response.decision === 'ERROR') {
+			if(getReasonCodes(response.reasonCode.get())){
+				return {error: true};
+			}
+		} else if (response.decision === 'REVIEW'){
+			return {review : true};
+		} else {
+			return {error: true};
+		}
+	}
+	return {pending: true};
+}
+function getReasonCodes(reasonCode){
+	var reasonCodes = CybersourceConstants.REASONCODES;
+	for each(var rs in reasonCodes){
+		if(rs === reasonCode){
+			return true;
+		}
+	}
+	return false;
+}
+/*Remove any existing Payment Instrument and create new 
+* payment Instrument with success/error status for selected payment method 
+*/
+function HandleRequest(Basket){
+	//get payment method from billing form
+	var PaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
+	var isPaymentInstrumentCreated = false;
+	//create payment instrument if selected payment method is not null
+	if (!empty(PaymentMethod)) {
+	    var Transaction = require('dw/system/Transaction');
+        Transaction.wrap(function () {
+        	removeExistingPaymentInstruments(Basket);
+            Basket.createPaymentInstrument(PaymentMethod, calculateNonGiftCertificateAmount(Basket));
+            isPaymentInstrumentCreated = true;
+        });
+        if (isPaymentInstrumentCreated) {
+        	return {success: true};
+        }
+	}
+	return {error:true};
+	
+}
+/**
+ * @param {Object} options
+ * @param {String} options.recipient
+ * @param {String} options.template
+ * @param {String} options.subject
+ * @param {String} options.from
+ * @param {Object} options.context
+ * @return {dw.system.Status} whether the mail was successfully queued (Status.OK) or not (Status.ERROR).
+ */
+function sendMail(options) {
+	var Mail = require('dw/net/Mail');
+	var Site = require('dw/system/Site');
+	var Template = require('dw/util/Template');
+    if (!options.template || !options.recipient || !options.subject) {
+        return;
+    }
+    var mail = new Mail();
+    mail.addTo(options.recipient);
+    mail.setSubject(options.subject);
+    mail.setFrom(options.from || Site.getCurrent().getCustomPreferenceValue('customerServiceEmail') || 'no-reply@salesforce.com');
+    var context = ToHashMap(options.context);
+    context.CurrentForms = session.forms;
+    context.CurrentHttpParameterMap = request.httpParameterMap;
+    context.CurrentCustomer = customer;
+    var template = new Template(options.template);
+    var content = template.render(context).text;
+    mail.setContent(content, 'text/html', 'UTF-8');
+    return mail.send();
+};
+function ToHashMap(object) {
+    var HashMap = require('dw/util/HashMap');
+    var hashmap = new HashMap();
+
+    for (var key in object) {
+        if (object.hasOwnProperty(key)) {
+            hashmap.put(key, object[key]);
+        }
+    }
+
+    return hashmap;
+};
+ 
 module.exports = {
 	CreateCybersourceShipFromObject : CreateCybersourceShipFromObject,
 	CreateCyberSourceBillToObject : CreateCyberSourceBillToObject,
@@ -1007,6 +1493,8 @@ module.exports = {
 	CreateCyberSourcePurchaseTotalsObject_UserData : CreateCyberSourcePurchaseTotalsObject_UserData,
 	CreateCyberSourceBillToObject_UserData : CreateCyberSourceBillToObject_UserData,
 	CreateCybersourceItemObject : CreateCybersourceItemObject,
+	CreateKlarnaItemObject : CreateKlarnaItemObject,
+	GetPaymentType : GetPaymentType,
 	UpdateOrderShippingAddress : UpdateOrderShippingAddress,
 	CreateCartStateString : CreateCartStateString,
 	UpdateTaxForGiftCertificate:UpdateTaxForGiftCertificate,
@@ -1018,5 +1506,12 @@ module.exports = {
 	GetSubscriptionToken: GetSubscriptionToken,
 	GetRequestLocale:GetRequestLocale,
 	signedDataUsingHMAC256:signedDataUsingHMAC256,
-	LogResponse:LogResponse
-}
+	GetPurchaseTotal :getPurchaseTotal,
+	GetItemObject:getItemObject,
+	AddAddressToCart:addAddressToCart,
+	LogResponse:LogResponse,
+	CheckStatusServiceRequest : CheckStatusServiceRequest,
+	HandleRequest : HandleRequest,
+	sendMail : sendMail,
+	CalculateNonGiftCertificateAmount : calculateNonGiftCertificateAmount
+};

@@ -15,7 +15,7 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 	var shipment = basket.getDefaultShipment();
 	var shippingMethod = shipment.getShippingMethod();
 	var lineItems : Iterator = basket.allLineItems.iterator();
-	var items : Array = new Array();
+	var items  = [];
 	var idcount : Number = 0;
 	
 	var shippingMethodTaxCode = null;
@@ -46,7 +46,7 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 	// END adjust order level promos
 	
 	var StringUtils = require('dw/util/StringUtils');
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	while( lineItems.hasNext() ) {
 		var actualQuantity : Number = 0;
@@ -58,10 +58,10 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
  			
  			actualQuantity = lineItem.quantity.value;
  			
- 			if( orderLevelAdjustmentPrice!=null ){
+ 			if( orderLevelAdjustmentPrice !== null ){
          		orderLevelAdjustmentPrice = orderLevelAdjustmentPrice.multiply(-1);
 	        }
-			if( orderLevelAdjustmentPrice != null && !empty(orderLevelAdjustmentPrice) ) {		
+			if( orderLevelAdjustmentPrice !== null && !empty(orderLevelAdjustmentPrice) ) {		
 				adjustedLineItemFinalPrice = getOrderLevelAdjustedLineItemPrice(lineItem.adjustedNetPrice,orderLevelAdjustmentPrice,basketSubTotalPrice,basket.currencyCode,actualQuantity);
 			} else {						
 			    adjustedLineItemFinalPrice = lineItem.adjustedNetPrice.divide(actualQuantity);		
@@ -96,7 +96,7 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 				}
 			}
 			
-			if( empty(shipPriceAdjustTotal) || shipPriceAdjustTotal==0 ) {
+			if( empty(shipPriceAdjustTotal) || shipPriceAdjustTotal === 0 ) {
 			   shipPriceAdjustTotal = lineItem.basePrice.value;
 			}
 				
@@ -106,8 +106,6 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 			item.productName = lineItem.lineItemText;
 			item.productSKU = "PriceAdjustment";
 			item.productCode = lineItem.taxClassID || CybersourceHelper.getDefaultCouponTaxCode();
-		//	lineItem.setTax(new dw.value.Money(new Number(0),basket.currencyCode));
-		//	lineItem.setGrossPrice(lineItem.netPrice.add(new dw.value.Money(new Number(0),basket.currencyCode)));
 		 	lineItem.updateTax(0);
 		}				
 	}
@@ -183,7 +181,7 @@ function CreateCybersourceTaxationPurchaseTotalsObject(Basket : dw.order.LineIte
 {
 	var basket = Basket;
   
-	var PurchaseTotals_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
+	var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
     var purchaseObject = new PurchaseTotals_Object();
 	var amount = basket.totalGrossPrice;
 	purchaseObject.setCurrency(basket.getCurrencyCode());
@@ -197,9 +195,9 @@ function CreateCybersourceTaxationPurchaseTotalsObject(Basket : dw.order.LineIte
 
 function CreateCyberSourceTaxRequestObject()
 {
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var TaxService_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_TaxRequest_Object');
+	var TaxService_Object = require('~/cartridge/scripts/cybersource/Cybersource_TaxRequest_Object');
 	var taxServiceObject = new TaxService_Object();
 	
 	taxServiceObject.setOrderAcceptanceCity(CybersourceHelper.getPOACity());
@@ -290,4 +288,4 @@ module.exports = {
 	UpdatePriceAdjustment:UpdatePriceAdjustment,
 	CreateCybersourceTaxationPurchaseTotalsObject:CreateCybersourceTaxationPurchaseTotalsObject,
 	CreateCybersourceTaxationItemsObject:CreateCybersourceTaxationItemsObject
-}
+};

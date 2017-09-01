@@ -25,7 +25,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		}
 	
 		response = result.response;
-		if ( null != response.response)
+		if ( null !== response.response)
 		{
 			pdict.viewSubscriptionResponse = response.response;
 		}

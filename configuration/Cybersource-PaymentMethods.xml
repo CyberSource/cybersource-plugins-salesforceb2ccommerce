@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <payment-settings xmlns="http://www.demandware.com/xml/impex/paymentsettings/2009-09-15">
+    
     <payment-method method-id="CREDIT_CARD">
         <name xml:lang="x-default">Credit Card</name>
         <name xml:lang="fr-FR">Carte de crédit</name>
@@ -8,47 +9,218 @@
         <name xml:lang="zh-CN">信用卡</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
     </payment-method>
+
     <payment-method method-id="ALIPAY">
         <name xml:lang="x-default">Alipay</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_ALIPAY</processor-id>
     </payment-method>
-    <payment-method method-id="PayPal">
-        <name xml:lang="x-default">Pay Pal</name>
+
+    <payment-method method-id="PAYPAL">
+        <name xml:lang="x-default">PAYPAL</name>
         <name xml:lang="fr-FR">Pay Pal</name>
         <name xml:lang="it-IT">PayPal</name>
         <name xml:lang="ja-JP">PayPal</name>
         <name xml:lang="zh-CN">PayPal</name>
-        <enabled-flag>false</enabled-flag>
+        <enabled-flag>true</enabled-flag>
         <processor-id>PAYPAL_EXPRESS</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
     </payment-method>
+
     <payment-method method-id="DW_APPLE_PAY">
         <name xml:lang="x-default">Apple Pay</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>BASIC_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
     </payment-method>
+
     <payment-method method-id="VISA_CHECKOUT">
         <name xml:lang="x-default">Visa Checkout</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
+
     <payment-method method-id="SA_REDIRECT">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Redirect)</name>
         <description xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Redirect)</description>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
+
     <payment-method method-id="SA_SILENTPOST">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Silent Order POST</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
+
     <payment-method method-id="SA_IFRAME">
         <name xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Iframe)</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
+
+    <payment-method method-id="DW_ANDROID_PAY">
+        <name xml:lang="x-default">Android Pay</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BASIC_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-method method-id="KLARNA">
+        <name xml:lang="x-default">Klarna</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>KLARNA_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="de-DE">sapient_nitro_1</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="en-GB">sapient_nitro_2</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="en-US">sapient_nitro</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="de-DE">0cjh7aTtZ9wb9y2m2cEFEWacvokaJBMWyEBaQ6qfUaxX4QNY5MRKoZgs5DtjV2jwaoJqtxi7Jj0g4ig1jj9RwKXedzu9U5xycGY9mOI5CRU9xjebNFWUf9qkVfpjrSZ9U5vU8L/i6ZDJn1HeO7j8mkV3OcJjnHh5zHPDS2FfBVVjcRufEgwoJqYjNHiA7tlr7AyCfJAp868YowFQpa11xHZGuF/Qi3M4CSUpK7eBiyzcSqyKIJsIz8uZp/QZDTFso3TK/a/t1xPvUd4WQ4gcOlrrTvlVsmCMmnQKGDI9ONzVxFe4PCwFphsOtrpkS+KbM+FVmW1iFXy4tqqD9uJ8Sw==</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="en-GB">skUoJYB7Sh0D4eFJI3d5g8MXwOo+SoNdAHxES4Ix6iijiz4mXAOX11iU15t5d49J620yWk9gPY3tkyYsSY/iF44EVzdbFpPyNthtt7vfWPjRki1y3X7O3i4RVudfBI8qrAj2OeetrGCVNqWCmgYzeCPh97uipGsndqjQHc4TYexy4Jqj+f9q4dJ6uCO1tPWD2034FVmCWRI2L9PaTO/FqLcPTp8OahPeLC2gQUh3YFtSR3NZdckM1K9ZmYk3D+UQ3Mgn7v8hp8gBeUzGnlY7rvH1Bo5wuBGJUABqTlOKDPbFfKJAP0plShIl2iPgZcOEkbwQiWmg76sNZzk4d7/H1w==</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="en-US">rfhXadH6L+ZGJKqk8u2YEQxNQ2XYFn0X3APSEjNqJot4fEpKb1d9GGO3hswCox6oljXTav5HpK5VxweXU/TskbMd78yGfTrSg6h8D40Qg3tHzNm56d0dOjSZB4jTGb0DVOC2Np2nboD6tZEloIqxUKDm5AWCGvUKQbZdZ4p0Quep0DmkF5EER3+nSligb1fogQQtk5iq3ShUhFfbGjItj7RVCmVAIoVQahHz0Ddv9cubQNpLSS335stDla1fm/edOLb482k3cJAWkej0HhT3aage4wpVXsmN42hJCp/WeinZdq1gzr3hoRU3Fb4NbGh35SLziPwuQdo5M+72YiM2EA==</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-method method-id="PAYPAL_CREDIT">
+        <name xml:lang="x-default">Paypal Credit</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>PAYPAL_CREDIT</processor-id>
+        <customer-groups>
+            <customer-group group-id="Registered"/>
+        </customer-groups>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+	
+	<payment-method method-id="SOFORT">
+        <name xml:lang="x-default">SOFORT</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="fr-FR">sapient_nitro</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="fr-FR">6WsppuNeJXVePoDqZ7JZo72Tk+Za6hQBusOS5FZ/V2c/YRTaNS69ETDhxW6lTf5sczahzmanaf1A9s+I84IXS5NgXm9QdHU4wBWaTZlETSNyEIFd1RpqFNXom//Woc0DPST3H63wpyPOpHSWamhmxEeEZUyixTmLlF6xOBcz8lKmZq5jUpzywSf1S7KjfLqZa44CGXgtxhIIehs6/LXhYZsKR1YJI20wlz7Ab7wMNA0nad6QXmM7rF9g2bKYE6VU3Gns0fdlM4K++4/6ixzcJ9DjHB6rCnRbppP94Pu4IhfpCJcjxh3R2KAlmNwkQCVUfK3bhXgkLsDZ3koPDQc2Hg==</custom-attribute>
+            <custom-attribute attribute-id="paymentType">SOF</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-method method-id="BANCONTACT">
+        <name xml:lang="x-default">BANCONTACT</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="fr-FR">sapient_nitro</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="fr-FR">6WsppuNeJXVePoDqZ7JZo72Tk+Za6hQBusOS5FZ/V2c/YRTaNS69ETDhxW6lTf5sczahzmanaf1A9s+I84IXS5NgXm9QdHU4wBWaTZlETSNyEIFd1RpqFNXom//Woc0DPST3H63wpyPOpHSWamhmxEeEZUyixTmLlF6xOBcz8lKmZq5jUpzywSf1S7KjfLqZa44CGXgtxhIIehs6/LXhYZsKR1YJI20wlz7Ab7wMNA0nad6QXmM7rF9g2bKYE6VU3Gns0fdlM4K++4/6ixzcJ9DjHB6rCnRbppP94Pu4IhfpCJcjxh3R2KAlmNwkQCVUfK3bhXgkLsDZ3koPDQc2Hg==</custom-attribute>
+            <custom-attribute attribute-id="paymentType">MCH</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-method method-id="IDEAL">
+        <name xml:lang="x-default">IDEAL Bank Transfer</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">true</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default">sapient_nitro_1</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="fr-FR">sapient_nitro_1</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default">0cjh7aTtZ9wb9y2m2cEFEWacvokaJBMWyEBaQ6qfUaxX4QNY5MRKoZgs5DtjV2jwaoJqtxi7Jj0g4ig1jj9RwKXedzu9U5xycGY9mOI5CRU9xjebNFWUf9qkVfpjrSZ9U5vU8L/i6ZDJn1HeO7j8mkV3OcJjnHh5zHPDS2FfBVVjcRufEgwoJqYjNHiA7tlr7AyCfJAp868YowFQpa11xHZGuF/Qi3M4CSUpK7eBiyzcSqyKIJsIz8uZp/QZDTFso3TK/a/t1xPvUd4WQ4gcOlrrTvlVsmCMmnQKGDI9ONzVxFe4PCwFphsOtrpkS+KbM+FVmW1iFXy4tqqD9uJ8Sw==</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="fr-FR">0cjh7aTtZ9wb9y2m2cEFEWacvokaJBMWyEBaQ6qfUaxX4QNY5MRKoZgs5DtjV2jwaoJqtxi7Jj0g4ig1jj9RwKXedzu9U5xycGY9mOI5CRU9xjebNFWUf9qkVfpjrSZ9U5vU8L/i6ZDJn1HeO7j8mkV3OcJjnHh5zHPDS2FfBVVjcRufEgwoJqYjNHiA7tlr7AyCfJAp868YowFQpa11xHZGuF/Qi3M4CSUpK7eBiyzcSqyKIJsIz8uZp/QZDTFso3TK/a/t1xPvUd4WQ4gcOlrrTvlVsmCMmnQKGDI9ONzVxFe4PCwFphsOtrpkS+KbM+FVmW1iFXy4tqqD9uJ8Sw==</custom-attribute>
+            <custom-attribute attribute-id="paymentType">IDL</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-method method-id="EPS">
+        <name xml:lang="x-default">EPS</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">true</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="fr-FR">sapient_nitro</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="fr-FR">6WsppuNeJXVePoDqZ7JZo72Tk+Za6hQBusOS5FZ/V2c/YRTaNS69ETDhxW6lTf5sczahzmanaf1A9s+I84IXS5NgXm9QdHU4wBWaTZlETSNyEIFd1RpqFNXom//Woc0DPST3H63wpyPOpHSWamhmxEeEZUyixTmLlF6xOBcz8lKmZq5jUpzywSf1S7KjfLqZa44CGXgtxhIIehs6/LXhYZsKR1YJI20wlz7Ab7wMNA0nad6QXmM7rF9g2bKYE6VU3Gns0fdlM4K++4/6ixzcJ9DjHB6rCnRbppP94Pu4IhfpCJcjxh3R2KAlmNwkQCVUfK3bhXgkLsDZ3koPDQc2Hg==</custom-attribute>
+            <custom-attribute attribute-id="paymentType">EPS</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-method method-id="GIROPAY">
+        <name xml:lang="x-default">GIROPAY</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">true</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="fr-FR">sapient_nitro</custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="fr-FR">6WsppuNeJXVePoDqZ7JZo72Tk+Za6hQBusOS5FZ/V2c/YRTaNS69ETDhxW6lTf5sczahzmanaf1A9s+I84IXS5NgXm9QdHU4wBWaTZlETSNyEIFd1RpqFNXom//Woc0DPST3H63wpyPOpHSWamhmxEeEZUyixTmLlF6xOBcz8lKmZq5jUpzywSf1S7KjfLqZa44CGXgtxhIIehs6/LXhYZsKR1YJI20wlz7Ab7wMNA0nad6QXmM7rF9g2bKYE6VU3Gns0fdlM4K++4/6ixzcJ9DjHB6rCnRbppP94Pu4IhfpCJcjxh3R2KAlmNwkQCVUfK3bhXgkLsDZ3koPDQc2Hg==</custom-attribute>
+            <custom-attribute attribute-id="paymentType">GPY</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
+    <payment-card card-type="JCB">
+        <name xml:lang="x-default">JCB Card</name>
+        <description xml:lang="x-default">JCB</description>
+        <enabled-flag>false</enabled-flag>
+        <card-number-settings>
+            <enable-checksum-verification>true</enable-checksum-verification>
+            <number-length>
+                <length>16-19</length>
+            </number-length>
+            <number-prefix/>
+        </card-number-settings>
+        <security-code-length>3</security-code-length>
+        <countries>
+            <country country-code="CA"/>
+            <country country-code="DE"/>
+            <country country-code="US"/>
+        </countries>
+        <customer-groups>
+            <customer-group group-id="Everyone"/>
+        </customer-groups>
+        <custom-attributes>
+            <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
+        </custom-attributes>
+    </payment-card>
+
+    <payment-card card-type="Diners Club">
+        <name xml:lang="x-default">Dinners Club Intl</name>
+        <description xml:lang="x-default">Dinners club</description>
+        <enabled-flag>false</enabled-flag>
+        <card-number-settings>
+            <enable-checksum-verification>true</enable-checksum-verification>
+            <number-length>
+                <length>16-19</length>
+            </number-length>
+            <number-prefix>
+                <prefix>36</prefix>
+                <prefix>38</prefix>
+            </number-prefix>
+        </card-number-settings>
+        <security-code-length>3</security-code-length>
+        <custom-attributes>
+            <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
+        </custom-attributes>
+    </payment-card>
+
     <payment-card card-type="DinersClub">
         <name xml:lang="x-default">Diners Club International</name>
         <name xml:lang="fr-FR">Diners Club International</name>
@@ -69,9 +241,10 @@
         </card-number-settings>
         <security-code-length>3</security-code-length>
         <custom-attributes>
-            <custom-attribute attribute-id="csEnablePayerAuthentication">false</custom-attribute>
+            <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+
     <payment-card card-type="Visa">
         <name xml:lang="x-default">Visa</name>
         <name xml:lang="fr-FR">Visa</name>
@@ -95,6 +268,7 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+
     <payment-card card-type="Amex">
         <name xml:lang="x-default">American Express</name>
         <name xml:lang="fr-FR">American Express</name>
@@ -117,6 +291,7 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+
     <payment-card card-type="Discover">
         <name xml:lang="x-default">Discover</name>
         <name xml:lang="fr-FR">Discover</name>
@@ -149,6 +324,7 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+
     <payment-card card-type="MasterCard">
         <name xml:lang="x-default">MasterCard</name>
         <name xml:lang="fr-FR">Master Card</name>
@@ -170,6 +346,7 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+
     <payment-card card-type="Maestro">
         <name xml:lang="x-default">Maestro</name>
         <enabled-flag>true</enabled-flag>
@@ -197,4 +374,5 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+
 </payment-settings>

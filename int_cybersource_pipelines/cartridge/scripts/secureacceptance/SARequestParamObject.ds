@@ -6,7 +6,8 @@
 *   @output ResponseParamObject : Object
 *
 */
-var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/helper/SecureAcceptanceHelper');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 
 function execute( args : PipelineDictionary ) : Number
 {

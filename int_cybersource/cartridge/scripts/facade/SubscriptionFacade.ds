@@ -1,7 +1,8 @@
 'use strict';
 var Logger = require('dw/system/Logger');
 var dwsvc = require ("dw/svc");
-var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
 /**
  * This function creates subscription on basis of billto,card object,amount and currency of the order.
@@ -26,20 +27,25 @@ function CreateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper); 
 	}catch(e){
 		Logger.error("[subscriptionFacade.ds] Error in subscription request ( {0} )",e.message);
 		 return {error:true, errorMsg:e.message};
 	}
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
 		 return {error:true, errorMsg:"empty or error in CreateSubscription response: "+serviceResponse};
 	}
 	serviceResponse = serviceResponse.object;
 	var createSubscriptionResponse = {};
 	
-	if ( null != serviceResponse.paySubscriptionCreateReply)
+	if ( null !== serviceResponse.paySubscriptionCreateReply)
 	{
 		createSubscriptionResponse["SubscriptionIDToken"] = serviceResponse.paySubscriptionCreateReply.subscriptionID;
 	}
@@ -69,14 +75,19 @@ function DeleteSubscription(subscriptionID)
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper);  
 	}catch(e){
 		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
 		return {error:true};
 	}
 	serviceResponse = serviceResponse.object;
@@ -115,15 +126,20 @@ function UpdateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper); 
 	}
 	catch(e){
 		Logger.error("[UpdateSubscription.ds] Error in Service Call",e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
 		Logger.error("[UpdateSubscription.ds] response is null");
 		return {error:true};
 	}
@@ -137,7 +153,7 @@ function UpdateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
 		subscriptionObject['reasonCode'] = serviceResponse.reasonCode;
 		subscriptionObject['requestID'] = serviceResponse.requestID;
 		subscriptionObject['requestToken'] = serviceResponse.requestToken;
-		if(null != serviceResponse.paySubscriptionUpdateReply){
+		if(null !== serviceResponse.paySubscriptionUpdateReply){
 			subscriptionObject['NewSubscriptionID'] = serviceResponse.paySubscriptionUpdateReply.subscriptionID;
 		}
 	}
@@ -153,7 +169,7 @@ function UpdateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
  * @param subscriptionID : unique value of the subscription.
  */
 
-function ViewSubscription(subscriptionID : String)
+function ViewSubscription(subscriptionID)
 {
 
     var subscriptionObject = {};
@@ -167,20 +183,25 @@ function ViewSubscription(subscriptionID : String)
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper);  
 	}catch(e){
 		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
 		return {error:true};
 	}
 	else
 	{
 		serviceResponse = serviceResponse.object;
-		if ( null != serviceResponse.paySubscriptionRetrieveReply)
+		if ( null !== serviceResponse.paySubscriptionRetrieveReply)
 		{
 			subscriptionObject['response'] = serviceResponse.paySubscriptionRetrieveReply;
 		}

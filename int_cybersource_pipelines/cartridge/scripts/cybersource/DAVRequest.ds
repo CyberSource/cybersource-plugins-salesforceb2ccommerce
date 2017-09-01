@@ -33,7 +33,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	pdict.ReasonCode = serviceResponse.ReasonCode;
 	pdict.Decision = serviceResponse.Decision;
 	
-	if(null != serviceResponse.davReply){
+	if(null !== serviceResponse.davReply){
 		pdict.DAVReasonCode = serviceResponse.DAVReasonCode;
 	}
     return PIPELET_NEXT;

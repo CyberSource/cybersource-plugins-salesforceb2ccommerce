@@ -51,10 +51,6 @@
 </isif>
 
 <br/>
-<isif condition="${pdict.ActionPOS.equals('Cybersource_POS-TestAuthorizePOS')}"> 
-<a href="${dw.web.URLUtils.https(pdict.ActionPOS)}">${Resource.msg('pos_resultpage_back','cybersource','')}</a>
-<iselse>
-<a href="${dw.web.URLUtils.https('CybersourceUnitTesting-StartPOS')}">${Resource.msg('pos_resultpage_back','cybersource','')}</a>
-</isif>
+<a href="${dw.web.URLUtils.https('CYBServicesTesting-StartPOS')}">${Resource.msg('pos_resultpage_back','cybersource','')}</a>
 
 </body></html>

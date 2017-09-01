@@ -1,0 +1,37 @@
+/**
+* ProcessBankTransferOrder.ds
+* This file is getting used to call sale service 
+* and redirect user to merchant site to authorize
+* and complete the payment
+*
+*
+* @input Order : dw.order.Order
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @input paymentFlow : String
+* @output Result : Object
+*
+*/
+importPackage( dw.system );
+/*
+* This method is used to call either sale or check status service
+* and process the request for pipeline
+*/
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//declare local variables
+	var orderNo = pdict.Order.orderNo;
+	var paymentInstrument = pdict.PaymentInstrument;
+	//declare variable for cybersource constant and adaptor
+    var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var adaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
+	var result = {};
+	//check if payment flow is sale then call sale service else check status service
+	if(!empty(pdict.paymentFlow) && CybersourceConstants.SALE.equals(pdict.paymentFlow)){
+		result = adaptor.AuthorizeRequest(orderNo,paymentInstrument);
+	} else if(!empty(pdict.paymentFlow) && CybersourceConstants.CHECK_STATUS.equals(pdict.paymentFlow)){
+		result = adaptor.CheckStatusServiceRequest(pdict.Order);
+	}
+	//set the result into pipeline dictionary
+	pdict.Result = result;
+    return PIPELET_NEXT;
+}

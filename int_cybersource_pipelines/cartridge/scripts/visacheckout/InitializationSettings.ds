@@ -9,17 +9,29 @@
 */
                 
 var Logger = require('dw/system/Logger');
-var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/helper/VisaCheckoutHelper');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var VisaCheckoutAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/adaptor/VisaCheckoutAdaptor');
+
+var BasketMgr = require('dw/order/BasketMgr'); 
+var PaymentMgr = require('dw/order/PaymentMgr');
+
+
 function execute( pdict : PipelineDictionary ) : Number
 {
+	var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive();
+	var Basket = BasketMgr.getCurrentOrNewBasket();
 	try 
 	{
-		var result = VisaCheckoutHelper.GetButtonInitializeSettings(pdict.Basket, pdict.IsDeliveryAddress);
-	    pdict.VInitFormattedString = result.VInitFormattedString;
-		pdict.Signature = result.signature;
-	   	return PIPELET_NEXT;
+		if(isVisaCheckout && !empty(Basket))
+		{
+			var result = VisaCheckoutAdaptor.GetButtonInitializeSettings(Basket, pdict.IsDeliveryAddress);
+		    pdict.VInitFormattedString = result.VInitFormattedString;
+			pdict.Signature = result.signature;
+			return PIPELET_NEXT;
+		}else
+			return PIPELET_ERROR;
 	}
-	catch(err) 
+	catch(err)
 	{
 		Logger.error("Visa Checkout initialization failed: {0}", err.message);
 		return PIPELET_ERROR;

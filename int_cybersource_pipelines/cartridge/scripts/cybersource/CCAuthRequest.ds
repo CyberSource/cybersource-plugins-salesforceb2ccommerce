@@ -8,7 +8,7 @@
 * @input IPAddress : String The client's IP address
 * @input ReadFromBasket : Boolean
 * @input visaCheckoutFlag : Boolean
-* optional payer auth input data 
+* optional payer auth input data
 * if XID is provided (not null) the PA data is added to the request
 * @input SubscriptionID :String Token
 * @input PayerEnrollResponse :Object
@@ -30,8 +30,9 @@
 * @output SubscriptionIDToken :String Token
 */
 var Logger = require('dw/system/Logger');
-var CardFacade = require('int_cybersource/cartridge/scripts/facade/CardFacade');
-var VisaCheckoutFacade = require('int_cybersource/cartridge/scripts/facade/VisaCheckoutFacade');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CardFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'facade/CardFacade');
+var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/facade/VisaCheckoutFacade');
 function execute( pdict : PipelineDictionary ) : Number
 {
 
@@ -74,7 +75,6 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		pdict.AuthorizationAmount = result.serviceResponse.AuthorizationAmount;
 		pdict.AuthorizationCode = result.serviceResponse.AuthorizationCode;
-		//pdict.AuthorizationReasonCode = result.serviceResponse.ccAuthReply.reasonCode.get();
 		pdict.AuthorizationReasonCode = result.serviceResponse.AuthorizationReasonCode;
 	}
 	if ( result.serviceResponse.paySubscriptionCreateReply )
@@ -91,7 +91,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	if( !empty(result.serviceResponse.invalidField) ) {
 		pdict.InvalidFieldsArray = result.serviceResponse.InvalidFieldsArray;
 	}	
-	if(null != result.serviceResponse.davReply){
+	if(!empty(result.serviceResponse.davReply)){
 		pdict.DAVReasonCode = result.serviceResponse.DAVReasonCode;
 		pdict.StandardizedAddress = result.serviceResponse.StandardizedAddress;
 	}

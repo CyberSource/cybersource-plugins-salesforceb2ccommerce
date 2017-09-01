@@ -21,6 +21,7 @@ function ShipTo_Object() {
 	this.phoneNumber = "";
 	this.email = "";
 	this.shippingMethod = "";
+	this.district = "";
 }
 
 ShipTo_Object.prototype = 
@@ -132,6 +133,12 @@ ShipTo_Object.prototype =
 	},
 	getShippingMethod : function(){
 	return this.shippingMethod;
+	},
+	setDistrict : function(value){
+	this.district = value;
+	},
+	getDistrict : function(){
+	return this.district;
 	}
 }
 module.exports = ShipTo_Object;

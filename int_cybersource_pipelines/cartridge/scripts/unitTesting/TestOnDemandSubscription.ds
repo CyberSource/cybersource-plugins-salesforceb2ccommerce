@@ -2,64 +2,21 @@
 *	OnDemandSubscription.ds
 *	Perfroms the on demand subscription info service and returns the response.
 *
-*	@input 	subscriptionID : String
-*	@input currency : String
-*	@input purchaseamount : String
-*
-*	@output amount : String
-* 	@output authorizationCode : String
-*	@output authorizedDateTime : String
-*	@output processorResponse : String
-*	@output reconciliationID : String
-*	@output decision : String
-* 	@output reasonCode : Object
-* 	@output requestID : Object
-* 	@output requestToken : Object
-* 	@output invalidField : Array
-* 	@output missingField : Array
+* 	@output Result : Object
 *
 */
+
+
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
 var Logger = dw.system.Logger.getLogger('Cybersource');
-var TestFacade = require('int_cybersource/cartridge/scripts/facade/TestFacade');
+var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
 var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
 function execute( pdict : PipelineDictionary ) : Number
 {
+	var onDemandServiceObject = {};
+	onDemandServiceObject.response = TestFacade.TestOnDemandSubscription().response;
+	pdict.Result = onDemandServiceObject.response;
 
-	var subscriptionID : String = pdict.subscriptionID;
-	var result = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(pdict.currency, pdict.purchaseamount);
-	if(result.error)
-	{
-		return PIPELET_ERROR;
-	}
-	var purchaseObject = result.purchaseTotals;
-	var response = null;
-	result = TestFacade.TestOnDemandSubscription(subscriptionID, purchaseObject);
-	if(result.error)
-	{
-		Logger.error("[TestFacade.ds] Error in subscription request ( {0} )",result.errorMsg);
-		return PIPELET_ERROR;
-	}
-		response = result.response;
-		if(null!=response.ccAuthReply)
-		{
-			pdict.amount = response.amount;
-			pdict.authorizationCode = response.authorizationCode;
-			pdict.authorizedDateTime = response.authorizedDateTime;
-			pdict.processorResponse = response.processorResponse;
-			pdict.reasonCode = response.reasonCode;
-			pdict.reconciliationID = response.reconciliationID;
-			pdict.decision = response.decision;
-			pdict.requestID = response.requestID;
-			pdict.requestToken = response.requestToken;
-		}
-		else
-		{
-			pdict.decision = response.decision;
-			pdict.requestID = response.requestID;
-			pdict.requestToken = response.requestToken;
-			pdict.reasonCode = response.reasonCode;
-			pdict.invalidField = response.invalidField;
-			pdict.missingField = response.missingField;
-		}
 	return PIPELET_NEXT;
 }
