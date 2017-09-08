@@ -139,8 +139,8 @@
                         <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/iDealBankOptionJob.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName">run</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">true</parameter>
-                        <parameter name="merchantId">sapient_nitro_1</parameter>
-                        <parameter name="merchantKey">0cjh7aTtZ9wb9y2m2cEFEWacvokaJBMWyEBaQ6qfUaxX4QNY5MRKoZgs5DtjV2jwaoJqtxi7Jj0g4ig1jj9RwKXedzu9U5xycGY9mOI5CRU9xjebNFWUf9qkVfpjrSZ9U5vU8L/i6ZDJn1HeO7j8mkV3OcJjnHh5zHPDS2FfBVVjcRufEgwoJqYjNHiA7tlr7AyCfJAp868YowFQpa11xHZGuF/Qi3M4CSUpK7eBiyzcSqyKIJsIz8uZp/QZDTFso3TK/a/t1xPvUd4WQ4gcOlrrTvlVsmCMmnQKGDI9ONzVxFe4PCwFphsOtrpkS+KbM+FVmW1iFXy4tqqD9uJ8Sw==</parameter>
+                        <parameter name="merchantId"></parameter>
+                        <parameter name="merchantKey"></parameter>
                         <parameter name="paymentType">IDL</parameter>
                     </parameters>
                 </step>

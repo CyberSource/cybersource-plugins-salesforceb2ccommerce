@@ -32,7 +32,7 @@
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
         <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
+        <comm-log-enabled>false</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>cybersourceprofile</profile-id>
         <credential-id>conversiondetailreport</credential-id>
@@ -42,7 +42,7 @@
         <service-type>SOAP</service-type>
         <enabled>true</enabled>
         <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
+        <comm-log-enabled>false</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>cybersourceprofile</profile-id>
         <credential-id>cybersourcegeneric</credential-id>
@@ -52,7 +52,7 @@
         <service-type>SOAP</service-type>
         <enabled>true</enabled>
         <log-prefix>cybersource</log-prefix>
-        <comm-log-enabled>true</comm-log-enabled>
+        <comm-log-enabled>false</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>cybersourceprofile</profile-id>
         <credential-id>cybersourcegeneric</credential-id>
