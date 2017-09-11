@@ -105,7 +105,7 @@
                     <description>To handle failed order</description>
                     <parameters>
                         <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/SAMerchantPostJob.js</parameter>
-                        <parameter name="ExecuteScriptModule.FunctionName">sAMerchantPostJob</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">SAMerchantPostJob</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
                     </parameters>
                 </step>
