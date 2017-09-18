@@ -956,6 +956,7 @@
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>test</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsAvsDeclineFlags">
                 <display-name xml:lang="x-default">CyberSource AVS Decline Flags (AVS)</display-name>
@@ -1058,6 +1059,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>https://h.online-metrix.net</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsDeviceFingerprintOrgId">
                 <display-name xml:lang="x-default">CsDeviceFingerprintOrgId</display-name>
@@ -1066,6 +1068,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>1snn5n9w</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsDeviceFingerprintRedirectionType">
                 <display-name xml:lang="x-default">Device Fingerprint Redirection</display-name>
@@ -1097,6 +1100,7 @@ A mapping rule based redirection requires a mapping rule at static mappings Site
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsEnableTaxation">
                 <display-name xml:lang="x-default">CyberSource Enable Taxation</display-name>
@@ -1399,6 +1403,7 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/embedded/pay</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsSAOverrideBillingAddress">
                 <display-name xml:lang="x-default">CyberSource Secure Acceptance Override Billing Address</display-name>
@@ -1420,6 +1425,7 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/pay</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsSecurityKey">
                 <display-name xml:lang="x-default">CyberSource Merchant Key</display-name>
@@ -1573,6 +1579,7 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/silent/token/create</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="Secure_Acceptance_Token_Update_Endpoint">
                 <display-name xml:lang="x-default">Secure_Acceptance_Token_Update_Endpoint</display-name>
@@ -1581,6 +1588,7 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/silent/token/update</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="apPaymentType">
                 <display-name xml:lang="x-default">Alipay Payment Type</display-name>
@@ -1712,6 +1720,7 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>test</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="cybVisaAPIKey">
                 <display-name xml:lang="x-default">cybVisaAPIKey</display-name>
@@ -1755,7 +1764,7 @@ neutral</description>
                         <display xml:lang="x-default">None</display>
                         <value>None</value>
                     </value-definition>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">34</display>
                         <value>34</value>
                     </value-definition>
@@ -1836,7 +1845,7 @@ DISCOVER</description>
                 <externally-managed-flag>false</externally-managed-flag>
                 <select-multiple-flag>true</select-multiple-flag>
                 <value-definitions>
-                    <value-definition>
+                    <value-definition default="true">
                         <display xml:lang="x-default">VISA</display>
                         <value>VISA</value>
                     </value-definition>
@@ -1862,6 +1871,7 @@ DISCOVER</description>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <field-length>50</field-length>
+				<default-value>anujcyb</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="cybVisaSdkJsLibrary">
                 <display-name xml:lang="x-default">cybVisaSdkJsLibrary</display-name>
@@ -1907,6 +1917,7 @@ false - Allow a consumer prompt</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="disableResponsiveDesign">
                 <display-name xml:lang="x-default">Disable Responsive Design</display-name>
@@ -1971,6 +1982,7 @@ false - Allow a consumer prompt</description>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>https://credit.klarnacdn.net/lib/v1/api.js</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="listPriceDefault">
                 <display-name xml:lang="x-default">Default List Price Book ID</display-name>
@@ -2049,6 +2061,7 @@ false - Allow a consumer prompt</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="rateLimiterThreshold">
                 <display-name xml:lang="x-default">Rate Limiter Threshold</display-name>
