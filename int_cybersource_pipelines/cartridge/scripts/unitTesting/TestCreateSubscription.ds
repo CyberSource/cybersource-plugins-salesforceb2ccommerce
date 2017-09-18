@@ -36,7 +36,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	
 		response = result.serviceResponse;
 		pdict.subscriptionResponse = response;
-		if ( null != response.SubscriptionIDToken)
+		if (!empty(response.SubscriptionIDToken))
 		{
 			pdict.SubscriptionIDToken = response.SubscriptionIDToken;
 		}

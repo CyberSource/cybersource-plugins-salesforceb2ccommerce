@@ -42,10 +42,10 @@ Production = k8vif92e
   
   // Level_1 is a static Mapping (direct pipline call with redirect):
   if (redirectionType == "static") {
-	  url_1 = URLUtils.url('CYBERSOURCE_CREDIT-RedirectFpLocation', 'type' , '1');
-	  url_2 = URLUtils.url('CYBERSOURCE_CREDIT-RedirectFpLocation', 'type' , '2');
-	  url_3 = URLUtils.url('CYBERSOURCE_CREDIT-RedirectFpLocation', 'type' , '3');
-	  url_4 = URLUtils.url('CYBERSOURCE_CREDIT-RedirectFpLocation', 'type' , '4');
+	  url_1 = URLUtils.url('CYBCredit-RedirectFpLocation', 'type' , '1');
+	  url_2 = URLUtils.url('CYBCredit-RedirectFpLocation', 'type' , '2');
+	  url_3 = URLUtils.url('CYBCredit-RedirectFpLocation', 'type' , '3');
+	  url_4 = URLUtils.url('CYBCredit-RedirectFpLocation', 'type' , '4');
   }  
   // Level_2 is a general redirection, requires a mapping rule:
   else if (redirectionType == "dynamic") {

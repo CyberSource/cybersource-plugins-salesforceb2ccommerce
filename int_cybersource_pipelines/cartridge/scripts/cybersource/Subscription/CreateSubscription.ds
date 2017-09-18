@@ -30,7 +30,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		return PIPELET_ERROR;
 	}
 		serviceResponse = result.serviceResponse;
-		if ( null != serviceResponse.SubscriptionIDToken)
+		if (!empty(serviceResponse.SubscriptionIDToken))
 		{
 			pdict.SubscriptionIDToken = serviceResponse.SubscriptionIDToken;
 		}

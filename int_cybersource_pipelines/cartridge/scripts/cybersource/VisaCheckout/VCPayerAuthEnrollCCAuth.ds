@@ -3,7 +3,7 @@
 * It always returns PIPELET_NEXT in case the request was successful.
 * PIPLET_ERROR is only used in case of an technical problem 
 *
-*
+* @input PaymentInstrument : dw.order.PaymentInstrument
 * @input Basket : dw.order.LineItemCtnr The basket used for Authorization
 * @input Amount : dw.value.Money The amount to authorize
 * @input OrderNo : String The order no
@@ -30,15 +30,23 @@
 * @output SubscriptionIDToken :String Token
 *
 */
+
+
 var Logger = require('dw/system/Logger');
-var VisaCheckoutFacade = require('int_cybersource/cartridge/scripts/facade/VisaCheckoutFacade');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/facade/VisaCheckoutFacade');
+var libCybersource = require(CybersourceConstants.CS_CORE_SCRIPT+'cybersource/libCybersource');
+var CybersourceHelper = libCybersource.getCybersourceHelper();
+var Transaction = require('dw/system/Transaction');
+
+
 function execute( pdict : PipelineDictionary ) : Number
 {
 
     // read pipeline dictionary input parameter
     var basket = pdict.Basket;
-    var amount : dw.value.Money = pdict.Amount;
-    var orderNo : String = pdict.OrderNo;
+    var amount = pdict.Amount;
+    var orderNo = pdict.OrderNo;
 
 	if(basket == null){
 		Logger.error("Please provide a Basket!");
@@ -68,7 +76,6 @@ function execute( pdict : PipelineDictionary ) : Number
 	{
 		pdict.AuthorizationAmount = result.serviceResponse.AuthorizationAmount;
 		pdict.AuthorizationCode = result.serviceResponse.AuthorizationCode;
-		//pdict.AuthorizationReasonCode = result.serviceResponse.ccAuthReply.reasonCode.get();
 		pdict.AuthorizationReasonCode = result.serviceResponse.AuthorizationReasonCode;
 	}
 	if ( result.serviceResponse.paySubscriptionCreateReply )
@@ -79,11 +86,16 @@ function execute( pdict : PipelineDictionary ) : Number
 	/**********************************************/
 	/* DAV-related WebService response processing */
 	/**********************************************/
-	if(null != result.serviceResponse.davReply){
+	if(!empty(result.serviceResponse.davReply)){
 		pdict.DAVReasonCode = result.serviceResponse.DAVReasonCode;
 		pdict.StandardizedAddress = result.serviceResponse.StandardizedAddress;
 	}
 	/* End of DAV response processing */
+	
+	if(CybersourceHelper.getProofXMLEnabled())
+		Transaction.wrap(function () {
+			pdict.PaymentInstrument.paymentTransaction.custom.proofXML = result.serviceResponse.ProofXML;
+		});
 
     return PIPELET_NEXT;
 }

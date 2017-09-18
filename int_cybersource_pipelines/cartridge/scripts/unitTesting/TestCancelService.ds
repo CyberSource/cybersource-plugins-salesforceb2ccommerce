@@ -1,0 +1,22 @@
+/**
+* TestRefundService.ds
+*
+* The file is used to test CyberSource Cancel service to send request to test facade
+* and handle the response.
+*
+*
+*   @output Result : Object
+*
+*/
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+	var cancelServiceObject = {};
+	cancelServiceObject.response = TestFacade.TestCancelService();
+	pdict.Result = cancelServiceObject.response;
+	
+   return PIPELET_NEXT;
+}

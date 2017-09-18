@@ -107,5 +107,5 @@ Card_Object.prototype =
 	getCreditCardToken : function(){
 	return this.creditCardToken;
 	}
-}
+};
 module.exports = Card_Object;

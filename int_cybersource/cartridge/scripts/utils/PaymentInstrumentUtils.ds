@@ -1,8 +1,8 @@
 'use strict';
 var Logger = require('dw/system/Logger');
 var Transaction = require('dw/system/Transaction');
-var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants.ds');
+var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 /**
  * Update the order payment instrument when card capture response arrived.
  * @param Order
@@ -28,25 +28,65 @@ function UpdatePaymentTransactionCardCapture( paymentInstrument, order, response
  * @param order
  * @param responseObject
  */
-function UpdatePaymentTransactionCardAuthorize(paymentInstrument, responseObject) 
-{
-	if(paymentInstrument!=null && responseObject != null){
-		Transaction.wrap(function () {
-			paymentInstrument.paymentTransaction.transactionID = responseObject.RequestID;
+function UpdateMobilePaymentTransactionCardAuthorize(paymentInstrument, responseObject) 
+{	
+	var _svcResponse = responseObject.ServiceResponse.serviceResponse;
+	if(paymentInstrument!=null && _svcResponse != null){
+		Transaction.wrap(function () {			
+			paymentInstrument.paymentTransaction.transactionID = _svcResponse.RequestID;					
 			if (!empty(responseObject.CardType)) {
-				paymentInstrument.paymentTransaction.custom.cardType =responseObject.CardType;
+				paymentInstrument.paymentTransaction.custom.cardType = _svcResponse.CardType;
+			}	
+				
+			if(!empty(responseObject.requestParam)){
+				var PaymentMgr = require('dw/order/PaymentMgr');
+				var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
+				paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;		        
+		        paymentInstrument.creditCardNumber = !empty(responseObject.requestParam.NetworkToken) === true ? responseObject.requestParam.NetworkToken : "N/A";
+		        paymentInstrument.creditCardType = !empty(responseObject.requestParam.CardType) === true ? responseObject.requestParam.CardType : "N/A";
+		        paymentInstrument.creditCardExpirationMonth = !empty(responseObject.requestParam.TokenExpirationMonth) === true ? responseObject.requestParam.TokenExpirationMonth : "N/A";
+		        paymentInstrument.creditCardExpirationYear = !empty(responseObject.requestParam.TokenExpirationYear) === true ? responseObject.requestParam.TokenExpirationYear : "N/A"; 		        
 			}
-			paymentInstrument.paymentTransaction.custom.requestId = responseObject.RequestID;
-			paymentInstrument.paymentTransaction.custom.requestToken = responseObject.RequestToken;
-			paymentInstrument.paymentTransaction.custom.authAmount = responseObject.AuthorizationAmount;
-			paymentInstrument.paymentTransaction.custom.authCode = responseObject.AuthorizationCode;	
-			paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.AuthorizationReasonCode;	
-			if ((responseObject.ReasonCode == "100" || responseObject.ReasonCode == "480") && !empty(responseObject.SubscriptionID) && empty(paymentInstrument.creditCardToken)) {
-				paymentInstrument.creditCardToken = responseObject.SubscriptionID;
+			paymentInstrument.paymentTransaction.custom.requestId = _svcResponse.RequestID;
+			paymentInstrument.paymentTransaction.custom.requestToken = _svcResponse.RequestToken;
+			paymentInstrument.paymentTransaction.custom.authAmount = _svcResponse.AuthorizationAmount;
+			paymentInstrument.paymentTransaction.custom.authCode = _svcResponse.AuthorizationCode;	
+			paymentInstrument.paymentTransaction.custom.approvalStatus = _svcResponse.AuthorizationReasonCode;	
+			if ((_svcResponse.ReasonCode == "100" || _svcResponse.ReasonCode == "480") && !empty(_svcResponse.SubscriptionID) && empty(paymentInstrument.creditCardToken)) {
+				paymentInstrument.setCreditCardToken(responseObject.SubscriptionID);
 			}
 		});	
 	}
 }
+
+/**
+ * Update Payment Transaction details in order's payment transaction from card authorize response
+ * @param order
+ * @param responseObject
+ */
+function UpdatePaymentTransactionCardAuthorize(paymentInstrument, responseObject) 
+{	
+	if(paymentInstrument!=null && responseObject != null){
+		Transaction.wrap(function () {			
+			paymentInstrument.paymentTransaction.transactionID = responseObject.RequestID;					
+			if (!empty(responseObject.CardType)) {
+				paymentInstrument.paymentTransaction.custom.cardType = responseObject.CardType;
+			}		
+				                
+			paymentInstrument.paymentTransaction.custom.requestId = responseObject.RequestID;
+			paymentInstrument.paymentTransaction.custom.requestToken = responseObject.RequestToken;
+			paymentInstrument.paymentTransaction.custom.authAmount = responseObject.AuthorizationAmount;
+			paymentInstrument.paymentTransaction.custom.authCode = responseObject.AuthorizationCode;	
+			paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.AuthorizationReasonCode;
+			paymentInstrument.paymentTransaction.custom.decision = responseObject.Decision;	
+			if ((responseObject.ReasonCode == "100" || responseObject.ReasonCode == "480") && !empty(responseObject.SubscriptionID) && empty(paymentInstrument.creditCardToken)) {
+				paymentInstrument.setCreditCardToken(responseObject.SubscriptionID);
+			}
+		});	
+	}
+}
+
+
 /**
  * Update Payment Transaction ProofXML in order's payment transaction from card payer enrollment response
  * @param order
@@ -59,38 +99,49 @@ function UpdatePaymentTransactionWithProofXML(paymentInstrument, proofXML)
 	});
 }
 /*Update Payment Transaction details after the Order get authorize from ALIPAY */
-function authorizeAlipayOrderUpdate(order,alipayInitiatePaymentObject) 
+function authorizeAlipayOrderUpdate(order,alipayInitiatePaymentObject, apPaymentType) 
 {
 	Transaction.wrap(function () {
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
 	if( paymentInstrument != null && alipayInitiatePaymentObject !== null){
-			paymentInstrument.paymentTransaction.custom.apMerchantURL = alipayInitiatePaymentObject.RedirectURL;
-			paymentInstrument.paymentTransaction.custom.approvalStatus = alipayInitiatePaymentObject.ReasonCode;
-			paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = alipayInitiatePaymentObject.ReconciliationID;
-			paymentInstrument.paymentTransaction.custom.apInitiatePaymentRequestID = alipayInitiatePaymentObject.RequestID;
-			paymentInstrument.paymentTransaction.custom.requestToken = alipayInitiatePaymentObject.RequestToken;
-			paymentInstrument.paymentTransaction.custom.apInitiatePaymentType = alipayInitiatePaymentObject.InitiatePaymentType;	
+			paymentInstrument.paymentTransaction.custom.apMerchantURL = alipayInitiatePaymentObject.apInitiateReply.merchantURL;
+			paymentInstrument.paymentTransaction.custom.approvalStatus = alipayInitiatePaymentObject.reasonCode.get();;
+			paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = alipayInitiatePaymentObject.apInitiateReply.reconciliationID;
+			paymentInstrument.paymentTransaction.custom.apInitiatePaymentRequestID = alipayInitiatePaymentObject.requestID;
+			paymentInstrument.paymentTransaction.custom.requestToken = alipayInitiatePaymentObject.requestToken;
+			paymentInstrument.paymentTransaction.custom.apInitiatePaymentType = apPaymentType;
+			// map response RequestID,InitiatePaymentType to generic custom.requestId and apPaymentType to use further in checkStatus job
+			paymentInstrument.paymentTransaction.custom.requestId = alipayInitiatePaymentObject.requestID;
+			paymentInstrument.paymentTransaction.custom.apPaymentType = apPaymentType;	
 	}
 	});	
 }
 
-/*Update Payment Transaction details after the Payment Status verified from ALIPAY */
-function checkAlipayPaymentStatusOrderUpdate(order,alipayCheckPaymentObject) 
+/*Update Payment Transaction details after the Payment Status verified */
+function checkStatusOrderUpdate(order,responseObject,paymentType) 
 {
 	Transaction.wrap(function () {
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
-	if(paymentInstrument != null && alipayCheckPaymentObject !== null){
-			paymentInstrument.paymentTransaction.custom.apPaymentStatus = alipayCheckPaymentObject.apPaymentStatus;
-			paymentInstrument.paymentTransaction.custom.approvalStatus =alipayCheckPaymentObject.ReasonCode;
-			paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = alipayCheckPaymentObject.ReconciliationID;
-			//paymentInstrument.paymentTransaction.custom.apInitiatePaymentRequestID = alipayCheckPaymentObject.RequestID;
-			paymentInstrument.paymentTransaction.custom.requestToken = alipayCheckPaymentObject.RequestToken;
-			paymentInstrument.paymentTransaction.custom.apCheckStatusProcessTransactionID = alipayCheckPaymentObject.ProcessorTransactionID;
-			paymentInstrument.paymentTransaction.transactionID = alipayCheckPaymentObject.ProcessorTransactionID;
-			if(alipayCheckPaymentObject.ReasonCode == 100 && alipayCheckPaymentObject.apPaymentStatus == "COMPLETED"){
+	if(paymentInstrument != null && responseObject !== null){
+			paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
+			paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
+			if(responseObject.apCheckStatusReply !== null){
+				paymentInstrument.paymentTransaction.custom.apPaymentStatus = responseObject.apCheckStatusReply.paymentStatus;
+				paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = responseObject.apCheckStatusReply.reconciliationID;
+				switch(paymentType){
+					case 'APY':
+					case 'APD':
+					paymentInstrument.paymentTransaction.transactionID = responseObject.apCheckStatusReply.processorTransactionID;
+				}
+			}
+			if(responseObject.reasonCode.get() === 100 && (responseObject.apCheckStatusReply.paymentStatus === 'COMPLETED'
+				|| responseObject.apCheckStatusReply.paymentStatus === 'settled')){
+				order.paymentStatus = 2;
+			} else if(CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)
+				&& responseObject.reasonCode.get() === 100 && responseObject.apCheckStatusReply.paymentStatus === 'authorized'){
 				order.paymentStatus = 2;
 			}			
-	}
+		}
 	});	
 }
 
@@ -117,11 +168,12 @@ function capturePaypalOrderUpdate(order,capturePaypalObject)
 	}
 }
 
+
 function updatePaymentInstrumentVisaDecrypt( cart, decryptedPaymentData, visaCheckoutCallId )
 {
 	// Retrieve the inputs
 	var visa = decryptedPaymentData;
-	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
 	Transaction.wrap(function () {
 		var instrument = cart.createPaymentInstrument(CybersourceConstants.METHOD_VISA_CHECKOUT, cart.totalGrossPrice);
@@ -150,8 +202,8 @@ function updatePaymentInstrumentVisaDecrypt( cart, decryptedPaymentData, visaChe
 		instrument.setCreditCardType(visa.VCCardType);
 		instrument.setCreditCardHolder(visa.VCNameOnCard);
 		instrument.setCreditCardNumber("************"+visa.CardSuffix);
-		var month : Number = new Number(visa.ExpirationMonth);
-		var year : Number = new Number(visa.ExpirationYear);
+		var month : Number = parseFloat(visa.ExpirationMonth);
+		var year : Number = parseFloat(visa.ExpirationYear);
 		instrument.setCreditCardExpirationMonth(month.valueOf());
 		instrument.setCreditCardExpirationYear(year.valueOf());
 		
@@ -190,7 +242,7 @@ function updatePaymentInstrumentVisaDecrypt( cart, decryptedPaymentData, visaChe
 			instrument.custom.xid  = visa.VCXID;
 		}		
 		// Populate the billing address
-		var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/helper/VisaCheckoutHelper');
+		var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/helper/VisaCheckoutHelper');
 		billingAddress = VisaCheckoutHelper.CreateLineItemCtnrBillingAddress(billingAddress, visa);
 		if (!billingAddress.success) {return billingAddress;}
 		
@@ -211,6 +263,7 @@ function UpdatePaymentTransactionSecureAcceptanceAuthorize(order, responseObject
 			paymentInstrument.paymentTransaction.custom.authAmount = responseObject.AuthorizationAmount;
 			paymentInstrument.paymentTransaction.custom.authCode = responseObject.AuthorizationCode;	
 			paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.AuthorizationReasonCode;	
+			paymentInstrument.paymentTransaction.custom.decision = responseObject.Decision;
 		});	
 	}
 }
@@ -256,7 +309,7 @@ function UpdateOrderBillingShippingDetails(order, responseHttpMap,isOverrideShip
 	return {error:true};
 }
 function updatePaymentInstumenSACard(paymentInstrument, expiryDateString : String, maskedNumber : String, cardType:String, cardToken:String, firstname, lastName) {
-	var dateFieldsArr : Array = new Array();
+	var dateFieldsArr  = [];
 	if(!empty(expiryDateString)){
 		dateFieldsArr = expiryDateString.split("-");
 	}
@@ -284,11 +337,11 @@ function updatePaymentInstumenSACard(paymentInstrument, expiryDateString : Strin
 	session.forms.billing.paymentMethods.creditCard.selectedCardID.value  = cardToken;
 }
 
-function ApplePayOrderUpdate(order, serviceResponse) {
-	UpdatePaymentTransactionCardAuthorize(CardHelper.getNonGCPaymemtInstument(order), serviceResponse);
+function MobilePaymentOrderUpdate(order, serviceResponse) {	
+	UpdateMobilePaymentTransactionCardAuthorize(CardHelper.getNonGCPaymemtInstument(order), serviceResponse);
 	var OrderMgr = require('dw/order/OrderMgr');
 	var Status = require('dw/system/Status');
-	if (serviceResponse.Decision.equalsIgnoreCase('ACCEPT')) {
+	if (serviceResponse.ServiceResponse.serviceResponse.Decision.equalsIgnoreCase('ACCEPT')) {
 	    var orderPlacementStatus = Transaction.wrap(function () {
 	        if (OrderMgr.placeOrder(order) === Status.ERROR) {
 	            OrderMgr.failOrder(order);
@@ -302,7 +355,7 @@ function ApplePayOrderUpdate(order, serviceResponse) {
 	    if (orderPlacementStatus === Status.ERROR) {
 	    	return false;
 	    }
-	} else if (!serviceResponse.Decision.equalsIgnoreCase('REVIEW')) {
+	} else if (!serviceResponse.ServiceResponse.serviceResponse.Decision.equalsIgnoreCase('REVIEW')) {
 		 Transaction.wrap(function () {
 	            OrderMgr.failOrder(order);			                    
 	        });
@@ -314,12 +367,12 @@ module.exports = {
 		UpdatePaymentTransactionCardCapture: UpdatePaymentTransactionCardCapture,
 		authorizeAlipayOrderUpdate:authorizeAlipayOrderUpdate,
 		capturePaypalOrderUpdate:capturePaypalOrderUpdate,
-		checkAlipayPaymentStatusOrderUpdate:checkAlipayPaymentStatusOrderUpdate,
+		checkStatusOrderUpdate:checkStatusOrderUpdate,
 		UpdatePaymentTransactionCardAuthorize:UpdatePaymentTransactionCardAuthorize,
 		UpdatePaymentTransactionWithProofXML : UpdatePaymentTransactionWithProofXML,
 		UpdatePaymentInstrumentVisaDecrypt:updatePaymentInstrumentVisaDecrypt,
 		UpdatePaymentTransactionSecureAcceptanceAuthorize : UpdatePaymentTransactionSecureAcceptanceAuthorize,
 		updatePaymentInstumenSACard:updatePaymentInstumenSACard,
 		UpdateOrderBillingShippingDetails:UpdateOrderBillingShippingDetails,
-		ApplePayOrderUpdate:ApplePayOrderUpdate
+		MobilePaymentOrderUpdate:MobilePaymentOrderUpdate
 	};

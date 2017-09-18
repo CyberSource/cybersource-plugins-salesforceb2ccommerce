@@ -22,14 +22,18 @@
 * @output ParesStatus : String paresStatus as returned by Cybersource
 * @output PAVResponse : Object
 */
-var TestFacade = require('int_cybersource/cartridge/scripts/facade/TestFacade');
+
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+var Logger = require('dw/system/Logger');
+
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var creditCard = pdict.CreditCard;
     var PaRes = pdict.PaRes;
     var result = TestFacade.TestPayerAuthValidation(PaRes, creditCard);
     if(result.error){
-    	throw new Error(result.errorMsg);
+    	Logger.error(result.errorMsg);
 		return PIPELET_ERROR;
 	}
 	pdict.PAVResponse = result.serviceResponse;

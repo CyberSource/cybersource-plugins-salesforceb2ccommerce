@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <standard-preferences>
+        <all-instances>
+            <preference preference-id="AddProductToBasketBehavior">IncrementQuantities</preference>
+            <preference preference-id="BasketLifetime">240</preference>
+            <preference preference-id="BasketPersistence">all</preference>
+            <preference preference-id="CategoryChangeFrequency">daily</preference>
+            <preference preference-id="CategoryPriority">0.5</preference>
+            <preference preference-id="ContentChangeFrequency">daily</preference>
+            <preference preference-id="ContentPriority">0.5</preference>
+            <preference preference-id="CouponGeneratorIncludeDashes">true</preference>
+            <preference preference-id="CouponGeneratorIncludeVowels">true</preference>
+            <preference preference-id="EnableSiteOrderNumbers">false</preference>
+            <preference preference-id="FailNonPlacedOrdersAfter">0</preference>
+            <preference preference-id="FailedOrderRetention">0</preference>
+            <preference preference-id="GenerateCustomerNumberEnabled">false</preference>
+            <preference preference-id="GiftCertificateCodeMasked">1</preference>
+            <preference preference-id="GiftCertificateEmailTemplate">marketing/giftcertificateemail.isml</preference>
+            <preference preference-id="GiftCertificateExportMerchantID">0</preference>
+            <preference preference-id="GiftCertificateSenderEmail">noreply@demandware.com</preference>
+            <preference preference-id="GiftCertificateSenderName">Customer Support</preference>
+            <preference preference-id="IntegrationOrderCenterIncludeSite">true</preference>
+            <preference preference-id="MaxURLsPerFile">5000</preference>
+            <preference preference-id="OrderEditExportDelay">30</preference>
+            <preference preference-id="OrderExportDelay">30</preference>
+            <preference preference-id="OrderExportFormat">15.4</preference>
+            <preference preference-id="OrderIPLoggingEnabled">true</preference>
+            <preference preference-id="OrderLifetime">0</preference>
+            <preference preference-id="PaymentAccountNumberLifetime">0</preference>
+            <preference preference-id="ProductChangeFrequency">daily</preference>
+            <preference preference-id="ProductPriority">0.5</preference>
+            <preference preference-id="RedirectUrlCopySourceParameters">false</preference>
+            <preference preference-id="RetainNonExportedOrders">false</preference>
+            <preference preference-id="SiteCatalog">storefront-catalog-en</preference>
+            <preference preference-id="SiteCurrencies">USD</preference>
+            <preference preference-id="SiteCustomerList">SiteGenesis</preference>
+            <preference preference-id="SiteDefaultLocale">en_US</preference>
+            <preference preference-id="SiteInventoryList">inventory</preference>
+            <preference preference-id="SiteLibrary">SiteGenesisSharedLibrary</preference>
+            <preference preference-id="SiteLocales">en_US:default:en_GB</preference>
+            <preference preference-id="SitePriceBooks">cny-list-prices:cny-sale-prices:eur-list-prices:eur-sale-prices:gbp-list-prices:gbp-sale-prices:jpy-list-prices:jpy-sale-prices:usd-list-prices:usd-sale-prices</preference>
+            <preference preference-id="SiteTimezone">Etc/UTC</preference>
+            <preference preference-id="StorefrontOrderAccess">unrestricted</preference>
+            <preference preference-id="StorefrontURLsEnabled">true</preference>
+        </all-instances>
+        <development>
+            <preference preference-id="AvailabilityFiltering">Disabled</preference>
+            <preference preference-id="AvailabilityLowRankingThreshold">0.0</preference>
+            <preference preference-id="RobotsTxtContent"/>
+            <preference preference-id="RobotsTxtMode">Cartridge</preference>
+            <preference preference-id="SearchSuggestions">Disabled</preference>
+        </development>
+        <staging>
+            <preference preference-id="AvailabilityFiltering">Disabled</preference>
+            <preference preference-id="AvailabilityLowRankingThreshold">0.0</preference>
+            <preference preference-id="RobotsTxtContent"/>
+            <preference preference-id="RobotsTxtMode">Cartridge</preference>
+            <preference preference-id="SearchSuggestions">Enabled</preference>
+        </staging>
+        <production>
+            <preference preference-id="AvailabilityFiltering">Disabled</preference>
+            <preference preference-id="AvailabilityLowRankingThreshold">0.0</preference>
+            <preference preference-id="RobotsTxtContent"/>
+            <preference preference-id="RobotsTxtMode">Cartridge</preference>
+            <preference preference-id="SearchSuggestions">Disabled</preference>
+        </production>
+    </standard-preferences>
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="CsAndoridPayTokenizationEnabled">true</preference>
+            <preference preference-id="CsApplePayPassword"></preference>
+            <preference preference-id="CsApplePayUser">test</preference>
+            <preference preference-id="CsAvsIgnoreResult">false</preference>
+            <preference preference-id="CsCorrectShipState">true</preference>
+            <preference preference-id="CsCvnDeclineFlags">false</preference>
+            <preference preference-id="CsDavEnable">YES</preference>
+            <preference preference-id="CsDavOnAddressVerificationFailure">DECLINE</preference>
+            <preference preference-id="CsDebugCybersource">true</preference>
+            <preference preference-id="CsDeveloperID"></preference>
+            <preference preference-id="CsDeviceFingerprintEnabled">true</preference>
+            <preference preference-id="CsDeviceFingerprintJetmetrixLocation">https://h.online-metrix.net</preference>
+            <preference preference-id="CsDeviceFingerprintOrgId">1snn5n9w</preference>
+            <preference preference-id="CsDeviceFingerprintRedirectionType">none</preference>
+            <preference preference-id="CsEnableExpressPaypal">true</preference>
+            <preference preference-id="CsEnableTaxation">true</preference>
+            <preference preference-id="CsEndpoint">Test</preference>
+            <preference preference-id="CsMerchantId"></preference>
+            <preference preference-id="CsPaEnableProofXML">true</preference>
+            <preference preference-id="CsPaMerchantId"></preference>
+            <preference preference-id="CsPaMerchantName"></preference>
+            <preference preference-id="CsPaMerchantPassword"></preference>
+            <preference preference-id="CsPaSaveParesStatus">true</preference>
+            <preference preference-id="CsPaypalAddressOverride">true</preference>
+            <preference preference-id="CsPaypalHdrbackcolor">00FFFF</preference>
+            <preference preference-id="CsPaypalNoshipping">true</preference>
+            <preference preference-id="CsPaypalOrderType">CUSTOM</preference>
+            <preference preference-id="CsPaypalPayflowcolor">00ff80</preference>
+            <preference preference-id="CsPaypalPaymentOption">AuthorizeAndCapture</preference>
+            <preference preference-id="CsPaypalReqconfirmshipping">true</preference>
+            <preference preference-id="CsPoaCity">Maryland</preference>
+            <preference preference-id="CsPoaCountryCode">USA</preference>
+            <preference preference-id="CsPoaStateCode">MA</preference>
+            <preference preference-id="CsPoaZipCode">01862</preference>
+            <preference preference-id="CsPooCity">Maryland</preference>
+            <preference preference-id="CsPooCountryCode">USA</preference>
+            <preference preference-id="CsPooStateCode">MA</preference>
+            <preference preference-id="CsPooZipCode">01862</preference>
+            <preference preference-id="CsRequestBillingAddress">true</preference>
+            <preference preference-id="CsSAIframetFormAction">https://testsecureacceptance.cybersource.com/embedded/pay</preference>
+            <preference preference-id="CsSAOverrideBillingAddress">true</preference>
+            <preference preference-id="CsSAOverrideShippingAddress">true</preference>
+            <preference preference-id="CsSARedirectFormAction">https://testsecureacceptance.cybersource.com/pay</preference>
+            <preference preference-id="CsSecurityKey"></preference>
+            <preference preference-id="CsTokenizationEnable">YES</preference>
+            <preference preference-id="SAPostCustomerServiceEmail">noreply@demandware.com</preference>
+            <preference preference-id="SA_Iframe_AccessKey"></preference>
+            <preference preference-id="SA_Iframe_ProfileID"></preference>
+            <preference preference-id="SA_Iframe_SecretKey"></preference>
+            <preference preference-id="SA_Redirect_AccessKey"></preference>
+            <preference preference-id="SA_Redirect_ProfileID"></preference>
+            <preference preference-id="SA_Redirect_SecretKey"></preference>
+            <preference preference-id="SA_Silent_AccessKey"></preference>
+            <preference preference-id="SA_Silent_ProfileID"></preference>
+            <preference preference-id="SA_Silent_SecretKey"></preference>
+            <preference preference-id="Secure_Acceptance_Token_Create_Endpoint">https://testsecureacceptance.cybersource.com/silent/token/create</preference>
+            <preference preference-id="Secure_Acceptance_Token_Update_Endpoint">https://testsecureacceptance.cybersource.com/silent/token/update</preference>
+            <preference preference-id="apPaymentType">APY</preference>
+            <preference preference-id="apTestReconciliationID"></preference>
+            <preference preference-id="bankTransferPaymentMethods">
+                <value>IDEAL</value>
+            </preference>
+            <preference preference-id="csCardDecisionManagerEnable">true</preference>
+            <preference preference-id="csMasterCardAuthIndicator">0</preference>
+            <preference preference-id="customerServiceEmail">donotreply@demandware.com</preference>
+            <preference preference-id="cybAndroidPayInterfacePassword"></preference>
+            <preference preference-id="cybAndroidPayInterfaceUser">test</preference>
+            <preference preference-id="cybVisaAPIKey"></preference>
+            <preference preference-id="cybVisaButtonColor">standard</preference>
+            <preference preference-id="cybVisaButtonHeight">34</preference>
+            <preference preference-id="cybVisaButtonImgUrl">https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png</preference>
+            <preference preference-id="cybVisaButtonOnCart">true</preference>
+            <preference preference-id="cybVisaButtonSize">154</preference>
+            <preference preference-id="cybVisaButtonWidth">154</preference>
+            <preference preference-id="cybVisaCardBrands">
+                <value>VISA</value>
+                <value>MASTERCARD</value>
+                <value>AMEX</value>
+                <value>DISCOVER</value>
+            </preference>
+            <preference preference-id="cybVisaExternalProfileId">anujcyb</preference>
+            <preference preference-id="cybVisaSdkJsLibrary">https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</preference>
+            <preference preference-id="cybVisaSecretKey"></preference>
+            <preference preference-id="cybVisaTellMeMoreLinkActive">true</preference>
+            <preference preference-id="cybVisaThreeDSActive">true</preference>
+            <preference preference-id="cybVisaThreeDSSuppressChallenge">false</preference>
+            <preference preference-id="isDecisionManagerEnable">true</preference>
+            <preference preference-id="isKlarnaDecisionManagerRequired">true</preference>
+            <preference preference-id="isKlarnaRedirectionRequired">false</preference>
+            <preference preference-id="klarnaJSAPIPath">https://credit.klarnacdn.net/lib/v1/api.js</preference>
+            <preference preference-id="payPalBillingAgreements">false</preference>
+        </development>
+        <staging>
+            <preference preference-id="CsPaMerchantPassword"></preference>
+            <preference preference-id="buildNotificationEmailList"></preference>
+            <preference preference-id="disableResponsiveDesign">false</preference>
+            <preference preference-id="slideshoweffect">growX</preference>
+        </staging>
+        <production>
+            <preference preference-id="CsPaMerchantPassword"></preference>
+        </production>
+    </custom-preferences>
+</preferences>
+

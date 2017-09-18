@@ -30,6 +30,7 @@
 
 
 var dwsvc		= require ("dw/svc");
+var Logger = require('dw/system/Logger');
 var CardFacade = require('int_cybersource/cartridge/scripts/facade/CardFacade');
 function execute( pdict : PipelineDictionary ) : Number
 {

@@ -1,0 +1,33 @@
+/**
+* InitiatePayPalExpress.ds
+* This file will be used to initiate the paypal
+* express checkout flow from cart,minicart
+* and billing page to display the widget
+* from where user will be redirected to
+*  summary/review page
+* Parameters
+*  @input basket : dw.order.Basket
+*  @input request : dw.system.Request
+*  @output response : Object
+*
+*/
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var adapter = require('int_cybersource/cartridge/scripts/paypal/adapter/PaypalAdapter');
+	// call to initiate express checkout to display paypal widget
+	var billingAgreementFlag = pdict.CurrentHttpParameterMap.billingAgreement.booleanValue,
+		payPalCreditFlag = pdict.CurrentHttpParameterMap.isPayPalCredit.booleanValue;
+	var args={};
+	args.billingAgreementFlag=billingAgreementFlag ? true : false;
+	args.payPalCreditFlag = payPalCreditFlag ? true :false;
+	var result = adapter.InitiateExpressCheckout(pdict.basket,args);
+	if(result.error)
+	{
+		PIPELET_NEXT = false;
+	}
+	// setting the response to output
+	pdict.response = result;
+    return PIPELET_NEXT;
+}

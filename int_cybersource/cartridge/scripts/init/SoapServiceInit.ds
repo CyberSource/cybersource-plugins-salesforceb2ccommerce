@@ -37,7 +37,6 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic",
 /**/	
 	createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
 		var csReference  = webreferences.CyberSourceTransaction;
-		//var service = csReference.getService("TransactionProcessor", "portXML");
 		var service = csReference.getDefaultService();
 		svc.webReference = csReference;
 	    svc.serviceClient = service;
@@ -56,8 +55,9 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic",
 /**/		
 	
 	execute : function(svc : dwsvc.SOAPService, parameter : Object) {
-		       var userName = svc.getConfiguration().getCredential().getUser();
-		       var password = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSecurityKey");//svc.getConfiguration().getCredential().getPassword();
+		       
+		       var userName = parameter.merchantCredentials.merchantID;
+		       var password = parameter.merchantCredentials.merchantKey;
 		       var secretsMap = new HashMap();
 		       secretsMap.put(userName, password); 
 		       var requestCfg = new HashMap();
@@ -71,7 +71,7 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic",
 		     
 		       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
 		
-		return svc.serviceClient.runTransaction(parameter);
+		return svc.serviceClient.runTransaction(parameter.request);
 	},
 /**
 * Description  : Method to get the response from cybersource.soap.transactionprocessor.generic service
@@ -117,7 +117,6 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.pos", {
 /**/	
 	createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
 		var csReference  = webreferences.CyberSourceTransaction;
-		//var service = csReference.getService("TransactionProcessor", "portXML");
 		var service = csReference.getDefaultService();
 		svc.webReference = csReference;
 	    svc.serviceClient = service;
@@ -138,7 +137,7 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.pos", {
 	execute : function(svc : dwsvc.SOAPService, parameter : Object) {
 		
 				if (parameter==null){return null;}
-				var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+				var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 				var CybersourceHelper = libCybersource.getCybersourceHelper();
 				var merchantID : String = CybersourceHelper.getPosMerchantID(parameter.location);
 				var merchantPassword : String = null;
@@ -204,15 +203,16 @@ dwsvc.ServiceRegistry.configure("cybersource.conversiondetailreport", {
                                 // Default request method is post
                                  svc.setRequestMethod("POST");
                                  svc.addHeader("Content-Type", "text/xml");
-              //svc.addHeader("Content-Type","application/json; charset=utf-8");
+             
               
         var url = svc.getURL();    
-        var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+        var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     	var CybersourceHelper = libCybersource.getCybersourceHelper();
-        var urlParms = url.match(/{[^{}]+}/g) || new Array();      
+    	var paramArray = [];
+        var urlParms = url.match(/{[^{}]+}/g) || paramArray;      
                 
         //remove url parms with blank values
-        urlParms = (url + '&').match(/[\x3F&][^=&]*=(?=&)/g) || new Array();
+        urlParms = (url + '&').match(/[\x3F&][^=&]*=(?=&)/g) || paramArray;
        
         urlParms.forEach(function(value, index) {
               url = url.replace(value.replace(/[\x3F&]/g, ''), ''); //1) strip away ? and & from parm 2) strip result from url
@@ -222,10 +222,10 @@ dwsvc.ServiceRegistry.configure("cybersource.conversiondetailreport", {
         url = url.replace(/&$/, ''); //replace & at the end with blank        
         
         //set timestamp parm
-         //merchantID={merchant_id}&username={username}&password={password}&startDate={startDate}&startTime={startTime}&endDate={endDate}&endTime={endTime}
-        url = url.replace(/{merchantID}/, CybersourceHelper.getMerchantID());
-        url = url.replace(/{username}/, svc.getConfiguration().getCredential().getUser());
-        url = url.replace(/{password}/, svc.getConfiguration().getCredential().getPassword());
+       
+        url = url.replace(/{merchantID}/, args.merchantId);
+        url = url.replace(/{username}/, args.username);
+        url = url.replace(/{password}/, args.password);
         url = url.replace(/{startDate}/, args.startDate);
         url = url.replace(/{startTime}/, args.startTime);
         url = url.replace(/{endDate}/, args.endDate);

@@ -125,5 +125,5 @@ Pos_Object.prototype =
 		getDeviceId : function(){
 			return this.deviceId;
 		}
-}
+};
 module.exports = Pos_Object;

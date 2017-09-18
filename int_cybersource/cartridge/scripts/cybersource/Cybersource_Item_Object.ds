@@ -64,6 +64,7 @@ function Item_Object() {
 	this.localTax = "";
 	this.zeroCostToCustomerIndicator = "";
 	this.id = "";
+	this.unitTaxAmount='';
 }
 
 Item_Object.prototype = 
@@ -427,6 +428,12 @@ Item_Object.prototype =
 		},
 		getId : function(){
 			return this.id;
-		}	
+		},
+		setUnitTaxAmount : function(value){
+			this.unitTaxAmount = value;
+		},
+		getUnitTaxAmount : function(){
+			return this.unitTaxAmount;
+		}		
 }
 module.exports = Item_Object;

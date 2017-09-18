@@ -1,0 +1,76 @@
+<iscontent type="application/json" charset="UTF-8" compact="true"/>
+{
+	<isif condition="${!empty(pdict.ERRORCODE) && pdict.ERRORCODE != 'undefined'}">
+		"${Resource.msg('ERROR_CODE','cybersource','')}":"<isprint value="${pdict.ERRORCODE}" />",
+		"${Resource.msg('ERROR_MSG','cybersource','')}":"<isprint value="${pdict.ERRORMSG}" />"
+	<iselse>
+		"${Resource.msg('TRANSACTION_RESULT','cybersource','')}":
+		{
+		"${Resource.msg('DECISION','cybersource','')}":"<isprint value="${pdict.ServiceResponse.Decision}" />",
+		"${Resource.msg('REASON_CODE','cybersource','')}":"<isprint value="${pdict.ServiceResponse.ReasonCode}" />",
+		"${Resource.msg('REQUEST_ID','cybersource','')}":"<isprint value="${pdict.ServiceResponse.RequestID}" />",
+		"${Resource.msg('REQUEST_TOKEN','cybersource','')}":"<isprint value="${pdict.ServiceResponse.RequestToken}" />",
+		"${Resource.msg('AUTHORIZATION_AMOUNT','cybersource','')}":"<isprint value="${pdict.ServiceResponse.AuthorizationAmount}" />",
+		"${Resource.msg('AUTHORIZATION_CODE','cybersource','')}":"<isprint value="${pdict.ServiceResponse.AuthorizationCode}" />",
+		"${Resource.msg('AUTHORIZATION_REASON_CODE','cybersource','')}":"<isprint value="${pdict.ServiceResponse.AuthorizationReasonCode}" />",
+		"${Resource.msg('DAV_REASON_CODE','cybersource','')}":"<isprint value="${pdict.ServiceResponse.DAVReasonCode}" />",
+		"${Resource.msg('SUBSCRIPTION_ID','cybersource','')}":"<isprint value="${pdict.ServiceResponse.SubscriptionID}" />",
+	<isif condition="${!empty(pdict.ServiceResponse)}">
+		"${Resource.msg('RAW_SERVICE_RESPONSE','cybersource','')}":{
+			<isif condition="${!empty(pdict.ServiceResponse.RequestID)}">"${Resource.msg('RequestID','cybersource','')}":"<isprint value="${pdict.ServiceResponse.RequestID}" />",</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.RequestToken)}">"${Resource.msg('RequestToken','cybersource','')}":"<isprint value="${pdict.ServiceResponse.RequestToken}" />",</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.ReasonCode)}">"${Resource.msg('ReasonCode','cybersource','')}":"<isprint value="${pdict.ServiceResponse.ReasonCode}" />",</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.Decision)}">"${Resource.msg('Decision','cybersource','')}":"<isprint value="${pdict.ServiceResponse.Decision}" />",</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.ccAuthReply)}">"${Resource.msg('ccAuthReply','cybersource','')}":"<isprint value="${pdict.ServiceResponse.ccAuthReply}" />",
+			<isif condition="${!empty(pdict.ServiceResponse.AuthorizationAmount)}">
+				"${Resource.msg('AuthorizationAmount','cybersource','')}":"<isprint value="${pdict.ServiceResponse.AuthorizationAmount}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.AuthorizationCode)}">
+				"${Resource.msg('AuthorizationCode','cybersource','')}":"<isprint value="${pdict.ServiceResponse.AuthorizationCode}" />",
+			</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.AuthorizationReasonCode)}">
+				"${Resource.msg('AuthorizationReasonCode','cybersource','')}":"<isprint value="${pdict.ServiceResponse.AuthorizationReasonCode}" />",
+			</isif>
+		</isif>
+		<isif condition="${!empty(pdict.ServiceResponse.SubscriptionID)}">"${Resource.msg('SubscriptionID','cybersource','')}":"<isprint value="${pdict.ServiceResponse.SubscriptionID}" />",</isif>
+			<isif condition="${!empty(pdict.ServiceResponse.MissingFieldsArray)}">
+				"${Resource.msg('MissingFieldsArray','cybersource','')}":"<isloop items="${pdict.ServiceResponse.MissingFieldsArray}" var="missingfield">${missingfield},</isloop>",
+			</isif>
+		<isif condition="${!empty(pdict.ServiceResponse.InvalidFieldsArray)}">
+			"${Resource.msg('InvalidFieldsArray','cybersource','')}":"<isloop items="${pdict.ServiceResponse.InvalidFieldsArray}" var="invalidfield">${invalidfield},</isloop>",
+		</isif>
+		<isif condition="${!empty(pdict.ServiceResponse.DAVReasonCode)}">"${Resource.msg('DAVReasonCode','cybersource','')}":"<isprint value="${pdict.ServiceResponse.DAVReasonCode}" />",
+			<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress)}">
+				"${Resource.msg('StandardizedAddress','cybersource','')}": {
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.firstName)}">
+					"${Resource.msg('firstName','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.firstName}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.lastName)}">
+					"${Resource.msg('lastName','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.lastName}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.address1)}">
+					"${Resource.msg('address1','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.address1}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.address2)}">
+					"${Resource.msg('address2','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.address2}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.city)}">
+					"${Resource.msg('city','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.city}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.state)}">
+					"${Resource.msg('state','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.state}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.postalCode)}">
+					"${Resource.msg('postalCode','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.postalCode}" />",
+					</isif>
+					<isif condition="${!empty(pdict.ServiceResponse.StandardizedAddress.country)}">
+					"${Resource.msg('country','cybersource','')}":"<isprint value="${pdict.ServiceResponse.StandardizedAddress.country}" />"
+					</isif>
+					}
+				</isif>
+			</isif>
+			}
+		</isif>
+		}
+	</isif>
+}

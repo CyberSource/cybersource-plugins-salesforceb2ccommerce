@@ -42,6 +42,6 @@ MockLineItem_Object.prototype =
 	getProductCode : function(){
 		return this.productCode;
 	}
-}
+};
 
 module.exports = MockLineItem_Object;
