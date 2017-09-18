@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
-    <job job-id="AlipayCheckStatusService" priority="0">
+    <job job-id="APCheckStatusJob" priority="0">
         <description>Job Scheduler to check the status of Ali Pay Initiate Payment request status.</description>
-        <flow>
-            <context site-id="SiteGenesis"/>
-            <step step-id="CYBERSOURCE_ALIPAY_JOB" type="ExecutePipeline" enforce-restart="false">
-                <description/>
-                <parameters>
-                    <parameter name="ExecutePipeline.Pipeline">CYBERSOURCE_ALIPAY_JOB-AlipayCheckPaymentStatusWorkflow</parameter>
-                </parameters>
-            </step>
-        </flow>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_23"/>
+            </flow>
+            <flow>
+                <context site-id="SiteGenesisGlobal"/>
+                <template-ref template-id="template_23"/>
+            </flow>
+            <flow-template template-id="template_23">
+                <step step-id="APCheckStatusJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Check payment status for APM's</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/APCheckStatusJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">checkPaymentStatusJob</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="LagTime">0</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
         <rules>
             <on-running runtime-threshold="60m" enabled="false">
                 <mark-job-as-hanging/>
@@ -40,17 +53,32 @@
         </triggers>
     </job>
 
-    <job job-id="CyberSourceConversionReport" priority="0">
+    <job job-id="CyberSourceConversionReportJob" priority="0">
         <description>CyberSource conversion detail report</description>
-        <flow>
-            <context site-id="SiteGenesis"/>
-            <step step-id="CONVERSION_DETAIL_REPORT_JOB" type="ExecutePipeline" enforce-restart="false">
-                <description/>
-                <parameters>
-                    <parameter name="ExecutePipeline.Pipeline">CONVERSION_DETAIL_REPORT_JOB-CoversionDetailReport</parameter>
-                </parameters>
-            </step>
-        </flow>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_91"/>
+            </flow>
+            <flow>
+                <context site-id="SiteGenesisGlobal"/>
+                <template-ref template-id="template_91"/>
+            </flow>
+            <flow-template template-id="template_91">
+                <step step-id="ConversionDetailReportJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Update order status which are in REVIEW/REJECT state</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/ConversionDetailReportJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">conversionDetailReport</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="merchantId">sapient_nitro</parameter>
+                        <parameter name="username">anujjain</parameter>
+                        <parameter name="password">Sapient345$</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
         <rules/>
         <triggers>
             <run-once enabled="true">
@@ -62,20 +90,67 @@
 
     <job job-id="SecureAcceptanceMerchantPostJob" priority="0">
         <description>Secure Acceptance Merhcant Post Notification Job</description>
-        <flow>
-            <context site-id="SiteGenesis"/>
-            <step step-id="SECURE_ACCEPTANCE_JOB" type="ExecutePipeline" enforce-restart="false">
-                <description/>
-                <parameters>
-                    <parameter name="ExecutePipeline.Pipeline">SECURE_ACCEPTANCE_JOB-MerchantPostJob</parameter>
-                </parameters>
-            </step>
-        </flow>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_43"/>
+            </flow>
+            <flow>
+                <context site-id="SiteGenesisGlobal"/>
+                <template-ref template-id="template_43"/>
+            </flow>
+            <flow-template template-id="template_43">
+                <step step-id="SAMerchantPostJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>To handle failed order</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/SAMerchantPostJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">SAMerchantPostJob</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
         <rules/>
         <triggers>
             <run-once enabled="true">
                 <date>2016-12-29Z</date>
                 <time>11:40:27.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="iDealBankOptionJob" priority="0">
+        <description>To the supported list of baks for iDeal bank transfer</description>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <template-ref template-id="template_55"/>
+            </flow>
+            <flow>
+                <context site-id="SiteGenesisGlobal"/>
+                <template-ref template-id="template_55"/>
+            </flow>
+            <flow-template template-id="template_55">
+                <step step-id="call-cyb-option-service" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>To get the supported bank list for iDeal payment method.</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/iDealBankOptionJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">run</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                        <parameter name="merchantId"></parameter>
+                        <parameter name="merchantKey"></parameter>
+                        <parameter name="paymentType">IDL</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2017-07-17Z</date>
+                <time>10:20:57.000Z</time>
             </run-once>
         </triggers>
     </job>

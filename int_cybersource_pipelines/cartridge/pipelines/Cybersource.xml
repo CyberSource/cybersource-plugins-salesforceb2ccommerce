@@ -276,16 +276,14 @@
                             <key-binding alias="PaymentInstrument.creditCardExpirationMonth" key="To_3"/>
                             <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.expiration.year.value" key="From_4"/>
                             <key-binding alias="PaymentInstrument.creditCardExpirationYear" key="To_4"/>
-                            <key-binding alias="subscriptionID" key="From_6"/>
-                            <key-binding alias="PaymentInstrument.creditCardToken" key="To_6"/>
                             <key-binding alias="null" key="From_7"/>
                             <key-binding alias="null" key="To_7"/>
                             <key-binding alias="null" key="From_8"/>
                             <key-binding alias="null" key="To_8"/>
                             <key-binding alias="null" key="From_9"/>
                             <key-binding alias="null" key="To_9"/>
-                            <key-binding alias="true" key="From_5"/>
-                            <key-binding alias="PaymentInstrument.custom.isSubscription" key="To_5"/>
+                            <key-binding alias="PaymentInstrument.creditCardToken" key="To_5"/>
+                            <key-binding alias="subscriptionID" key="From_5"/>
                           </pipelet-node>
                           <node-display x="0" y="1"/>
                         </node>
@@ -453,394 +451,13 @@
     <segment>
       <node>
         <text-node>
-          <description>Calculate Taxes</description>
-        </text-node>
-        <node-display x="10" y="0"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="CalculateTaxes">
-    <segment>
-      <node>
-        <start-node call-mode="private" name="CalculateTaxes" secure="false"/>
-        <node-display x="10" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <decision-node condition-key="!empty(Basket)&amp;&amp;!empty(Basket.getAllProductLineItems())&amp;&amp;!empty(Basket.defaultShipment)&amp;&amp;!empty(Basket.defaultShipment.shippingAddress)" condition-operator="expr"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="yes">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="source" x="0" y="1"/>
-            </transition-display>
-          </transition>
-          <segment>
-            <node>
-              <pipelet-node custom-name="Prevent unnessary tax calls to cybersource" pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="cybersource/CreateCartStateString.ds"/>
-                <key-binding alias="CartStateStringLog" key="ScriptLog"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="CartStateString" key="CartStateString"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="error">
-                <transition target-connector="in"/>
-                <segment>
-                  <node>
-                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                      <config-property key="Transactional" value="true"/>
-                      <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="cybersource/Taxation/UpdatePriceAdjustment.ds"/>
-                      <key-binding alias="log" key="ScriptLog"/>
-                      <key-binding alias="Basket" key="Basket"/>
-                    </pipelet-node>
-                    <node-display orientation="horizontal" x="2" y="0"/>
-                    <branch basename="b2" source-connector="error">
-                      <transition target-connector="in1" target-path="../../+1">
-                        <transition-display>
-                          <bend-point relative-to="source" x="0" y="1"/>
-                          <bend-point relative-to="source" x="1" y="1"/>
-                        </transition-display>
-                      </transition>
-                    </branch>
-                  </node>
-                  <transition target-connector="in1" target-path="../../+1"/>
-                </segment>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <decision-node condition-key="empty(CurrentSession.custom.SkipTaxCalculation)" condition-operator="expr"/>
-              <node-display x="0" y="1"/>
-              <branch basename="b3" source-connector="yes">
-                <transition target-connector="in1" target-path="./+1"/>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="1" y="0"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <decision-node condition-key="CurrentSession.custom.SkipTaxCalculation" condition-operator="expr"/>
-              <node-display orientation="horizontal" x="1" y="0"/>
-              <branch basename="b4" source-connector="yes">
-                <transition target-connector="in1" target-path="../+2"/>
-              </branch>
-            </node>
-            <transition target-connector="in3" target-path="./+1">
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="2"/>
-              </transition-display>
-            </transition>
-          </segment>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="-1" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <key-binding alias="true" key="From_0"/>
-                <key-binding alias="ReadFromBasket" key="To_0"/>
-                <key-binding alias="null" key="From_1"/>
-                <key-binding alias="null" key="To_1"/>
-                <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
-                <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
-                <key-binding alias="null" key="From_4"/>
-                <key-binding alias="null" key="To_4"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition/>
-            <node>
-              <call-node start-name-ref="CybersourceData-CreateBillTo"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <call-node start-name-ref="CybersourceData-CreateShipTo"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <call-node start-name-ref="CybersourceData-CreatePaymentCard"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <call-node start-name-ref="CybersourceData-CreateTaxPurchaseTotals"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <call-node start-name-ref="CybersourceData-CreateTaxItems"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="target" x="0" y="-1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="ScriptFile" value="cybersource/TaxationRequest.ds"/>
-                <config-property key="Transactional" value="true"/>
-                <config-property key="Timeout" value="30"/>
-                <key-binding alias="ScriptLog" key="ScriptLog"/>
-                <key-binding alias="Basket" key="Basket"/>
-                <key-binding alias="ReasonCode" key="ReasonCode"/>
-                <key-binding alias="billto" key="billTo"/>
-                <key-binding alias="card" key="card"/>
-                <key-binding alias="purchaseTaxTotals" key="purchaseTotals"/>
-                <key-binding alias="im" key="itemMap"/>
-                <key-binding alias="shipfrom" key="shipFrom"/>
-                <key-binding alias="shipto" key="shipTo"/>
-                <key-binding alias="ia" key="itemArray"/>
-                <key-binding alias="totalTaxAmount" key="totalTaxAmount"/>
-                <key-binding alias="response" key="response"/>
-                <key-binding alias="Decision" key="Decision"/>
-              </pipelet-node>
-              <node-display x="0" y="2"/>
-              <branch basename="b2" source-connector="error">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="source" x="1" y="0"/>
-                  </transition-display>
-                </transition>
-                <segment>
-                  <node>
-                    <end-node name="ERROR"/>
-                    <node-display orientation="horizontal" x="1" y="0"/>
-                  </node>
-                </segment>
-              </branch>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <call-node start-name-ref="Cybersource-DebugTaxRequest"/>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <pipelet-node custom-name="Save cart state to session" pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <key-binding alias="CartStateString" key="From_0"/>
-                <key-binding alias="CurrentSession.custom.cartStateString" key="To_0"/>
-                <key-binding alias="false" key="From_1"/>
-                <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
-                <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
-                <key-binding alias="null" key="From_4"/>
-                <key-binding alias="null" key="To_4"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-                <key-binding alias="CurrentSession.custom.SkipTaxCalculation" key="To_1"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition/>
-            <node>
-              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <key-binding alias="null" key="From_0"/>
-                <key-binding alias="card" key="To_0"/>
-                <key-binding alias="null" key="From_1"/>
-                <key-binding alias="null" key="To_1"/>
-                <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
-                <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
-                <key-binding alias="null" key="From_4"/>
-                <key-binding alias="null" key="To_4"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <end-node name="OK"/>
-              <node-display x="0" y="1"/>
-            </node>
-          </segment>
-        </branch>
-      </node>
-      <transition target-connector="in1" target-path="./+1">
-        <transition-display>
-          <bend-point relative-to="target" x="0" y="-2"/>
-        </transition-display>
-      </transition>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="3" y="1"/>
-      </node>
-      <transition target-connector="in2" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="-1" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="true"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="cybersource/UpdateTaxForGiftCertificate.ds"/>
-          <key-binding alias="log" key="ScriptLog"/>
-          <key-binding alias="Basket" key="Basket"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in2" target-path="./+1">
-            <transition-display>
-              <bend-point relative-to="source" x="1" y="0"/>
-              <bend-point relative-to="target" x="1" y="0"/>
-            </transition-display>
-          </transition>
-        </branch>
-      </node>
-      <transition target-connector="in1" target-path="./+1"/>
-    </segment>
-    <segment>
-      <node>
-        <join-node/>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
-          <key-binding alias="false" key="From_0"/>
-          <key-binding alias="CurrentSession.custom.SkipTaxCalculation" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
-          <key-binding alias="null" key="To_1"/>
-          <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
-          <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
-          <key-binding alias="null" key="From_4"/>
-          <key-binding alias="null" key="To_4"/>
-          <key-binding alias="null" key="From_5"/>
-          <key-binding alias="null" key="To_5"/>
-          <key-binding alias="null" key="From_6"/>
-          <key-binding alias="null" key="To_6"/>
-          <key-binding alias="null" key="From_7"/>
-          <key-binding alias="null" key="To_7"/>
-          <key-binding alias="null" key="From_8"/>
-          <key-binding alias="null" key="To_8"/>
-          <key-binding alias="null" key="From_9"/>
-          <key-binding alias="null" key="To_9"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <end-node name="OK"/>
-        <node-display x="0" y="1"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_7">
-    <segment>
-      <node>
-        <text-node>
           <description>Only handles a single shipment.  Customer must override this behavior to handle multiple shipments per Order.</description>
         </text-node>
         <node-display x="9" y="3"/>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_8">
+  <branch basename="_ANONYMOUS_BRANCH_6">
     <segment>
       <node>
         <text-node>
@@ -1126,7 +743,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_10">
+  <branch basename="_ANONYMOUS_BRANCH_8">
     <segment>
       <node>
         <text-node>
@@ -1451,7 +1068,7 @@
                     </transition-display>
                   </simple-transition>
                   <node>
-                    <jump-node start-name-ref="VisaCheckout-PayerAuthEnroll"/>
+                    <jump-node start-name-ref="CYBVisaCheckout-PayerAuthEnroll"/>
                     <node-display x="3" y="1"/>
                   </node>
                 </segment>
@@ -1487,196 +1104,13 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_12">
-    <segment>
-      <node>
-        <text-node>
-          <description>Capture Credit Card paid amount, authorize if decision ACCEPT</description>
-        </text-node>
-        <node-display x="29" y="0"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="CaptureCard">
-    <segment>
-      <node>
-        <start-node call-mode="private" name="CaptureCard" secure="false"/>
-        <node-display x="29" y="1"/>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="true"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="cybersource/CCCaptureRequest.ds"/>
-          <config-property key="Timeout" value="30"/>
-          <key-binding alias="ScriptLog" key="ScriptLog"/>
-          <key-binding alias="Order" key="Order"/>
-          <key-binding alias="CaptureAmount" key="CaptureAmount"/>
-          <key-binding alias="CaptureReasonCode" key="CaptureReasonCode"/>
-          <key-binding alias="Decision" key="Decision"/>
-          <key-binding alias="ReasonCode" key="ReasonCode"/>
-          <key-binding alias="RequestID" key="RequestID"/>
-          <key-binding alias="RequestToken" key="RequestToken"/>
-          <key-binding alias="CaptureResponse" key="CaptureResponse"/>
-        </pipelet-node>
-        <node-display x="0" y="1"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in"/>
-          <segment>
-            <node>
-              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <key-binding alias="ScriptLog" key="From_0"/>
-                <key-binding alias="null" key="From_1"/>
-                <key-binding alias="null" key="To_1"/>
-                <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
-                <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
-                <key-binding alias="null" key="From_4"/>
-                <key-binding alias="null" key="To_4"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-                <key-binding alias="ErrorMsg" key="To_0"/>
-              </pipelet-node>
-              <node-display orientation="horizontal" x="1" y="0"/>
-            </node>
-            <transition target-connector="in1" target-path="../b3.1"/>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-          <bend-point relative-to="source" x="-1" y="1"/>
-          <bend-point relative-to="target" x="-1" y="0"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <decision-node condition-key="Decision == 'ERROR'" condition-operator="expr"/>
-        <node-display orientation="horizontal" x="0" y="1"/>
-        <branch basename="b3" source-connector="yes">
-          <transition target-connector="in1"/>
-          <segment>
-            <node>
-              <join-node/>
-              <node-display x="1" y="0"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="1" y="0"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <end-node name="error"/>
-              <node-display orientation="horizontal" x="1" y="0"/>
-            </node>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <decision-node condition-key="Decision == 'ACCEPT'" condition-operator="expr"/>
-        <node-display x="0" y="1"/>
-        <branch basename="b4" source-connector="yes">
-          <transition target-connector="in"/>
-          <segment>
-            <node>
-              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="false"/>
-                <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_cybersource:cybersource/getNonGCPaymentInstrument.ds"/>
-                <key-binding alias="null" key="ScriptLog"/>
-                <key-binding alias="Order" key="Order"/>
-                <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-              <branch basename="b2" source-connector="error">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="source" x="1" y="0"/>
-                  </transition-display>
-                </transition>
-                <segment>
-                  <node>
-                    <end-node name="error"/>
-                    <node-display orientation="horizontal" x="1" y="0"/>
-                  </node>
-                </segment>
-              </branch>
-            </node>
-            <simple-transition/>
-            <node>
-              <pipelet-node custom-name="Set transaction id" pipelet-name="Assign" pipelet-set-identifier="bc_api">
-                <config-property key="Transactional" value="true"/>
-                <key-binding alias="RequestID" key="From_0"/>
-                <key-binding alias="PaymentInstrument.paymentTransaction.transactionID" key="To_0"/>
-                <key-binding alias="RequestToken" key="From_1"/>
-                <key-binding alias="PaymentInstrument.paymentTransaction.custom.requestToken" key="To_1"/>
-                <key-binding alias="2" key="From_2"/>
-                <key-binding alias="Order.paymentStatus" key="To_2"/>
-                <key-binding alias="PaymentInstrument.paymentTransaction.custom.AmountPaid" key="To_3"/>
-                <key-binding alias="null" key="From_5"/>
-                <key-binding alias="null" key="To_5"/>
-                <key-binding alias="null" key="From_6"/>
-                <key-binding alias="null" key="To_6"/>
-                <key-binding alias="null" key="From_7"/>
-                <key-binding alias="null" key="To_7"/>
-                <key-binding alias="null" key="From_8"/>
-                <key-binding alias="null" key="To_8"/>
-                <key-binding alias="null" key="From_9"/>
-                <key-binding alias="null" key="To_9"/>
-                <key-binding alias="Number(CaptureAmount)" key="From_3"/>
-              </pipelet-node>
-              <node-display x="0" y="1"/>
-            </node>
-            <simple-transition>
-              <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
-              </transition-display>
-            </simple-transition>
-            <node>
-              <end-node name="authorized"/>
-              <node-display x="0" y="1"/>
-            </node>
-          </segment>
-        </branch>
-      </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="target" x="-1" y="0"/>
-        </transition-display>
-      </simple-transition>
-      <node>
-        <end-node name="declined"/>
-        <node-display orientation="horizontal" x="2" y="0"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_14">
+  <branch basename="_ANONYMOUS_BRANCH_10">
     <segment>
       <node>
         <text-node>
           <description>Pipeline is used to debug tax request</description>
         </text-node>
-        <node-display x="33" y="0"/>
+        <node-display x="28" y="0"/>
       </node>
     </segment>
   </branch>
@@ -1684,7 +1118,7 @@
     <segment>
       <node>
         <start-node call-mode="private" name="DebugTaxRequest" secure="false"/>
-        <node-display x="33" y="1"/>
+        <node-display x="28" y="1"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1720,7 +1154,7 @@
           <segment>
             <node>
               <interaction-node transaction-required="false">
-                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                <template buffered="true" dynamic="false" name="common/scripterror"/>
               </interaction-node>
               <node-display orientation="horizontal" x="1" y="0"/>
             </node>
@@ -1738,13 +1172,13 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_16">
+  <branch basename="_ANONYMOUS_BRANCH_12">
     <segment>
       <node>
         <text-node>
           <description>Reset Payment Forms on billing page</description>
         </text-node>
-        <node-display x="37" y="0"/>
+        <node-display x="32" y="0"/>
       </node>
     </segment>
   </branch>
@@ -1752,7 +1186,7 @@
     <segment>
       <node>
         <start-node call-mode="private" name="ResetPaymentForms" secure="false"/>
-        <node-display x="37" y="1"/>
+        <node-display x="32" y="1"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1799,7 +1233,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_18">
+  <branch basename="_ANONYMOUS_BRANCH_14">
     <segment>
       <node>
         <text-node>
@@ -1869,7 +1303,7 @@
                     </transition-display>
                   </simple-transition>
                   <node>
-                    <decision-node condition-key="(empty(subscriptionID) &amp;&amp; dw.system.Site.getCurrent().getCustomPreferenceValue(&quot;CsTokenizationEnable&quot;) == &quot;YES&quot;)" condition-operator="expr"/>
+                    <decision-node condition-key="(empty(subscriptionID) &amp;&amp; dw.system.Site.getCurrent().getCustomPreferenceValue(&quot;CsTokenizationEnable&quot;).value == &quot;YES&quot;)" condition-operator="expr"/>
                     <node-display orientation="horizontal" x="0" y="1"/>
                     <branch basename="b3" source-connector="yes">
                       <transition target-connector="in">
@@ -1973,7 +1407,7 @@
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="utils/SaveCustomerCreditCard.ds"/>
+                      <config-property key="ScriptFile" value="app_storefront_core:checkout/SaveCustomerCreditCard.ds"/>
                       <key-binding alias="null" key="ScriptLog"/>
                       <key-binding alias="NewCreditCard" key="PaymentInstrument"/>
                       <key-binding alias="CurrentForms.billing.paymentMethods.creditCard" key="CreditCardFormFields"/>
@@ -2035,8 +1469,8 @@
                           <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                             <config-property key="Transactional" value="false"/>
                             <config-property key="OnError" value="PIPELET_ERROR"/>
-                            <config-property key="ScriptFile" value="int_cybersource:cybersource/getNonGCPaymentInstrument.ds"/>
-                            <key-binding alias="null" key="ScriptLog"/>
+                            <config-property key="ScriptFile" value="cybersource/getNonGCPaymentInstrument.ds"/>
+                            <key-binding alias="Log" key="ScriptLog"/>
                             <key-binding alias="Basket" key="Order"/>
                             <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
                           </pipelet-node>
@@ -2126,7 +1560,7 @@
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="false"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="utils/DuplicateCheck.ds"/>
+                      <config-property key="ScriptFile" value="app_storefront_core:account/payment/DuplicateCheck.ds"/>
                       <key-binding alias="CurrentForms.billing.paymentMethods.creditCard.number.value" key="NoIn"/>
                       <key-binding alias="DuplicateCard" key="Duplicate"/>
                       <key-binding alias="CreditCards" key="PIList"/>
@@ -2212,7 +1646,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_20">
+  <branch basename="_ANONYMOUS_BRANCH_16">
     <segment>
       <node>
         <text-node>
@@ -2269,7 +1703,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_22">
+  <branch basename="_ANONYMOUS_BRANCH_18">
     <segment>
       <node>
         <text-node>
@@ -2577,7 +2011,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_24">
+  <branch basename="_ANONYMOUS_BRANCH_20">
     <segment>
       <node>
         <text-node>
@@ -2600,7 +2034,7 @@
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="cybersource/Subscription/DeleteSubscription.ds"/>
           <config-property key="Timeout" value="30"/>
-          <key-binding alias="log" key="ScriptLog"/> 
+          <key-binding alias="log" key="ScriptLog"/>
           <key-binding alias="decision" key="decision"/>
           <key-binding alias="invalidField" key="invalidField"/>
           <key-binding alias="reasonCode" key="reasonCode"/>
@@ -2651,7 +2085,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_26">
+  <branch basename="_ANONYMOUS_BRANCH_22">
     <segment>
       <node>
         <text-node>
@@ -2764,7 +2198,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_28">
+  <branch basename="_ANONYMOUS_BRANCH_24">
     <segment>
       <node>
         <text-node>
@@ -2889,7 +2323,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_30">
+  <branch basename="_ANONYMOUS_BRANCH_26">
     <segment>
       <node>
         <text-node>
@@ -3359,7 +2793,7 @@
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_cybersource:cybersource/SaveCustomerCardToken.ds"/>
+                      <config-property key="ScriptFile" value="cybersource/SaveCustomerCardToken.ds"/>
                       <key-binding alias="logs" key="ScriptLog"/>
                       <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
                       <key-binding alias="CurrentCustomer.authenticated?CurrentCustomer:null" key="CustomerObj"/>
@@ -3722,7 +3156,7 @@
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_cybersource:cybersource/SaveCustomerCardToken.ds"/>
+                      <config-property key="ScriptFile" value="cybersource/SaveCustomerCardToken.ds"/>
                       <key-binding alias="logs" key="ScriptLog"/>
                       <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
                       <key-binding alias="CurrentCustomer.authenticated?CurrentCustomer:null" key="CustomerObj"/>
@@ -3884,7 +3318,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_32">
+  <branch basename="_ANONYMOUS_BRANCH_28">
     <segment>
       <node>
         <text-node>
@@ -3894,7 +3328,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_33">
+  <branch basename="_ANONYMOUS_BRANCH_29">
     <segment>
       <node>
         <text-node>
@@ -3904,7 +3338,7 @@
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_34">
+  <branch basename="_ANONYMOUS_BRANCH_30">
     <segment>
       <node>
         <text-node>
@@ -3916,7 +3350,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_35">
+  <branch basename="_ANONYMOUS_BRANCH_31">
     <segment>
       <node>
         <text-node>
@@ -3926,7 +3360,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_36">
+  <branch basename="_ANONYMOUS_BRANCH_32">
     <segment>
       <node>
         <text-node>
@@ -3936,7 +3370,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_37">
+  <branch basename="_ANONYMOUS_BRANCH_33">
     <segment>
       <node>
         <text-node>
@@ -3987,7 +3421,7 @@ General Error</description>
           <segment>
             <node>
               <interaction-node transaction-required="false">
-                <template buffered="true" dynamic="false" name="custom/scripterror"/>
+                <template buffered="true" dynamic="false" name="common/scripterror"/>
               </interaction-node>
               <node-display orientation="horizontal" x="1" y="0"/>
             </node>
@@ -4046,7 +3480,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_39">
+  <branch basename="_ANONYMOUS_BRANCH_35">
     <segment>
       <node>
         <text-node>
@@ -4065,7 +3499,7 @@ General Error</description>
       <transition target-connector="in2" target-path="/HookIn3DRequest.2"/>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_41">
+  <branch basename="_ANONYMOUS_BRANCH_37">
     <segment>
       <node>
         <text-node>
@@ -4075,7 +3509,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_42">
+  <branch basename="_ANONYMOUS_BRANCH_38">
     <segment>
       <node>
         <text-node>
@@ -4085,7 +3519,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_43">
+  <branch basename="_ANONYMOUS_BRANCH_39">
     <segment>
       <node>
         <text-node>
@@ -4095,7 +3529,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_44">
+  <branch basename="_ANONYMOUS_BRANCH_40">
     <segment>
       <node>
         <text-node>
@@ -4105,7 +3539,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_45">
+  <branch basename="_ANONYMOUS_BRANCH_41">
     <segment>
       <node>
         <text-node>
@@ -4115,7 +3549,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_46">
+  <branch basename="_ANONYMOUS_BRANCH_42">
     <segment>
       <node>
         <text-node>
@@ -4125,7 +3559,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_47">
+  <branch basename="_ANONYMOUS_BRANCH_43">
     <segment>
       <node>
         <text-node>
@@ -4135,7 +3569,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_48">
+  <branch basename="_ANONYMOUS_BRANCH_44">
     <segment>
       <node>
         <text-node>
@@ -4145,7 +3579,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_49">
+  <branch basename="_ANONYMOUS_BRANCH_45">
     <segment>
       <node>
         <text-node>
@@ -4155,7 +3589,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_50">
+  <branch basename="_ANONYMOUS_BRANCH_46">
     <segment>
       <node>
         <text-node>
@@ -4165,7 +3599,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_51">
+  <branch basename="_ANONYMOUS_BRANCH_47">
     <segment>
       <node>
         <text-node>
@@ -4175,7 +3609,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_52">
+  <branch basename="_ANONYMOUS_BRANCH_48">
     <segment>
       <node>
         <text-node>
@@ -4185,7 +3619,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_53">
+  <branch basename="_ANONYMOUS_BRANCH_49">
     <segment>
       <node>
         <text-node>
@@ -4195,7 +3629,7 @@ General Error</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_54">
+  <branch basename="_ANONYMOUS_BRANCH_50">
     <segment>
       <node>
         <text-node>
@@ -4324,7 +3758,7 @@ General Error</description>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="false"/>
                       <config-property key="OnError" value="PIPELET_ERROR"/>
-                      <config-property key="ScriptFile" value="int_cybersource:cybersource/getNonGCPaymentInstrument.ds"/>
+                      <config-property key="ScriptFile" value="cybersource/getNonGCPaymentInstrument.ds"/>
                       <key-binding alias="ScriptLog" key="ScriptLog"/>
                       <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
                       <key-binding alias="Order" key="Order"/>
@@ -4642,7 +4076,7 @@ General Error</description>
             </node>
             <simple-transition/>
             <node>
-              <jump-node start-name-ref="VisaCheckout-PayerAuthValidation"/>
+              <jump-node start-name-ref="CYBVisaCheckout-PayerAuthValidation"/>
               <node-display orientation="horizontal" x="2" y="0"/>
             </node>
           </segment>

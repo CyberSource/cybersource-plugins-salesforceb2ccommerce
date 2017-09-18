@@ -1,0 +1,25 @@
+/**
+*PayPalProcessOrder.ds
+* This file is used to process the order
+* for paypal express checkout and decide
+* based on custom preference value
+* to create a standard or custom order
+* on SFCC.
+* Parameters
+* @input Order : dw.order.Order
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @output Result : Object
+*/
+
+
+function execute(pdict : PipelineDictionary ) : Number
+{
+	var order = pdict.Order;
+	var paymentInstrument = pdict.PaymentInstrument;
+    var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var adapter = require(CybersourceConstants.PAYPAL_ADAPTOR);
+	var result = {};
+	result = adapter.PaymentService(order,paymentInstrument);
+	pdict.Result = result;
+    return PIPELET_NEXT;
+}

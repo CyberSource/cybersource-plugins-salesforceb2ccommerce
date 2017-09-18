@@ -8,22 +8,24 @@
 * @output requestData : dw.util.HashMap
 * @output formAction :String
 */
-var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/helper/SecureAcceptanceHelper');
-var TestHelper = require('int_cybersource/cartridge/scripts/helper/TestHelper');
+
 function execute( pdict : PipelineDictionary ) : Number
 {
+	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var testFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+	var testHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/helper/TestHelper');
 	var billToObject = pdict.billTo;
 	var shipToObject = pdict.shipTo;
 	var purchaseObject = pdict.purchaseTotals;
 	
-	var billToObject = TestHelper.CreateCyberSourceBillToObject().billTo;
-	var shipToObject = TestHelper.CreateCyberSourceShipToObject().shipTo;
-	var purchaseObject = TestHelper.CreateCyberSourcePurchaseTotalsObject().purchaseTotals;
-	var result = secureAcceptanceHelper.TestSACreateToken( billToObject, shipToObject, purchaseObject );
+	var billToObject = testHelper.CreateCyberSourceBillToObject().billTo;
+	var shipToObject = testHelper.CreateCyberSourceShipToObject().shipTo;
+	var purchaseObject = testHelper.CreateCyberSourcePurchaseTotalsObject().purchaseTotals;
+	var result = testFacade.TestSACreateToken( billToObject, shipToObject, purchaseObject );
 	if(result.success){
 			/*set request parameter*/
-			pdict.requestData = result.requestMap;
-			pdict.formAction = result.formAction;
+			pdict.Data = result.requestMap;
+			pdict.FormAction = result.formAction;
 		return PIPELET_NEXT;
 	}
 

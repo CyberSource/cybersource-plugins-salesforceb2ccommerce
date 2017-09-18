@@ -6,7 +6,8 @@
 *   @output Decision : String
 *
 */
-var secureAcceptanceHelper = require('int_cybersource/cartridge/scripts/helper/SecureAcceptanceHelper');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants'),
+	secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 function execute( args : PipelineDictionary ) : Number
 {
     // insert business logic here

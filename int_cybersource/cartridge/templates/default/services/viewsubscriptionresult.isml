@@ -1,0 +1,77 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	This template will populate the result of view subscription
+</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="view-subscription">
+<label><strong>${Resource.msg('test.cybdecision','cybersource',null)}</strong></label><isprint value="${pdict.decision}"><br/>
+<label><strong>${Resource.msg('test.cybinvalidfieldresponse','cybersource',null)}</strong></label>
+<isloop items="${pdict.invalidField}" alias="invalidField">									
+	<isprint value="${invalidField}">,
+</isloop>
+<br/>
+<label><strong>${Resource.msg('test.cybresponsemissingfiled','cybersource',null)}</strong></label>
+<isloop items="${pdict.missingField}" alias="missingField">									
+	<isprint value="${missingField}">,
+</isloop>
+<br/>
+<label><strong>${Resource.msg('test.cybreasoncode','cybersource',null)}</strong></label><isprint value="${pdict.reasonCode}"><br>
+<label><strong>${Resource.msg('test.cybrequestid','cybersource',null)}</strong></label><isprint value="${pdict.requestID}"><br>
+<label><strong>${Resource.msg('test.cybrequesttoken','cybersource',null)}</strong></label><isprint value="${pdict.requestToken}"><br/>
+<label><strong>${Resource.msg('test.cybapproval','cybersource',null)}</strong></label><isprint value="${pdict.response.approvalRequired}"><br/>
+<label><strong>${Resource.msg('test.automaticRenew','cybersource',null)}</strong></label><isprint value="${pdict.response.automaticRenew}"><br/>
+<label><strong>${Resource.msg('test.billPayment','cybersource',null)}</strong></label><isprint value="${pdict.response.billPayment}"><br/>
+<label><strong>${Resource.msg('test.cardAccountNumber','cybersource',null)}</strong></label><isprint value="${pdict.response.cardAccountNumber}"><br/>
+<label><strong>${Resource.msg('test.cardExpirationMonth','cybersource',null)}</strong></label><isprint value="${pdict.response.cardExpirationMonth}"><br/>
+<label><strong>${Resource.msg('test.cardExpirationYear','cybersource',null)}</strong></label><isprint value="${pdict.response.cardExpirationYear}"><br/>
+<label><strong>${Resource.msg('test.cardIssueNumber','cybersource',null)}</strong></label><isprint value="${pdict.response.cardIssueNumber}"><br/>
+<label><strong>${Resource.msg('test.cardStartMonth','cybersource',null)}</strong></label><isprint value="${pdict.response.cardStartMonth}"><br/>
+<label><strong>${Resource.msg('test.cardStartYear','cybersource',null)}</strong></label><isprint value="${pdict.response.cardStartYear}"><br/>
+<label><strong>${Resource.msg('pos_testpage_label_cardtype','cybersource',null)}</strong></label><isprint value="${pdict.response.cardType}"><br/>
+<label><strong>${Resource.msg('test.checkAccountNumber','cybersource',null)}</strong></label><isprint value="${pdict.response.checkAccountNumber}"><br/>
+<label><strong>${Resource.msg('test.checkAuthenticateID','cybersource',null)}</strong></label><isprint value="${pdict.response.checkAuthenticateID}"><br/>
+<label><strong>${Resource.msg('test.checkBankTransitNumber','cybersource',null)}</strong></label><isprint value="${pdict.response.checkBankTransitNumber}"><br/>
+<label><strong>${Resource.msg('test.checkSecCode','cybersource',null)}</strong></label><isprint value="${pdict.response.checkSecCode}"><br/>
+<label><strong>${Resource.msg('city','cybersource',null)}</strong></label><isprint value="${pdict.response.city}"><br/>
+<label><strong>${Resource.msg('test.comments','cybersource',null)}</strong></label><isprint value="${pdict.response.comments}"><br/>
+<label><strong>${Resource.msg('test.companyName','cybersource',null)}</strong></label><isprint value="${pdict.response.companyName}"><br/>
+<label><strong>${Resource.msg('test.companyTaxID','cybersource',null)}</strong></label><isprint value="${pdict.response.companyTaxID}"><br/>
+<label><strong>${Resource.msg('country','cybersource',null)}</strong></label><isprint value="${pdict.response.country}"><br/>
+<label><strong>${Resource.msg('pos_testpage_label_currency','cybersource',null)}</strong></label><isprint value="${pdict.response.currency}"><br/>
+<label><strong>${Resource.msg('test.dateOfBirth','cybersource',null)}</strong></label><isprint value="${pdict.response.dateOfBirth}"><br/>
+<label><strong>${Resource.msg('test.driversLicenseNumber','cybersource',null)}</strong></label><isprint value="${pdict.response.driversLicenseState}"><br/>
+<label><strong>${Resource.msg('test.driversLicenseState','cybersource',null)}</strong></label><isprint value="${pdict.response.checkAccountType}"><br/>
+<label><strong>${Resource.msg('test.email','cybersource',null)}</strong></label><isprint value="${pdict.response.email}"><br/>
+<label><strong>${Resource.msg('test.endDate','cybersource',null)}</strong></label><isprint value="${pdict.response.endDate}"><br/>
+<label><strong>${Resource.msg('firstName','cybersource',null)}</strong></label><isprint value="${pdict.response.firstName}"><br/>
+<label><strong>${Resource.msg('test.frequency','cybersource',null)}</strong></label><isprint value="${pdict.response.frequency}"><br/>
+<label><strong>${Resource.msg('lastName','cybersource',null)}</strong></label><isprint value="${pdict.response.lastName}"><br/>
+<label><strong>${Resource.msg('test.ownerMerchantID','cybersource',null)}</strong></label><isprint value="${pdict.response.ownerMerchantID}"><br/>
+<label><strong>${Resource.msg('test.paymentMethod','cybersource',null)}</strong></label><isprint value="${pdict.response.paymentMethod}"><br/>
+<label><strong>${Resource.msg('test.paymentsRemaining','cybersource',null)}</strong></label><isprint value="${pdict.response.paymentsRemaining}"><br/>
+<label><strong>${Resource.msg('test.phoneNumber','cybersource',null)}</strong></label><isprint value="${pdict.response.phoneNumber}"><br/>
+<label><strong>${Resource.msg('test.postalCode','cybersource',null)}</strong></label><isprint value="${pdict.response.postalCode}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_reasoncode','cybersource',null)}</strong></label><isprint value="${pdict.response.reasonCode}"><br/>
+<label><strong>${Resource.msg('test.recurringAmount','cybersource',null)}</strong></label><isprint value="${pdict.response.recurringAmount}"><br/>
+<label><strong>${Resource.msg('test.setupAmount','cybersource',null)}</strong></label><isprint value="${pdict.response.setupAmount}"><br/>
+<label><strong>${Resource.msg('test.startDate','cybersource',null)}</strong></label><isprint value="${pdict.response.startDate}"><br/>
+<label><strong>${Resource.msg('state','cybersource',null)}</strong></label><isprint value="${pdict.response.state}"><br/>
+<label><strong>${Resource.msg('test.status','cybersource',null)}</strong></label><isprint value="${pdict.response.status}"><br/>
+<label><strong>${Resource.msg('test.street1','cybersource',null)}</strong></label><isprint value="${pdict.response.street1}"><br/>
+<label><strong>${Resource.msg('test.street2','cybersource',null)}</strong></label><isprint value="${pdict.response.street2}"><br/>
+<label><strong>${Resource.msg('SubscriptionID','cybersource',null)}</strong></label><isprint value="${pdict.response.subscriptionID}"><br/>
+<label><strong>${Resource.msg('test.subscriptionIDNew','cybersource',null)}</strong></label><isprint value="${pdict.response.subscriptionIDNew}"><br/>
+<label><strong>${Resource.msg('test.title','cybersource',null)}</strong></label><isprint value="${pdict.response.title}"><br/>
+<label><strong>${Resource.msg('test.totalPayments','cybersource',null)}</strong></label><isprint value="${pdict.response.totalPayments}"><br/>
+<br/><br/><br/>
+
+<strong>${Resource.msg('test.cybsubscriptiondetails','cybersource',null)}</strong><br/>
+<a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">${Resource.msg('test.cybtestaccount','cybersource',null)}</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.https('CYBServicesTesting-ViewSubscription')}" >${Resource.msg('test.cybbackbutton','cybersource',null)}</a>
+</div>
+</body></html>

@@ -9,29 +9,32 @@
  */
 var logger = require('dw/system/Logger');
 var ShippingMgr = require('dw/order/ShippingMgr');
-var VisaCheckoutHelper = require('int_cybersource/cartridge/scripts/helper/VisaCheckoutHelper');
+var BasketMgr = require('dw/order/BasketMgr'); 
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/helper/VisaCheckoutHelper');
+var VisaCheckoutAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/adaptor/VisaCheckoutAdaptor');
 
 function execute( pdict : PipelineDictionary ) : Number
 {
-	try {
-		// Retrieve the inputs
-		var visaDecrypted = pdict.VisaDecrypted;
-		
-		// Create or replace the shipping address
-		var shippingAddress = pdict.Shipment.createShippingAddress();	
-		
-		// Populate the shipping address from the visa object
-		VisaCheckoutHelper.CreateLineItemCtnrShippingAddress(shippingAddress, visaDecrypted);
-		
-		// Set shipping method to default if not already set
-		if (pdict.Shipment.shippingMethod == null) {
-			pdict.Shipment.setShippingMethod(ShippingMgr.getDefaultShippingMethod());
+	
+	try{
+			if(!empty(pdict.VisaDecrypted))
+			{
+				var result = VisaCheckoutAdaptor.UpdateShipping(pdict.VisaDecrypted);
+				if(result.success)
+				{
+					var basket = BasketMgr.getCurrentOrNewBasket();
+					dw.system.HookMgr.callHook( "dw.order.calculate", "calculate",basket);
+					return PIPELET_NEXT;
+				}
+				else
+					return PIPELET_ERROR;	
+			}else
+				return PIPELET_ERROR;
 		}
-		
-		return PIPELET_NEXT;
-	}
-	catch(err) {
-		logger.error('Error creating shipment from Visa Checkout address: {0}', err.message);
-		return PIPELET_ERROR;	
-	}
+		catch(err)
+		{
+			logger.error('Error creating shipment from Visa Checkout address: {0}', err.message);
+			return PIPELET_ERROR;	
+		}
 }

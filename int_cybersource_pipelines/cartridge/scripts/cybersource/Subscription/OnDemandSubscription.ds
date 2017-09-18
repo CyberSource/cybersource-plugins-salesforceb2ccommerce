@@ -14,8 +14,9 @@
 */
 var dwsvc = require ("dw/svc");
 var Logger = require('dw/system/Logger');
-var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
-var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var libCybersource = require(CybersourceConstants.CS_CORE_SCRIPT+'cybersource/libCybersource');
+var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var subscriptionID : String = "9909000136755587";
@@ -24,8 +25,6 @@ function execute( pdict : PipelineDictionary ) : Number
 	var billToObject = CreateCyberSourceBillToObject().billTo;
 	var shipToObject = CreateCybersourceShipToObject().shipTo;
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-	
-	
 	var csReference = webreferences.CyberSourceTransaction;
 	var request = new csReference.RequestMessage();
 	//Defect fix: CYB-110:Not able to search order with Order number in CyberSource control.
@@ -39,9 +38,9 @@ function execute( pdict : PipelineDictionary ) : Number
 	var enableDAV : String = CybersourceHelper.getDavEnable();
 	var approveDAV : String = CybersourceHelper.getDavOnAddressVerificationFailure();
 	
-	if( enableDAV=='YES' ) {
+	if( enableDAV==='YES' ) {
 		var ignoreDAVResult = false;
-		if( approveDAV=='APPROVE' ) {
+		if( approveDAV==='APPROVE' ) {
 			ignoreDAVResult = true;
 		}
 		CybersourceHelper.addDAVRequestInfo(request,billToObject,shipToObject,ignoreDAVResult);
@@ -64,21 +63,18 @@ function execute( pdict : PipelineDictionary ) : Number
 		return PIPELET_ERROR;
 	}
 	
-	if(empty(response) || response.status != "OK"){
+	if(empty(response) || response.status !== "OK"){
 		return PIPELET_ERROR;
 	}
 	else
 	{
 		response = response.object;
-		if(null!=response.ccAuthReply)
+		if(null!==response.ccAuthReply)
 		{
 			pdict.amount = response.ccAuthReply.amount;
 			pdict.authorizationCode = response.ccAuthReply.authorizationCode;
 			pdict.processorResponse = response.ccAuthReply.processorResponse;
-			//Defect fix: CYB-99 : CyberSource does not create a Subscription ID for 480 decision
-			//pdict.authReasonCode = response.ccAuthReply.reasonCode;
 			pdict.reasonCode = response.reasonCode;
-			//pdict.reconciliationID = response.ccAuthReply.reconciliationID;
 			pdict.decision = response.decision;
 			pdict.requestID = response.requestID;
 			pdict.requestToken = response.requestToken;
@@ -92,26 +88,23 @@ function execute( pdict : PipelineDictionary ) : Number
 			pdict.invalidField = response.invalidField;
 			pdict.missingField = response.missingField;
 		}
-		
 		/**********************************************/
 		/* DAV-related WebService response processing */
 		/**********************************************/
-		if(null != response.davReply){
-			//pdict.DAVReasonCode = response.davReply.reasonCode.get();			
+		if(null !== response.davReply){
 			if( !empty(response.davReply.standardizedAddress1) ) {
-				var stdAddress : Object = new Object();
+				var stdAddress ={};
 				stdAddress.firstName = shipToObject.firstName;
 				stdAddress.lastName = shipToObject.lastName;
 				stdAddress.address1 = response.davReply.standardizedAddress1;
 				stdAddress.address2 = response.davReply.standardizedAddress2;
 				stdAddress.city = response.davReply.standardizedCity;
-				//Defect fix: CYB-92 : DAV Country province code 
-			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") == false)
+			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") === false)
 				stdAddress.state = shipToObject.state;
 			else
 				stdAddress.state = response.davReply.standardizedState;
 				//The second fix addressed the issue for Gift Certs when there is no shipto info:
- 			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") == true)
+ 			if("CsCorrectShipState" in dw.system.Site.getCurrent().getPreferences().getCustom() && dw.system.Site.getCurrent().getCustomPreferenceValue("CsCorrectShipState") === true)
 				stdAddress.state = response.davReply.standardizedState;
 			else if(!empty(shipToObject.state))
 				stdAddress.state = shipToObject.state;
@@ -120,7 +113,6 @@ function execute( pdict : PipelineDictionary ) : Number
 				stdAddress.postalCode = response.davReply.standardizedPostalCode;
 				//Fix for CYB-91: DAV Country code 
 				stdAddress.country = response.davReply.standardizedISOCountry;
-				//pdict.StandardizedAddress = stdAddress;
 			}
 		}
 		/* End of DAV response processing */
@@ -174,22 +166,6 @@ function CreateCybersourceShipToObject()
 	
 	var ShipTo_Object = require('int_cybersource/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
 	var shipToObject = new ShipTo_Object();
-	//var shippingAddress = basket.defaultShipment.shippingAddress;
-	//var shippingMethod = basket.defaultShipment.shippingMethod;
-	//var it  = basket.getShipments().iterator();
-	// TODO: This code purposely does not handle the case of
-	// multiple shipments per order
-	/*if(shippingAddress == null){
-		while(it.hasNext()){
-			var shipment = it.next();
-			shippingAddress = shipment.getShippingAddress();
-			shippingMethod = shipment.getShippingMethod();
-			if(shippingAddress != null){
-				break;
-			}
-		}
-	}
-	if( !empty(shippingAddress) && !empty(basket) ) {*/
 		shipToObject.setFirstName("Sapient");
 		shipToObject.setLastName("Test");
 		shipToObject.setStreet1("728 Geary St");
@@ -201,49 +177,5 @@ function CreateCybersourceShipToObject()
 		shipToObject.setPhoneNumber("1111111111");
 		shipToObject.setEmail("nsiddiqui@sapient.com");	
 		shipToObject.setShippingMethod("none");	
-		//*****************************************************//
-		// ShippingMethod custom attribute CybersourceShippingID is used to fetch Cybersource Shipping method i.e. oneday, sameday, twoday etc.
-		// if merchant does not specify Cybersource Shipping Id whilie creating shipping methods within Business Manager, the switch statement
-		// fetch default shipping method available in Demandware's Site Genesis.  
-		//*****************************************************//
-		/*if( !empty(shippingMethod) ) 
-		{
-			if ( !empty(shippingMethod.custom.CybersouceShippingID.value) ) 
-			{
-				shipToObject.setShippingMethod(shippingMethod.custom.CybersouceShippingID.value);
-			} 
-			else
-			{
-				switch (shippingMethod.displayName)
-					{									
-						case "Overnight":
-						shipToObject.setShippingMethod("oneday");						
-						break;
-						case "Next Day":
-						shipToObject.setShippingMethod("oneday");						
-						break;
-						case "2-Day Express":
-						shipToObject.setShippingMethod("twoday");						
-						break;	
-						case "Super Saver":
-						shipToObject.setShippingMethod("threeday");						
-						break;		
-						case "Ground":
-						shipToObject.setShippingMethod("other");						
-						break;			
-						case "None":
-						shipToObject.setShippingMethod("none");						
-						break;
-						default:
-						shipToObject.setShippingMethod("none");						
-						break;	
-					}				
-			}			
-		} 
-		else {
-			shipToObject.setShippingMethod("none");
-		}
-	}
-	*/
     return {success:true, shipTo:shipToObject};
 }

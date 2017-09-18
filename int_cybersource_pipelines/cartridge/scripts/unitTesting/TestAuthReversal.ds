@@ -1,0 +1,18 @@
+/**
+* Performs the authorization reversal of the credit card/Klarna/PayPal auth reversal request. If auth request ID
+* information is  sumbitted in the Capture request.
+*
+* @output Result :Object
+*/
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+ 	var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+	var authReversalServiceObject = {};
+	authReversalServiceObject.response = TestFacade.TestAuthReversalService();
+	pdict.Result = authReversalServiceObject.response;
+	
+   return PIPELET_NEXT;
+
+}

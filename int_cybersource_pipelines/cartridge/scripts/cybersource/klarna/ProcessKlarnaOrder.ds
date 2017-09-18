@@ -1,0 +1,48 @@
+/**
+* ProcessKlarnaOrder.ds
+* This file is getting used to call session service 
+* authorization service and check status service and 
+* to process the Klarna order
+*
+*
+* @input Order : dw.order.Order
+* @input Basket : dw.order.Basket
+* @input CurrentHttpParameterMap :dw.web.HttpParameterMap
+* @input PaymentInstrument : dw.order.PaymentInstrument
+* @input paymentFlow : String
+* @output Result : Object
+*
+*/
+importPackage( dw.system );
+/*
+* This method is used to call different services of klarna
+* to process the request for pipeline
+*/
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//declare local variables
+	var Basket = pdict.Basket;
+	var Order = pdict.Order;
+	var paymentInstrument = pdict.PaymentInstrument;
+	//declare variable for cybersource constant and adaptor
+    var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var adaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'klarna/adaptor/KlarnaAdaptor');
+	var result = {};
+	//check if payment flow is session then call session service
+	if(!empty(pdict.paymentFlow) && CybersourceConstants.SESSION.equals(pdict.paymentFlow)){
+		result = adaptor.HandleRequest(Basket,false);
+	} else if(!empty(pdict.paymentFlow) && CybersourceConstants.AUTHORIZED.equals(pdict.paymentFlow)){
+		//set the value of token and call authorization service
+		var token = pdict.CurrentHttpParameterMap.klarnaAuthToken.value;
+		result = adaptor.AuthorizeRequest(Order.orderNo, paymentInstrument,token);
+	} else if(!empty(pdict.paymentFlow) && CybersourceConstants.SIGNATURE.equals(pdict.paymentFlow)){
+		//get the klarna order with signature
+		result = adaptor.GetKlarnaOrder({Order:Order});
+	} else if(!empty(pdict.paymentFlow) && CybersourceConstants.CHECK_STATUS.equals(pdict.paymentFlow)){
+		//call check status service
+		result = adaptor.CheckStatusServiceRequest(Order) ;
+	}
+	//set the result into pipeline dictionary
+	pdict.Result = result;
+    return PIPELET_NEXT;
+}

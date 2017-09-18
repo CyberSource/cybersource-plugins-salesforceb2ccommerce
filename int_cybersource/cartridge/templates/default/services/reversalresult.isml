@@ -29,6 +29,6 @@
 
 <strong>${Resource.msg('test.cybsubscriptiondetails','cybersource',null)}</strong><br/>
 <a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">${Resource.msg('test.cybtestaccount','cybersource',null)}</a>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.https('CybersourceUnitTesting-StartAuthReversal')}" >${Resource.msg('test.cybbackbutton','cybersource',null)}</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.https('CYBServicesTesting-StartAuthReversal')}" >${Resource.msg('test.cybbackbutton','cybersource',null)}</a>
 </div>
 </body></html>

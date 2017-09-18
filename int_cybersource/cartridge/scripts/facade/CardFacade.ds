@@ -1,7 +1,7 @@
 'use strict';
 var dwsvc = require ("dw/svc");
 var Logger = require('dw/system/Logger');
-
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 /**
  * This method create the input for the cybersource credit card payment method, validates it and gets response from the service.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr
@@ -24,15 +24,14 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	//**************************************************************************//
 	// Check if Basket exists
 	//**************************************************************************//
-	if(basket == null){
+	if(basket === null){
 		Logger.error("Please provide a Basket!");
 		return {error:true};
 	}
-
-	var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
-	var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
-	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants.ds');
+	var PaymentInstrument = require('dw/order/PaymentInstrument');
+	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();	
 	//Objects to set in the Service Request inside facade
 	var billTo, shipTo, purchaseObject, cardObject;
@@ -60,14 +59,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	//**************************************************************************//	
 	if (!empty(SubscriptionID)) {
 		CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject,orderNo);
-	}
-	
-	/********************************/
-	/* TOKEN-related WebService setup */
-	/********************************/
-	var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
-	if(enableTokenization=='YES' && empty(SubscriptionID))
-	{
+	}else if(CybersourceHelper.getTokenizationEnabled().equals('YES')){
 		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest,billTo,purchaseObject,cardObject,OrderNo);
 	}
 	
@@ -115,20 +107,26 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	try
 	{
 		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		// getting merchant id and key for specific payment method
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper);
 	}
 	catch(e)
 	{
-		Logger.fatal("[CardFacade.ds] Error in CCAuthRequest ( {0} )", e.message);
+		Logger.error("[CardFacade.ds] Error in CCAuthRequest ( {0} )", e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
-	Logger.debug(response);
+	Logger.debug(serviceResponse);
 	
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK")
+	if(empty(serviceResponse) || serviceResponse.status !== "OK")
 	{
-		Logger.fatal("[CardFacade.ds] CCAuthRequest Error : null response");
+		Logger.error("[CardFacade.ds] CCAuthRequest Error : null response");
 		return {error:true, errorMsg:"empty or error in test CCAuthRequest response: "+serviceResponse};
 	}
 	serviceResponse = serviceResponse.object;	
@@ -140,69 +138,6 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	return {success:true, serviceResponse:result.responseObject};
 }
 
-/**
- * For normal Credit card payment type, CC service is called and response is given back to invoked method. 
- * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
- */
-
-
-function CCCaptureRequest(Order : dw.order.LineItemCtnr)
-{
-    var order = Order;
-    var PaymentInstrument = require('dw/order/PaymentInstrument');
-    var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
-    if (empty(order.getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD)) && 
-    	empty(order.getPaymentInstruments(CybersourceConstants.SA_IFRAME)) &&
-    	empty(order.getPaymentInstruments(CybersourceConstants.SA_REDIRECT)) &&
-    	empty(order.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST)) &&
-    	empty(order.getPaymentInstruments("DW_APPLE_PAY")) &&
-    	empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
-    	return {error:true, errorMsg:"credit card payment instrument not available in order"};
-    }
-    var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
-    var paymentinstr = CardHelper.getNonGCPaymemtInstument(order);
-    var paymentTransaction = paymentinstr.paymentTransaction;
- 	if(order.paymentStatus.value == "PAID") {
- 		return {error:true, errorMsg:'order already in PAID status'};
- 	}
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
-	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	
-	var csReference = webreferences.CyberSourceTransaction;
-
-	var serviceRequest = new csReference.RequestMessage();
-	CybersourceHelper.addCCCaptureRequestInfo(serviceRequest, order);
-	if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
-		CybersourceHelper.addVCOrderID(serviceRequest,paymentinstr.custom.callId);
-	}
-	
-	var serviceResponse = null;
-	// send request
-	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
-	}catch(e){
-		Logger.error("[CardFacade.ds] Error in CCCaptureRequest ( {0} )",e.message);
-		return {error:true, errorMsg:e.message};
-	}
-	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
-		return {error:true, errorMsg:"[CardFacade.ds] empty or error in card capture response: "+serviceResponse};
-	}
-	serviceResponse = serviceResponse.object;
-	
-	var responseObject = {};
-	responseObject["RequestID"] = serviceResponse.requestID;
-	responseObject["RequestToken"] = serviceResponse.requestToken;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
-	responseObject["Decision"] = serviceResponse.decision;
-	responseObject["ccCaptureReply"] = (null !== serviceResponse.ccCaptureReply) ? "exists" : null;
-	if(null !== serviceResponse.ccCaptureReply){
-		responseObject["CaptureAmount"] = serviceResponse.ccCaptureReply.amount;
-		responseObject["CaptureReasonCode"] = serviceResponse.ccCaptureReply.reasonCode.get();
-	}
-	return {success:true, serviceResponse:responseObject};
-}
 
 /**
  * DAV request call is made to cybersource and response if send back.
@@ -216,7 +151,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr,billTo : Object,shipTo : Obje
     // read pipeline dictionary input parameter
     var basket = Basket;
 
-	if( basket == null ){
+	if( basket === null ){
 		Logger.error("[CardFacade.ds DAVRequest] Please provide a Basket");
 		return {error:true};
 	}
@@ -224,7 +159,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr,billTo : Object,shipTo : Obje
 	var billToObject = billTo;
 	var shipToObject = shipTo;
 	
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
 	var csReference = webreferences.CyberSourceTransaction;
@@ -235,15 +170,20 @@ function DAVRequest(Basket : dw.order.LineItemCtnr,billTo : Object,shipTo : Obje
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials; 
+		serviceResponse = service.call(requestWrapper);
 	}catch(e){
-		Logger.fatal("[CardFacade.ds] Error in DAV request ( {0} )",e.message);
+		Logger.error("[CardFacade.ds] Error in DAV request ( {0} )",e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
-		Logger.fatal("[CardFacade.ds] response in DAV response ( {0} )",serviceResponse);
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		Logger.error("[CardFacade.ds] response in DAV response ( {0} )",serviceResponse);
 		return {error:true, errorMsg:"empty or error in DAV response: "+serviceResponse};
 	}
 	serviceResponse = serviceResponse.object;
@@ -275,13 +215,13 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
     var creditCardForm = CreditCardForm;
     var orderNo : String = OrderNo;
     
-	if((lineItemCtnrObj == null || creditCardForm == null )){
+	if((lineItemCtnrObj === null || creditCardForm === null )){
 		Logger.error("[CardFacade.ds] Please provide a Basket and the credit card form element!");
 		return {error:true};
 	}
 	
-	var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
@@ -291,14 +231,19 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials; 
+		serviceResponse = service.call(requestWrapper); 
 	}catch(e){
-		Logger.fatal("[CardFacade.ds] Error in PayerAuthEnrollCheck request ( {0} )",e.message);
+		Logger.error("[CardFacade.ds] Error in PayerAuthEnrollCheck request ( {0} )",e.message);
 		return {error:true, errorMsg:e.message};
 	}
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
-		Logger.fatal("[CardFacade.ds] response in PayerAuthEnrollCheck response ( {0} )",serviceResponse);
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		Logger.error("[CardFacade.ds] response in PayerAuthEnrollCheck response ( {0} )",serviceResponse);
 		return {error:true, errorMsg:"empty or error in PayerAuthEnrollCheck response: "+serviceResponse};
 	}
 	serviceResponse = serviceResponse.object;
@@ -335,12 +280,11 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
     var amount = Amount;
     var creditCardForm = CreditCardForm;
     var signedPaRes = dw.util.StringUtils.trim(PaRes);
-	//var signedPaRes : String =PaRes;
 	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
-	var libCybersource = require('int_cybersource/cartridge/scripts/cybersource/libCybersource');
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
 	var csReference = webreferences.CyberSourceTransaction;
@@ -352,14 +296,19 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	// send request
 	try{
 		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
-		serviceResponse = service.call(serviceRequest);
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials; 
+		serviceResponse = service.call(requestWrapper); 
 	}catch(e){
-		Logger.fatal("[CardFacade.ds] Error in PayerAuthValidation request ( {0} )",e.message);
+		Logger.error("[CardFacade.ds] Error in PayerAuthValidation request ( {0} )",e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
-	if(empty(serviceResponse) || serviceResponse.status != "OK"){
-		Logger.fatal("[CardFacade.ds] response in PayerAuthValidation response ( {0} )",serviceResponse);
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		Logger.error("[CardFacade.ds] response in PayerAuthValidation response ( {0} )",serviceResponse);
 		return {error:true, errorMsg:"empty or error in PayerAuthValidation response: "+serviceResponse};
 	}
 	serviceResponse = serviceResponse.object;
@@ -384,7 +333,6 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	return {success:true, serviceResponse:responseObject};
 }
 module.exports = {
-		CCCaptureRequest: CCCaptureRequest,
 		PayerAuthEnrollCheck: PayerAuthEnrollCheck,
 		PayerAuthValidation: PayerAuthValidation,
 		CCAuthRequest : CCAuthRequest,

@@ -1,0 +1,90 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	This template will populate the input fields of update subscription
+</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<isinclude template="util/modules"/>
+<h2 class="main-title">${Resource.msg('test.cybupdatesubstestpage','cybersource',null)}</h2><br/><br/>
+<form class="update-subscription" action="${URLUtils.https('CYBServicesTesting-UpdateSubscription','service','update')}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+	<table>
+		<tr>
+			<th>${Resource.msg('test.cybsubsID','cybersource',null)}</th>
+			<th>${Resource.msg('test.inpbillingaddress','cybersource',null)}</th>
+			<th>${Resource.msg('test.cybrcc','cybersource',null)}</th>
+			<th>${Resource.msg('test.cyborderdetail','cybersource',null)}</th>
+		</tr>
+		<tr>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
+			</td>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.title}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.firstName}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.lastName}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.street1}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.city}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.state}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.postalCode}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.country}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.phoneNumber}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.email}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.ipAddress}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.dateOfBirth}" type="input"/>
+			</td>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.accountNumber}" type="input"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.cardType}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.expiryMonth}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.expiryYear}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.cvnNumber}" type="input"/>
+			</td>
+			<td>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.currency}" type="select"/>
+				<isinputfield formfield="${pdict.CurrentForms.subscription.amount}" type="input"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>${Resource.msg('test.cybsampletestdatasubscription','cybersource',null)}</p><br/><br/>
+				<label>Subscription ID:</label>	9997000016232809<br/>
+			</td>
+			<td>
+				<p>${Resource.msg('test.cybbillingadd','cybersource',null)}</p><br/><br/>
+				<label>${Resource.msg('firstName','cybersource',null)}</label>	FNAME<br/>
+				<label>${Resource.msg('lastName','cybersource',null)}</label>	LNAME<br/>
+				<label>${Resource.msg('test.street','cybersource',null)}</label>	728 Geary St<br/> 
+				<label>${Resource.msg('city','cybersource',null)}</label>	San Francisco<br/>
+				<label>${Resource.msg('state','cybersource',null)}</label>	California<br/>
+				<label>${Resource.msg('postCode','cybersource',null)}</label>	94109<br/>
+				<label>${Resource.msg('country','cybersource',null)}</label>	United States<br/> 
+				<label>${Resource.msg('test.phoneNumber','cybersource',null)}</label>	1111111111<br/>
+				<label>${Resource.msg('test.email','cybersource',null)}</label>	abc@test.com<br/>
+			</td>
+			<td>
+				<p>${Resource.msg('pos_testpage_cardsection_heading','cybersource',null)}</p><br/><br/>
+				<label>${Resource.msg('pos_testpage_label_accountnumber','cybersource',null)}</label>	4111111111111111<br/>
+				<label>${Resource.msg('pos_testpage_label_cardtype','cybersource',null)}</label>	VISA<br/>
+				<label>${Resource.msg('pos_testpage_label_expirymonth','cybersource',null)}</label>	03<br/> 
+				<label>${Resource.msg('pos_testpage_label_expiryyear','cybersource',null)}</label>	2017<br/>
+				<label>${Resource.msg('pos_testpage_label_cvnnumber','cybersource',null)}</label>	111<br/>
+			</td>
+			<td>
+				<p>${Resource.msg('pos_testpage_ordersection_heading','cybersource',null)}</p><br/><br/>
+				<label>${Resource.msg('pos_testpage_label_currency','cybersource',null)}</label>	USD<br/>
+				<label>${Resource.msg('cybamount','cybersource',null)}</label>	100<br/>
+			</td>
+		</tr>
+	</table>	
+	
+		<div class="form-row form-row-button">
+			<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+				${Resource.msg('global.submit','locale',null)}
+			</button>
+		</div>	
+</form>
+</body></html>

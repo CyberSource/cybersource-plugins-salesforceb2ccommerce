@@ -1,30 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
-    <type-extension type-id="Order">
-	<custom-attribute-definitions>
-		<attribute-definition attribute-id="cybmerchantpostfailure">
-			<display-name xml:lang="x-default">cybmerchantpostfailure</display-name>
-			<type>boolean</type>
-			<mandatory-flag>false</mandatory-flag>
-			<externally-managed-flag>false</externally-managed-flag>
-		</attribute-definition>
-	</custom-attribute-definitions>
-	<group-definitions>
-		<attribute-group group-id="Cybersource">
-            <display-name xml:lang="x-default">Cybersource</display-name>
-            <attribute attribute-id="cybmerchantpostfailure"/>
-		</attribute-group>
-	</group-definitions>
-    </type-extension>
-	<type-extension type-id="OrderPaymentInstrument">
+   
+    <type-extension type-id="CustomerPaymentInstrument">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankAccountDriversLicense">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankAccountDriversLicenseStateCode">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankAccountHolder">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankRoutingNumber">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="creditCardExpirationMonth"/>
+            <attribute-definition attribute-id="creditCardExpirationYear"/>
+            <attribute-definition attribute-id="creditCardHolder">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardIssueNumber">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardType">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardValidFromMonth"/>
+            <attribute-definition attribute-id="creditCardValidFromYear"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="paymentMethod">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
         <custom-attribute-definitions>
-             <attribute-definition attribute-id="savecard">
-                <display-name xml:lang="x-default">savecard</display-name>
-                <type>boolean</type>
+            <attribute-definition attribute-id="subscriptionID">
+                <display-name xml:lang="x-default">CYBS subscriptionID</display-name>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
             </attribute-definition>
-           <attribute-definition attribute-id="avsCodeRaw">
+        </custom-attribute-definitions>
+    </type-extension>   
+
+    <type-extension type-id="OrderPaymentInstrument">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankAccountDriversLicense">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankAccountDriversLicenseStateCode">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankAccountHolder">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="bankRoutingNumber">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="creditCardExpirationMonth"/>
+            <attribute-definition attribute-id="creditCardExpirationYear"/>
+            <attribute-definition attribute-id="creditCardHolder">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardIssueNumber">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardNumber">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardType">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creditCardValidFromMonth"/>
+            <attribute-definition attribute-id="creditCardValidFromYear"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="paymentMethod">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="avsCodeRaw">
                 <display-name xml:lang="x-default">avsCodeRaw</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -101,6 +167,12 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="savecard">
+                <display-name xml:lang="x-default">savecard</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="vcDecryptReasonCode">
                 <display-name xml:lang="x-default">vcDecryptReasonCode</display-name>
                 <type>string</type>
@@ -138,6 +210,9 @@
             </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
+            <attribute-group group-id="VisaCheckout">
+                <display-name xml:lang="x-default">Visa Checkout</display-name>
+            </attribute-group>
             <attribute-group group-id="cybersource">
                 <display-name xml:lang="x-default">cybersource</display-name>
                 <attribute attribute-id="callId"/>
@@ -156,168 +231,386 @@
                 <attribute attribute-id="paresTimeStamp"/>
                 <attribute attribute-id="veresTimeStamp"/>
                 <attribute attribute-id="xid"/>
-				<attribute attribute-id="savecard"/>
+                <attribute attribute-id="savecard"/>
+            </attribute-group>
+            <attribute-group group-id="custom">
+                <display-name xml:lang="x-default">custom</display-name>
             </attribute-group>
         </group-definitions>
     </type-extension>
-	<type-extension type-id="PaymentTransaction">
-		<custom-attribute-definitions>
-			<attribute-definition attribute-id="AmountPaid">
-				<display-name xml:lang="x-default">Amount Paid</display-name>
-				<type>double</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-			</attribute-definition>
-			<attribute-definition attribute-id="approvalStatus">
-				<display-name xml:lang="x-default">Approval Status</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="authAmount">
-				<display-name xml:lang="x-default">Auth Amount</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="authCode">
-				<display-name xml:lang="x-default">Authorization Code</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="cardType">
-				<display-name xml:lang="x-default">Card Type</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="eFundsTransactionHistory">
-				<display-name xml:lang="x-default">eFunds Transaction History</display-name>
-				<type>set-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-			</attribute-definition>
-			<attribute-definition attribute-id="proofXML">
-				<display-name xml:lang="x-default">Payer Authentication Proof.xml</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="requestId">
-				<display-name xml:lang="x-default">Request ID</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="requestToken">
-				<display-name xml:lang="x-default">Request Token</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="apCheckStatusReconciliationID">
-                <display-name xml:lang="x-default">Ali Pay Check Status Reconciliation ID</display-name>
-                <description xml:lang="x-default">Ali Pay Check Status Reconciliation ID</description>
+
+    <type-extension type-id="PaymentCard">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cardType">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="description"/>
+            <attribute-definition attribute-id="image"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="name">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="csEnablePayerAuthentication">
+                <display-name xml:lang="x-default">Enable Payer Authenticaton</display-name>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="PayerAuth">
+                <display-name xml:lang="x-default">Payer Authentication</display-name>
+                <attribute attribute-id="csEnablePayerAuthentication"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="PaymentMethod">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="ID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="description"/>
+            <attribute-definition attribute-id="image"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="name">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="isBicEnabled">
+                <display-name xml:lang="x-default">Is Bic Enabled</display-name>
+                <description xml:lang="x-default">Check the checkbox if BIC filed is required.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="isSupportedBankListRequired">
+                <display-name xml:lang="x-default">Is Supported Bank List Required</display-name>
+                <description xml:lang="x-default">To populate the supported bank list.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantID">
+                <display-name xml:lang="x-default">merchantID</display-name>
                 <type>string</type>
+                <localizable-flag>true</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="apCheckStatusRequestToken">
-                <display-name xml:lang="x-default">Ali Pay Check Status Request Token</display-name>
-                <description xml:lang="x-default">Ali Pay Check Status Request Token</description>
+            <attribute-definition attribute-id="merchantKey">
+                <display-name xml:lang="x-default">merchantKey</display-name>
                 <type>string</type>
+                <localizable-flag>true</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="apCheckStatusServiceApprovalStatus">
-                <display-name xml:lang="x-default">Ali Pay Check Status Service Approval Status</display-name>
-                <description xml:lang="x-default">Ali Pay Check Status Service Approval Status</description>
-                <type>string</type>
+            <attribute-definition attribute-id="paymentType">
+                <display-name xml:lang="x-default">Payment Type</display-name>
+                <description xml:lang="x-default">Payment Type</description>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">SOFORT</display>
+                        <value>SOF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">BANCONTACT</display>
+                        <value>MCH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">IDEAL</display>
+                        <value>IDL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">GIROPAY</display>
+                        <value>GPY</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">EPS</display>
+                        <value>EPS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Test</display>
+                        <value>Test</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Demo</display>
+                        <value>Demo</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="custom">
+                <display-name xml:lang="x-default">Custom</display-name>
+                <attribute attribute-id="paymentType"/>
+            </attribute-group>
+            <attribute-group group-id="BankTransferOptions">
+                <display-name xml:lang="x-default">Bank Transfer Options</display-name>
+                <attribute attribute-id="isSupportedBankListRequired"/>
+                <attribute attribute-id="isBicEnabled"/>
+            </attribute-group>
+            <attribute-group group-id="CybCredentials">
+                <display-name xml:lang="x-default">Cybersource Crendentials</display-name>
+                <attribute attribute-id="merchantID"/>
+                <attribute attribute-id="merchantKey"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="PaymentTransaction">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
                 <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="transactionID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="type">
+                <value-definitions immutable="true">
+                    <value-definition>
+                        <display xml:lang="x-default">Authorization</display>
+                        <value>TYPE_AUTH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Authorization Reversal</display>
+                        <value>TYPE_AUTH_REVERSAL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Capture</display>
+                        <value>TYPE_CAPTURE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Credit</display>
+                        <value>TYPE_CREDIT</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="AmountPaid">
+                <display-name xml:lang="x-default">Amount Paid</display-name>
+                <type>double</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="apInitiatePaymentReconciliationID">
-                <display-name xml:lang="x-default">Ali Pay Initiate Payment Reconciliation ID</display-name>
-                <description xml:lang="x-default">Ali Pay Reconciliation ID for InitiatePayment Service</description>
+                <display-name xml:lang="x-default">Initiate Payment Reconciliation ID</display-name>
+                <description xml:lang="x-default">Reconciliation ID for InitiatePayment Service</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="apInitiatePaymentRequestID">
-                <display-name xml:lang="x-default">Ali Pay Initiate Payment Request ID</display-name>
-                <description xml:lang="x-default">Ali Pay Initiate Payment Request ID</description>
+                <display-name xml:lang="x-default">Initiate Payment Request ID</display-name>
+                <description xml:lang="x-default">Initiate Payment Request ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="apInitiatePaymentType">
+                <display-name xml:lang="x-default">Initiate Payment Type</display-name>
+                <description xml:lang="x-default">Initiate Payment Type</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="apMerchantURL">
-                <display-name xml:lang="x-default">Alipay Merchant URL</display-name>
-                <description xml:lang="x-default">Alipay Merchant URL</description>
+                <display-name xml:lang="x-default">Merchant URL</display-name>
+                <description xml:lang="x-default">Merchant URL</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="apPaymentStatus">
-                <display-name xml:lang="x-default">Ali Pay Payment Status</display-name>
-                <description xml:lang="x-default">Ali Pay Payment Status</description>
+                <display-name xml:lang="x-default">Payment Status</display-name>
+                <description xml:lang="x-default">Payment Status</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="apInitiatePaymentType">
-                <display-name xml:lang="x-default">Alipay Initiate Payment Type</display-name>
-                <description xml:lang="x-default">Alipay Initiate Payment Type</description>
+            <attribute-definition attribute-id="apPaymentType">
+                <display-name xml:lang="x-default">Payment Type</display-name>
+                <description xml:lang="x-default">Payment Type</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="orderSetupRequestId">
-                <display-name xml:lang="x-default">orderSetupRequestId</display-name>
+            <attribute-definition attribute-id="apSessionProcessorTID">
+                <display-name xml:lang="x-default">Session Processor Transaction ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="orderSetupRequestToken">
-                <display-name xml:lang="x-default">orderSetupRequestToken</display-name>
+            <attribute-definition attribute-id="approvalStatus">
+                <display-name xml:lang="x-default">Approval Status</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="orderSetupTransactionId">
-                <display-name xml:lang="x-default">orderSetupTransactionId</display-name>
+            <attribute-definition attribute-id="authAmount">
+                <display-name xml:lang="x-default">Auth Amount</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="payPalPayerId">
-                <display-name xml:lang="x-default">payPalPayerId</display-name>
+            <attribute-definition attribute-id="authCode">
+                <display-name xml:lang="x-default">Authorization Code</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="paypalAuthTransactionID">
-                <display-name xml:lang="x-default">paypalAuthTransactionID</display-name>
+            <attribute-definition attribute-id="authProcessorTID">
+                <display-name xml:lang="x-default">Auth Processor Transaction ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="authRequestID">
+                <display-name xml:lang="x-default">Auth Request ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="authRequestToken">
+                <display-name xml:lang="x-default">Auth Request Token</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="billingAgreementID">
+                <display-name xml:lang="x-default">Billing Agreement ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="billingAgreementStatus">
+                <display-name xml:lang="x-default">Billing Agreement Status</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cardType">
+                <display-name xml:lang="x-default">Card Type</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="decision">
+                <display-name xml:lang="x-default">decision</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="fundingSource">
+                <display-name xml:lang="x-default">Funding Source</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="orderID">
+                <display-name xml:lang="x-default">order ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="orderRequestID">
+                <display-name xml:lang="x-default">Order Request ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="payerID">
+                <display-name xml:lang="x-default">Payer ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paymentStatus">
+                <display-name xml:lang="x-default">Payment Status</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalAutorizationId">
+                <display-name xml:lang="x-default">Paypal Authorization Id</display-name>
+                <description xml:lang="x-default">Paypal Authorization Id</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalCaptureCorrelationID">
+                <display-name xml:lang="x-default">Paypal Capture Correlation ID</display-name>
+                <description xml:lang="x-default">Paypal Capture Correlation ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalCaptureFeeAmount">
+                <display-name xml:lang="x-default">Paypal Capture Fee Amount</display-name>
+                <description xml:lang="x-default">Paypal Capture Fee Amount</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalCaptureRequestId">
+                <display-name xml:lang="x-default">Paypal Capture Request ID</display-name>
+                <description xml:lang="x-default">Paypal Capture Request ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paypalCaptureRequestToken">
+                <display-name xml:lang="x-default">Paypal Capture Request Token</display-name>
+                <description xml:lang="x-default">Paypal Capture Request Token</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -330,14 +623,9 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="paypalEcSetRequestID">
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="paypalEcSetRequestToken">
-                <display-name xml:lang="x-default">paypalEcSetRequestToken</display-name>
+            <attribute-definition attribute-id="paypalParentTransactionId">
+                <display-name xml:lang="x-default">Paypal Parent Transaction Id</display-name>
+                <description xml:lang="x-default">Paypal Parent Transaction Id</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -350,189 +638,7 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="paypalToken">
-                <display-name xml:lang="x-default">paypalToken</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="apCheckStatusProcessTransactionID">
-                <display-name xml:lang="x-default">Ali Pay Check Status Process Transaction ID</display-name>
-                <description xml:lang="x-default">Ali Pay Check Status Process Transaction ID</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="isPaypalBillingAddressPresent">
-                <display-name xml:lang="x-default">Is Billing Address Present in Paypal</display-name>
-                <description xml:lang="x-default">Is Billing Address Present in Paypal</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="paypalParentTransactionId">
-                <display-name xml:lang="x-default">Paypal Parent Transaction Id</display-name>
-                <description xml:lang="x-default">Paypal Parent Transaction Id</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalGetDetailsPayerStatus">
-                <display-name xml:lang="x-default">Paypal Get Details Service Payer Status</display-name>
-                <description xml:lang="x-default">Paypal Get Details Service Payer Status</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalGetDetailsAddressStatus">
-                <display-name xml:lang="x-default">Paypal Get Details Service Address Status</display-name>
-                <description xml:lang="x-default">Paypal Get Details Service Address Status</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalGetDetailsCorrelationId">
-                <display-name xml:lang="x-default">Paypal Get Details Service Correlation Id</display-name>
-                <description xml:lang="x-default">Paypal Get Details Service Correlation Id</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalGetDetailsTaxAmount">
-                <display-name xml:lang="x-default">Paypal Get Details Service Tax Amount</display-name>
-                <description xml:lang="x-default">Paypal Get Details Service Tax Amount</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="paypalSetRequestCorrelationID">
-                <display-name xml:lang="x-default">Paypal Set Up Request Correlation ID</display-name>
-                <description xml:lang="x-default">Paypal Set Up Request Correlation ID</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalPayerFirstName">
-                <display-name xml:lang="x-default">Paypal Payer First Name From Get Details</display-name>
-                <description xml:lang="x-default">Paypal Payer First Name From Get Details</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="paypalPayerLastName">
-                <display-name xml:lang="x-default">Paypal Payer Last Name From Get Details</display-name>
-                <description xml:lang="x-default">Paypal Payer Last Name From Get Details</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalPayerCountry">
-                <display-name xml:lang="x-default">Paypal Payer Country From Get Details</display-name>
-                <description xml:lang="x-default">Paypal Payer Country From Get Details</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalBillingAgreementAcceptedStatus">
-                <display-name xml:lang="x-default">Paypal Billing Agreement Accepted Status</display-name>
-                <description xml:lang="x-default">Paypal Billing Agreement Accepted Status</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalOrderSetupTransactionType">
-                <display-name xml:lang="x-default">Paypal Order Setup Transaction Type</display-name>
-                <description xml:lang="x-default">Paypal Order Setup Transaction Type</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalOrderSetupCorrelationID">
-                <display-name xml:lang="x-default">Paypal Order Setup Correlation ID</display-name>
-                <description xml:lang="x-default">Paypal Order Setup Correlation ID</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalOrderSetupPendingReason">
-                <display-name xml:lang="x-default">Paypal Order Setup Pending Reason</display-name>
-                <description xml:lang="x-default">Paypal Order Setup Pending Reason</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalAuthorizedAmount">
-                <display-name xml:lang="x-default">Paypal Authorized Amount by Authorization Service</display-name>
-                <description xml:lang="x-default">Paypal Authorized Amount by Authorization Service</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalAvsCode">
-                <display-name xml:lang="x-default">Paypal Get Service Avs Code</display-name>
-                <description xml:lang="x-default">Paypal Get Service Avs Code</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalOrderSetupPaymentStatus">
-                <display-name xml:lang="x-default">Paypal Order Setup Payment Status</display-name>
-                <description xml:lang="x-default">Paypal Order Setup Payment Status</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalProtectionEligibility">
-                <display-name xml:lang="x-default">Paypal Protection Eligibility</display-name>
-                <description xml:lang="x-default">Paypal Protection Eligibility</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="paypalProtectionEligibilityType">
-                <display-name xml:lang="x-default">Paypal Protection Eligibility Type</display-name>
-                <description xml:lang="x-default">Paypal Protection Eligibility Type</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalCorrelationId">
-                <display-name xml:lang="x-default">Paypal Authorization Service Correlation Id</display-name>
-                <description xml:lang="x-default">Paypal Authorization Service Correlation Id</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalAutorizationId">
-                <display-name xml:lang="x-default">Paypal Authorization Id</display-name>
-                <description xml:lang="x-default">Paypal Authorization Id</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="paypalReceiptId">
+            <attribute-definition attribute-id="paypalReceiptId">
                 <display-name xml:lang="x-default">Paypal Receipt Id</display-name>
                 <description xml:lang="x-default">Paypal Receipt Id</description>
                 <type>string</type>
@@ -540,404 +646,332 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="paypalCaptureRequestId">
-                <display-name xml:lang="x-default">Paypal Capture Request ID</display-name>
-                <description xml:lang="x-default">Paypal Capture Request ID</description>
+            <attribute-definition attribute-id="processorFraudDecisionReason">
+                <display-name xml:lang="x-default">Processor Fraud Decision Reason</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="paypalCaptureRequestToken">
-                <display-name xml:lang="x-default">Paypal Capture Request Token</display-name>
-                <description xml:lang="x-default">Paypal Capture Request Token</description>
+            <attribute-definition attribute-id="processorResponse">
+                <display-name xml:lang="x-default">Order processor response</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="paypalCaptureFeeAmount">
-                <display-name xml:lang="x-default">Paypal Capture Fee Amount</display-name>
-                <description xml:lang="x-default">Paypal Capture Fee Amount</description>
+            <attribute-definition attribute-id="proofXML">
+                <display-name xml:lang="x-default">Payer Authentication Proof.xml</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="reconsilationID">
+                <display-name xml:lang="x-default">Reconsilation ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="paypalCaptureCorrelationID">
-                <display-name xml:lang="x-default">Paypal Capture Correlation ID</display-name>
-                <description xml:lang="x-default">Paypal Capture Correlation ID</description>
+            <attribute-definition attribute-id="requestId">
+                <display-name xml:lang="x-default">Request ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-		</custom-attribute-definitions>
-		<group-definitions>
-			<attribute-group group-id="Custom">
-				<display-name xml:lang="x-default">Custom</display-name>
-				<attribute attribute-id="eFundsTransactionHistory"/>
-				<attribute attribute-id="proofXML"/>
-			</attribute-group>
-		</group-definitions>
-	</type-extension>
-	<type-extension type-id="SitePreferences">
-		<custom-attribute-definitions>
-            <attribute-definition attribute-id="CsDeveloperID">
-                <display-name xml:lang="x-default">CsDeveloperID</display-name>
+            <attribute-definition attribute-id="requestToken">
+                <display-name xml:lang="x-default">Request Token</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <field-length>8</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="cybVisaAPIKey">
-                <display-name xml:lang="x-default">cybVisaAPIKey</display-name>
-                <description xml:lang="x-default">The Visa Checkout account API key specified in cybersource business center (Alphanumeric; maximum 100 characters)</description>
+            <attribute-definition attribute-id="saleProcessorTID">
+                <display-name xml:lang="x-default">Sale Processor Transaction  ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <field-length>100</field-length>
             </attribute-definition>
-            <attribute-definition attribute-id="cybVisaButtonColor">
-                <display-name xml:lang="x-default">cybVisaButtonColor</display-name>
-                <description xml:lang="x-default">The color of the Visa Checkout button&#13;
-standard (default)&#13;
-neutral</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>true</mandatory-flag>
+            <attribute-definition attribute-id="saleRequestID">
+                <display-name xml:lang="x-default">Sale Request ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="saleRequestToken">
+                <display-name xml:lang="x-default">Sale Request Token</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Custom">
+                <display-name xml:lang="x-default">Custom</display-name>
+                <attribute attribute-id="proofXML"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Profile">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="birthday"/>
+            <attribute-definition attribute-id="companyName">
+                <min-length>0</min-length>
+                <field-length>10</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="customerNo">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="email">
+                <field-length>75</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="fax">
+                <min-length>0</min-length>
+                <field-length>32</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="firstName">
+                <min-length>0</min-length>
+                <field-length>25</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="gender">
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Male</display>
+                        <value>1</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Female</display>
+                        <value>2</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="jobTitle">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="lastLoginTime"/>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="lastName">
+                <min-length>0</min-length>
+                <field-length>25</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="lastVisitTime"/>
+            <attribute-definition attribute-id="nextBirthday"/>
+            <attribute-definition attribute-id="phoneBusiness">
+                <min-length>0</min-length>
+                <field-length>32</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="phoneHome">
+                <min-length>0</min-length>
+                <field-length>32</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="phoneMobile">
+                <min-length>0</min-length>
+                <field-length>32</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="preferredLocale">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="salutation">
+                <min-length>0</min-length>
+                <field-length>5</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="secondName">
+                <min-length>0</min-length>
+                <field-length>25</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="suffix">
+                <min-length>0</min-length>
+                <field-length>5</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="taxID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="taxIDType">
                 <value-definitions>
                     <value-definition default="true">
-                        <display xml:lang="x-default">standard</display>
-                        <value>standard</value>
+                        <display xml:lang="x-default">Arbitrary</display>
+                        <value>Arbitrary</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">neutral</display>
-                        <value>neutral</value>
+                        <display xml:lang="x-default">CPF</display>
+                        <value>CPF</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
-            <attribute-definition attribute-id="cybVisaButtonHeight">
-                <display-name xml:lang="x-default">cybVisaButtonHeight</display-name>
-                <description xml:lang="x-default">Height of the button, in pixels, You must specify the height if you specify a value for width&#13;
-34&#13;
-47&#13;
-94</description>
+            <attribute-definition attribute-id="title">
+                <min-length>0</min-length>
+                <field-length>10</field-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="billingAgreementID">
+                <display-name xml:lang="x-default">PayPal Billing Agreement ID</display-name>
+                <description xml:lang="x-default">The Billing Agreement ID of the customer in PayPal</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Standard">
+                <display-name xml:lang="x-default">Profile Attributes</display-name>
+                <attribute attribute-id="salutation" system="true"/>
+                <attribute attribute-id="title" system="true"/>
+                <attribute attribute-id="companyName" system="true"/>
+                <attribute attribute-id="jobTitle" system="true"/>
+                <attribute attribute-id="firstName" system="true"/>
+                <attribute attribute-id="lastName" system="true"/>
+                <attribute attribute-id="suffix" system="true"/>
+                <attribute attribute-id="gender" system="true"/>
+                <attribute attribute-id="birthday" system="true"/>
+                <attribute attribute-id="secondName" system="true"/>
+                <attribute attribute-id="email" system="true"/>
+                <attribute attribute-id="nextBirthday" system="true"/>
+                <attribute attribute-id="billingAgreementID"/>
+            </attribute-group>
+            <attribute-group group-id="Phone">
+                <display-name xml:lang="x-default">Phone Numbers</display-name>
+                <attribute attribute-id="phoneHome" system="true"/>
+                <attribute attribute-id="phoneBusiness" system="true"/>
+                <attribute attribute-id="phoneMobile" system="true"/>
+                <attribute attribute-id="fax" system="true"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="ShippingMethod">
+        <system-attribute-definitions>
+            <attribute-definition attribute-id="ID">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="UUID">
+                <min-length>0</min-length>
+                <field-length>28</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="creationDate"/>
+            <attribute-definition attribute-id="description">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="displayName">
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="lastModified"/>
+            <attribute-definition attribute-id="taxClassID">
+                <min-length>0</min-length>
+            </attribute-definition>
+        </system-attribute-definitions>
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="CybersouceShippingID">
+                <display-name xml:lang="x-default">Cybersouce Shipping ID</display-name>
                 <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <value-definitions>
                     <value-definition>
-                        <display xml:lang="x-default">None</display>
-                        <value>None</value>
+                        <display xml:lang="x-default">sameday</display>
+                        <value>sameday</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">34</display>
-                        <value>34</value>
+                        <display xml:lang="x-default">oneday</display>
+                        <value>oneday</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">47</display>
-                        <value>47</value>
+                        <display xml:lang="x-default">twoday</display>
+                        <value>twoday</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">94</display>
-                        <value>94</value>
+                        <display xml:lang="x-default">threeday</display>
+                        <value>threeday</value>
                     </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaButtonImgUrl">
-                <display-name xml:lang="x-default">cybVisaButtonImgUrl</display-name>
-                <description xml:lang="x-default">Sandbox	https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png&#13;
-LIVE	https://secure.checkout.visa.com/wallet-services-web/xo/button.png</description>
-                <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaButtonSize">
-                <display-name xml:lang="x-default">cybVisaButtonSize</display-name>
-                <description xml:lang="x-default">You can either specify size to display a standard size button, or you can specify height and width to specify a custom size. If you do not specify size or both height and width, the button size is 213 pixels. If you specify height or width, the value of size is ignored&#13;
-154 - small&#13;
-213 - medium (default)&#13;
-425 - High resolution or large</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
                     <value-definition>
-                        <display xml:lang="x-default">small</display>
-                        <value>154</value>
+                        <display xml:lang="x-default">lowcost</display>
+                        <value>lowcost</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">pickup</display>
+                        <value>pickup</value>
                     </value-definition>
                     <value-definition default="true">
-                        <display xml:lang="x-default">medium (default)</display>
-                        <value>213</value>
+                        <display xml:lang="x-default">other</display>
+                        <value>other</value>
                     </value-definition>
                     <value-definition>
-                        <display xml:lang="x-default">High resolution or large</display>
-                        <value>425</value>
+                        <display xml:lang="x-default">none</display>
+                        <value>none</value>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
-            <attribute-definition attribute-id="cybVisaButtonWidth">
-                <display-name xml:lang="x-default">cybVisaButtonWidth</display-name>
-                <description xml:lang="x-default">Width of the button, in pixels, You must specify the width if you specify a value for height&#13;
--less than 477 if height is 34; default value is 154&#13;
--greater than 212 and less than 659 if height is 47; default value is 213&#13;
--greater than 424 and less than 1317 if height is 94; default value is 425</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>154</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaCardBrands">
-                <display-name xml:lang="x-default">cybVisaCardBrands</display-name>
-                <description xml:lang="x-default">Override value for brands associated with card art to be displayed. If a brand matching the consumer's preferred card is specified, the card art is displayed on the button; otherwise, a generic button is displayed&#13;
-Select multiple ire required&#13;
-VISA&#13;
-MASTERCARD&#13;
-AMEX&#13;
-DISCOVER</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <select-multiple-flag>true</select-multiple-flag>
-                <value-definitions>
-                    <value-definition>
-                        <display xml:lang="x-default">VISA</display>
-                        <value>VISA</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">MASTERCARD</display>
-                        <value>MASTERCARD</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">AMEX</display>
-                        <value>AMEX</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">DISCOVER</display>
-                        <value>DISCOVER</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaExternalProfileId">
-                <display-name xml:lang="x-default">cybVisaExternalProfileId</display-name>
-                <description xml:lang="x-default">Use profile's name, created externally by a merchant whom Visa Checkout uses to populate settings, such as accepted card brands and shipping regions. The properties set in this profile override properties in the merchant's current profile. (Alphanumeric; maximum 50 characters)</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <field-length>50</field-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaSdkJsLibrary">
-                <display-name xml:lang="x-default">cybVisaSdkJsLibrary</display-name>
-                <description xml:lang="x-default">Sandbox	https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js&#13;
-LIVE	https://assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</description>
-                <type>string</type>
+            <attribute-definition attribute-id="storePickupEnabled">
+                <display-name xml:lang="x-default">Store Pickup Enabled</display-name>
+                <type>boolean</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="cybVisaSecretKey">
-                <display-name xml:lang="x-default">cybVisaSecretKey</display-name>
-                <description xml:lang="x-default">The secret key specified VISA Checkout account profile</description>
-                <type>string</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaTellMeMoreLinkActive">
-                <display-name xml:lang="x-default">cybVisaTellMeMoreLinkActive</display-name>
-                <description xml:lang="x-default">Indicate whether Tell Me More Link to be displayed with VISA button&#13;
-true (default)&#13;
-false</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaThreeDSActive">
-                <display-name xml:lang="x-default">cybVisaThreeDSActive</display-name>
-                <description xml:lang="x-default">Whether Verified by Visa (VbV) is active for this transaction. If Verified by Visa is configured, you can use threeDSActive to deactivate it for the transaction; otherwise, VbV will be active if it has been configured</description>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="storePickUp">
+                <display-name xml:lang="x-default">Store Pick Up</display-name>
+                <attribute attribute-id="storePickupEnabled"/>
+            </attribute-group>
+            <attribute-group group-id="CybersouceShippingId">
+                <display-name xml:lang="x-default">Cybersouce Shipping ID</display-name>
+                <attribute attribute-id="CybersouceShippingID"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="CsAndoridPayTokenizationEnabled">
+                <display-name xml:lang="x-default">Android Pay Card Subscription Enabled</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaThreeDSSuppressChallenge">
-                <display-name xml:lang="x-default">cybVisaThreeDSSuppressChallenge</display-name>
-                <description xml:lang="x-default">Whether a Verified by Visa (VbV) consumer authentication prompt is suppressed for this transaction. If true, VbV authentication is performed only when it is possible to do so without the consumer prompt.&#13;
-true - Do not display a consumer prompt.&#13;
-false - Allow a consumer prompt</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="cybVisaButtonOnCart">
-                <display-name xml:lang="x-default">Cybersource Visa Button display on minicart and cart</display-name>
-                <description xml:lang="x-default">Cybersource Visa Button display on minicart and cart</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-				<default-value>true</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="CsSAOverrideBillingAddress">
-                <display-name xml:lang="x-default">Cybersource Secure Acceptance Override Billing Address</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="CsSAOverrideShippingAddress">
-                <display-name xml:lang="x-default">Cybersource Secure Acceptance Override Shipping Address</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
-			<attribute-definition attribute-id="CsCvnDeclineFlags">
-                <display-name xml:lang="x-default">CyberSource Ignore CVN Result (CVN)</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="SA_Redirect_AccessKey">
-                <display-name xml:lang="x-default">Secure Acceptance Redirect Access Key</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="SA_Redirect_ProfileID">
-                <display-name xml:lang="x-default">Secure Aceeptance Redirect Profile ID</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="SA_Redirect_SecretKey">
-                <display-name xml:lang="x-default">Secure Acceptance Redirect Secret Key</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="SA_Iframe_AccessKey">
-                <display-name xml:lang="x-default">Secure Acceptance Iframe Access Key</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="SA_Iframe_ProfileID">
-                <display-name xml:lang="x-default">Secure Acceptance Iframe Profile ID</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="SA_Iframe_SecretKey">
-                <display-name xml:lang="x-default">Secure Acceptance Iframe secret key</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="SA_Silent_AccessKey">
-                <display-name xml:lang="x-default">Secure Acceptance Silent Post Access Key</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="SA_Silent_ProfileID">
-                <display-name xml:lang="x-default">Secure Aceeptance Silent Post Profile ID</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="SA_Silent_SecretKey">
-                <display-name xml:lang="x-default">Secure Acceptance Silent Post Secret Key</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-			<attribute-definition attribute-id="CsSARedirectFormAction">
-                <display-name xml:lang="x-default">Cybersource secure acceptance redirect form action</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>	
-			<attribute-definition attribute-id="CsSAIframetFormAction">
-                <display-name xml:lang="x-default">Cybersource secure acceptance Iframe form action</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>	
-            <attribute-definition attribute-id="Secure_Acceptance_Token_Create_Endpoint">
-                <display-name xml:lang="x-default">Secure_Acceptance_Token_Create_Endpoint</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
-            <attribute-definition attribute-id="Secure_Acceptance_Token_Update_Endpoint">
-                <display-name xml:lang="x-default">Secure_Acceptance_Token_Update_Endpoint</display-name>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="CsApplePayPassword">
-                <display-name xml:lang="x-default">Cybersource Interface Apple Pay Password</display-name>
+                <display-name xml:lang="x-default">CyberSource Interface Apple Pay Password</display-name>
                 <type>password</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <field-length>12</field-length>
             </attribute-definition>
             <attribute-definition attribute-id="CsApplePayUser">
-                <display-name xml:lang="x-default">Cybersource Interface Apple Pay User</display-name>
+                <display-name xml:lang="x-default">CyberSource Interface Apple Pay User</display-name>
                 <type>string</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<default-value>test</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="CsPaypalCaptureCompleteType">
-                <display-name xml:lang="x-default">Paypal Capture Complete Type</display-name>
-                <description xml:lang="x-default">Paypal Capture Complete Type default Complete else NotComplete</description>
-                <type>enum-of-string</type>
+            <attribute-definition attribute-id="CsAvsDeclineFlags">
+                <display-name xml:lang="x-default">CyberSource AVS Decline Flags (AVS)</display-name>
+                <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">Complete</display>
-                        <value>Complete</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">NotComplete</display>
-                        <value>NotComplete</value>
-                    </value-definition>
-                </value-definitions>
+                <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="CsMerchantId">
-				<display-name xml:lang="x-default">CyberSource Merchant Id</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-			</attribute-definition>
+            <attribute-definition attribute-id="CsAvsIgnoreResult">
+                <display-name xml:lang="x-default">CyberSource Ignore AVS Result (AVS)</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="CsCorrectShipState">
                 <display-name xml:lang="x-default">CyberSource correct shipping state</display-name>
                 <type>boolean</type>
@@ -945,307 +979,16 @@ false - Allow a consumer prompt</description>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="CsAvsDeclineFlags">
-				<display-name xml:lang="x-default">CyberSource AVS Decline Flags (AVS)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsAvsIgnoreResult">
-				<display-name xml:lang="x-default">CyberSource Ignore AVS Result (AVS)</display-name>
-				<type>boolean</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDavEnable">
-				<display-name xml:lang="x-default">Cybersource - Enable Delivery Address Verification</display-name>
-				<description xml:lang="x-default">This will enable Delivery Address Verification, to help minimize risk of undeliverable or returns orders, because of user data entry errors.</description>
-				<type>enum-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<value-definitions>
-					<value-definition default="true">
-						<display xml:lang="x-default">YES</display>
-						<value>YES</value>
-					</value-definition>
-					<value-definition>
-						<display xml:lang="x-default">NO</display>
-						<value>NO</value>
-					</value-definition>
-				</value-definitions>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDavOnAddressVerificationFailure">
-				<display-name xml:lang="x-default">Cybersource - On Delivery Address Verification Failure</display-name>
-				<description xml:lang="x-default">Prevent/enable authorization of payment if the DeliveryAddressVerification results in an error or rejection response.</description>
-				<type>enum-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<value-definitions>
-					<value-definition default="true">
-						<display xml:lang="x-default">DECLINE</display>
-						<value>DECLINE</value>
-					</value-definition>
-					<value-definition>
-						<display xml:lang="x-default">APPROVE</display>
-						<value>APPROVE</value>
-					</value-definition>
-				</value-definitions>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsSecurityKey">
-				<display-name xml:lang="x-default">CyberSource Merchant Key</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsEndpoint">
-				<display-name xml:lang="x-default">CyberSource Endpoint</display-name>
-				<type>enum-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<value-definitions>
-					<value-definition>
-						<display xml:lang="x-default">Production</display>
-						<value>Production</value>
-					</value-definition>
-					<value-definition default="true">
-						<display xml:lang="x-default">Test</display>
-						<value>Test</value>
-					</value-definition>
-					<value-definition>
-						<display xml:lang="x-default">Development</display>
-						<value>Development</value>
-					</value-definition>
-					<value-definition>
-						<display xml:lang="x-default">Missing</display>
-						<value>Missing</value>
-					</value-definition>
-				</value-definitions>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDebugCybersource">
-				<display-name xml:lang="x-default">Disable logging of Cybersource traces</display-name>
-				<description xml:lang="x-default">Some trace information will be stored in the impex folder on the server with the order ID as the name</description>
-				<type>boolean</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsShipFromCity">
-				<display-name xml:lang="x-default">CyberSource ShipFrom City</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>Lyndhurst</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsShipFromCountryCode">
-				<display-name xml:lang="x-default">CyberSource ShipFrom Country Code</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>US</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsShipFromStateCode">
-				<display-name xml:lang="x-default">CyberSource ShipFrom StateCode</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>NJ</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsShipFromZipCode">
-				<display-name xml:lang="x-default">CyberSource ShipFrom ZipCode</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>07071</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPaMerchantId">
-				<display-name xml:lang="x-default">CyberSource Merchant ID (PA)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPaMerchantPassword">
-				<display-name xml:lang="x-default">CyberSource Merchant Password (PA)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPaMerchantName">
-				<display-name xml:lang="x-default">CyberSource Merchant Name (PA)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPoaCity">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance City (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>Lyndhurst</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPoaCountryCode">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance Country Code (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>US</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPoaStateCode">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance State Code (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>NJ</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPoaZipCode">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Acceptance Zip Code (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<default-value>76208</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPooCity">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Origin City (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>Lyndhurst</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPooCountryCode">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Origin Country Code (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>US</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPooStateCode">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Origin StateCode (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>NJ</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsPooZipCode">
-				<display-name xml:lang="x-default">CyberSource Purchase Order Origin ZipCode (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<field-length>0</field-length>
-				<field-height>0</field-height>
-				<default-value>76208</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDefaultProductTaxCode">
-				<display-name xml:lang="x-default">CyberSource Default Product Tax Code (Tax)</display-name>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-				<default-value>5310</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsNexus">
-				<display-name xml:lang="x-default">CyberSource Nexus States List</display-name>
-				<type>set-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsNoNexus">
-				<display-name xml:lang="x-default">CyberSource No Nexus States List</display-name>
-				<type>set-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDeviceFingerprintEnabled">
-				<display-name xml:lang="x-default">Cybersource Device Fingeprint enabled</display-name>
-				<description xml:lang="x-default">If enabled, a unique ID (fingerprint) of the customer's environment will be checked to detect spam / fraud.</description>
-				<type>boolean</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDeviceFingerprintJetmetrixLocation">
-				<display-name xml:lang="x-default">Jetmetrix Location</display-name>
-				<description xml:lang="x-default">Jetmetrix Location for Device fingerprint</description>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDeviceFingerprintOrgId">
-				<display-name xml:lang="x-default">CsDeviceFingerprintOrgId</display-name>
-				<description xml:lang="x-default">Organization ID for the device fingerprint check.</description>
-				<type>string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<min-length>0</min-length>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsDeviceFingerprintRedirectionType">
-				<display-name xml:lang="x-default">Device Fingerprint Redirection</display-name>
-				<description xml:lang="x-default">'none' for no redirection, 'static' for pipeline redirection, 'dynamic' for mapping-rule based redirection.&#13;
-A mapping rule based redirection requires a mapping rule at static mappings Site Urls-&gt;Static mapping:&#13;
-&#13;
-# Mapping for Cybersource Device Fingerprint Service&#13;
-/fp/** p,,,Cybersource-RedirectFpLocation,,,Location,{_url}</description>
-				<type>enum-of-string</type>
-				<mandatory-flag>false</mandatory-flag>
-				<externally-managed-flag>false</externally-managed-flag>
-				<value-definitions>
-					<value-definition default="true">
-						<display xml:lang="x-default">none</display>
-						<value>none</value>
-					</value-definition>
-					<value-definition>
-						<display xml:lang="x-default">static</display>
-						<value>static</value>
-					</value-definition>
-					<value-definition>
-						<value>dynamic</value>
-					</value-definition>
-				</value-definitions>
-			</attribute-definition>
-			<attribute-definition attribute-id="CsTokenizationEnable">
-                <display-name xml:lang="x-default">Cybersource - Enable Tokenization</display-name>
-                <description xml:lang="x-default">This will enable Payment Tokenization.</description>
+            <attribute-definition attribute-id="CsCvnDeclineFlags">
+                <display-name xml:lang="x-default">CyberSource Ignore CVN Result (CVN)</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDavEnable">
+                <display-name xml:lang="x-default">CyberSource - Enable Delivery Address Verification</display-name>
+                <description xml:lang="x-default">This will enable Delivery Address Verification, to help minimize risk of undeliverable or returns orders, because of user data entry errors.</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1260,14 +1003,198 @@ A mapping rule based redirection requires a mapping rule at static mappings Site
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
-			<attribute-definition attribute-id="CsPaEnableProofXML">
+            <attribute-definition attribute-id="CsDavOnAddressVerificationFailure">
+                <display-name xml:lang="x-default">CyberSource - On Delivery Address Verification Failure</display-name>
+                <description xml:lang="x-default">Prevent/enable authorization of payment if the DeliveryAddressVerification results in an error or rejection response.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">DECLINE</display>
+                        <value>DECLINE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">APPROVE</display>
+                        <value>APPROVE</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDebugCybersource">
+                <display-name xml:lang="x-default">Disable logging of CyberSource traces</display-name>
+                <description xml:lang="x-default">Some trace information will be stored in the impex folder on the server with the order ID as the name</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDefaultProductTaxCode">
+                <display-name xml:lang="x-default">CyberSource Default Product Tax Code (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>5310</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDeveloperID">
+                <display-name xml:lang="x-default">CsDeveloperID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>8</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDeviceFingerprintEnabled">
+                <display-name xml:lang="x-default">CyberSource Device Fingeprint enabled</display-name>
+                <description xml:lang="x-default">If enabled, a unique ID (fingerprint) of the customer's environment will be checked to detect spam / fraud.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDeviceFingerprintJetmetrixLocation">
+                <display-name xml:lang="x-default">Jetmetrix Location</display-name>
+                <description xml:lang="x-default">Jetmetrix Location for Device fingerprint</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>https://h.online-metrix.net</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDeviceFingerprintOrgId">
+                <display-name xml:lang="x-default">CsDeviceFingerprintOrgId</display-name>
+                <description xml:lang="x-default">Organization ID for the device fingerprint check.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>1snn5n9w</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsDeviceFingerprintRedirectionType">
+                <display-name xml:lang="x-default">Device Fingerprint Redirection</display-name>
+                <description xml:lang="x-default">'none' for no redirection, 'static' for pipeline redirection, 'dynamic' for mapping-rule based redirection.&#13;
+A mapping rule based redirection requires a mapping rule at static mappings Site Urls-&gt;Static mapping:&#13;
+&#13;
+# Mapping for Cybersource Device Fingerprint Service&#13;
+/fp/** p,,,Cybersource-RedirectFpLocation,,,Location,{_url}</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">none</display>
+                        <value>none</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">static</display>
+                        <value>static</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>dynamic</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsEnableExpressPaypal">
+                <display-name xml:lang="x-default">CsEnableExpressPaypal</display-name>
+                <description xml:lang="x-default">Cyber Source Flag for Enable paypal expess in cart and Minicart page</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsEnableTaxation">
+                <display-name xml:lang="x-default">CyberSource Enable Taxation</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsEndpoint">
+                <display-name xml:lang="x-default">CyberSource Endpoint</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Production</display>
+                        <value>Production</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Test</display>
+                        <value>Test</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Development</display>
+                        <value>Development</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Missing</display>
+                        <value>Missing</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsFundingSource">
+                <display-name xml:lang="x-default">Funding Source</display-name>
+                <description xml:lang="x-default">Funding Source</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">UNRESTRICTED</display>
+                        <value>UNRESTRICTED</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">INSTANT</display>
+                        <value>INSTANT</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsMerchantId">
+                <display-name xml:lang="x-default">CyberSource Merchant Id</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsNexus">
+                <display-name xml:lang="x-default">CyberSource Nexus States List</display-name>
+                <type>set-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsNoNexus">
+                <display-name xml:lang="x-default">CyberSource No Nexus States List</display-name>
+                <type>set-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaEnableProofXML">
                 <display-name xml:lang="x-default">CyberSource Save Proof.xml (PA)</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="CsPaSaveParesStatus">
+            <attribute-definition attribute-id="CsPaMerchantId">
+                <display-name xml:lang="x-default">CyberSource Merchant ID (PA)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaMerchantName">
+                <display-name xml:lang="x-default">CyberSource Merchant Name (PA)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaSaveParesStatus">
                 <display-name xml:lang="x-default">CyberSource Save ParesStatus (PA)</display-name>
                 <description xml:lang="x-default">Save ParesStatus received as response from Pa Authenticate request and send it as param in ccAuth request call.&#13;
 This field should be enabled after verifying cybersource merchant account settings.</description>
@@ -1275,67 +1202,6 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
-            </attribute-definition>
-			<attribute-definition attribute-id="apPaymentType">
-                <display-name xml:lang="x-default">Alipay Payment Type</display-name>
-                <description xml:lang="x-default">Alipay Payment Type for Domestic as well as International Payment</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">Domestic</display>
-                        <value>APD</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">International</display>
-                        <value>APY</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="apTestReconciliationID">
-                <display-name xml:lang="x-default">Test Reconciliation ID for Alipay</display-name>
-                <description xml:lang="x-default">Test Reconciliation ID for Alipay</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">Domestic COMPLETE</display>
-                        <value>666666666701</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Domestic PENDING</display>
-                        <value>666666666702</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Domestic ABANDONED</display>
-                        <value>666666666703</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Domestic Reject</display>
-                        <value>666666666725</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">International PENDING</display>
-                        <value>333333333402</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">International COMPLETED</display>
-                        <value>110115230002</value>
-                    </value-definition>
-					<value-definition>
-                        <display xml:lang="x-default">International ABANDONED</display>
-                        <value>333333333403</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-			<attribute-definition attribute-id="CsEnableExpressPaypal">
-                <display-name xml:lang="x-default">CsEnableExpressPaypal</display-name>
-                <description xml:lang="x-default">Cyber Source Flag for Enable paypal expess in cart and Minicart page</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="CsPaypalAddressOverride">
                 <display-name xml:lang="x-default">Paypal Address Override</display-name>
@@ -1391,6 +1257,22 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalOrderType">
+                <display-name xml:lang="x-default">Paypal Order Type</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Standard Order</display>
+                        <value>STANDARD</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Custom Order</display>
+                        <value>CUSTOM</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="CsPaypalPagestyle">
                 <display-name xml:lang="x-default">Paypal page style</display-name>
                 <description xml:lang="x-default">Set the paypal page Style</description>
@@ -1430,13 +1312,83 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-            <attribute-definition attribute-id="CsPaypalSandboxURL">
-                <display-name xml:lang="x-default">CsPaypalSandboxURL</display-name>
-                <description xml:lang="x-default">Sandbox url to redirect the customer to paypal for authentication</description>
+            <attribute-definition attribute-id="CsPoaCity">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Acceptance City (Tax)</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>Lyndhurst</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPoaCountryCode">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Acceptance Country Code (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>US</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPoaStateCode">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Acceptance State Code (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>NJ</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPoaZipCode">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Acceptance Zip Code (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>76208</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPooCity">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Origin City (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>Lyndhurst</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPooCountryCode">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Origin Country Code (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>US</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPooStateCode">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Origin StateCode (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>NJ</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPooZipCode">
+                <display-name xml:lang="x-default">CyberSource Purchase Order Origin ZipCode (Tax)</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>76208</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsRequestBillingAddress">
                 <display-name xml:lang="x-default">Request Billing address</display-name>
@@ -1445,13 +1397,277 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-			<attribute-definition attribute-id="isDecisionManagerEnable">
-                <display-name xml:lang="x-default">Decision Manager Enable for Paypal</display-name>
-                <description xml:lang="x-default">Decision Manager Enable for Paypal</description>
+            <attribute-definition attribute-id="CsSAIframetFormAction">
+                <display-name xml:lang="x-default">CyberSource secure acceptance Iframe form action</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/embedded/pay</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsSAOverrideBillingAddress">
+                <display-name xml:lang="x-default">CyberSource Secure Acceptance Override Billing Address</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsSAOverrideShippingAddress">
+                <display-name xml:lang="x-default">CyberSource Secure Acceptance Override Shipping Address</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsSARedirectFormAction">
+                <display-name xml:lang="x-default">CyberSource secure acceptance redirect form action</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/pay</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsSecurityKey">
+                <display-name xml:lang="x-default">CyberSource Merchant Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsShipFromCity">
+                <display-name xml:lang="x-default">CyberSource ShipFrom City</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>Lyndhurst</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsShipFromCountryCode">
+                <display-name xml:lang="x-default">CyberSource ShipFrom Country Code</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>US</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsShipFromStateCode">
+                <display-name xml:lang="x-default">CyberSource ShipFrom StateCode</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>NJ</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsShipFromZipCode">
+                <display-name xml:lang="x-default">CyberSource ShipFrom ZipCode</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <field-height>0</field-height>
+                <default-value>07071</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsTokenizationEnable">
+                <display-name xml:lang="x-default">CyberSource - Enable Tokenization</display-name>
+                <description xml:lang="x-default">This will enable Payment Tokenization.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">YES</display>
+                        <value>YES</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NO</display>
+                        <value>NO</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="GoogleVerificationTag">
+                <display-name xml:lang="x-default">GoogleVerificationTag - Content Attribute</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SAPostCustomerServiceEmail">
+                <display-name xml:lang="x-default">SAPostCustomerServiceEmail</display-name>
+                <description xml:lang="x-default">Secure Acceptance Post Job Customer Service Email</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>100</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Iframe_AccessKey">
+                <display-name xml:lang="x-default">Secure Acceptance Iframe Access Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Iframe_ProfileID">
+                <display-name xml:lang="x-default">Secure Acceptance Iframe Profile ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Iframe_SecretKey">
+                <display-name xml:lang="x-default">Secure Acceptance Iframe secret key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Redirect_AccessKey">
+                <display-name xml:lang="x-default">Secure Acceptance Redirect Access Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Redirect_ProfileID">
+                <display-name xml:lang="x-default">Secure Aceeptance Redirect Profile ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Redirect_SecretKey">
+                <display-name xml:lang="x-default">Secure Acceptance Redirect Secret Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Silent_AccessKey">
+                <display-name xml:lang="x-default">Secure Acceptance Silent Post Access Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Silent_ProfileID">
+                <display-name xml:lang="x-default">Secure Aceeptance Silent Post Profile ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Silent_SecretKey">
+                <display-name xml:lang="x-default">Secure Acceptance Silent Post Secret Key</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="Secure_Acceptance_Token_Create_Endpoint">
+                <display-name xml:lang="x-default">Secure_Acceptance_Token_Create_Endpoint</display-name>
+                <description xml:lang="x-default">Secure_Acceptance_Token_Create_Endpoint</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/silent/token/create</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="Secure_Acceptance_Token_Update_Endpoint">
+                <display-name xml:lang="x-default">Secure_Acceptance_Token_Update_Endpoint</display-name>
+                <description xml:lang="x-default">Secure_Acceptance_Token_Update_Endpoint</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>https://testsecureacceptance.cybersource.com/silent/token/update</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="apPaymentType">
+                <display-name xml:lang="x-default">Alipay Payment Type</display-name>
+                <description xml:lang="x-default">Alipay Payment Type for Domestic as well as International Payment</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Domestic</display>
+                        <value>APD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International</display>
+                        <value>APY</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="apTestReconciliationID">
+                <display-name xml:lang="x-default">Test Reconciliation ID for Alipay</display-name>
+                <description xml:lang="x-default">Test Reconciliation ID for Alipay</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Domestic COMPLETE</display>
+                        <value>666666666701</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Domestic PENDING</display>
+                        <value>666666666702</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Domestic ABANDONED</display>
+                        <value>666666666703</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Domestic Reject</display>
+                        <value>666666666725</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International PENDING</display>
+                        <value>333333333402</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International COMPLETED</display>
+                        <value>110115230002</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">International ABANDONED</display>
+                        <value>333333333403</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="checkTLS">
+                <display-name xml:lang="x-default">Check TLS</display-name>
+                <description xml:lang="x-default">When true, this causes a TLS check to take place based on whether or not a cookie ('dw_TLSWarning') has been set on the browser</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="countryCode">
+                <display-name xml:lang="x-default">Default Country Code</display-name>
+                <description xml:lang="x-default">Default country code for store searches</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">USA</display>
+                        <value>US</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">CANADA</display>
+                        <value>CA</value>
+                    </value-definition>
+                </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="csCardDecisionManagerEnable">
                 <display-name xml:lang="x-default">Decision Manager Enable for Card</display-name>
@@ -1483,10 +1699,444 @@ Undefined authorization:omit authIndicator field from the request message</descr
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
-		</custom-attribute-definitions>
-		<group-definitions>
-            <attribute-group group-id="Cybersource_VisaCheckout">
-                <display-name xml:lang="x-default">Cybersource Visa Checkout</display-name>
+            <attribute-definition attribute-id="customerServiceEmail">
+                <display-name xml:lang="x-default">Customer Service Email</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>0</field-length>
+                <default-value>noreply@salesforce.com</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybAndroidPayInterfacePassword">
+                <display-name xml:lang="x-default">CyberSource AndroidPay Password</display-name>
+                <type>password</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybAndroidPayInterfaceUser">
+                <display-name xml:lang="x-default">AndroidPay API Interface UserId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>test</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaAPIKey">
+                <display-name xml:lang="x-default">cybVisaAPIKey</display-name>
+                <description xml:lang="x-default">The Visa Checkout account API key specified in cyberSource business center (Alphanumeric; maximum 100 characters)</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>100</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonColor">
+                <display-name xml:lang="x-default">cybVisaButtonColor</display-name>
+                <description xml:lang="x-default">The color of the Visa Checkout button&#13;
+standard (default)&#13;
+neutral</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">standard</display>
+                        <value>standard</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">neutral</display>
+                        <value>neutral</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonHeight">
+                <display-name xml:lang="x-default">cybVisaButtonHeight</display-name>
+                <description xml:lang="x-default">Height of the button, in pixels, You must specify the height if you specify a value for width&#13;
+34&#13;
+47&#13;
+94</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">None</display>
+                        <value>None</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">34</display>
+                        <value>34</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">47</display>
+                        <value>47</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">94</display>
+                        <value>94</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonImgUrl">
+                <display-name xml:lang="x-default">cybVisaButtonImgUrl</display-name>
+                <description xml:lang="x-default">Sandbox	https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png&#13;
+LIVE	https://secure.checkout.visa.com/wallet-services-web/xo/button.png</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonOnCart">
+                <display-name xml:lang="x-default">CyberSource Visa Button display on minicart and cart</display-name>
+                <description xml:lang="x-default">CyberSource Visa Button display on minicart and cart</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonSize">
+                <display-name xml:lang="x-default">cybVisaButtonSize</display-name>
+                <description xml:lang="x-default">You can either specify size to display a standard size button, or you can specify height and width to specify a custom size. If you do not specify size or both height and width, the button size is 213 pixels. If you specify height or width, the value of size is ignored&#13;
+154 - small&#13;
+213 - medium (default)&#13;
+425 - High resolution or large</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">small</display>
+                        <value>154</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">medium (default)</display>
+                        <value>213</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">High resolution or large</display>
+                        <value>425</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonWidth">
+                <display-name xml:lang="x-default">cybVisaButtonWidth</display-name>
+                <description xml:lang="x-default">Width of the button, in pixels, You must specify the width if you specify a value for height&#13;
+-less than 477 if height is 34; default value is 154&#13;
+-greater than 212 and less than 659 if height is 47; default value is 213&#13;
+-greater than 424 and less than 1317 if height is 94; default value is 425</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>154</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaCardBrands">
+                <display-name xml:lang="x-default">cybVisaCardBrands</display-name>
+                <description xml:lang="x-default">Override value for brands associated with card art to be displayed. If a brand matching the consumer's preferred card is specified, the card art is displayed on the button; otherwise, a generic button is displayed&#13;
+Select multiple ire required&#13;
+VISA&#13;
+MASTERCARD&#13;
+AMEX&#13;
+DISCOVER</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">VISA</display>
+                        <value>VISA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">MASTERCARD</display>
+                        <value>MASTERCARD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">AMEX</display>
+                        <value>AMEX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">DISCOVER</display>
+                        <value>DISCOVER</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaExternalProfileId">
+                <display-name xml:lang="x-default">cybVisaExternalProfileId</display-name>
+                <description xml:lang="x-default">Use profile's name, created externally by a merchant whom Visa Checkout uses to populate settings, such as accepted card brands and shipping regions. The properties set in this profile override properties in the merchant's current profile. (Alphanumeric; maximum 50 characters)</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>50</field-length>
+				<default-value>anujcyb</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaSdkJsLibrary">
+                <display-name xml:lang="x-default">cybVisaSdkJsLibrary</display-name>
+                <description xml:lang="x-default">Sandbox	https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js&#13;
+LIVE	https://assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaSecretKey">
+                <display-name xml:lang="x-default">cybVisaSecretKey</display-name>
+                <description xml:lang="x-default">The secret key specified VISA Checkout account profile</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaTellMeMoreLinkActive">
+                <display-name xml:lang="x-default">cybVisaTellMeMoreLinkActive</display-name>
+                <description xml:lang="x-default">Indicate whether Tell Me More Link to be displayed with VISA button&#13;
+true (default)&#13;
+false</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaThreeDSActive">
+                <display-name xml:lang="x-default">cybVisaThreeDSActive</display-name>
+                <description xml:lang="x-default">Whether Verified by Visa (VbV) is active for this transaction. If Verified by Visa is configured, you can use threeDSActive to deactivate it for the transaction; otherwise, VbV will be active if it has been configured</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaThreeDSSuppressChallenge">
+                <display-name xml:lang="x-default">cybVisaThreeDSSuppressChallenge</display-name>
+                <description xml:lang="x-default">Whether a Verified by Visa (VbV) consumer authentication prompt is suppressed for this transaction. If true, VbV authentication is performed only when it is possible to do so without the consumer prompt.&#13;
+true - Do not display a consumer prompt.&#13;
+false - Allow a consumer prompt</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="disableResponsiveDesign">
+                <display-name xml:lang="x-default">Disable Responsive Design</display-name>
+                <description xml:lang="x-default">Disable Responsive Design for Storefront</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="enableInfiniteScroll">
+                <display-name xml:lang="x-default">Enable Infinite Scroll</display-name>
+                <description xml:lang="x-default">This Boolean toggles the option for infinite scrolling or pagination from within the search grid.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="enableMultiShipping">
+                <display-name xml:lang="x-default">Enable MultiShipping</display-name>
+                <description xml:lang="x-default">The attribute is used to enable/disable Multi-Shipment Checkout for each site via BM.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="enableStorePickUp">
+                <display-name xml:lang="x-default">Enable In Store Pickup</display-name>
+                <description xml:lang="x-default">This Boolean enables the storefront ability to perform tasks related to in store orders</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="isDecisionManagerEnable">
+                <display-name xml:lang="x-default">Decision Manager Enable for Paypal</display-name>
+                <description xml:lang="x-default">Decision Manager Enable for Paypal</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="isKlarnaDecisionManagerRequired">
+                <display-name xml:lang="x-default">Klarna Decision Manager Required</display-name>
+                <description xml:lang="x-default">Klarna Decision Manager Required</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="isKlarnaRedirectionRequired">
+                <display-name xml:lang="x-default">Klarna Merchant URL Redirection Required</display-name>
+                <description xml:lang="x-default">Klarna Merchant URL Redirection Required</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="klarnaJSAPIPath">
+                <display-name xml:lang="x-default">Klarna JS API Path</display-name>
+                <description xml:lang="x-default">Klarna JS API Path</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+				<default-value>https://credit.klarnacdn.net/lib/v1/api.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="listPriceDefault">
+                <display-name xml:lang="x-default">Default List Price Book ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>usd-list-prices</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptor">
+                <display-name xml:lang="x-default">Merchant Descriptor</display-name>
+                <description xml:lang="x-default">Merchant Descriptor</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>Online Store</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptorCity">
+                <display-name xml:lang="x-default">Merchant Descriptor City</display-name>
+                <description xml:lang="x-default">Merchant Descriptor City</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>San Francisco</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptorContact">
+                <display-name xml:lang="x-default">Merchant Descriptor Contact</display-name>
+                <description xml:lang="x-default">Merchant Descriptor Contact</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>6504327350</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptorCountry">
+                <display-name xml:lang="x-default">Merchant Descriptor Country</display-name>
+                <description xml:lang="x-default">Merchant Descriptor Country</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>US</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptorPostalCode">
+                <display-name xml:lang="x-default">Merchant Descriptor Postal Code</display-name>
+                <description xml:lang="x-default">Merchant Descriptor Postal Code</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>94128</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptorState">
+                <display-name xml:lang="x-default">Merchant Descriptor State</display-name>
+                <description xml:lang="x-default">Merchant Descriptor State</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>CA</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchantDescriptorStreet">
+                <display-name xml:lang="x-default">Merchant Descriptor Street</display-name>
+                <description xml:lang="x-default">Merchant Descriptor Street</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>P.O. Box 8999</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="payPalBillingAgreements">
+                <display-name xml:lang="x-default">Billing Agreement</display-name>
+                <description xml:lang="x-default">Enable/Disable PayPal Billing Agreements</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="rateLimiterThreshold">
+                <display-name xml:lang="x-default">Rate Limiter Threshold</display-name>
+                <description xml:lang="x-default">This number indicates the number of times failures for Logins, GiftCert Balances, and Order Tracking requests will be allowed before displaying a CAPTCHA-style pop-up rate limiter</description>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-value>0.0</min-value>
+                <default-value>5</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="storeLookupMaxDistance">
+                <display-name xml:lang="x-default">Store Lookup Max Distance</display-name>
+                <description xml:lang="x-default">Store Lookup Max Distance</description>
+                <type>enum-of-int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">50</display>
+                        <value>50</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">75</display>
+                        <value>75</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">100</display>
+                        <value>100</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">150</display>
+                        <value>150</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">200</display>
+                        <value>200</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="storeLookupUnit">
+                <display-name xml:lang="x-default">Store Lookup Unit</display-name>
+                <description xml:lang="x-default">Used in finding the store near the ZIP code specified in the storefront by the end user.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">kilometers</display>
+                        <value>km</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">miles</display>
+                        <value>mi</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Storefront Configs">
+                <display-name xml:lang="x-default">Storefront Configurations</display-name>
+                <attribute attribute-id="listPriceDefault"/>
+                <attribute attribute-id="disableResponsiveDesign"/>
+                <attribute attribute-id="GoogleVerificationTag"/>
+                <attribute attribute-id="enableInfiniteScroll"/>
+                <attribute attribute-id="enableMultiShipping"/>
+                <attribute attribute-id="enableStorePickUp"/>
+                <attribute attribute-id="countryCode"/>
+                <attribute attribute-id="storeLookupUnit"/>
+                <attribute attribute-id="storeLookupMaxDistance"/>
+                <attribute attribute-id="customerServiceEmail"/>
+                <attribute attribute-id="rateLimiterThreshold"/>
+                <attribute attribute-id="checkTLS"/>
+            </attribute-group>
+            <attribute-group group-id="CyberSource_VisaCheckout">
+                <display-name xml:lang="x-default">CyberSource Visa Checkout</display-name>
                 <attribute attribute-id="cybVisaSdkJsLibrary"/>
                 <attribute attribute-id="cybVisaTellMeMoreLinkActive"/>
                 <attribute attribute-id="cybVisaButtonColor"/>
@@ -1500,53 +2150,43 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="cybVisaSecretKey"/>
                 <attribute attribute-id="cybVisaAPIKey"/>
                 <attribute attribute-id="cybVisaThreeDSActive"/>
-				<attribute attribute-id="cybVisaButtonOnCart"/>
+                <attribute attribute-id="cybVisaButtonOnCart"/>
             </attribute-group>
-            <attribute-group group-id="Cybersource_SecureAcceptance">
-                <display-name xml:lang="x-default">Cybersource Secure Acceptance</display-name>
-				<attribute attribute-id="SA_Redirect_ProfileID"/>
+            <attribute-group group-id="CyberSource_SecureAcceptance">
+                <display-name xml:lang="x-default">CyberSource Secure Acceptance</display-name>
+                <attribute attribute-id="SAPostCustomerServiceEmail"/>
+                <attribute attribute-id="SA_Redirect_ProfileID"/>
                 <attribute attribute-id="SA_Redirect_SecretKey"/>
                 <attribute attribute-id="SA_Redirect_AccessKey"/>
-				<attribute attribute-id="SA_Silent_ProfileID"/>
+                <attribute attribute-id="SA_Silent_ProfileID"/>
                 <attribute attribute-id="SA_Silent_SecretKey"/>
                 <attribute attribute-id="SA_Silent_AccessKey"/>
                 <attribute attribute-id="CsSAOverrideBillingAddress"/>
                 <attribute attribute-id="CsSAOverrideShippingAddress"/>
-				<attribute attribute-id="CsSARedirectFormAction"/>
-				<attribute attribute-id="CsSAIframetFormAction"/>
-				<attribute attribute-id="SA_Iframe_AccessKey"/>
+                <attribute attribute-id="CsSARedirectFormAction"/>
+                <attribute attribute-id="CsSAIframetFormAction"/>
+                <attribute attribute-id="SA_Iframe_AccessKey"/>
                 <attribute attribute-id="SA_Iframe_ProfileID"/>
                 <attribute attribute-id="SA_Iframe_SecretKey"/>
-				<attribute attribute-id="CsCvnDeclineFlags"/>
+                <attribute attribute-id="CsCvnDeclineFlags"/>
                 <attribute attribute-id="Secure_Acceptance_Token_Update_Endpoint"/>
                 <attribute attribute-id="Secure_Acceptance_Token_Create_Endpoint"/>
-            </attribute-group>			
-            <attribute-group group-id="Cybersource_ApplePay">
-                <display-name xml:lang="x-default">Cybersource Apple Pay</display-name>
+            </attribute-group>
+            <attribute-group group-id="CyberSource_ApplePay">
+                <display-name xml:lang="x-default">CyberSource Apple Pay</display-name>
                 <attribute attribute-id="CsApplePayUser"/>
                 <attribute attribute-id="CsApplePayPassword"/>
             </attribute-group>
-			<attribute-group group-id="Cybersource_paypal">
-                <display-name xml:lang="x-default">Cybersource Paypal</display-name>
+            <attribute-group group-id="CyberSource_paypal">
+                <display-name xml:lang="x-default">CyberSource_paypal</display-name>
+                <attribute attribute-id="isDecisionManagerEnable"/>
+                <attribute attribute-id="payPalBillingAgreements"/>
+                <attribute attribute-id="CsPaypalOrderType"/>
+                <attribute attribute-id="CsFundingSource"/>
                 <attribute attribute-id="CsEnableExpressPaypal"/>
-                <attribute attribute-id="CsPaypalSandboxURL"/>
-                <attribute attribute-id="CsPaypalLc"/>
-                <attribute attribute-id="CsPaypalPayflowcolor"/>
-                <attribute attribute-id="CsPaypalReqconfirmshipping"/>
-                <attribute attribute-id="CsPaypalHdrbordercolor"/>
-                <attribute attribute-id="CsPaypalPagestyle"/>
-                <attribute attribute-id="CsPaypalHdrbackcolor"/>
-                <attribute attribute-id="CsPaypalAddressOverride"/>
-                <attribute attribute-id="CsPaypalNoshipping"/>
-                <attribute attribute-id="CsPaypalLogoimg"/>
-                <attribute attribute-id="CsPaypalHdrimg"/>
-                <attribute attribute-id="CsRequestBillingAddress"/>
-                <attribute attribute-id="CsPaypalPaymentOption"/>
-				<attribute attribute-id="isDecisionManagerEnable"/>
-				<attribute attribute-id="CsPaypalCaptureCompleteType"/>
             </attribute-group>
-            <attribute-group group-id="Cybersource">
-                <display-name xml:lang="x-default">Cybersource</display-name>
+            <attribute-group group-id="CyberSource">
+                <display-name xml:lang="x-default">CyberSource</display-name>
                 <attribute attribute-id="CsMerchantId"/>
                 <attribute attribute-id="CsSecurityKey"/>
                 <attribute attribute-id="CsEndpoint"/>
@@ -1559,7 +2199,6 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="CsDavOnAddressVerificationFailure"/>
                 <attribute attribute-id="CsDavEnable"/>
                 <attribute attribute-id="CsPaMerchantId"/>
-                <attribute attribute-id="CsPaMerchantPassword"/>
                 <attribute attribute-id="CsPaMerchantName"/>
                 <attribute attribute-id="CsPoaCity"/>
                 <attribute attribute-id="CsPoaStateCode"/>
@@ -1582,76 +2221,34 @@ Undefined authorization:omit authIndicator field from the request message</descr
                 <attribute attribute-id="apPaymentType"/>
                 <attribute attribute-id="apTestReconciliationID"/>
                 <attribute attribute-id="CsCorrectShipState"/>
-                <attribute attribute-id="csCardDecisionManagerEnable"/>
                 <attribute attribute-id="csMasterCardAuthIndicator"/>
+                <attribute attribute-id="csCardDecisionManagerEnable"/>
                 <attribute attribute-id="CsDeveloperID"/>
+                <attribute attribute-id="CsEnableTaxation"/>
             </attribute-group>
-		</group-definitions>
-	</type-extension>
-	<type-extension type-id="PaymentCard">
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="csEnablePayerAuthentication">
-                <display-name xml:lang="x-default">Enable Payer Authenticaton</display-name>
-                <type>boolean</type>
-                <mandatory-flag>true</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-        </custom-attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="PayerAuth">
-                <display-name xml:lang="x-default">Payer Authentication</display-name>
-                <attribute attribute-id="csEnablePayerAuthentication"/>
+            <attribute-group group-id="CyberSource_AndroidPay">
+                <display-name xml:lang="x-default">CyberSource AndroidPay</display-name>
+                <attribute attribute-id="cybAndroidPayInterfaceUser"/>
+                <attribute attribute-id="cybAndroidPayInterfacePassword"/>
+                <attribute attribute-id="CsAndoridPayTokenizationEnabled"/>
             </attribute-group>
-        </group-definitions>
-    </type-extension>
-	<type-extension type-id="ShippingMethod">
-        <custom-attribute-definitions>
-            <attribute-definition attribute-id="CybersouceShippingID">
-                <display-name xml:lang="x-default">Cybersouce Shipping ID</display-name>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition>
-                        <display xml:lang="x-default">sameday</display>
-                        <value>sameday</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">oneday</display>
-                        <value>oneday</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">twoday</display>
-                        <value>twoday</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">threeday</display>
-                        <value>threeday</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">lowcost</display>
-                        <value>lowcost</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">pickup</display>
-                        <value>pickup</value>
-                    </value-definition>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">other</display>
-                        <value>other</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">none</display>
-                        <value>none</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-        </custom-attribute-definitions>
-        <group-definitions>
-            <attribute-group group-id="CybersouceShippingId">
-                <display-name xml:lang="x-default">Cybersouce Shipping ID</display-name>
-                <attribute attribute-id="CybersouceShippingID"/>
+            <attribute-group group-id="CyberSource_Klarna">
+                <display-name xml:lang="x-default">CyberSource Klarna</display-name>
+                <attribute attribute-id="isKlarnaRedirectionRequired"/>
+                <attribute attribute-id="isKlarnaDecisionManagerRequired"/>
+                <attribute attribute-id="klarnaJSAPIPath"/>
+            </attribute-group>
+            <attribute-group group-id="CyberSource_BankTransfer">
+                <display-name xml:lang="x-default">CyberSource Bank Transfer</display-name>
+                <attribute attribute-id="merchantDescriptorPostalCode"/>
+                <attribute attribute-id="merchantDescriptor"/>
+                <attribute attribute-id="merchantDescriptorContact"/>
+                <attribute attribute-id="merchantDescriptorState"/>
+                <attribute attribute-id="merchantDescriptorStreet"/>
+                <attribute attribute-id="merchantDescriptorCity"/>
+                <attribute attribute-id="merchantDescriptorCountry"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
+
 </metadata>
