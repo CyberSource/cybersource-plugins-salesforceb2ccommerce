@@ -393,8 +393,9 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
 					requestMap.put('item_'+itemId+'_code', item.getProductCode());
 				}
 				if (!empty(item.getProductName())) {
-					signed_field_names = signed_field_names + ",item_"+itemId+"_name";
-					requestMap.put('item_'+itemId+'_name', item.getProductName());
+					//signed_field_names = signed_field_names + ",item_"+itemId+"_name";
+					unsigned_field_names = unsigned_field_names + ",item_"+itemId+"_name";
+					requestMap.put('item_'+itemId+'_name', StringUtils.stringToHtml(item.getProductName()));
 				}
 				if (!empty(item.getUnitPrice())) {
 					signed_field_names = signed_field_names + ",item_"+itemId+"_unit_price";
