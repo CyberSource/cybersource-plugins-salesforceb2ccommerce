@@ -1,0 +1,14 @@
+{
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "env": {
+        "es6": true
+     },
+     "globals": {
+        "browser": true
+    },
+    "rules": {
+        "prefer-const": ["error"]
+    }
+}

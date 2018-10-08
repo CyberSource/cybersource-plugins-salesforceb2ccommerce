@@ -1,0 +1,20 @@
+{
+    "hooks": [
+        {
+            "name": "app.payment.processor.cybersource_credit",
+            "script": "./cartridge/scripts/hooks/payment/processor/cybersource_credit"
+        },
+        {
+            "name": "app.fraud.detection",
+            "script": "./cartridge/scripts/hooks/fraudDetection"
+        },
+        {
+            "name": "dw.extensions.applepay.paymentAuthorized.authorizeOrderPayment",
+            "script": "./cartridge/scripts/hooks/applepay/applePayAuth"
+        },
+        {
+            "name": "dw.order.calculateTax",
+            "script": "./cartridge/scripts/hooks/tax/taxes"
+        }
+    ]
+}

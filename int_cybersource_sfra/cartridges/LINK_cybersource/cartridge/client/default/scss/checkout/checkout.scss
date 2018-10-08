@@ -1,0 +1,87 @@
+@import "~base/checkout/checkout";
+@import "../components/creditCardField";
+
+.data-checkout-stage {
+    // Initial states ------------------------
+    &[data-checkout-stage] {
+        .card.secure-acceptance-iframe {
+            display: none;
+        }
+    }
+	
+	&[data-checkout-stage] {
+        button.sa_redirect {
+            display: none;
+        }
+    }
+	
+	&[data-checkout-stage] {
+        button.sa_iframe {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage] {
+        button.sa_silentpost {
+            display: none;
+        }
+    }
+	
+    // Payment -------------------------------
+    &[data-checkout-stage=payment] {
+        .card.secure-acceptance-iframe {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.sa_redirect {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.sa_iframe {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.sa_silentpost {
+            display: none;
+        }
+    }
+
+    // Place Order -----------------------------
+    &[data-checkout-stage=placeOrder] {
+        .card.secure-acceptance-iframe,
+        .card.payment-summary,
+        .shipping-summary {
+            display: block;
+        }
+    }
+
+    &[data-checkout-stage=submitted] {
+        .card.secure-acceptance-iframe {
+            display: none;
+        }
+    }
+    
+     &[data-checkout-stage=placeOrder] {
+        button.sa_redirect {
+            display: block;
+        }
+    }
+    
+     &[data-checkout-stage=placeOrder] {
+        button.sa_iframe {
+            display: block;
+        }
+    }
+    
+    &[data-checkout-stage=placeOrder] {
+        button.sa_silentpost {
+            display: block;
+        }
+    }
+}

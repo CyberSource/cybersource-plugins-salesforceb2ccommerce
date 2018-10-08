@@ -1,0 +1,224 @@
+'use strict';
+var Logger = require('dw/system/Logger');
+var dwsvc = require ("dw/svc");
+var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+
+/**
+ * This function creates subscription on basis of billto,card object,amount and currency of the order.
+ * @param purchaseTotals : Object having value of currency and amount.
+ * @param bill To : billing address of the order
+ * @param card : details of the card like name,account number, expiry year and month
+ */
+function CreateSubscription(billTo : Object,card : Object,purchaseTotals : Object)
+{
+
+    var billToObject = billTo;
+	var cardObject = card;
+	var purchaseObject = purchaseTotals;
+	
+	
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+
+	CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billToObject, purchaseObject, cardObject, "test");
+	
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = CSServices.CyberSourceTransactionService;
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper); 
+	}catch(e){
+		Logger.error("[subscriptionFacade.ds] Error in subscription request ( {0} )",e.message);
+		 return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		 return {error:true, errorMsg:"empty or error in CreateSubscription response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	var createSubscriptionResponse = {};
+	
+	if ( null !== serviceResponse.paySubscriptionCreateReply)
+	{
+		createSubscriptionResponse["SubscriptionIDToken"] = serviceResponse.paySubscriptionCreateReply.subscriptionID;
+	}
+	createSubscriptionResponse["decision"]= serviceResponse.decision;
+	createSubscriptionResponse["invalidField"] = serviceResponse.invalidField;
+	createSubscriptionResponse["missingField"] = serviceResponse.missingField;
+	createSubscriptionResponse["reasonCode"] = serviceResponse.reasonCode;
+	createSubscriptionResponse["requestID"] = serviceResponse.requestID;
+	createSubscriptionResponse["requestToken"] = serviceResponse.requestToken;
+	return {success:true, serviceResponse :createSubscriptionResponse};
+}
+
+
+/**
+ * This function deletes the  subscription on basis of its ID.
+ * @param subscriptionID : unique value of the subscription.
+ */
+function DeleteSubscription(subscriptionID)
+{
+
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+
+	CybersourceHelper.addPaySubscriptionDeleteService(serviceRequest, "test", subscriptionID);
+	
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = CSServices.CyberSourceTransactionService;
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper);  
+	}catch(e){
+		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		return {error:true};
+	}
+	serviceResponse = serviceResponse.object;
+	var deleteSubscriptionResponse = {};
+	deleteSubscriptionResponse['decision'] = serviceResponse.decision;
+	deleteSubscriptionResponse['invalidField'] = serviceResponse.invalidField;
+	deleteSubscriptionResponse['missingField'] = serviceResponse.missingField;
+	deleteSubscriptionResponse['reasonCode'] = serviceResponse.reasonCode;
+	deleteSubscriptionResponse['requestID'] = serviceResponse.requestID;
+	deleteSubscriptionResponse['requestToken'] = serviceResponse.requestToken;
+	return {success:true, serviceResponse:deleteSubscriptionResponse};
+}
+
+/**
+ * This function updates the  subscription on basis of subscription Id with updated values of billto,card object,amount and currency of the order.
+ * @param purchaseTotals : Object having value of currency and amount.
+ * @param bill To : billing address of the order
+ * @param card : details of the card like name,account number, expiry year and month
+ * @param subscriptionID : unique value of the subscription.
+ */
+function UpdateSubscription(billTo : Object,card : Object,purchaseTotals : Object,storedSubscriptionID : String)
+{
+	var billToObject = billTo;
+	var cardObject = card;
+	var purchaseObject = purchaseTotals;
+	var storedSubscriptionID : String = storedSubscriptionID;
+	
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+	var subscriptionObject = {};
+	
+	var csReference  = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+
+	CybersourceHelper.addSubscriptionUpdateInfo(serviceRequest,billToObject,purchaseObject,cardObject,storedSubscriptionID);
+	
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = CSServices.CyberSourceTransactionService;
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper); 
+	}
+	catch(e){
+		Logger.error("[UpdateSubscription.ds] Error in Service Call",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		Logger.error("[UpdateSubscription.ds] response is null");
+		return {error:true};
+	}
+	
+	else
+	{
+		serviceResponse = serviceResponse.object;
+		subscriptionObject['decision'] = serviceResponse.decision;
+		subscriptionObject['invalidField'] = serviceResponse.invalidField;
+		subscriptionObject['missingField'] = serviceResponse.missingField;
+		subscriptionObject['reasonCode'] = serviceResponse.reasonCode;
+		subscriptionObject['requestID'] = serviceResponse.requestID;
+		subscriptionObject['requestToken'] = serviceResponse.requestToken;
+		if(null !== serviceResponse.paySubscriptionUpdateReply){
+			subscriptionObject['NewSubscriptionID'] = serviceResponse.paySubscriptionUpdateReply.subscriptionID;
+		}
+	}
+	
+
+	Logger.info("[UpdateSubscriptionID.ds] Leaving");
+    return {success:true, response:subscriptionObject};
+}
+
+
+/**
+ * This function fetches details of the particular subscription on basis of its ID.
+ * @param subscriptionID : unique value of the subscription.
+ */
+
+function ViewSubscription(subscriptionID)
+{
+
+    var subscriptionObject = {};
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    	
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+
+	CybersourceHelper.addPaySubscriptionRetrieveService(serviceRequest, "test", subscriptionID);
+	
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = CSServices.CyberSourceTransactionService;
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials;
+		serviceResponse = service.call(requestWrapper);  
+	}catch(e){
+		Logger.error("[libCybersource.ds] Error in subscription request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		return {error:true};
+	}
+	else
+	{
+		serviceResponse = serviceResponse.object;
+		if ( null !== serviceResponse.paySubscriptionRetrieveReply)
+		{
+			subscriptionObject['response'] = serviceResponse.paySubscriptionRetrieveReply;
+		}
+			subscriptionObject['decision'] = serviceResponse.decision;
+			subscriptionObject['invalidField'] = serviceResponse.invalidField;
+			subscriptionObject['missingField'] = serviceResponse.missingField;
+			subscriptionObject['reasonCode'] = serviceResponse.reasonCode;
+			subscriptionObject['requestID'] = serviceResponse.requestID;
+			subscriptionObject['requestToken'] = serviceResponse.requestToken;
+	}
+	return {success:true, response:subscriptionObject};
+}
+
+module.exports = {
+		CreateSubscription: CreateSubscription,
+		DeleteSubscription: DeleteSubscription,
+		UpdateSubscription: UpdateSubscription,
+		ViewSubscription: ViewSubscription
+	};

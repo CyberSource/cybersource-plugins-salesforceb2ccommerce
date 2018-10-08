@@ -1,0 +1,3 @@
+<div class="tab-pane applepay-content" id="applepay-content" role="tabpanel">
+    <isapplepay class="apple-pay-cart btn btn-block"></isapplepay>
+</div>

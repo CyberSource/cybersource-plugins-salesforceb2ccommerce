@@ -1,0 +1,22 @@
+<iscomment>
+TEMPLATENAME: secureAcceptanceIframeSummary.isml
+</iscomment>
+<isscript>
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+ </isscript>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>	
+
+<isif condition="${empty(pdict.Basket)}">
+	<isreportcheckout checkoutstep="${6}" checkoutname="${'OrderPay'}"/>
+	<div class="form-row">
+		<a class="cyb_secureacceptance_iframe" id="${CybersourceConstants.METHOD_SA_IFRAME}" name="${CybersourceConstants.METHOD_SA_IFRAME}" value="${Resource.msg('global.submitorder','locale',null)}">
+			${Resource.msg('global.submitorder','locale',null)}
+		</a>
+	</div>
+	<div class="SecureAcceptance_IFRAME">
+	<input type="hidden" name="sa_iframeURL" id="sa_iframeURL" value="${dw.web.URLUtils.https('CYBSecureAcceptance-OpenIframe').toString()}"  /> 
+	</div>
+	<isset name="iframeURL" value="${dw.web.URLUtils.https('CYBSecureAcceptance-OpenIframe').toString()}" scope="page" />
+	
+</isif>

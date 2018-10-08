@@ -1,0 +1,11 @@
+<iscomment>
+	This template is used to redirect the pipeline 
+</iscomment>
+<isinclude url="${URLUtils.url('CYBCredit-IncludeDigitalFingerprint')}"/>
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+<div class="cyb_testfingerprintRedirect">
+<input type="hidden" id="URl_redirect" value ="${URLUtils.https('CYBServicesTesting-TestCCAuth')}" />
+	<isinclude url="${URLUtils.url('CYBServicesTesting-TestCCAuth')}"/>
+</div>
+

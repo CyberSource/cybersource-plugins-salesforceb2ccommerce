@@ -1,0 +1,6 @@
+{
+    "hooks": "~/hooks.json",
+    "init": [
+        "~/cartridge/scripts/init/SoapServiceInit.ds"
+    ]
+}
