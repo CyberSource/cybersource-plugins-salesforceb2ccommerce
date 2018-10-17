@@ -15,12 +15,33 @@ server.extend(page);
  * @returns {boolean} a boolean representing card validation
  */
 server.replace('SubmitPayment', server.middleware.https, function (req, res, next) {
+	var Site = require('dw/system/Site');
 	var paymentForm = server.forms.getForm('billing');
-	var paymentMethodID = server.forms.getForm('billing').paymentMethod.value;   
+	var paymentMethodID = server.forms.getForm('billing').paymentMethod.value; 
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
     var billingFormErrors = {};
     var creditCardErrors = {};
     var viewData = {};
     
+    //Secure Acceptance Flex Microform
+	if(CsSAType == 'SA_FLEX' && !req.form.storedPaymentUUID) {
+		var flexForm = new Object();
+		   flexForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
+		   flexForm.expirationMonth = server.forms.getForm('billing').creditCardFields.expirationMonth;
+		   flexForm.expirationYear = server.forms.getForm('billing').creditCardFields.expirationYear;
+		   flexForm.securityCode = server.forms.getForm('billing').creditCardFields.securityCode;
+		   flexForm.email = server.forms.getForm('billing').creditCardFields.email;
+		   flexForm.phone = server.forms.getForm('billing').creditCardFields.phone;
+		if(server.forms.getForm('billing').creditCardFields.flexresponse.value) {
+			var flexResponse = server.forms.getForm('billing').creditCardFields.flexresponse.value;
+			var flexString = JSON.parse(flexResponse);
+			var keyId = flexString.keyId;
+			flexForm.creditCardFields.cardNumber.value = flexString.maskedPan;
+			flexForm.creditCardFields.cardType.value = flexString.cardType;
+		}
+	}
+	
+	    
     var SAForm = new Object();
 	    SAForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
 	    SAForm.email = server.forms.getForm('billing').creditCardFields.email;
@@ -30,12 +51,16 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
     billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
     
 	    if(!req.form.storedPaymentUUID) {
-	    	if(paymentMethodID == "CREDIT_CARD" || paymentMethodID == "SA_SILENTPOST") {
+	    	if(paymentMethodID == "CREDIT_CARD") {
+	    		if(CsSAType == null || CsSAType == "SA_SILENTPOST") {
 				// verify credit card form data
-				creditCardErrors = COHelpers.validateCreditCard(paymentForm);
-	    	} else {
+	    			creditCardErrors = COHelpers.validateCreditCard(paymentForm);
+	    		} else if (CsSAType == 'SA_FLEX') {
+	    			creditCardErrors = COHelpers.validateCreditCard(flexForm);
+	    		} else {
 	    		// verify payment method, email and phone
-	        	creditCardErrors = COHelpers.validateCreditCard(SAForm);
+	    			creditCardErrors = COHelpers.validateCreditCard(SAForm);
+	    		}
 	    	}
 	    }
     
@@ -407,7 +432,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     Transaction.wrap(function () {
         basketCalculationHelpers.calculateTotals(currentBasket);
     });
-
+    
     // Re-validates existing payment instruments
     var validPayment = COHelpers.validatePayment(req, currentBasket);
     if (validPayment.error) {
@@ -460,6 +485,33 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 			 Data:handlePaymentResult.data, FormAction:handlePaymentResult.formAction
 		});
     	return next();
+    } else if (handlePaymentResult.intermediateSilentPost) {
+    	res.render(handlePaymentResult.renderViewPath, {
+    		requestData:handlePaymentResult.data, formAction:handlePaymentResult.formAction, cardObject:handlePaymentResult.cardObject
+		});
+    	return next();
+   } else if (handlePaymentResult.declined) {
+    	 session.custom.SkipTaxCalculation = false;
+    	 Transaction.wrap(function () { OrderMgr.failOrder(order); });
+    	 res.json({
+             error: true,
+             errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
+         });
+         return next();
+    } else if (handlePaymentResult.missingPaymentInfo) {
+   	     session.custom.SkipTaxCalculation = false;
+	   	 Transaction.wrap(function () { OrderMgr.failOrder(order); });
+	 	 res.json({
+	          error: true,
+	            errorMessage: Resource.msg('error.technical', 'checkout', null)
+	      });
+	 	 return next();
+    }else if (handlePaymentResult.process3DRedirection){
+        res.json({
+        	error: false,
+        	continueUrl: URLUtils.url('CheckoutServices-PayerAuthentication').toString()
+    	});
+        return next();
     }
     
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
@@ -507,5 +559,21 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
     
 });
-
+server.get('PayerAuthentication', server.middleware.https, function (req, res, next) {
+	var OrderMgr = require('dw/order/OrderMgr');
+	var order = OrderMgr.getOrder(session.privacy.order_id);
+	var AcsURL =  session.privacy.AcsURL;
+	var PAReq = session.privacy.PAReq;
+	var PAXID = session.privacy.PAXID;
+	session.privacy.AcsURL = '';
+	session.privacy.PAReq = '';
+	session.privacy.PAXID = '';
+	res.render('cart/payerauthentication', {
+		Order: order,
+		AcsURL:AcsURL,
+		PAReq:PAReq,
+		PAXID: PAXID
+	});
+	return next();
+});
 module.exports = server.exports();

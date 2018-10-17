@@ -200,8 +200,9 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
             }
             break;
         case 'paymentinstruments':
-            firstName = session.forms.creditCard.addressFields.firstName.value;
-            lastName = session.forms.creditCard.addressFields.lastName.value;
+            firstName = session.forms.billing.addressFields.firstName.value;
+            lastName = session.forms.billing.addressFields.lastName.value;
+            fullName = !empty(firstName) ? firstName + ' ' + lastName : null;
             accounNumber = session.forms.billing.creditCardFields.cardNumber.value;
             cardType = '' + session.forms.billing.creditCardFields.cardType.value;
             expiryMonth = '' + session.forms.billing.creditCardFields.expirationMonth.value;

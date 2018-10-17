@@ -3,6 +3,8 @@ var Logger = require('dw/system/Logger');
 var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 var URLUtils = require('dw/web/URLUtils');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var Site = require('dw/system/Site');
+
 /**
  * Add or Update Token details in customer payment cards from order payment instrument card details
  * @param CustomerObj : dw.customer.Customer
@@ -28,7 +30,7 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
                 }
                 //find token ID exists for matching payment card
                 if (cardTypeMatch && cardNumberMatch) {
-                    matchedPaymentInstrument = creditCardInstrument;
+                    matchedk = creditCardInstrument;
                     break;
                 }
             }
@@ -83,10 +85,10 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
 */
 function CreateHMACSignature(paymentInstrument, LineItemCtnr, responseParameterMap, subscriptionToken) {
     try {
-        var sitePreferenceData = GetSitePrefernceDetails(paymentInstrument, subscriptionToken);
+        var sitePreferenceData = GetSitePrefernceDetails(subscriptionToken);
         var HashMap = require('dw/util/HashMap');
         var requestMapResult = new HashMap();
-        var signatureAuthorize: Boolean = false;
+        var signatureAuthorize = false;
         var secretKey = sitePreferenceData.secretKey;
         var requestData = null, dataToSign, signature;
         var formAction = sitePreferenceData.formAction;
@@ -192,18 +194,19 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
         var requestMap = new HashMap();
         var paymentMethod = paymentInstrument.paymentMethod;
         var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-
+		var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+		
         /*Region BM Setting START: request setting for based on BM configuration*/
         if (null !== sitePreferenceData) {
             var ignore_avs = false;
             var ignore_cvn = false;
             var authIndicatorRes, providerVal;
             transaction_type = "authorization";
-            switch (paymentMethod) {
+            switch (CsSAType) {
                 case CybersourceConstants.METHOD_SA_REDIRECT:
                     providerVal = 'saredirect';
                 case CybersourceConstants.METHOD_SA_IFRAME:
-                    if (paymentMethod.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
+                    if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
                         providerVal = 'saiframe';
                     }
                     if (sitePreferenceData.CsTokenizationEnable === "YES") {
@@ -247,7 +250,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     }
                     signed_field_names = signed_field_names + ",override_custom_cancel_page";
                     signed_field_names = signed_field_names + ",override_custom_receipt_page";
-                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal,'order_token',orderToken));
+                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal, 'order_token', orderToken));
                     requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'order_id', lineItemCtnr.orderNo, 'order_token', lineItemCtnr.getOrderToken(), 'provider', providerVal));
 
                     break;
@@ -270,6 +273,26 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     }
                     signed_field_names = signed_field_names + ",override_custom_receipt_page";
                     requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
+                    break;
+                 case CybersourceConstants.METHOD_SA_FLEX:
+                    transaction_type = "create_payment_token";
+                    if (!empty(subscriptionToken)) {
+                        requestMap.put('payment_token', subscriptionToken);
+                        transaction_type = "update_payment_token";
+                    }
+                    if (!empty(lineItemCtnr) && !empty(lineItemCtnr.getCustomerNo())) {
+                        signed_field_names = signed_field_names + ",consumer_id";
+                        requestMap.put('consumer_id', lineItemCtnr.getCustomerNo());
+                    }
+                    requestMap.put('ignore_avs', true);
+                    requestMap.put('ignore_cvn', true);
+                    if (sitePreferenceData.csCardDecisionManagerEnable) {
+                        requestMap.put('skip_decision_manager', false);
+                    } else {
+                        requestMap.put('skip_decision_manager', true);
+                    }
+                    signed_field_names = signed_field_names + ",override_custom_receipt_page";
+                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-FlexMicroformResponse'));
                     break;
                 default:
                     transaction_type = "authorization";
@@ -309,6 +332,8 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
     var reference_number;
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants'),
         CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'helper/CommonHelper');
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+
     /*Region BM Setting END:*/
     /*Region request creation START:*/
     if (null !== lineItemCtnr) {
@@ -316,8 +341,12 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
         requestMap.put('amount', nonGiftCardAmount.value.toFixed(2));
         requestMap.put('currency', lineItemCtnr.currencyCode);
 
-        if (paymentMethod === CybersourceConstants.METHOD_SA_SILENTPOST) {
-            reference_number = lineItemCtnr.UUID;
+        if (CsSAType === CybersourceConstants.METHOD_SA_SILENTPOST) {
+            reference_number = lineItemCtnr.orderNo;
+            requestMap.put('reference_number', reference_number);
+            requestMap.put('payment_method', 'card');
+        } else if (CsSAType === CybersourceConstants.METHOD_SA_FLEX) {
+        	reference_number = lineItemCtnr.UUID;
             requestMap.put('reference_number', reference_number);
             requestMap.put('payment_method', 'card');
         } else {
@@ -387,7 +416,7 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
                     requestMap.put('item_' + itemId + '_code', item.getProductCode());
                 }
                 if (!empty(item.getProductName())) {
-                    signed_field_names = signed_field_names + ",item_"+itemId+"_name";
+                    signed_field_names = signed_field_names + ",item_" + itemId + "_name";
                     //unsigned_field_names = unsigned_field_names + ",item_" + itemId + "_name";
                     requestMap.put('item_' + itemId + '_name', StringUtils.stringToHtml(item.getProductName()));
                 }
@@ -417,13 +446,13 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
  * Fetch site preference configurations for secure acceptance[redirect/Iframe/SilentPost]
  * @param paymentInstrument : Payment Instrument object is set to get payment method information.
 */
-function GetSitePrefernceDetails(paymentInstrument, subscriptionToken) {
+function GetSitePrefernceDetails(subscriptionToken) {
     var sitePreference = {};
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var CsTokenizationEnable: dw.value.EnumValue;
-    if (null !== paymentInstrument) {
-        var paymentMethod = paymentInstrument.paymentMethod;
-        switch (paymentMethod) {
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+    if (null !== CsSAType) {
+        switch (CsSAType) {
             case CybersourceConstants.METHOD_SA_REDIRECT:
                 sitePreference["access_key"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Redirect_AccessKey");
                 sitePreference["profile_id"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Redirect_ProfileID");
@@ -442,6 +471,21 @@ function GetSitePrefernceDetails(paymentInstrument, subscriptionToken) {
 
                 break;
             case CybersourceConstants.METHOD_SA_SILENTPOST:
+                sitePreference["access_key"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_AccessKey");
+                sitePreference["profile_id"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_ProfileID");
+                sitePreference["secretKey"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_SecretKey");
+                if (empty(subscriptionToken)) {
+                    sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('Secure_Acceptance_Token_Create_Endpoint');
+                    sitePreference["signed_field_names"] = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country";
+                    sitePreference["unsigned_field_names"] = "card_type,card_expiry_date,card_cvn,card_number";
+                }
+                else {
+                    sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('Secure_Acceptance_Token_Update_Endpoint');
+                    sitePreference["signed_field_names"] = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country,payment_token";
+                    sitePreference["unsigned_field_names"] = "card_type,card_expiry_date,card_cvn";
+                }
+                break;
+            case CybersourceConstants.METHOD_SA_FLEX:
                 sitePreference["access_key"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_AccessKey");
                 sitePreference["profile_id"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_ProfileID");
                 sitePreference["secretKey"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_SecretKey");
@@ -813,10 +857,6 @@ function AuthorizeCreditCard(args) {
         session.privacy.process3DRequest = true;
         var handle3DResponse = {
             process3DRedirection: true,
-            Order: args.Order,
-            AcsURL: result.serviceResponse.AcsURL,
-            PAReq: result.serviceResponse.PAReq,
-            PAXID: result.serviceResponse.PAXID
         };
         return handle3DResponse;
     }
@@ -872,7 +912,7 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
     }
     if (paEnabled && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-        result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard);
+        result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields);
         if (result.error) {
             return result;
         }
@@ -884,6 +924,9 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         if (serviceResponse.ReasonCode === 100) {
             return { OK: true, serviceResponse: serviceResponse };
         } else if (!empty(serviceResponse.AcsURL)) {
+            session.privacy.AcsURL = serviceResponse.AcsURL;
+            session.privacy.PAReq = serviceResponse.PAReq;
+            session.privacy.PAXID = serviceResponse.PAXID;
             session.privacy.order_id = orderNo;
             return { payerauthentication: true, serviceResponse: serviceResponse };
         } else {

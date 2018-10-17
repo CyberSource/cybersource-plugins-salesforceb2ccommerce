@@ -13,6 +13,12 @@
         <password encrypted="true" encryption-type="common.export"></password>
     </service-credential>
 
+    <service-credential service-credential-id="CybersourceFlexToken">
+        <url>https://apitest.cybersource.com/flex/v1/keys</url>
+        <user-id></user-id>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+
     <service-profile service-profile-id="CybersourceProfile">
         <timeout-millis>30000</timeout-millis>
         <rate-limit-enabled>false</rate-limit-enabled>
@@ -26,7 +32,7 @@
     <service service-id="cybersource.conversiondetailreport">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
-        <log-prefix>cybersource</log-prefix>
+        <log-prefix>Cybersource</log-prefix>
         <comm-log-enabled>false</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>CybersourceProfile</profile-id>
@@ -36,11 +42,22 @@
     <service service-id="cybersource.soap.transactionprocessor.generic">
         <service-type>SOAP</service-type>
         <enabled>true</enabled>
-        <log-prefix>cybersource</log-prefix>
+        <log-prefix>Cybersource</log-prefix>
         <comm-log-enabled>false</comm-log-enabled>
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>CybersourceProfile</profile-id>
         <credential-id>CybersourceService</credential-id>
+    </service>
+
+    <service service-id="cybersource.http.flextoken">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>Cybersource</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>false</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>CybersourceProfile</profile-id>
+        <credential-id>CybersourceFlexToken</credential-id>
     </service>
 
 </services>

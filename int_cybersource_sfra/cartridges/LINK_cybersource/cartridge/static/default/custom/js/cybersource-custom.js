@@ -58,7 +58,7 @@ $(document).ready(function () {
 	if($("div").hasClass("SecureAcceptance_IFRAME"))
 	{	
 		var url_loc = document.getElementById("sa_iframeURL").value;
-		$(".SecureAcceptance_IFRAME").append('<iframe src='+url_loc+'  name="hss_iframe"  width="78%" height="730px" scrolling="no" />');
+		$(".SecureAcceptance_IFRAME").append('<iframe src='+url_loc+'  name="hss_iframe"  width="100%" height="730px" scrolling="no" />');
 		
 	}	
 	// For Secure Acceptance Iframe 
@@ -153,20 +153,21 @@ $(document).ready(function () {
 		    	}
 		    }
 		};
-	if(SitePreferences.ISPAYPALENABLED && $('.paypal-button-container-mini').length>0){
+	var isPaypalEnabled = $('#isPaypalEnabled').length>0 ? document.getElementById("isPaypalEnabled").value : false;
+	if(isPaypalEnabled && $('.paypal-button-container-mini').length>0){
 	paypal.Button.render(config,'.paypal-button-container-mini');
 	}
-	if(SitePreferences.ISPAYPALENABLED && $('.paypal-button-container-cart1').length>0){
+	if(isPaypalEnabled && $('.paypal-button-container-cart1').length>0){
 		paypal.Button.render(config,'.paypal-button-container-cart1');	
 	}
-	if(SitePreferences.ISPAYPALENABLED && $('.paypal-button-container-cart2').length>0){
+	if(isPaypalEnabled && $('.paypal-button-container-cart2').length>0){   
 		paypal.Button.render(config,'.paypal-button-container-cart2');
 	}
-	if(SitePreferences.ISPAYPALENABLED && $('#paypal-button-container').length>0){
+	if(isPaypalEnabled && $('#paypal-button-container').length>0){
 		paypal.Button.render(config,'#paypal-button-container');
 	}
 	//Settings for PayPal Credit Card Button
-	if(SitePreferences.ISPAYPALENABLED && $('#paypal-credit-container').length>0){
+	if(isPaypalEnabled && $('#paypal-credit-container').length>0){
 		config.style ={
 				label: 'credit',
 	            size:  'small', // small | medium

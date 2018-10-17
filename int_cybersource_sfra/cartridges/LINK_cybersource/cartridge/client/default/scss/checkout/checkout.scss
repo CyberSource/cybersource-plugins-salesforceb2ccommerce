@@ -27,6 +27,11 @@
         }
     }
 	
+	&[data-checkout-stage] {
+        button.sa_flex {
+            display: none;
+        }
+    }
     // Payment -------------------------------
     &[data-checkout-stage=payment] {
         .card.secure-acceptance-iframe {
@@ -51,7 +56,17 @@
             display: none;
         }
     }
-
+	
+	&[data-checkout-stage=payment] {
+        button.sa_flex {
+            display: block;
+        }
+    }
+	
+	#cardNumber-container{
+	 height:43px;
+	}
+	
     // Place Order -----------------------------
     &[data-checkout-stage=placeOrder] {
         .card.secure-acceptance-iframe,
@@ -61,6 +76,12 @@
         }
     }
 
+    &[data-checkout-stage=submitted] {
+        button.sasilentpost {
+            display: none;
+        }
+    }
+    
     &[data-checkout-stage=submitted] {
         .card.secure-acceptance-iframe {
             display: none;
@@ -82,6 +103,12 @@
     &[data-checkout-stage=placeOrder] {
         button.sa_silentpost {
             display: block;
+        }
+    }
+    
+    &[data-checkout-stage=placeOrder] {
+        button.sa_flex {
+            display: none;
         }
     }
 }

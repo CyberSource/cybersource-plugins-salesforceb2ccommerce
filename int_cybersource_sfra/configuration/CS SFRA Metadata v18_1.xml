@@ -1051,6 +1051,15 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-value>0.0</min-value>
                 <default-value>86400000</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsOrderImportLookBack">
+                <display-name xml:lang="x-default">CS Decision Manager OrderUpdate Lookback time </display-name>
+                <description xml:lang="x-default">Time, in hours to look back for new decisions when running the Decision Manager Order Update job.</description>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-value>0.0</min-value>
+                <default-value>24</default-value>
             </attribute-definition>            
             <attribute-definition attribute-id="CsDeviceFingerprintJetmetrixLocation">
                 <display-name xml:lang="x-default">CS Device Fingerprint ThreatMetrix URL</display-name>
@@ -1328,6 +1337,52 @@
                 <min-length>0</min-length>
                 <field-length>100</field-length>
             </attribute-definition>
+			<attribute-definition attribute-id="SA_Flex_HostName">
+                <display-name xml:lang="x-default">Secure Acceptance Flex Host Name</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Flex_KeyID">
+                <display-name xml:lang="x-default">Secure Acceptance Flex KeyId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="SA_Flex_SharedSecret">
+                <display-name xml:lang="x-default">Secure Acceptance Flex Shared Secret</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+			<attribute-definition attribute-id="CsSAType">
+                <display-name xml:lang="x-default">Secure Acceptance Type</display-name>
+                <description xml:lang="x-default">Secure Acceptance Type</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">SA Redirect</display>
+                        <value>SA_REDIRECT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SA iFrame</display>
+                        <value>SA_IFRAME</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SA SilentPost</display>
+                        <value>SA_SILENTPOST</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">SA Flex</display>
+                        <value>SA_FLEX</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="SA_Iframe_AccessKey">
                 <display-name xml:lang="x-default">CS SA Iframe Access Key</display-name>
                 <type>string</type>
@@ -1447,6 +1502,7 @@
                 <attribute attribute-id="csMasterCardAuthIndicator"/>
 								
 				<attribute attribute-id="csCardDecisionManagerEnable"/>
+                <attribute attribute-id="CsOrderImportLookBack"/>
 				
                 <attribute attribute-id="CsTokenizationEnable"/>
 				
@@ -1486,6 +1542,7 @@
             </attribute-group>
             <attribute-group group-id="CyberSource_SecureAcceptance">
                 <display-name xml:lang="x-default">CyberSource: Secure Acceptance</display-name>
+                <attribute attribute-id="CsSAType"/>
                 <attribute attribute-id="SAPostCustomerServiceEmail"/>
                 <attribute attribute-id="SA_Redirect_ProfileID"/>
                 <attribute attribute-id="SA_Redirect_SecretKey"/>
@@ -1503,6 +1560,9 @@
                 <attribute attribute-id="CsCvnDeclineFlags"/>
                 <attribute attribute-id="Secure_Acceptance_Token_Update_Endpoint"/>
                 <attribute attribute-id="Secure_Acceptance_Token_Create_Endpoint"/>
+				<attribute attribute-id="SA_Flex_SharedSecret"/>
+                <attribute attribute-id="SA_Flex_KeyID"/>
+                <attribute attribute-id="SA_Flex_HostName"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

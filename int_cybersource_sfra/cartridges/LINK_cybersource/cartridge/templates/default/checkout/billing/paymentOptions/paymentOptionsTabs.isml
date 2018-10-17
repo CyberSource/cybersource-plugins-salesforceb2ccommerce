@@ -5,13 +5,4 @@
     <isif condition="${paymentOption.ID === 'DW_APPLE_PAY'}">
         <isinclude template="checkout/billing/paymentOptions/applePayTab" />
     </isif>
-    <isif condition="${paymentOption.ID === 'SA_IFRAME'}">
-        <isinclude template="checkout/billing/paymentOptions/secureAcceptanceIframeTab" />
-    </isif>
-    <isif condition="${paymentOption.ID === 'SA_SILENTPOST'}">
-        <isinclude template="checkout/billing/paymentOptions/secureAcceptanceSilentPostTab" />
-    </isif>
-    <isif condition="${paymentOption.ID === 'SA_REDIRECT'}">
-        <isinclude template="checkout/billing/paymentOptions/secureAcceptanceRedirectTab" />
-    </isif>  
 </isloop>

@@ -1,0 +1,19 @@
+<div id="secureAcceptancePost">
+	<form method="post" id="silentPostFetchToken" action="${pdict.formAction}"  target="_parent">
+		<isif condition="${!empty(pdict.requestData)}"> 
+			<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
+				<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="off"/>' />
+			</isloop>
+		</isif>		
+		<isif condition="${!empty(pdict.cardObject)}">
+			<input type="hidden" id="card_type" name="card_type" value="${pdict.cardObject.cardType}">
+			<input type="hidden" id="card_cvn" name="card_cvn" value="${pdict.cardObject.cvNumber}">
+			<input type="hidden" id="card_expiry_date" name="card_expiry_date" value="${pdict.cardObject.expirationMonth.length == 1 ? '0'+pdict.cardObject.expirationMonth + '-' + pdict.cardObject.expirationYear : pdict.cardObject.expirationMonth + '-' + pdict.cardObject.expirationYear}">
+		</isif>
+	</form>
+</div>  
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#silentPostFetchToken").submit();
+	});
+</script>

@@ -9,7 +9,7 @@ var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-
+var Site = require('dw/system/Site');
 /**
  * Creates a token.
  * @returns {string} a token
@@ -42,11 +42,12 @@ exports.CreatePaymentToken = function (module) {
  * @returns {Object} -  {fieldErrors: [], serverErrors: [], error: Boolean}
  */
 exports.Handle = function (basket, paymentInformation) {
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
 	var PaymentMethod = session.forms.billing.paymentMethod.value;
 	if (empty(PaymentMethod)) {
 		return {error: true};
 	}
-	if (!PaymentMethod.equals(CybersourceConstants.METHOD_SA_IFRAME) && !PaymentMethod.equals(CybersourceConstants.METHOD_SA_REDIRECT) && !PaymentMethod.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
+	if (CsSAType == null) {
 		var Cybersource = require('LINK_cybersource/cartridge/scripts/Cybersource');
 		return Cybersource.HandleCard(basket, paymentInformation);
 	} else {
@@ -66,6 +67,7 @@ exports.Handle = function (basket, paymentInformation) {
  * @returns {Object} -  {fieldErrors: [], serverErrors: [], error: Boolean}
  */
 exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) {
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
     var pi = paymentInstrument;
@@ -79,7 +81,7 @@ exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) 
     });
 
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    if (!paymentMethod.equals(CybersourceConstants.METHOD_SA_IFRAME) && !paymentMethod.equals(CybersourceConstants.METHOD_SA_REDIRECT) && !paymentMethod.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
+	if (CsSAType == null) {
         var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
         return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
     } else {
@@ -102,13 +104,32 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
 	 var cardSecurityCode = paymentInformation.securityCode.value;
 	 var expirationMonth = paymentInformation.expirationMonth.value;
 	 var expirationYear = paymentInformation.expirationYear.value;
-     var transStatus = Transaction.wrap(function () {
-    	 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
-    	 CommonHelper.removeExistingPaymentInstruments(cart);
-    	 var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
-    	 var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, amount);
-        return true;
-    });
+	 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
+	 var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	 var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
+
+	 if(CsSAType != 'SA_SILENTPOST') {
+	         var transStatus = Transaction.wrap(function () {
+	    	 CommonHelper.removeExistingPaymentInstruments(cart);
+	    	 var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, amount);
+	        return true;
+	    });
+	 } else {
+		    session.forms.billing.creditCardFields.securityCode.value = paymentInformation.securityCode.value;
+		 	var transStatus = Transaction.wrap(function () {
+	        CommonHelper.removeExistingPaymentInstruments(cart);
+	        var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, amount);
+		        paymentInstrument.setCreditCardHolder(cart.billingAddress.fullName);
+		        paymentInstrument.setCreditCardNumber(cardNumber);
+		        paymentInstrument.setCreditCardType(cardType);
+		        paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
+		        paymentInstrument.setCreditCardExpirationYear(expirationYear);
+		        if (!empty(paymentInformation.creditCardToken)) {
+		            paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
+		        }
+	        return true;
+	    });
+	 }
     if (transStatus) {
     	return {sucess: true};
     }
@@ -121,6 +142,7 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
  * This function takes order No and payment instrument as Input
  */
 function SecureAcceptanceAuthorize (orderNumber, paymentInstrument, paymentProcessor) {
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
 	var PaymentMgr = require('dw/order/PaymentMgr'),
 		Transaction = require('dw/system/Transaction');
 	var paymentInstrument = paymentInstrument,
@@ -136,7 +158,7 @@ function SecureAcceptanceAuthorize (orderNumber, paymentInstrument, paymentProce
 	Transaction.wrap(function () {
 		paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 	 });
-	if (paymentMethod == CybersourceConstants.METHOD_SA_REDIRECT) {
+	if (CsSAType.equals(CybersourceConstants.METHOD_SA_REDIRECT)) {
 		additionalArgs.subscriptionToken = session.forms.billing.creditCardFields.selectedCardID.value;
 	    var secureAcceptanceAdapter = require('~/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
 		var saRedirectRequest = secureAcceptanceAdapter.Authorize(orderNumber, paymentInstrument, paymentProcessor,additionalArgs);
@@ -154,8 +176,11 @@ function SecureAcceptanceAuthorize (orderNumber, paymentInstrument, paymentProce
 		 }else{
 	  	return {error:true};
 		}
-	}else{
-		if (paymentMethod == CybersourceConstants.METHOD_SA_IFRAME) {
+	} else if (CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
+		additionalArgs.subscriptionToken = session.forms.billing.creditCardFields.selectedCardID.value;
+		return require('~/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter').Authorize(orderNumber, paymentInstrument, paymentProcessor,additionalArgs);   
+	} else {
+		if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
 			session.privacy.order_id = orderNumber;
 		}
 		return require('~/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter').Authorize(orderNumber, paymentInstrument, paymentProcessor,additionalArgs);   

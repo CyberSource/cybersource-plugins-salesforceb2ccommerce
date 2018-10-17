@@ -1,5 +1,0 @@
-<li class="nav-item secureacceptance-iframe-tab-wrapper" data-method-id="${paymentOption.ID}">
-    <a class="nav-link credit-card-tab" data-toggle="tab" data-method-id="${paymentOption.ID}" href="#credit-card-content" role="tab">
-         ${paymentOption.name}
-    </a>
-</li>

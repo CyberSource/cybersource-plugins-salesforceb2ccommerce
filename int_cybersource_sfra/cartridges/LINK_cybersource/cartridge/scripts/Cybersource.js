@@ -39,34 +39,36 @@ function HandleCard(basket, paymentInformation) {
                 cardSecurityCode
             );
         } else {
-            cardErrors[paymentInformation.cardNumber.htmlName] = Resource.msg('error.invalid.card.number', 'creditCard', null);
+            cardErrors[paymentInformation.cardNumber.htmlName] = dw.web.Resource.msg('error.invalid.card.number', 'creditCard', null);
             return { fieldErrors: [cardErrors], serverErrors: serverErrors, error: true };
         }
 
         if (creditCardStatus.error) {
+        	var collections = require('*/cartridge/scripts/util/collections');
+			var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
             collections.forEach(creditCardStatus.items, function (item) {
                 switch (item.code) {
 
                     case PaymentStatusCodes.CREDITCARD_INVALID_CARD_NUMBER:
                         cardErrors[paymentInformation.cardNumber.htmlName] =
-                            Resource.msg('error.invalid.card.number', 'creditCard', null);
+                            dw.web.Resource.msg('error.invalid.card.number', 'creditCard', null);
                         break;
 
                     case PaymentStatusCodes.CREDITCARD_INVALID_EXPIRATION_DATE:
                         cardErrors[paymentInformation.expirationMonth.htmlName] =
-                            Resource.msg('error.expired.credit.card', 'creditCard', null);
+                            dw.web.Resource.msg('error.expired.credit.card', 'creditCard', null);
                         cardErrors[paymentInformation.expirationYear.htmlName] =
-                            Resource.msg('error.expired.credit.card', 'creditCard', null);
+                            dw.web.Resource.msg('error.expired.credit.card', 'creditCard', null);
                         break;
 
                     case PaymentStatusCodes.CREDITCARD_INVALID_SECURITY_CODE:
                         cardErrors[paymentInformation.securityCode.htmlName] =
-                            Resource.msg('error.invalid.security.code', 'creditCard', null);
+                            dw.web.Resource.msg('error.invalid.security.code', 'creditCard', null);
                         break;
 
                     default:
                         serverErrors.push(
-                            Resource.msg('error.card.information.error', 'creditCard', null)
+                            dw.web.Resource.msg('error.card.information.error', 'creditCard', null)
                         );
                 }
             });
@@ -167,7 +169,7 @@ function Process3DRequestParent(args) {
             var PAXID = request.httpParameterMap.PAXID.value;
 
             var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken());
+            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken());
             if (result.success && result.serviceResponse.ReasonCode === 100 && PAXID === result.serviceResponse.PAVXID) {
                 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
                 result = secureAcceptanceHelper.HookIn3DRequest({ Order: order, payerValidationResponse: result.serviceResponse, paymentInstrument: paymentInstrument, SubscriptionID: paymentInstrument.getCreditCardToken() });

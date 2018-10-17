@@ -25,7 +25,9 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 				res.redirect(dw.web.URLUtils.https('COPlaceOrder-SubmitOrder', 'order_id', providerResult.Order.orderNo));
 				return next();
 			} else if (providerResult.error) {
-				fail({Order:providerResult.Order});
+				var args = {Order : providerResult.Order};
+				var failOrderResult = failOrder(args);
+				res.redirect(dw.web.URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', dw.web.Resource.msg('payerauthentication.carderror', 'cybersource', null)));
 				return next();
 			} else if (providerResult.cancelfail) {
 				res.redirect(dw.web.URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderResult', providerResult.PlaceOrderError));
@@ -84,6 +86,29 @@ server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next
 
 	    return next();
 });
+
+function failOrder(args){
+	var Cybersource = require('~/cartridge/scripts/Cybersource');
+	var orderResult = Cybersource.GetOrder(args.Order);
+	if (orderResult.error) {
+		args.PlaceOrderError = orderResult.PlaceOrderError;
+		return args;
+	}
+	var order = orderResult.Order;
+	var PlaceOrderError = args.PlaceOrderError!= null ? args.PlaceOrderError : new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined", "Payment Declined");
+	session.custom.SkipTaxCalculation=false;
+	var failResult = dw.system.Transaction.wrap(function () {
+		OrderMgr.failOrder(order);
+		return {
+			error: true,
+			PlaceOrderError: PlaceOrderError
+		};
+	});
+	if (failResult.error){
+	args.PlaceOrderError = failResult.PlaceOrderError;
+   }
+	return args;
+}
 
 /**
  * Leave order in created state in demandware and send order confirmation email

@@ -967,7 +967,7 @@ function validateBillingAddress() {
 	var city = (session.forms.billing.addressFields.city.value);
 	var country = (session.forms.billing.addressFields.country.value);
 	var email = (session.forms.billing.creditCardFields.email.value);
-	var phoneNumber = (session.forms.billing.addressFields.phone.value);
+	var phoneNumber = (session.forms.billing.creditCardFields.phone.value);
 	var postalCode = (session.forms.billing.addressFields.postalCode.value);
 	var state = (session.forms.billing.addressFields.states.stateCode.value);
 	var street1 = (session.forms.billing.addressFields.address1.value);

@@ -610,7 +610,7 @@ var CybersourceHelper = {
 
         __setClientData(serviceRequest, orderNo);
 
-        if (!empty(subscriptionToken)) {
+        if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
             request_recurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
@@ -668,11 +668,11 @@ var CybersourceHelper = {
     addCardInfo: function (request, creditCardForm) {
         var StringUtils = require('dw/util/StringUtils');
         request.card = new CybersourceHelper.csReference.Card();
-        request.card.expirationMonth = StringUtils.formatNumber(creditCardForm.expiration.month.htmlValue, '00');
-        request.card.expirationYear = creditCardForm.expiration.year.value;
-        request.card.accountNumber = creditCardForm.number.value;
+        request.card.expirationMonth = StringUtils.formatNumber(creditCardForm.expirationMonth.value, '00');
+        request.card.expirationYear = creditCardForm.expirationYear.value;
+        request.card.accountNumber = creditCardForm.cardNumber.value;
 
-        switch (creditCardForm.type.htmlValue) {
+        switch (creditCardForm.cardType.value) {
             case 'Visa':
                 request.card.cardType = '001';
                 break;

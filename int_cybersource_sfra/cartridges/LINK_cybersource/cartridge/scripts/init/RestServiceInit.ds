@@ -1,0 +1,44 @@
+
+/** *******************************************************************************
+*
+* Description: 	Class for Cybersource HTTP Service Initialization,
+*
+/*********************************************************************************/
+var HashMap = require('dw/util/HashMap');
+var SOAPUtil = require('dw/rpc/SOAPUtil');
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
+/**
+ *
+ *	HTTP Services
+ *
+ */
+/** *******************************************************************************
+* Service Name : cybersource.http.flextoken
+* Input 	   : request object holds the input parameter for the respective service request(custom) Object
+*
+/*********************************************************************************/
+
+// dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic", {
+/*
+* Description  : Method to Initialize cybersource.soap.transactionprocessor service
+* Input 	   : None
+* output	   : Service Client
+*
+/***/
+var CyberSourceFlexTokenService = LocalServiceRegistry.createService("cybersource.http.flextoken", {
+	createRequest: function(svc, requestObj, digestString){
+		svc.setURL("https://apitest.cybersource.com/flex/v1/keys");  
+		svc.setRequestMethod("POST");  
+		svc.addHeader("Accept","application/json; charset=utf-8");
+		svc.addHeader("Content-Type", "application/json; charset=utf-8");
+		for each(var key in requestObj.keySet()){
+	         svc.addHeader(key, requestObj.get(key));
+		}
+		return digestString;
+	},
+	parseResponse: function(svc, client) {
+		return client.text;
+	}
+});
+
+exports.CyberSourceFlexTokenService = CyberSourceFlexTokenService;

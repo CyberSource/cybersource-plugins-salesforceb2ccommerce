@@ -6,14 +6,5 @@
         <isif condition="${payment.paymentMethod === 'DW_APPLE_PAY'}">
             <isinclude template="checkout/billing/paymentOptions/applePaySummary" />
         </isif>
-        <isif condition="${payment.paymentMethod === 'SA_IFRAME'}">
-            <isinclude template="checkout/billing/paymentOptions/secureAcceptanceIframeSummary" />
-        </isif>
-        <isif condition="${payment.paymentMethod === 'SA_SILENTPOST'}">
-            <isinclude template="checkout/billing/paymentOptions/secureAcceptanceSilentPostSummary" />
-        </isif>
-        <isif condition="${payment.paymentMethod === 'SA_REDIRECT'}">
-            <isinclude template="checkout/billing/paymentOptions/secureAcceptanceRedirectSummary" />
-        </isif>
     </isloop>
 </div>

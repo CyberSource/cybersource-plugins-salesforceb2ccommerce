@@ -204,7 +204,7 @@ function cancelfail(args) {
  * Process redirect url response of card 3d payer auth
  */
 function card(args) {
-    var orderResult = Cybersource.GetOrder({ Order: args.Order });
+    var orderResult = Cybersource.GetOrder(args);
     if (orderResult.error) {
         return { carterror: true };
     }

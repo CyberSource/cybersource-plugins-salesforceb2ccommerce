@@ -1,0 +1,23 @@
+<iscomment>
+	This template will submit the form on page onload
+</iscomment>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+<title>${Resource.msg('payerauthenticationredirect.title','cybersource',null)}</title>
+	
+</head>
+<body class="cyb_payerauthenticationredirect">
+	<form action="${URLUtils.https('COPlaceOrder-Submit','provider','card')}" method="POST" name="RedirectForm" target="_parent">
+	    <input type="hidden" name="MD" value="${pdict.CurrentHttpParameterMap.MD.stringValue}"/>
+	    <input type="hidden" name="PaRes" value="${pdict.CurrentHttpParameterMap.PaRes.stringValue}"/>
+	    <input type="hidden" name="order_token" value="${pdict.CurrentHttpParameterMap.order_token.stringValue}">
+	    <input type="hidden" name="PAXID" value="${pdict.CurrentHttpParameterMap.PAXID.stringValue}">
+	      
+	    
+	</form>
+</body></html>
+

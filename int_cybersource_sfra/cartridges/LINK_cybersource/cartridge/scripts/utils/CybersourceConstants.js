@@ -20,6 +20,7 @@ CybersourceConstants.METHOD_PAYPAL_CREDIT = 'PAYPAL_CREDIT';
 CybersourceConstants.METHOD_SA_REDIRECT = 'SA_REDIRECT';
 CybersourceConstants.METHOD_SA_IFRAME = 'SA_IFRAME';
 CybersourceConstants.METHOD_SA_SILENTPOST = 'SA_SILENTPOST';
+CybersourceConstants.METHOD_SA_FLEX = 'SA_FLEX';
 CybersourceConstants.METHOD_VISA_CHECKOUT = 'VISA_CHECKOUT';
 CybersourceConstants.METHOD_ApplePay = 'DW_APPLE_PAY';
 CybersourceConstants.METHOD_AndroidPay = 'DW_ANDROID_PAY';

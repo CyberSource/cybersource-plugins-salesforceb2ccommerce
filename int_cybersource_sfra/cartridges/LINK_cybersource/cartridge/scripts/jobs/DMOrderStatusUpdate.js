@@ -130,14 +130,16 @@ function setDateTimeForParameter() {
     var System = require('dw/system/System');
     var StringUtils = require('dw/util/StringUtils');
     var time = {};
-    //date logic: considering to run Batch job one day before the current date
     var endDate = System.getCalendar();
     endDate.setTimeZone('GMT');
     time.enddate = StringUtils.formatCalendar(endDate, 'yyyy-MM-dd');
     time.endtime = StringUtils.formatCalendar(endDate, 'HH:mm:ss');
     var currentDate = System.getCalendar();
     currentDate.setTimeZone('GMT');
-    currentDate.add(dw.util.Calendar.HOUR, -23);
+    var Site = require('dw/system/Site');
+    var lookBackPref = Site.getCurrent().getCustomPreferenceValue('CsOrderImportLookBack');
+    var lookbackTime = empty(lookBackPref) ? -24 : (-1 * lookBackPref);
+    currentDate.add(dw.util.Calendar.HOUR, lookbackTime);
     time.startDate = StringUtils.formatCalendar(currentDate, 'yyyy-MM-dd');
     time.startTime = StringUtils.formatCalendar(currentDate, 'HH:mm:ss');
     return time;

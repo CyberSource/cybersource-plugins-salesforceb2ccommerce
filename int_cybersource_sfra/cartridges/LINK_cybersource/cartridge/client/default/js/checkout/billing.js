@@ -13,7 +13,7 @@ base.paymentTabs = function () {
         var methodID = $(this).data('method-id');
         $('input[name*="billing_paymentMethod"]').val(methodID);
     	formHelpers.clearPreviousErrors('.payment-form');
-        if ($(this).data('method-id') === 'SA_IFRAME' || $(this).data('method-id') == 'SA_REDIRECT') { 
+        if ($(this).data('sa-type') === 'SA_IFRAME' || $(this).data('sa-type') == 'SA_REDIRECT') { 
         	$('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode').css("display", "none");
         } else {
         	$('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode').css("display", "block");
@@ -38,10 +38,11 @@ base.selectSavedPaymentInstrument = function () {
         $('.saved-payment-instrument.selected-payment ' +
             '.security-code-input').removeClass('checkout-hidden');
         $('#selectedCardID').val($('.saved-payment-instrument.selected-payment').data('uuid'));
-        $('input[name="dwfrm_billing_creditCardFields_cardNumber"]').val($.trim($('.saved-credit-card-number').text()));
-        $('input[name="dwfrm_billing_creditCardFields_cardType"]').val("Visa");
-        var expiryDate = $.trim($('.saved-credit-card-expiration-date').text()).replace(/[a-zA-Z\s]+/, '').split('/'); 
-        $('input[name="dwfrm_billing_creditCardFields_securityCode"]').val("111");
+        $('input[name="dwfrm_billing_creditCardFields_cardNumber"]').val($.trim($('.saved-payment-instrument.selected-payment .saved-credit-card-number').text()));
+        var cardType = $.trim($('.saved-payment-instrument.selected-payment .saved-credit-card-type').text()).replace(/\s{2,}/g,' ').split(' ');
+        $('input[name="dwfrm_billing_creditCardFields_cardType"]').val(cardType[1]);
+        var expiryDate = $.trim($('.saved-payment-instrument.selected-payment .saved-credit-card-expiration-date').text()).replace(/[a-zA-Z\s]+/, '').split('/'); 
+        $('input[name="dwfrm_billing_creditCardFields_securityCode"]').val($.trim($('.saved-payment-instrument.selected-payment #saved-payment-security-code').val()));
         $('#expirationMonth').val(expiryDate[0]);
         $('#expirationYear').val(expiryDate[1]);
     });
@@ -52,26 +53,35 @@ base.selectSavedPaymentInstrument = function () {
  * @description function to update payment details summary based on payment method
  */
 base.methods.updatePaymentInformation = function (order) {
+	 // update payment details
     var $paymentSummary = $('.payment-details');
     var htmlToAppend = '';
-
-    order.billing.payment.selectedPaymentInstruments.forEach(function (paymentInstrument) {
-        if (paymentInstrument.paymentMethod != "CREDIT_CARD") {
-                $('.place-order').removeClass('place-order').addClass(paymentInstrument.paymentMethod.toLowerCase());
-                htmlToAppend += '<span>' + paymentInstrument.paymentName + '</span>';
-        }  else if (order.billing.payment && order.billing.payment.selectedPaymentInstruments.length > 0) {
-            htmlToAppend += '<span>' + order.resources.cardType + ' '
-                + order.billing.payment.selectedPaymentInstruments[0].type
-                + '</span><div>'
-                + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
-                + '</div><div><span>'
-                + order.resources.cardEnding + ' '
-                + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
-                + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
-                + '</span></div>';
+    var isCSType = false;
+    var saType = $('.nav-item').data('sa-type');
+   
+        if (saType && saType != 'SA_SILENTPOST') {
+        	isCSType = true;
         }
-    });
-    	$paymentSummary.empty().append(htmlToAppend);
+    
+    if (isCSType) {
+	    	if(order.billing.payment && order.billing.payment.selectedPaymentInstruments
+	        && order.billing.payment.selectedPaymentInstruments.length > 0){
+	    		htmlToAppend += '<span>Secure Acceptance ' + order.billing.payment.selectedPaymentInstruments[0].paymentMethod.replace('_', ' ') + '</span>';
+	    	} 
+    	} else if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
+        && order.billing.payment.selectedPaymentInstruments.length > 0) {
+        htmlToAppend += '<span>' + order.resources.cardType + ' '
+            + order.billing.payment.selectedPaymentInstruments[0].type
+            + '</span><div>'
+            + order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber
+            + '</div><div><span>'
+            + order.resources.cardEnding + ' '
+            + order.billing.payment.selectedPaymentInstruments[0].expirationMonth
+            + '/' + order.billing.payment.selectedPaymentInstruments[0].expirationYear
+            + '</span></div>';
+    }
+
+    $paymentSummary.empty().append(htmlToAppend);
 };
 
 // Enable Apple Pay

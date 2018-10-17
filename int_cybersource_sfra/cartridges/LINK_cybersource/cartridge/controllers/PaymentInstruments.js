@@ -177,8 +177,8 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
                     paymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
                 }
                 if (verifyDuplicates) {
-                	var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
-                	PaymentInstrumentUtils.removeDuplicates({ PaymentInstruments: paymentInstruments, CreditCardFields: formInfo });
+                    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+                    PaymentInstrumentUtils.removeDuplicates({ PaymentInstruments: paymentInstruments, CreditCardFields: formInfo });
                 }
                 Transaction.commit();
                 res.json({
@@ -228,13 +228,19 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
         );
         var wallet = customer.getProfile().getWallet();
         var enableTokenization: String = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
-        if (enableTokenization.equals('YES') && !empty(paymentToDelete)) {
+        if (!empty(paymentToDelete)) {
             subscriptionID = paymentToDelete.raw.creditCardToken;
-            var Cybersource_Subscription = require('LINK_cybersource/cartridge/scripts/Cybersource')
-            var deleteSubscriptionBillingResult = Cybersource_Subscription.DeleteSubscriptionAccount(subscriptionID);
-            if (deleteSubscriptionBillingResult.error) {
-                subscriptionError = deleteSubscriptionBillingResult.reasonCode + "-" + deleteSubscriptionBillingResult.decision;
-                session.custom.SubscriptionError = subscriptionError;
+        }
+        //  Will make delete token call even if tokenization has been turned off since card was saved.
+        if ((enableTokenization.equals('YES') || !empty(subscriptionID)) && !empty(paymentToDelete)) {
+            //  If a card was saved while tokenization was disable it will not have a token.  No need to make delete call.
+            if (!empty(subscriptionID)) {
+                var Cybersource_Subscription = require('LINK_cybersource/cartridge/scripts/Cybersource')
+                var deleteSubscriptionBillingResult = Cybersource_Subscription.DeleteSubscriptionAccount(subscriptionID);
+                if (deleteSubscriptionBillingResult.error) {
+                    subscriptionError = deleteSubscriptionBillingResult.reasonCode + "-" + deleteSubscriptionBillingResult.decision;
+                    session.custom.SubscriptionError = subscriptionError;
+                }
             }
         }
 

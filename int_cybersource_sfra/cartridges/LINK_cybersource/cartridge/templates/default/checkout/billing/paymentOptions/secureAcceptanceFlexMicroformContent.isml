@@ -1,0 +1,39 @@
+<div class="row">
+    <div class="col-12">
+        <div class="form-group cardNumber">
+            <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
+            <div class="card-number-wrapper">
+                <div id="cardNumber-container" class="form-control"></div>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<isset name="flextoken" value="${JSON.parse(pdict.result)}" scope="page" />
+<input type="hidden" value="${JSON.stringify(flextoken)}" name="flextokenRespose" id="flextokenRespose"/>
+<input type="hidden" value="${JSON.stringify(flextoken.jwk)}" name="flextokenObj" id="flextokenObj"/>
+
+<iscomment>Secure Acceptance Flex MicroForm </iscomment>
+<div class="row">
+    <div class="col-12">
+        <div class="form-group
+            <isif condition=${creditFields.flexresponse.mandatory === true}>required</isif>
+            ${creditFields.flexresponse.htmlName}">
+            <div class="flexresponse-wrapper">
+                <input type="hidden" class="form-control flex-response" id="flex-response"
+                    value="" name="dwfrm_billing_creditCardFields_flexresponse"
+                    <isprint value=${creditFields.flexresponse.attributes} encoding="off"/> >
+            </div>
+        </div>
+    </div>
+</div>
+
+<iscomment>Secure Acceptance Flex Microform Scripts </iscomment>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	
+<isif condition="${dw.system.System.getInstanceType()!= 2}">
+	<script src="${URLUtils.staticURL('/custom/js/test/flex-microform.min.js')}"></script>
+<iselse>
+	<script src="${URLUtils.staticURL('/custom/js/flex-microform.min.js')}"></script>
+</isif>

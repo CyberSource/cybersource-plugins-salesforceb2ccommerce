@@ -56,6 +56,8 @@
            binding="phone" max-length="20" missing-error="error.card.info.missing.phone" />
     <include formid="addressFields" name="address"/>
 	<field formid="selectedCardID" type="string" />
+    <field formid="flexresponse" type="string" /> 
+           
     <field formid="saveCard" label="label.save.card" binding="saveCard" type="boolean" mandatory="false" checked="true" />
 	
 </form>
