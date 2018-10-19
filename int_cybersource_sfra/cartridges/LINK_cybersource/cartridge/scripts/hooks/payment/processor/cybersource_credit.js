@@ -81,7 +81,7 @@ exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) 
     });
 
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-	if (CsSAType == null) {
+	if (CsSAType == null || CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX) ) {
         var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
         return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
     } else {
@@ -108,10 +108,30 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
 	 var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
 	 var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
 
-	 if(CsSAType != 'SA_SILENTPOST') {
+	 if(CsSAType != CybersourceConstants.METHOD_SA_SILENTPOST && CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
 	         var transStatus = Transaction.wrap(function () {
 	    	 CommonHelper.removeExistingPaymentInstruments(cart);
 	    	 var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, amount);
+	        return true;
+	    });
+	 } else if (CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX)) {
+	        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+		 	var transStatus = Transaction.wrap(function () {
+	        CommonHelper.removeExistingPaymentInstruments(cart);
+	        var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, amount);
+		        paymentInstrument.setCreditCardHolder(cart.billingAddress.fullName);
+		        paymentInstrument.setCreditCardNumber(cardNumber);
+		        paymentInstrument.setCreditCardType(CardHelper.getCardType(cardType));
+		        paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
+		        paymentInstrument.setCreditCardExpirationYear(expirationYear);
+		    if (empty(paymentInformation.creditCardToken)) {
+		        var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
+				var flexString = JSON.parse(flexResponse);
+				var flexToken = flexString.token;
+		        paymentInstrument.setCreditCardToken(flexToken);
+		    } else {
+	            paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
+		    }
 	        return true;
 	    });
 	 } else {

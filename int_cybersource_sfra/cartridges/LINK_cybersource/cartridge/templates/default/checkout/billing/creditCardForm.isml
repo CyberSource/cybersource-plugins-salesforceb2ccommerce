@@ -1,17 +1,16 @@
 <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
-<isif condition="${CsSaType && CsSaType == "SA_FLEX"}"> 
-	<isset name="saStyleFlex" value="style='display: none'" scope="page" />
-	<isinclude url="${URLUtils.url('CYBSecureAcceptance-CreateFlexToken')}"/>
-<iselseif condition="${CsSaType && CsSaType == "SA_REDIRECT" || CsSaType == "SA_IFRAME"}" >
-	<isset name="saStyle" value="style='display: none'" scope="page" />
-</isif>	
+<isset name="saStyleFlex" value="${CsSaType && CsSaType == "SA_FLEX" ? "style='display: none'" : '' }" scope="page" />
+<isset name="saStyle" value="${CsSaType && CsSaType == "SA_REDIRECT" || CsSaType == "SA_IFRAME" ? "style='display: none'" : '' }" scope="page" />
 
+<isif condition="${CsSaType && CsSaType == "SA_FLEX"}">
+		<isinclude url="${URLUtils.url('CYBSecureAcceptance-CreateFlexToken')}"/>
+</isif>
 <!--- Hidden input for credit card type --->
 <input type="hidden" class="form-control" id="cardType"
        name="${creditFields.cardType.htmlName}"
        value="">
 
-<div class="row" ${saStyle ? saStyle : ''}  ${saStyleFlex ? saStyleFlex : ''}>
+<div class="row" ${saStyle !=null && saStyle ? saStyle : ''}  ${saStyleFlex  !=null && saStyleFlex ? saStyleFlex : ''}>
     <div class="col-12">
         <div class="form-group
             <isif condition=${creditFields.cardNumber.mandatory === true}>required</isif>
@@ -32,7 +31,7 @@
     </div>
 </div>
 
-<div class="row" ${saStyle ? saStyle : ''}>
+<div class="row" ${saStyle !=null && saStyle ? saStyle : ''}>
     <div class="col-6">
         <div class="form-group
             <isif condition=${creditFields.expirationMonth.mandatory === true}>required</isif>
@@ -54,7 +53,7 @@
             <div class="invalid-feedback"></div>
         </div>
     </div>
-    <div class="col-6" ${saStyle ? saStyle : ''}>
+    <div class="col-6" ${saStyle !=null && saStyle  ? saStyle : ''}>
         <div class="form-group
             <isif condition=${creditFields.expirationYear.mandatory === true}>required</isif>
             ${creditFields.expirationYear.htmlName}">
@@ -77,7 +76,7 @@
     </div>
 </div>
 
-<div class="row" ${saStyle ? saStyle : ''}>
+<div class="row" ${saStyle !=null && saStyle  ? saStyle : ''}>
     <div class="col-sm-6">
         <div class="form-group
             <isif condition=${creditFields.securityCode.mandatory === true}>required</isif>

@@ -69,6 +69,7 @@ $(document).ready(function () {
 	// For Secure Acceptance  
 	if($("body").hasClass("cyb_sa_request_form"))
 	{	
+		$('#loading').css('display', 'block');
 		document.ePayment.submit();
 	}	
 		

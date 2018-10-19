@@ -8,6 +8,41 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var HookMgr = require('dw/system/HookMgr');
 var BasketMgr = require('dw/order/BasketMgr');
 
+function submitApplePayOrder(order,req, res, next){
+    var checkoutHelper = require('*/cartridge/scripts/checkout/checkoutHelpers');
+
+    if (!order && req.querystring.order_token !== order.getOrderToken()) {
+        return next(new Error('Order token does not match'));
+    }
+    var HookMgr = require('dw/system/HookMgr');
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', order);
+    var orderPlacementStatus = checkoutHelper.placeOrder(order, fraudDetectionStatus);
+
+    if (orderPlacementStatus.error) {
+        return next(new Error('Could not place order'));
+    }
+
+    var config = {
+        numberOfLineItems: '*'
+    };
+    var orderModel = new OrderModel(order, { config: config });
+    if (!req.currentCustomer.profile) {
+        var passwordForm = server.forms.getForm('newPasswords');
+        passwordForm.clear();
+        res.render('checkout/confirmation/confirmation', {
+            order: orderModel,
+            returningCustomer: false,
+            passwordForm: passwordForm
+        });
+    } else {
+        res.render('checkout/confirmation/confirmation', {
+            order: orderModel,
+            returningCustomer: true
+        });
+    }
+    return next();
+}
+
 server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     var order = OrderMgr.getOrder(req.querystring.order_id);
 	var Provider = require('LINK_cybersource/cartridge/scripts/Provider');
@@ -44,7 +79,9 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 		} else {
 			return;
 		}
-	}
+	} else if(order.paymentInstrument.paymentMethod === 'DW_APPLE_PAY'){
+        submitApplePayOrder(order,req, res, next);
+    }
 });
 
 server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next) {

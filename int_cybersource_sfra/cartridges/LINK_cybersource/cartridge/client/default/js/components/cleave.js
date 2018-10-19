@@ -10,7 +10,7 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
             window.ccType = type;
             var creditCardTypes = {
                 visa: 'Visa',
-                mastercard: 'Master Card',
+                mastercard: 'MasterCard',
                 amex: 'Amex',
                 discover: 'Discover',
                 maestro: 'Maestro',
@@ -29,8 +29,23 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
             }
         }
     });
+    if ($('.nav-item').data('sa-type') != 'SA_FLEX') {
+    	$(cardFieldSelector).data('cleave', cleave);
+    }
+};
 
-    $(cardFieldSelector).data('cleave', cleave);
+base.serializeData =  function (form) {
+    var serializedArray = form.serializeArray();
+
+    serializedArray.forEach(function (item) {
+        if (item.name.indexOf('cardNumber') > -1) {
+        	if ($('.nav-item').data('sa-type') != 'SA_FLEX') {
+        		item.value = $('#cardNumber').data('cleave').getRawValue(); // eslint-disable-line
+        	}
+        }
+    });
+
+    return $.param(serializedArray);
 };
 
 module.exports = base;

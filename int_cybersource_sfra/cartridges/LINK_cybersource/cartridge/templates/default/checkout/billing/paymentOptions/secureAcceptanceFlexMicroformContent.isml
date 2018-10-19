@@ -17,13 +17,10 @@
 <iscomment>Secure Acceptance Flex MicroForm </iscomment>
 <div class="row">
     <div class="col-12">
-        <div class="form-group
-            <isif condition=${creditFields.flexresponse.mandatory === true}>required</isif>
-            ${creditFields.flexresponse.htmlName}">
+        <div class="form-group">
             <div class="flexresponse-wrapper">
                 <input type="hidden" class="form-control flex-response" id="flex-response"
-                    value="" name="dwfrm_billing_creditCardFields_flexresponse"
-                    <isprint value=${creditFields.flexresponse.attributes} encoding="off"/> >
+                    value="" name="dwfrm_billing_creditCardFields_flexresponse">
             </div>
         </div>
     </div>

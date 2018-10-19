@@ -96,7 +96,7 @@
                             <button class="btn btn-primary btn-block submit-shipping" type="submit" name="submit" value="submit-shipping" <isif condition="${pdict.order.usingMultiShipping && !pdict.order.shippable}">disabled</isif>> ${Resource.msg('button.next.payment', 'checkout', null)}
                             </button>
 
-                            <button class="btn btn-primary btn-block ${CsSaType && CsSaType == 'SA_FLEX'  ? CsSaType.toLowerCase() : 'submit-payment'}" type="submit" name="submit" value="submit-payment">
+                            <button class="btn btn-primary btn-block submit-payment" type="submit" name="submit" value="submit-payment">
                                 ${Resource.msg('button.next.place.order', 'checkout', null)}
                             </button>
                             
@@ -108,10 +108,8 @@
 			                    <div id="secureAcceptanceIframe">
 								</div>
                 			</div>
-                			<!-- secure acceptance error-->
-                			<span id="saspCardError" style="display:none">${Resource.msg('checkout.getsignature.service.problem', 'cybersource', null)}</span>	
-                			
-                            <button class="btn btn-primary btn-block ${CsSaType && CsSaType != 'SA_FLEX' ? CsSaType.toLowerCase() : 'place-order'}" data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}" type="submit"
+
+                            <button class="btn btn-primary btn-block ${CsSaType == null || CsSaType == 'SA_FLEX' ? 'place-order' : CsSaType.toLowerCase()}" data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}" type="submit"
                                 name="submit" value="place-order">${Resource.msg('button.place.order', 'checkout', null)}
                             </button>
                         </div>

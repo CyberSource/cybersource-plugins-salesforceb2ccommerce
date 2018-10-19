@@ -5,7 +5,6 @@
 <script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>	
 	<head>
 	<title>${Resource.msg('sa.redirect.form.title','cybersource',null)}</title>
-	<h1 class="title-center" align="center">${Resource.msg('sa.redirect.form.waitmessage','cybSecureAcceptance',null)}</h1>
 </head> 
 	<body class="cyb_sa_request_form">
 		<form method="post" name="ePayment" id="ePayment" action="${pdict.FormAction}" target="_parent">
@@ -16,12 +15,12 @@
 			</isif>
 			<input type="hidden" value="Proceed with Payment" name="Submit">
 		</form>
-		
+		<span id="loading" style="visibility: block; text-align: center;">
+    		<img src="${URLUtils.staticURL('/images/loading.gif')}" id="Img5" data-transition="slide" />
+	    </span>
 <script type="text/javascript">
 	$(document).ready(function() {
 		$("#ePayment").submit();
 	});
 </script>
-
-	</body>
 </html>

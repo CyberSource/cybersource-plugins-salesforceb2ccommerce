@@ -59,7 +59,7 @@
 	
 	&[data-checkout-stage=payment] {
         button.sa_flex {
-            display: block;
+            display: none;
         }
     }
 	
@@ -108,7 +108,7 @@
     
     &[data-checkout-stage=placeOrder] {
         button.sa_flex {
-            display: none;
+            display: block;
         }
     }
 }

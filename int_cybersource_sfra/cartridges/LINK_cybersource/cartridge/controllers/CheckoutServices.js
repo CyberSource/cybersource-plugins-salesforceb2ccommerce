@@ -36,17 +36,17 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 			var flexResponse = server.forms.getForm('billing').creditCardFields.flexresponse.value;
 			var flexString = JSON.parse(flexResponse);
 			var keyId = flexString.keyId;
-			flexForm.creditCardFields.cardNumber.value = flexString.maskedPan;
-			flexForm.creditCardFields.cardType.value = flexString.cardType;
+			paymentForm.creditCardFields.cardNumber.value = flexString.maskedPan;
+			paymentForm.creditCardFields.cardType.value = flexString.cardType;
 		}
 	}
 	
-	    
-    var SAForm = new Object();
-	    SAForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
-	    SAForm.email = server.forms.getForm('billing').creditCardFields.email;
-	    SAForm.phone = server.forms.getForm('billing').creditCardFields.phone;
-
+	if(CsSAType == 'SA_REDIRECT' || CsSAType == 'SA_IFRAME') {	    
+	    var SAForm = new Object();
+		    SAForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
+		    SAForm.email = server.forms.getForm('billing').creditCardFields.email;
+		    SAForm.phone = server.forms.getForm('billing').creditCardFields.phone;
+	}
     // verify billing form data
     billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
     

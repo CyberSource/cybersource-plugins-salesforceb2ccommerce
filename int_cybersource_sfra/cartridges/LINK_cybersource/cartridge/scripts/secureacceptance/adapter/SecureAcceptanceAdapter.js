@@ -326,137 +326,6 @@ function updateSAResponse(responseParameterMap, order, paymentInstrument, custom
     return { success: true, responseObject: responseObject };
 }
 
-
-
-/**
-* Function to creating request for Flex Microform
-*/
-function GetRequestDataForFlexMicroForm(cart, req) {
-    var httpParameterMap = request.httpParameterMap,
-        errorMsg,
-        Transaction = require('dw/system/Transaction'),
-        Resource = require('dw/web/Resource');
-    if (null !== httpParameterMap) {
-        session.forms.billing.creditCardFields.email.value = httpParameterMap.custemail.stringValue;
-        if (!empty(httpParameterMap.savecc.stringValue) && httpParameterMap.savecc.stringValue == "true") {
-            session.forms.billing.creditCardFields.saveCard.value = true;
-        } else {
-            session.forms.billing.creditCardFields.saveCard.value = false;
-        }
-        session.forms.billing.addressFields.firstName.value = httpParameterMap.firstname.stringValue;
-        session.forms.billing.addressFields.lastName.value = httpParameterMap.lastname.stringValue;
-        session.forms.billing.addressFields.address1.value = httpParameterMap.address1.stringValue;
-        session.forms.billing.addressFields.address2.value = httpParameterMap.address2.stringValue;
-        session.forms.billing.addressFields.city.value = httpParameterMap.city.stringValue;
-        session.forms.billing.addressFields.postalCode.value = httpParameterMap.zipcode.stringValue;
-        session.forms.billing.addressFields.country.value = httpParameterMap.country.stringValue;
-        session.forms.billing.addressFields.states.stateCode.value = httpParameterMap.state.stringValue;
-        if(req.currentCustomer.raw.authenticated) {
-            session.forms.billing.addressFields.phone.value = req.currentCustomer.profile.phone;
-        } else {
-            session.forms.billing.addressFields.phone.value = httpParameterMap.phone.stringValue;
-        }
-        if (!empty(httpParameterMap.cctoken.stringValue)) {
-            session.forms.billing.creditCardFields.selectedCardID.value = httpParameterMap.cctoken.stringValue;
-        } else {
-            session.forms.billing.creditCardFields.selectedCardID.value = "";
-        }
-
-        session.forms.billing.paymentMethod.value = CybersourceConstants.METHOD_CREDIT_CARD;
-        var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-        //checkoutHelpers-ValidateBilling
-        //var result = CommonHelper.validateBillingAddress();
-        var isValid = (function () {
-            if (!empty(request.httpParameterMap.noPaymentNeeded.value)) {
-                return true;
-            }
-            return true;
-        })();
-        if (isValid) {
-            isValid = false;
-            isValid = (function () {
-                var billingAddress = cart.getBillingAddress();
-                Transaction.wrap(function () {
-                    if (!billingAddress) {
-                        billingAddress = cart.createBillingAddress();
-                    }
-                    // copy the address details
-                    billingAddress.setFirstName(session.forms.billing.addressFields.firstName.value);
-                    billingAddress.setLastName(session.forms.billing.addressFields.lastName.value);
-                    billingAddress.setAddress1(session.forms.billing.addressFields.address1.value);
-                    billingAddress.setAddress2(session.forms.billing.addressFields.address2.value);
-                    billingAddress.setCity(session.forms.billing.addressFields.city.value);
-                    billingAddress.setPostalCode(session.forms.billing.addressFields.postalCode.value);
-                    billingAddress.setStateCode(session.forms.billing.addressFields.states.stateCode.value);
-                    billingAddress.setCountryCode(session.forms.billing.addressFields.country.value);
-                    if(req.currentCustomer.raw.authenticated) {
-                        billingAddress.setPhone(req.currentCustomer.profile.phone);
-                        cart.setCustomerEmail(req.currentCustomer.profile.email);
-                    } else {
-                    	  billingAddress.setPhone(session.forms.billing.addressFields.phone.value);
-                          cart.setCustomerEmail(session.forms.billing.creditCardFields.email.value);  
-                    }
-                });
-                return true;
-            })();
-        }
-        if (isValid) {
-            Transaction.wrap(function () {
-                CommonHelper.removeExistingPaymentInstruments(cart);
-                var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
-                cart.createPaymentInstrument(CybersourceConstants.METHOD_CREDIT_CARD, amount);
-            });
-            var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-            var paymentInstrument = CardHelper.getNonGCPaymemtInstument(cart);
-            var subscriptionToken = CommonHelper.GetSubscriptionToken(httpParameterMap.cctoken.stringValue, customer);
-            if (!empty(httpParameterMap.cctoken.stringValue) && empty(subscriptionToken)) {
-                errorMsg = Resource.msg('checkout.invalid.credit.card.info', 'cybersource', null);
-                return {
-                    success: false,
-                    errorMsg: errorMsg,
-                    nextStep: 'common/errorjson'
-                };
-            }
-            if(!subscriptionToken){
-            	 var flexKey = JSON.parse(httpParameterMap.flexToken);	
-                 var subscriptionToken = flexKey.token;
-                 session.forms.billing.creditCardFields.cardType.value = flexKey.cardType;
-                 session.forms.billing.creditCardFields.securityCode.value = httpParameterMap.cvn.stringValue;
-             	 session.forms.billing.creditCardFields.expirationMonth.value = httpParameterMap.month.doubleValue;
-             	 session.forms.billing.creditCardFields.expirationYear.value = httpParameterMap.expyear.doubleValue;
-            } else {
-            	session.forms.billing.creditCardFields.cardType.value = httpParameterMap.cctype.stringValue;
-            	session.forms.billing.creditCardFields.securityCode.value = httpParameterMap.cvn.stringValue;
-            	session.forms.billing.creditCardFields.expirationMonth.value = httpParameterMap.month.doubleValue;
-            	session.forms.billing.creditCardFields.expirationYear.value = httpParameterMap.expyear.doubleValue;
-            }
-    	    var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', subscriptionToken);
-            var saresponse = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, cart, null, subscriptionToken);
-            if (saresponse.success) {
-                if (saresponse.requestData !== null) {
-                    var data = saresponse.requestData;
-                    var formAction = saresponse.formAction;
-                    return {
-                        success: true,
-                        data: data,
-                        formAction: formAction,
-                        cardObject: cardObject.card,
-                        nextStep: 'secureacceptance/secureAcceptanceFlexMicroform'
-                    };
-                }
-            } else if (saresponse.error) {
-                errorMsg = Resource.msg('checkout.getsignature.service.problem', 'cybersource', null);
-            }
-        }
-    } else {
-        errorMsg = Resource.msg('silentpost.invalidRequestData.error', 'cybersource', null);
-    }
-    return {
-        success: false,
-        errorMsg: errorMsg
-    };
-}
-
 function SilentPostResponse() {
     var URLUtils = require('dw/web/URLUtils');
     var httpParameterMap = request.httpParameterMap;
@@ -500,47 +369,11 @@ function SilentPostResponse() {
     }
 }
 
-function FlexMicroformResponse(cart) {
-    var URLUtils = require('dw/web/URLUtils');
-    var httpParameterMap = request.httpParameterMap;
-    if ((httpParameterMap !== null) && (!empty(httpParameterMap.decision.stringValue))) {
-        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-        var paymentInstrument = CardHelper.getNonGCPaymemtInstument(cart);
-        var silentPostResponse = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, null, httpParameterMap, null);
-        if (silentPostResponse.success && silentPostResponse.signatureAuthorize) {
-            session.forms.billing.paymentMethod.value = CybersourceConstants.METHOD_CREDIT_CARD;
-            if ((('ACCEPT'.equals(httpParameterMap.decision.stringValue) && (httpParameterMap.reason_code.intValue === 100)))) {
-                var Transaction = require('dw/system/Transaction');
-                if (session.forms.billing.creditCardFields.saveCard.value) {
-                    Transaction.wrap(function () {
-                        paymentInstrument.custom.savecard = true;
-                    });
-                }
-                var paymentToken = !empty(httpParameterMap.payment_token.stringValue) ? httpParameterMap.payment_token.stringValue : httpParameterMap.req_payment_token.stringValue;
-                var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
-                Transaction.wrap(function () {
-                    PaymentInstrumentUtils.updatePaymentInstumenSACard(paymentInstrument, httpParameterMap.req_card_expiry_date.stringValue,
-                        httpParameterMap.req_card_number.stringValue, httpParameterMap.req_card_type.stringValue, paymentToken,
-                        httpParameterMap.req_bill_to_forename.stringValue, httpParameterMap.req_bill_to_surname.stringValue);
-                });
-
-                return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder' );
-            } else {
-                return URLUtils.https('Checkout-Begin', 'stage', 'payment' , 'SecureAcceptanceError', 'true' );
-            }
-        }
-    } else {
-        return URLUtils.https('Cart-Show', 'SecureAcceptanceError' , 'true');
-    }
-}
-
 /** Exported functions **/
 module.exports = {
     HandleRequest: HandleRequest,
     OpenIframe: OpenIframe,
     Authorize: Authorize,
     SAResponse: SAResponse,
-    SilentPostResponse: SilentPostResponse,
-    GetRequestDataForFlexMicroForm: GetRequestDataForFlexMicroForm,
-    FlexMicroformResponse: FlexMicroformResponse
+    SilentPostResponse: SilentPostResponse
 };

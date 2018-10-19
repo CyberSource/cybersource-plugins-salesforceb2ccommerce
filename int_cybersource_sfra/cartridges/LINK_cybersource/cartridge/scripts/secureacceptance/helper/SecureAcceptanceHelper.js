@@ -269,7 +269,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     if (sitePreferenceData.csCardDecisionManagerEnable) {
                         requestMap.put('skip_decision_manager', false);
                     } else {
-                        requestMap.put('skip_decision_manager', true);
+                        requestMap.put('skip_decision_manager', false);
                     }
                     signed_field_names = signed_field_names + ",override_custom_receipt_page";
                     requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
@@ -393,6 +393,7 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
         requestMap.put('customer_ip_address', CommonHelper.getIPAddress());
 
         var StringUtils = require('dw/util/StringUtils');
+        var SecureEncoder = require('dw/util/SecureEncoder');
         var result = CommonHelper.CreateCybersourceItemObject(lineItemCtnr);
         var items: dw.util.List = result.items;
         var item, itemId;
@@ -418,7 +419,7 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
                 if (!empty(item.getProductName())) {
                     signed_field_names = signed_field_names + ",item_" + itemId + "_name";
                     //unsigned_field_names = unsigned_field_names + ",item_" + itemId + "_name";
-                    requestMap.put('item_' + itemId + '_name', StringUtils.stringToHtml(item.getProductName()));
+                    requestMap.put('item_' + itemId + '_name', SecureEncoder.forUriComponent(item.getProductName()));
                 }
                 if (!empty(item.getUnitPrice())) {
                     signed_field_names = signed_field_names + ",item_" + itemId + "_unit_price";
@@ -901,9 +902,15 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var result, PAReasonCode, PAVReasonCode, AuthorizationReasonCode, serviceResponse;
     var paEnabled = false;
+    var Site = require('dw/system/Site');
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
     if (!empty(CybersourceHelper.getPAMerchantID())) {
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-        result = CardHelper.PayerAuthEnable(session.forms.billing.creditCardFields.cardType.value);
+        if (CsSAType === null || CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
+            result = CardHelper.PayerAuthEnable(session.forms.billing.creditCardFields.cardType.value);
+		} else if (CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX)) {
+			result = CardHelper.PayerAuthEnable(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
+		}
         if (result.error) {
             return result;
         } else if (result.paEnabled) {

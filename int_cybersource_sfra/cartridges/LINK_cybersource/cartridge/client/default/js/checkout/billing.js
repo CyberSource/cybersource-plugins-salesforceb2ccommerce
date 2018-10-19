@@ -2,6 +2,7 @@
 
 var base = require('base/checkout/billing');
 var formHelpers = require('base/checkout/formErrors');
+var cleave = require('../components/cleave');
 
 /**
  * @function
@@ -59,7 +60,7 @@ base.methods.updatePaymentInformation = function (order) {
     var isCSType = false;
     var saType = $('.nav-item').data('sa-type');
    
-        if (saType && saType != 'SA_SILENTPOST') {
+        if (saType && saType != 'SA_SILENTPOST' && saType != 'SA_FLEX') {
         	isCSType = true;
         }
     
