@@ -82,17 +82,16 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 		}
 	} else if(order.paymentInstrument.paymentMethod === 'DW_APPLE_PAY'){
         submitApplePayOrder(order,req, res, next);
-    }
+    } 
 });
 
 server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next) {
 		var currentBasket = BasketMgr.getCurrentBasket();
 		var order = OrderMgr.getOrder(req.querystring.order_id);
-		var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+        var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+        var Transaction = require('dw/system/Transaction');
+        var Resource = require('dw/web/Resource');
 	    if (fraudDetectionStatus.status === 'fail') { 
-            var Transaction = require('dw/system/Transaction');
-            var URLUtils = require('dw/web/URLUtils');
-            var Resource = require('dw/web/Resource');
 	        Transaction.wrap(function () { OrderMgr.failOrder(order); });
 	        // fraud detection failed
 	        req.session.privacyCache.set('fraudDetectionStatus', true);
@@ -103,7 +102,7 @@ server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next
 	            errorMessage: Resource.msg('error.technical', 'checkout', null)
 	        });
 	        return next();	
-	    }
+        }
 
 	    // Places the order
 	    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);

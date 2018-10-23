@@ -112,113 +112,119 @@
             </label>
         </div>
     </div>
-	<isif condition="${'CsTokenizationEnable' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.CsTokenizationEnable == 'YES'}">
-    <!--  Card Owner First Name -->
-    <div class="form-group
-    	<isif condition="${pdict.paymentForm.addressFields.firstName.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="firstName">
-			<isprint value="${pdict.paymentForm.addressFields.firstName.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="firstName" <isprint value="${pdict.paymentForm.addressFields.firstName.attributes}" encoding="off" />
-            autocomplete="given-name">
-		<div class="invalid-feedback"></div>
-	</div>
 	
-	<!-- Card Owner Last Name -->
-	 <div class="form-group
-    	<isif condition="${pdict.paymentForm.addressFields.lastName.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="lastName">
-			<isprint value="${pdict.paymentForm.addressFields.lastName.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="lastName" <isprint value="${pdict.paymentForm.addressFields.lastName.attributes}" encoding="off" />
-           autocomplete="family-name">
-		<div class="invalid-feedback"></div>
-	</div>
-	<div class="form-group
-    	<isif condition="${pdict.paymentForm.addressFields.address1.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="address1">
-			<isprint value="${pdict.paymentForm.addressFields.address1.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="address1" <isprint value="${pdict.paymentForm.addressFields.address1.attributes}" encoding="off" />
-            autocomplete="address-line1">
-		<div class="invalid-feedback"></div>
-	</div>
-	<div class="form-group
-    	<isif condition="${pdict.paymentForm.addressFields.address2.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="address2">
-			<isprint value="${pdict.paymentForm.addressFields.address2.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="address2" <isprint value="${pdict.paymentForm.addressFields.address2.attributes}" encoding="off" />
-            autocomplete="billing address-line2">
-		<div class="invalid-feedback"></div>
-	</div>            
-	<div class="form-group
-		<isif condition="${pdict.paymentForm.addressFields.country.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="billingCountry">
-	    	<isprint value="${pdict.paymentForm.addressFields.country.label}" encoding="htmlcontent" />
-	    </label>
-       <select class="form-control custom-select" id="billingCountry"
-           <isprint value=${pdict.paymentForm.addressFields.country.attributes} encoding="off"/>
-           autocomplete="billing country">
-               <option label=" "></option>
-               <isloop items=${pdict.paymentForm.addressFields.country.options} var="country">
-                   <option id="${country.id}" value="${country.htmlValue}">
-                       ${country.label}
-                   </option>
-               </isloop>
-       </select>
-       <div class="invalid-feedback"></div>
-	</div> 
-	<div class="row">
-    	<div class="col-6">
-	        <div class="form-group
-	        	<isif condition="${pdict.paymentForm.addressFields.states.mandatory === true}">required</isif>">
-	            <label class="form-control-label" for="billingState">
-	            	<isprint value="${pdict.paymentForm.addressFields.states.stateCode.label}" encoding="htmlcontent" />
-	            </label>
-	            <select class="form-control custom-select" id="billingState"
-	                <isprint value=${pdict.paymentForm.addressFields.states.stateCode.attributes} encoding="off"/>
-	                autocomplete="billing address-level1">
-	                    <isloop items=${pdict.paymentForm.addressFields.states.stateCode.options} var="state">
-	                        <option id="${state.id}"  value="${state.htmlValue}">
-	                            ${state.label}
-	                        </option>
-	                    </isloop>
-	            </select>
-	            <div class="invalid-feedback"></div>
-	        </div>
-		</div>
-	    <div class="col-6">
-	        <div class="form-group
-				<isif condition="${pdict.paymentForm.addressFields.city.mandatory === true}">required</isif>">
-	            	<label class="form-control-label" for="billingAddressCity">
-	            		<isprint value="${pdict.paymentForm.addressFields.city.label}" encoding="htmlcontent" />
-	            	</label>
-	            <input type="text" class="form-control" id="billingAddressCity" <isprint value=${pdict.paymentForm.addressFields.city.attributes} encoding="off"/>
-	                autocomplete="billing address-level2">
-				<div class="invalid-feedback"></div>
-	        </div>
-		</div>
-	</div>
-    <div class="form-group
-   		<isif condition="${pdict.paymentForm.addressFields.postalCode.mandatory === true}">required</isif>"> 
-		<label class="form-control-label" for="postalCode">
-			<isprint value="${pdict.paymentForm.addressFields.postalCode.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="postalCode" <isprint value="${pdict.paymentForm.addressFields.postalCode.attributes}" encoding="off" />
-			autocomplete="postal-code">
-		<div class="invalid-feedback"></div>
-	</div>
-    <div class="form-group
-   		<isif condition="${pdict.paymentForm.email.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="email">
-			<isprint value="${pdict.paymentForm.email.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="email" <isprint value="${pdict.paymentForm.email.attributes}" encoding="off" />>
-		<div class="invalid-feedback"></div>
-	</div>
+    
+    <!-- Tokenized Credit Card Form additions -->
+    <isif condition="${'CsTokenizationEnable' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.CsTokenizationEnable == 'YES'}">
+    
+        <!--  Card Owner First Name -->
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.addressFields.firstName.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="firstName">
+                <isprint value="${pdict.paymentForm.addressFields.firstName.label}" encoding="htmlcontent" />
+            </label>
+            <input type="text" class="form-control" id="firstName" <isprint value="${pdict.paymentForm.addressFields.firstName.attributes}"/>
+                autocomplete="given-name">
+            <div class="invalid-feedback"></div>
+        </div>
+        
+        <!-- Card Owner Last Name -->
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.addressFields.lastName.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="lastName">
+                <isprint value="${pdict.paymentForm.addressFields.lastName.label}" encoding="htmlcontent" />
+            </label>
+            <input type="text" class="form-control" id="lastName" <isprint value="${pdict.paymentForm.addressFields.lastName.attributes}"/>
+            autocomplete="family-name">
+            <div class="invalid-feedback"></div>
+        </div>
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.addressFields.address1.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="address1">
+                <isprint value="${pdict.paymentForm.addressFields.address1.label}" encoding="htmlcontent" />
+            </label>
+            <input type="text" class="form-control" id="address1" <isprint value="${pdict.paymentForm.addressFields.address1.attributes}"/>
+                autocomplete="address-line1">
+            <div class="invalid-feedback"></div>
+        </div>
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.addressFields.address2.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="address2">
+                <isprint value="${pdict.paymentForm.addressFields.address2.label}" encoding="htmlcontent" />
+            </label>
+            <input type="text" class="form-control" id="address2" <isprint value="${pdict.paymentForm.addressFields.address2.attributes}"/>
+                autocomplete="billing address-line2">
+            <div class="invalid-feedback"></div>
+        </div>            
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.addressFields.country.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="billingCountry">
+                <isprint value="${pdict.paymentForm.addressFields.country.label}" encoding="htmlcontent" />
+            </label>
+        <select class="form-control custom-select" id="billingCountry"
+            <isprint value=${pdict.paymentForm.addressFields.country.attributes}/>
+            autocomplete="billing country">
+                <option label=" "></option>
+                <isloop items=${pdict.paymentForm.addressFields.country.options} var="country">
+                    <option id="${country.id}" value="${country.htmlValue}">
+                        ${country.label}
+                    </option>
+                </isloop>
+        </select>
+        <div class="invalid-feedback"></div>
+        </div> 
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group
+                    <isif condition="${pdict.paymentForm.addressFields.states.mandatory === true}">required</isif>">
+                    <label class="form-control-label" for="billingState">
+                        <isprint value="${pdict.paymentForm.addressFields.states.stateCode.label}" encoding="htmlcontent" />
+                    </label>
+                    <select class="form-control custom-select" id="billingState"
+                        <isprint value=${pdict.paymentForm.addressFields.states.stateCode.attributes}/>
+                        autocomplete="billing address-level1">
+                            <isloop items=${pdict.paymentForm.addressFields.states.stateCode.options} var="state">
+                                <option id="${state.id}"  value="${state.htmlValue}">
+                                    ${state.label}
+                                </option>
+                            </isloop>
+                    </select>
+                    <div class="invalid-feedback"></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group
+                    <isif condition="${pdict.paymentForm.addressFields.city.mandatory === true}">required</isif>">
+                        <label class="form-control-label" for="billingAddressCity">
+                            <isprint value="${pdict.paymentForm.addressFields.city.label}" encoding="htmlcontent" />
+                        </label>
+                    <input type="text" class="form-control" id="billingAddressCity" <isprint value=${pdict.paymentForm.addressFields.city.attributes}/>
+                        autocomplete="billing address-level2">
+                    <div class="invalid-feedback"></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.addressFields.postalCode.mandatory === true}">required</isif>"> 
+            <label class="form-control-label" for="postalCode">
+                <isprint value="${pdict.paymentForm.addressFields.postalCode.label}" encoding="htmlcontent" />
+            </label>
+            <input type="text" class="form-control" id="postalCode" <isprint value="${pdict.paymentForm.addressFields.postalCode.attributes}"/>
+                autocomplete="postal-code">
+            <div class="invalid-feedback"></div>
+        </div>
+        <div class="form-group
+            <isif condition="${pdict.paymentForm.email.mandatory === true}">required</isif>">
+            <label class="form-control-label" for="email">
+                <isprint value="${pdict.paymentForm.email.label}" encoding="htmlcontent" />
+            </label>
+            <input type="text" class="form-control" id="email" <isprint value="${pdict.paymentForm.email.attributes}"/>>
+            <div class="invalid-feedback"></div>
+        </div>
 	</isif>
+
 	<input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+
     <!-- Cancel and Save Buttons -->
     <div class="row">
         <div class="col">
