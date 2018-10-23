@@ -88,7 +88,10 @@ server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next
 		var currentBasket = BasketMgr.getCurrentBasket();
 		var order = OrderMgr.getOrder(req.querystring.order_id);
 		var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
-	    if (fraudDetectionStatus.status === 'fail') {
+	    if (fraudDetectionStatus.status === 'fail') { 
+            var Transaction = require('dw/system/Transaction');
+            var URLUtils = require('dw/web/URLUtils');
+            var Resource = require('dw/web/Resource');
 	        Transaction.wrap(function () { OrderMgr.failOrder(order); });
 
 	        // fraud detection failed

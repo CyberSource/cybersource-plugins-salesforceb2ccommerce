@@ -200,15 +200,14 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
             }
             break;
         case 'paymentinstruments':
-            firstName = session.forms.billing.addressFields.firstName.value;
-            lastName = session.forms.billing.addressFields.lastName.value;
-            fullName = !empty(firstName) ? firstName + ' ' + lastName : null;
-            accounNumber = session.forms.billing.creditCardFields.cardNumber.value;
-            cardType = '' + session.forms.billing.creditCardFields.cardType.value;
-            expiryMonth = '' + session.forms.billing.creditCardFields.expirationMonth.value;
-            expiryYear = '' + session.forms.billing.creditCardFields.expirationYear.value;
-            cvnNumber = session.forms.billing.creditCardFields.securityCode.value;
-            subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.billing.creditCardFields.selectedCardID.value, customer);
+           firstName = session.forms.creditCard.addressFields.firstName.value;
+            lastName = session.forms.creditCard.addressFields.lastName.value;
+            accounNumber = session.forms.creditCard.cardNumber.value;
+            cardType = ""+session.forms.creditCard.cardType.value;
+            expiryMonth =""+session.forms.creditCard.expirationMonth.value;
+            expiryYear = ""+session.forms.creditCard.expirationYear.value;
+            cvnNumber = session.forms.creditCard.securityCode.value;
+            subscriptionToken = CommonHelper.GetSubscriptionToken( session.forms.creditCard.selectedCardID.value, customer);
             break;
     }
     if (!empty(cardType)) {
@@ -401,17 +400,6 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
     // response validate
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-
-    //  SFRA uses a hook (app.fraud.detection) called after handlePayments to handle fraud responses.
-    //  We get the fraud response here, so we save it to the session for future use.
-    //  Also note, that on a fraud rejection, this function will return error:true back to handlePayments,
-    //  which will cause the Order to be immediately canceled, skipping the fraud detection hook.
-    //  We only need to save the fraud status, and use the hook to handle the Review state.
-    var Transaction = require('dw/system/Transaction');
-    Transaction.wrap(function () {
-        session.custom.CybersourceFraudDecision = serviceResponse.Decision;
-    });
-
 
     if (!(CybersourceHelper.getDavEnable() && CybersourceHelper.getDavOnAddressVerificationFailure() === 'REJECT'
         && serviceResponse.ReasonCode !== 100 && !empty(serviceResponse.DAVReasonCode) && serviceResponse.DAVReasonCode !== 100)) {

@@ -75,6 +75,13 @@ function UpdatePaymentTransactionCardAuthorize(paymentInstrument, responseObject
             paymentInstrument.paymentTransaction.custom.authCode = responseObject.AuthorizationCode;
             paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.AuthorizationReasonCode;
             paymentInstrument.paymentTransaction.custom.decision = responseObject.Decision;
+                //  SFRA uses a hook (app.fraud.detection) called after handlePayments to handle fraud responses.
+                //  We get the fraud response here, so we save it to the session for future use.
+                //  Also note, that on a fraud rejection, this function will return error:true back to handlePayments,
+                //  which will cause the Order to be immediately canceled, skipping the fraud detection hook.
+                //  We only need to save the fraud status, and use the hook to handle the Review state.
+            session.custom.CybersourceFraudDecision = responseObject.Decision;
+    
             if ((responseObject.ReasonCode == "100" || responseObject.ReasonCode == "480") && !empty(responseObject.SubscriptionID) && empty(paymentInstrument.creditCardToken)) {
                 paymentInstrument.setCreditCardToken(responseObject.SubscriptionID);
             }
@@ -253,6 +260,12 @@ function UpdatePaymentTransactionSecureAcceptanceAuthorize(order, responseObject
             paymentInstrument.paymentTransaction.custom.authCode = responseObject.AuthorizationCode;
             paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.AuthorizationReasonCode;
             paymentInstrument.paymentTransaction.custom.decision = responseObject.Decision;
+                //  SFRA uses a hook (app.fraud.detection) called after handlePayments to handle fraud responses.
+                //  We get the fraud response here, so we save it to the session for future use.
+                //  Also note, that on a fraud rejection, this function will return error:true back to handlePayments,
+                //  which will cause the Order to be immediately canceled, skipping the fraud detection hook.
+                //  We only need to save the fraud status, and use the hook to handle the Review state.
+            session.custom.CybersourceFraudDecision = responseObject.Decision;
         });
     }
 }
@@ -373,7 +386,7 @@ function removeDuplicates(params) {
     for (var i = 0; i < paymentInstruments.length; i++) {
         var card = paymentInstruments[i];
         if (card.creditCardExpirationMonth === creditCardFields.expirationMonth && card.creditCardExpirationYear === creditCardFields.expirationYear
-            && card.creditCardType === creditCardFields.cardType && card.getCreditCardNumber().indexOf(ccNumber.substring(ccNumber.length - 4))) {
+            && card.creditCardType === creditCardFields.cardType && (card.getCreditCardNumber().indexOf(ccNumber.substring(ccNumber.length - 4)) > 0)) {
             isDuplicateCard = true;
             oldCard = card;
             break;

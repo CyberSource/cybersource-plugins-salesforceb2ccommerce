@@ -222,7 +222,6 @@ function CreateCyberSourceBillToObject_UserData(formType) {
             city = session.forms.creditCard.addressFields.city.value;
             country = '' + session.forms.creditCard.addressFields.country.value;
             email = session.forms.creditCard.email.value;
-            phoneNumber = session.forms.creditCard.addressFields.phone.value;
             postalCode = session.forms.creditCard.addressFields.postalCode.value;
             state = session.forms.creditCard.addressFields.states.stateCode.value;
             street1 = session.forms.creditCard.addressFields.address1.value;
@@ -241,7 +240,9 @@ function CreateCyberSourceBillToObject_UserData(formType) {
     billToObject.setState(state);
     billToObject.setPostalCode(postalCode);
     billToObject.setCountry(country);
-    billToObject.setPhoneNumber(phoneNumber);
+    if(phoneNumber == null) {
+    	 delete billToObject.phoneNumber;
+    }
     billToObject.setEmail(email);
     billToObject.setIpAddress(ipAddress);
     billToObject.setDateOfBirth(dob);

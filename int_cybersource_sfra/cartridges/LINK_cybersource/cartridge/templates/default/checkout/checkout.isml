@@ -59,7 +59,7 @@
 			    
 				<iscomment>Payer Auth Error Display </iscomment>
                 <isif condition="${'payerAuthError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.payerAuthError.stringValue !== null}">
-					<div class="alert alert-danger payerAuth"><isprint value="${pdict.CurrentHttpParameterMap.payerAuthError}" encoding="off"/></div>
+					<div class="alert alert-danger payerAuth"><isprint value="${pdict.CurrentHttpParameterMap.payerAuthError}"/></div>
 				</isif>
 				
                 <!-- Step 1: Shipping -->

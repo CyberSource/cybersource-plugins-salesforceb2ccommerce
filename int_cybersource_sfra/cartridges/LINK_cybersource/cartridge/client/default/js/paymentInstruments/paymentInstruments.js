@@ -2,7 +2,7 @@
 
 var formValidation = require('base/components/formValidation');
 var base = require('base/paymentInstruments/paymentInstruments');
-var cleave = require('base/components/cleave');
+var cleave = require('../components/cleave');
 
 var url;
 

@@ -210,15 +210,6 @@
 		<div class="invalid-feedback"></div>
 	</div>
     <div class="form-group
-   		<isif condition="${pdict.paymentForm.addressFields.phone.mandatory === true}">required</isif>">
-		<label class="form-control-label" for="phone">
-			<isprint value="${pdict.paymentForm.addressFields.phone.label}" encoding="htmlcontent" />
-		</label>
-		<input type="text" class="form-control" id="phone" <isprint value="${pdict.paymentForm.addressFields.phone.attributes}" encoding="off" />
-			 autocomplete="tel">
-		<div class="invalid-feedback"></div>
-	</div>
-    <div class="form-group
    		<isif condition="${pdict.paymentForm.email.mandatory === true}">required</isif>">
 		<label class="form-control-label" for="email">
 			<isprint value="${pdict.paymentForm.email.label}" encoding="htmlcontent" />
