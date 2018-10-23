@@ -419,7 +419,7 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
                 if (!empty(item.getProductName())) {
                     signed_field_names = signed_field_names + ",item_" + itemId + "_name";
                     //unsigned_field_names = unsigned_field_names + ",item_" + itemId + "_name";
-                    requestMap.put('item_' + itemId + '_name', SecureEncoder.forUriComponent(item.getProductName()));
+                    requestMap.put('item_' + itemId + '_name', SecureEncoder.forUriComponentStrict(item.getProductName()));
                 }
                 if (!empty(item.getUnitPrice())) {
                     signed_field_names = signed_field_names + ",item_" + itemId + "_unit_price";
@@ -909,7 +909,7 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         if (CsSAType === null || CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
             result = CardHelper.PayerAuthEnable(session.forms.billing.creditCardFields.cardType.value);
 		} else if (CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX)) {
-			result = CardHelper.PayerAuthEnable(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
+			result = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
 		}
         if (result.error) {
             return result;

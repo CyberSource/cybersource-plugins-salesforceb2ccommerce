@@ -10,7 +10,7 @@
 			<form method="post" id="ePayment" action="${pdict.formAction}" name="ePayment" target="_parent">
 				<isif condition="${!empty(pdict.requestData)}"> 
 					<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
-						<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="off"/>' />
+						<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="on"/>' />
 					</isloop>
 				</isif>	
 				

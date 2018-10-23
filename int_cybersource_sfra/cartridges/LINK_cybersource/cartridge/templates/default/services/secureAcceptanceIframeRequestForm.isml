@@ -9,7 +9,7 @@
 	<form class="secure_acceptance_iframe_request" name="form_iframe" method="post" action="${pdict.formAction}"> 
 		<isif condition="${!empty(pdict.requestData)}"> 
 			<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
-				<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="off"/>' />
+				<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="on"/>' />
 			</isloop>
 		</isif>
 	</form>	 

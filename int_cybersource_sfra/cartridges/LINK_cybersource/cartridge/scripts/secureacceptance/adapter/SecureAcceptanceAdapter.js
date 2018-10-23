@@ -357,11 +357,12 @@ function SilentPostResponse() {
                 if (silentPostResponse.authorized || silentPostResponse.process3DRedirection) {
                     var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
                     secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
+                    return URLUtils.https('COPlaceOrder-SubmitOrder', 'order_id' , order.orderNo);
+                } else {
+                    return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder' , 'SecureAcceptanceError', 'true' );
                 }
-                return URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken);
-                
             } else {
-                return URLUtils.https('Checkout-Begin', 'stage', 'payment' , 'SecureAcceptanceError', 'true' );
+                return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder' , 'SecureAcceptanceError', 'true' );
             }
         }
     } else {

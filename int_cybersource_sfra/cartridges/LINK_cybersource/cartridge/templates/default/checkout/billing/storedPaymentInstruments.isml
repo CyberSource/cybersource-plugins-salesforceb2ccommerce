@@ -48,8 +48,7 @@
             ${creditFields.selectedCardID.htmlName}">
             <div class="selectedCardID-wrapper">
                 <input type="hidden" class="form-control selectedCardID" id="selectedCardID"
-                    value=""
-                    <isprint value=${creditFields.selectedCardID.attributes} encoding="off"/> >
+                    value="" name="dwfrm_billing_creditCardFields_selectedCardID" >
             </div>
         </div>
     </div>

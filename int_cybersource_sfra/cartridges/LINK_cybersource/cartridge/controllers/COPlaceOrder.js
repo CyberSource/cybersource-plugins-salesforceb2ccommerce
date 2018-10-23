@@ -7,6 +7,7 @@ var OrderModel = require('*/cartridge/models/order');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var HookMgr = require('dw/system/HookMgr');
 var BasketMgr = require('dw/order/BasketMgr');
+var URLUtils = require('dw/web/URLUtils');
 
 function submitApplePayOrder(order,req, res, next){
     var checkoutHelper = require('*/cartridge/scripts/checkout/checkoutHelpers');
@@ -51,21 +52,21 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 		var providerResult = Provider.Check(order);
 		if(!empty(providerResult)){
 			if(providerResult.pending){
-				res.redirect(dw.web.URLUtils.https('COPlaceOrder-ReviewOrder', 'order_id', providerResult.Order.orderNo));
+				res.redirect(URLUtils.https('COPlaceOrder-ReviewOrder', 'order_id', providerResult.Order.orderNo));
 				return next();
 			} else if (providerResult.load3DRequest) {
 				res.render('cart/payerauthenticationredirect');
 				return next();
 			} else if (providerResult.submit) {
-				res.redirect(dw.web.URLUtils.https('COPlaceOrder-SubmitOrder', 'order_id', providerResult.Order.orderNo));
+				res.redirect(URLUtils.https('COPlaceOrder-SubmitOrder', 'order_id', providerResult.Order.orderNo));
 				return next();
 			} else if (providerResult.error) {
 				var args = {Order : providerResult.Order};
 				var failOrderResult = failOrder(args);
-				res.redirect(dw.web.URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', dw.web.Resource.msg('payerauthentication.carderror', 'cybersource', null)));
+				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', dw.web.Resource.msg('payerauthentication.carderror', 'cybersource', null)));
 				return next();
 			} else if (providerResult.cancelfail) {
-				res.redirect(dw.web.URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderResult', providerResult.PlaceOrderError));
+				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderResult', providerResult.PlaceOrderError));
 				return next();
 			} else if (providerResult.carterror) {
 				res.redirect(URLUtils.url('Cart-Show'));
@@ -93,18 +94,15 @@ server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next
             var URLUtils = require('dw/web/URLUtils');
             var Resource = require('dw/web/Resource');
 	        Transaction.wrap(function () { OrderMgr.failOrder(order); });
-
 	        // fraud detection failed
 	        req.session.privacyCache.set('fraudDetectionStatus', true);
-
 	        res.json({
 	            error: true,
 	            cartError: true,
 	            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
 	            errorMessage: Resource.msg('error.technical', 'checkout', null)
 	        });
-
-	        return next();
+	        return next();	
 	    }
 
 	    // Places the order
@@ -121,7 +119,7 @@ server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next
 
 	    // Reset usingMultiShip after successful Order placement
 	    req.session.privacyCache.set('usingMultiShipping', false);
-		res.redirect(dw.web.URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
+		res.redirect(URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
 
 
 	    return next();
@@ -188,7 +186,7 @@ server.get('ReviewOrder', csrfProtection.generateToken, function (req, res, next
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
-	res.redirect(dw.web.URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
+	res.redirect(URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
     return next();
 });
 

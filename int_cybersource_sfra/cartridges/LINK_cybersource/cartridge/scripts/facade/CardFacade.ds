@@ -43,7 +43,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	billTo = result.billTo;
 	result = CommonHelper.CreateCybersourceShipToObject(basket);
 	shipTo = result.shipTo;
-	if (CsSAType != CybersourceConstants.METHOD_SA_FLEX && CsSAType != CybersourceConstants.METHOD_SA_SILENTPOST) {
+	if (CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
 		result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
 		cardObject = result.card;
 	}

@@ -121,15 +121,16 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
 	        var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, amount);
 		        paymentInstrument.setCreditCardHolder(cart.billingAddress.fullName);
 		        paymentInstrument.setCreditCardNumber(cardNumber);
-		        paymentInstrument.setCreditCardType(CardHelper.getCardType(cardType));
 		        paymentInstrument.setCreditCardExpirationMonth(expirationMonth);
 		        paymentInstrument.setCreditCardExpirationYear(expirationYear);
 		    if (empty(paymentInformation.creditCardToken)) {
+		        paymentInstrument.setCreditCardType(CardHelper.getCardType(cardType));
 		        var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
 				var flexString = JSON.parse(flexResponse);
 				var flexToken = flexString.token;
 		        paymentInstrument.setCreditCardToken(flexToken);
 		    } else {
+		        paymentInstrument.setCreditCardType(cardType);
 	            paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
 		    }
 	        return true;

@@ -4,9 +4,22 @@ var assert = require('chai').assert;
 var proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 var ArrayList = require('../../../../../../mocks/dw.util.Collection');
 var loggerMock = require('../../../../../../mocks/dw/system/Logger');
-var siteMock = require('../../../../../../mocks/dw/system/Site');
-var cartMock = require('../../../../../../mocks/models/cart');
 var CybersourceConstants = require('../../../../../../../cartridges/LINK_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var BasketMgr = require('../../../../../../mocks/dw/order/BasketMgr');
+var Money = require('../../../../../../mocks/dw.value.Money');
+var PaymentMgr = require('../../../../../../mocks/dw/order/PaymentMgr');
+
+var siteMock = {
+	    getCurrent: function () {
+	        return {
+	            getCustomPreferenceValue: function () {
+	            	return {
+						value:  'SA_FLEX'
+	            	};
+	            }
+	        };
+	    }
+};
 
 var createSubscriptionMyAccountResult = '';
 var PaymentStatusCodes = {
@@ -24,61 +37,6 @@ var Resource = {
         return param;
     }
 };
-var PaymentMgr = {
-    getApplicablePaymentMethods: function () {
-        return [
-            {
-                ID: 'GIFT_CERTIFICATE',
-                name: 'Gift Certificate'
-            },
-            {
-                ID: 'CREDIT_CARD',
-                name: 'Credit Card'
-            }
-        ];
-    },
-    getPaymentMethod: function () {
-        return {
-            getApplicablePaymentCards: function () {
-                return [
-                    {
-                        cardType: 'Visa',
-                        name: 'Visa',
-                        UUID: 'some UUID'
-                    },
-                    {
-                        cardType: 'Amex',
-                        name: 'American Express',
-                        UUID: 'some UUID'
-                    },
-                    {
-                        cardType: 'Master Card',
-                        name: 'MasterCard'
-                    },
-                    {
-                        cardType: 'Discover',
-                        name: 'Discover'
-                    }
-                ];
-            }
-        };
-    },
-    getApplicablePaymentCards: function () {
-        return ['applicable payment cards'];
-    },
-    getPaymentCard: function (cardType) {
-        if (cardType === 'Visa') {
-            var paymentCard = {
-                verify: function () {
-                    //  How do we duplicate SFCC logic here?
-                    return {};
-                }
-            };
-            return paymentCard;
-        }
-        return {};
-    }
-};
 
 
 var CommonHelper = proxyquire('../../../../../../../../int_cybersource_sfra/cartridges/LINK_cybersource/cartridge/scripts/helper/CommonHelper.js', {
@@ -90,15 +48,37 @@ var CommonHelper = proxyquire('../../../../../../../../int_cybersource_sfra/cart
 
 });
 
+CommonHelper.CalculateNonGiftCertificateAmount = function () {
+    return "amount";
+};
+
+CommonHelper.removeExistingPaymentInstruments = function () {
+    return true;
+};
+var currentBasketMock = {
+		createPaymentInstrument:function(){
+			return 'SA_REDIRECT';	
+		}
+};
+var cart = BasketMgr;
+var PaymentMethod = "CREDIT_CARD";
+cart.createPaymentInstrument = function () {
+	return "paymentInstrument";
+}
+
 var Cybersource = proxyquire('../../../../../../../../int_cybersource_sfra/cartridges/LINK_cybersource/cartridge/scripts/Cybersource.js', {
     'dw/system/Logger': loggerMock,
     'dw/system/Site': siteMock,
     'dw/order/PaymentMgr': PaymentMgr,
     '~/cartridge/scripts/utils/CybersourceConstants': CybersourceConstants,
     '~/cartridge/scripts/helper/CommonHelper': CommonHelper,
-    'dw/system/Transaction': transaction,
-    '*/cartridge/models/cart': cartMock
+    'dw/system/Transaction': transaction
 });
+
+Cybersource.HandleCard = function() {
+	  return {error: false};
+};
+
 var CybersourceCredit = proxyquire('../../../../../../../../int_cybersource_sfra/cartridges/LINK_cybersource/cartridge/scripts/hooks/payment/processor/cybersource_credit.js', {
     'dw/web/Resource': Resource,
     'LINK_cybersource/cartridge/scripts/Cybersource': Cybersource,
@@ -108,7 +88,15 @@ var CybersourceCredit = proxyquire('../../../../../../../../int_cybersource_sfra
     '*/cartridge/scripts/util/collections': ArrayList,
     'dw/order/PaymentStatusCodes': PaymentStatusCodes,
     'createSubscriptionMyAccountResult': createSubscriptionMyAccountResult,
-    '~/cartridge/scripts/utils/CybersourceConstants': CybersourceConstants
+    '~/cartridge/scripts/utils/CybersourceConstants': CybersourceConstants,
+    'dw/system/Site': siteMock,
+    'dw/order/BasketMgr': {
+        getCurrentBasket: function () {
+            return currentBasketMock;
+        }
+    },
+    '~/cartridge/scripts/helper/CommonHelper': CommonHelper,
+    'dw/value/Money': Money
 });
 
 var createsubsciptiontoken = function (sucess) {
@@ -168,7 +156,7 @@ describe('Create Payment Token', function () {
 });
 
 
-describe('Handle Credit Card', function () {
+describe('Handle', function () {
     it('Return false if credit card is valid ', function () {
         global.session = {
             forms: {
@@ -200,5 +188,38 @@ describe('Handle Credit Card', function () {
 
         var handleCCResult = CybersourceCredit.Handle(basket, paymentInformation);
         assert.equal(handleCCResult.error, false);
+    });
+    
+    it('Return false if credit card is valid: SA is REDIRECT/IFRAME ', function () {
+        global.session = {
+            forms: {
+                billing: {
+                    paymentMethod: {
+                        value: {
+                            toString: function () {
+                                return 'CREDIT_CARD';
+                            },
+                            equals: function (a) {
+                                return (a === 'CREDIT_CARD');
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        var paymentInformation = {
+            cardNumber: { value: '4111111111111' },
+            securityCode: { value: '123' },
+            expirationMonth: { value: '5' },
+            expirationYear: { value: '2022' },
+            cardType: { value: 'Visa' },
+            creditCardToken: { value: '' }
+        };
+
+        var basket = {};
+
+        var handleCCResult = CybersourceCredit.Handle(basket, paymentInformation);
+        assert.equal(handleCCResult.sucess, true);
     });
 });
