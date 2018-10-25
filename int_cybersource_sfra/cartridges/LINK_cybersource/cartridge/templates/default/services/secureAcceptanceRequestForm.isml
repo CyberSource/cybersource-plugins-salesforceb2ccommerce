@@ -23,4 +23,5 @@
 		$("#ePayment").submit();
 	});
 </script>
+</body>
 </html>

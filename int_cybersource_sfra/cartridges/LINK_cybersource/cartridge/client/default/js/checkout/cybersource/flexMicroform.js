@@ -1,5 +1,3 @@
-var formHelpers = require('base/checkout/formErrors');
-
 $(document).ready(function () {	
 	if($('.nav-item').data('sa-type') == 'SA_FLEX') {
 		var jwk = JSON.parse($('#flextokenObj').val());

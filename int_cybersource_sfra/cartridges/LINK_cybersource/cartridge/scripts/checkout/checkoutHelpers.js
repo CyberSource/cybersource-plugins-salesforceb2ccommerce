@@ -19,6 +19,11 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
     var Site = require('dw/system/Site');
+    var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    if(CsSAType != null && CsSAType == "SA_FLEX") {
+    	billingData.paymentInformation.cardType.value = CardHelper.getCardType(billingData.paymentInformation.cardType.value);
+    }
     var verifyDuplicates = false;
 
     var basket = BasketMgr.getCurrentOrNewBasket();
@@ -31,7 +36,6 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
         verifyDuplicates = true;
         tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'billing');
     }
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var payInstrument = CardHelper.getNonGCPaymemtInstument(basket);
     Transaction.begin();
     var storedPaymentInstrument = wallet.createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
@@ -43,7 +47,7 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
         billingData.paymentInformation.cardNumber.value
     );
     storedPaymentInstrument.setCreditCardType(
-        billingData.paymentInformation.cardType.value
+    		billingData.paymentInformation.cardType.value
     );
     storedPaymentInstrument.setCreditCardExpirationMonth(
         billingData.paymentInformation.expirationMonth.value

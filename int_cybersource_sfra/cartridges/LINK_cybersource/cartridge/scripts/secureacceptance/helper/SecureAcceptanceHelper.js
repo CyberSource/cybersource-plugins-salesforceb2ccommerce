@@ -11,8 +11,7 @@ var Site = require('dw/system/Site');
  * @param orderPaymentInstrument : dw.order.OrderPaymentInstrument
  */
 function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
-    if (orderPaymentInstrument.getPaymentMethod().indexOf('SA_') > -1) {
-        if (!empty(CustomerObj) && !empty(orderPaymentInstrument) && orderPaymentInstrument.getPaymentMethod().indexOf("SA") > -1
+        if (!empty(CustomerObj) && !empty(orderPaymentInstrument)
             && !empty(orderPaymentInstrument.getCreditCardType()) && !empty(orderPaymentInstrument.getCreditCardNumber())
             && !empty(orderPaymentInstrument.custom.savecard) && orderPaymentInstrument.custom.savecard) {
             var wallet = CustomerObj.getProfile().getWallet();
@@ -30,7 +29,7 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
                 }
                 //find token ID exists for matching payment card
                 if (cardTypeMatch && cardNumberMatch) {
-                    matchedk = creditCardInstrument;
+                    matchedPaymentInstrument = creditCardInstrument;
                     break;
                 }
             }
@@ -70,7 +69,7 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
                 Logger.error('Error in Secure acceptance update payment instrument in customer card ');
             }
         }
-    }
+    
     return { success: true };
 }
 

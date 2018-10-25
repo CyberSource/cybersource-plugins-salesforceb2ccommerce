@@ -2,15 +2,6 @@
 
 /**
  * @function
- * @description function to convert html tag to lt or gt;
- * @param {fieldValue} value of the field
- */
-function encodeRequestFieldValue(fieldValue) {
-	return fieldValue.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-/**
- * @function
  * @description function to redirect secure acceptance redirect form
  */
 function initSecureAcceptance() {
@@ -18,7 +9,9 @@ function initSecureAcceptance() {
     	var CsSaType = $('.nav-item').data('sa-type');
     	if ('CREDIT_CARD' != CsSaType) {
     		var formaction = $(this).data('action');
-    		 window.location.href = formaction;
+			setTimeout(function () {
+			  window.location.href = formaction;
+			}, 500);
       	}
     });
 }
