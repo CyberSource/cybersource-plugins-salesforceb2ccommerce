@@ -13,8 +13,7 @@ var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 function TaxationRequest(cart) {
     // read pipeline dictionary input parameter
-    var reasonCode,
-        itemArray,
+    var itemArray,
         itemMap,
         result;
     var CybersourceHelper = libCybersource.getCybersourceHelper();
@@ -24,9 +23,18 @@ function TaxationRequest(cart) {
     var taxResult = {};
     var taxRequest = __addTaxRequest(cart, itemArray);
     var taxationResponse = null;
+
+    //  Provide ability to customize request object with a hook.
+    var HookMgr = require('dw/system/HookMgr');
+    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+        var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Tax', taxRequest);
+        if (!empty(modifiedServiceRequest)) {
+            taxRequest = modifiedServiceRequest;
+        }
+    }
+
     // send request
     try {
-        var dwsvc = require('dw/svc');
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials();
         var requestWrapper = {};

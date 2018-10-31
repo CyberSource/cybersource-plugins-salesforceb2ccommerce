@@ -63,7 +63,8 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	//**************************************************************************//	
 	if (!empty(SubscriptionID)) {
 		CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject,orderNo);
-	}else if(CybersourceHelper.getTokenizationEnabled().equals('YES')){
+	}
+    else if(CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')){
 		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest,billTo,purchaseObject,cardObject,OrderNo);
 	}
 	
@@ -103,7 +104,15 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
 	/* End of AVS Service setup */
 	CardHelper.writeOutDebugLog(serviceRequest,orderNo);
-	
+
+    //  Provide ability to customize request object with a hook.
+    var HookMgr = require('dw/system/HookMgr');
+    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+        var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'CCAuth', serviceRequest);
+        if (!empty(modifiedServiceRequest)) {
+           serviceRequest = modifiedServiceRequest;
+        }
+    }
 	//**************************************************************************//
 	// Execute Request
 	//**************************************************************************//	
@@ -232,6 +241,15 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
 	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken());
 
+    //  Provide ability to customize request object with a hook.
+    var HookMgr = require('dw/system/HookMgr');
+    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+        var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'PayerAuthEnroll', serviceRequest);
+        if (!empty(modifiedServiceRequest)) {
+           serviceRequest = modifiedServiceRequest;
+        }
+    }
+
 	var serviceResponse = null;
 	// send request
 	try{
@@ -296,6 +314,15 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	
 	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken);
 
+    //  Provide ability to customize request object with a hook.
+    var HookMgr = require('dw/system/HookMgr');
+    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+        var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'PayerAuthValidation', serviceRequest);
+        if (!empty(modifiedServiceRequest)) {
+           serviceRequest = modifiedServiceRequest;
+        }
+    }
+
 	var serviceResponse = null;
 	// send request
 	try{
@@ -336,9 +363,185 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	}
 	return {success:true, serviceResponse:responseObject};
 }
+
+
+/**
+ * CCAuthReversalService call is made to cybersource and response if send back.
+ * @param requestID : 
+ * @param amount : order total
+ * @param merchantRefCode : cybersource reference number
+ * @param paymentType : payment type
+ * @currency : currency used
+ */
+function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount) {
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+
+    var csReference = webreferences.CyberSourceTransaction;
+    var serviceRequest = new csReference.RequestMessage();
+	var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
+		purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
+    	serviceRequest.purchaseTotals = purchaseTotals;
+
+        // Create CCAuthReversal service reference for Credit Card
+        CybersourceHelper.addCCAuthReversalServiceInfo(serviceRequest, merchantRefCode, requestID);
+
+        //  Provide ability to customize request object with a hook.
+        var HookMgr = require('dw/system/HookMgr');
+        if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+            var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'AuthReversal', serviceRequest);
+            if (!empty(modifiedServiceRequest)) {
+            serviceRequest = modifiedServiceRequest;
+            }
+        }
+
+   // send request
+   var serviceResponse = null;
+		try {
+	        // create request,make service call and store returned response
+	        var service = CSServices.CyberSourceTransactionService;
+			// getting merchant id and key for specific payment method
+			var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+			var requestWrapper={};
+		    serviceRequest.merchantID = merchantCrdentials.merchantID;
+			requestWrapper.request = serviceRequest;
+			requestWrapper.merchantCredentials = merchantCrdentials;
+			serviceResponse = service.call(requestWrapper);
+	  	} catch (e) {
+	        Logger.error("[CardFacade.js] Error in CCAuthReversalService: {0}", e.message);
+	        return { error: true, errorMsg: e.message };
+	    }
+	
+	    if (empty(serviceResponse) || serviceResponse.status !== "OK") {
+	        return { error: true, errorMsg: "empty or error in CC auth reversal service response: " + serviceResponse };
+	    }
+	    if (!empty(serviceResponse)) {
+			serviceResponse = serviceResponse.object;
+	    }
+		
+	    return serviceResponse;
+}
+
+
+/**
+ * Credit Card Capture call is made to cybersource and response is sent back.
+ * @param requestID : Capture request ID, which is same as that of CC Authorize service
+ * @param merchantRefCode : Cybersource Merchant Reference Code
+ * @param paymentType : Payment Type for Capture
+ * @param purchaseTotal : Order total for current request
+ * @param currency : 
+ */
+
+function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String){
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
+	purchaseObject = purchaseObject.purchaseTotals;
+	serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
+	
+	libCybersource.setClientData(serviceRequest, merchantRefCode);
+	CybersourceHelper.ccCaptureService(serviceRequest, merchantRefCode, requestID, paymentType);
+	
+    //  Provide ability to customize request object with a hook.
+    var HookMgr = require('dw/system/HookMgr');
+    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+        var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Capture', serviceRequest);
+        if (!empty(modifiedServiceRequest)) {
+        serviceRequest = modifiedServiceRequest;
+        }
+    }
+
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = CSServices.CyberSourceTransactionService;
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials; 
+		serviceResponse = service.call(requestWrapper); 
+	}catch(e){
+		Logger.error("[CardFacade.ds] Error in CCCaptureRequest request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		Logger.error("[CardFacade.ds] response in CCCaptureRequest response ( {0} )",serviceResponse);
+		return {error:true, errorMsg:"empty or error in CCCaptureRequest response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	return serviceResponse;
+}
+
+/**
+ * CC Credit call is made to cybersource and response is sent back.
+ * @param requestID : Capture request ID, which is same as that of CC Authorize service
+ * @param merchantRefCode : Cybersource Merchant Reference Code
+ * @param paymentType : Payment Type for Credit
+ * @param purchaseTotal : Order total for current request
+ * @param currency : 
+ */
+function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String){
+	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+	var CybersourceHelper = libCybersource.getCybersourceHelper();
+
+	var csReference = webreferences.CyberSourceTransaction;
+	var serviceRequest = new csReference.RequestMessage();
+	
+	var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
+	purchaseObject = purchaseObject.purchaseTotals;
+	serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
+	
+	libCybersource.setClientData(serviceRequest, merchantRefCode);
+	CybersourceHelper.ccCreditService(serviceRequest, merchantRefCode, requestID, paymentType);
+	
+    //  Provide ability to customize request object with a hook.
+    var HookMgr = require('dw/system/HookMgr');
+    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
+        var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Credit', serviceRequest);
+        if (!empty(modifiedServiceRequest)) {
+        serviceRequest = modifiedServiceRequest;
+        }
+    }
+
+	var serviceResponse = null;
+	// send request
+	try{
+		var service = CSServices.CyberSourceTransactionService;
+		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+		var requestWrapper={};
+	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+		requestWrapper.request =serviceRequest;
+		requestWrapper.merchantCredentials = merchantCrdentials; 
+		serviceResponse = service.call(requestWrapper); 
+	}catch(e){
+		Logger.error("[CardFacade.ds] Error in CCCaptureRequest request ( {0} )",e.message);
+		return {error:true, errorMsg:e.message};
+	}
+	
+	if(empty(serviceResponse) || serviceResponse.status !== "OK"){
+		Logger.error("[CardFacade.ds] response in CCCaptureRequest response ( {0} )",serviceResponse);
+		return {error:true, errorMsg:"empty or error in CCCaptureRequest response: "+serviceResponse};
+	}
+	serviceResponse = serviceResponse.object;
+	return serviceResponse;
+}
+
 module.exports = {
 		PayerAuthEnrollCheck: PayerAuthEnrollCheck,
 		PayerAuthValidation: PayerAuthValidation,
 		CCAuthRequest : CCAuthRequest,
-		DAVRequest : DAVRequest
+		DAVRequest : DAVRequest,
+		CCAuthReversalService : CCAuthReversalService,
+		CCCaptureRequest : CCCaptureRequest,
+		CCCreditRequest : CCCreditRequest
 	};

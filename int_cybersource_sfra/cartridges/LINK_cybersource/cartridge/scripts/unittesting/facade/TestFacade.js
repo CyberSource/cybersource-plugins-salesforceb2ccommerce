@@ -410,13 +410,9 @@ function TestPayerAuthValidation(PaRes, CreditCard) {
 
 
 function TestTax(cart) {
-    var Money = require('dw/value/Money');
-
-
-    var csReference = webreferences.CyberSourceTransaction;
-    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    
     var serviceResponse;
-    var TaxFacade = require('~/cartridge/scripts/tax/facade/TaxFacade');
+    var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
     serviceResponse = TaxFacade.TaxationRequest(cart);
 
     if (empty(serviceResponse) || serviceResponse.error) {

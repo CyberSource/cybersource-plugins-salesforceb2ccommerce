@@ -1312,8 +1312,25 @@
                 <default-value>07071</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsTokenizationEnable">
-                <display-name xml:lang="x-default">CS Tokenization Enabled</display-name>
-                <description xml:lang="x-default">This will enable Payment Tokenization.</description>
+                <display-name xml:lang="x-default">CS Credit Card Tokenization Enabled</display-name>
+                <description xml:lang="x-default">Enable Payment Tokenization on saved credit cards.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">YES</display>
+                        <value>YES</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">NO</display>
+                        <value>NO</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+             <attribute-definition attribute-id="CsSubscriptionTokenizationEnable">
+                <display-name xml:lang="x-default">CS Subscription Tokens Enabled</display-name>
+                <description xml:lang="x-default">Enable the request of a subscription token on credit card authorizations.</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1505,6 +1522,7 @@
                 <attribute attribute-id="CsOrderImportLookBack"/>
 				
                 <attribute attribute-id="CsTokenizationEnable"/>
+                <attribute attribute-id="CsSubscriptionTokenizationEnable"/>
 				
                 <attribute attribute-id="CsAvsIgnoreResult"/>
                 <attribute attribute-id="CsAvsDeclineFlags"/>

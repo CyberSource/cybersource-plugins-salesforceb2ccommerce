@@ -29,7 +29,7 @@ function calculateTax(cart) {
                 if (result.success && !empty(result.CartStateString)) {
                     cartStateString = result.CartStateString;
                     if (((!empty(session.custom.SkipTaxCalculation) || !session.custom.SkipTaxCalculation)) && typeof session.custom.SkipTaxCalculation !== 'undefined') {
-                        var TaxFacade = require('~/cartridge/scripts/tax/facade/TaxFacade');
+                        var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
                         var taxationResponse = TaxFacade.TaxationRequest(cart);
                         if (taxationResponse.success && taxationResponse.response !== null) {
                             session.custom.cartStateString = cartStateString;

@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+<h1>
+	<isif condition="${!empty(pdict.serviceReply)}" >
+		<isprint value="${pdict.serviceReply}"><br>
+	</isif>
+</h1>
+</head>
+<body>
+<iscomment>
+	This template will populate the Unit Test result
+</iscomment>
+<!--  UI -->
+<b>merchantReferenceCode: </b><isprint value="${pdict.response['merchantReferenceCode']}" encoding="off"/> <br/>
+<b>requestID :</b> <isprint value="${pdict.response['requestID']}" encoding="off"/> <br/>
+<b>decision: </b><isprint value="${pdict.response['decision']}" encoding="off"/> <br/>
+<b>reasonCode: </b><isprint value="${pdict.response['reasonCode']}" encoding="off"/> <br/>
+<b>requestToken:</b> <isprint value="${pdict.response['requestToken']}" encoding="off"/> <br/>
+<b>ccCaptureReply.amount: </b><isprint value="${pdict.response[pdict.serviceReply]['amount']}" encoding="off"/> <br/>
+<b>ccCaptureReply.reconciliationID: </b><isprint value="${pdict.response[pdict.serviceReply]['reconciliationID']}" encoding="off"/> <br/>
+<b>ccCaptureReply.requestDateTime: </b><isprint value="${pdict.response[pdict.serviceReply]['requestDateTime']}" encoding="off"/> <br/>
+<b>ccAuthReply: </b><isprint value="${pdict.response[pdict.serviceReply]['reasonCode']}" encoding="off"/> <br/>
+
+<isif condition="${!empty(pdict.response.invalidField)}">
+	<strong>${Resource.msg('InvalidFieldsArray','cybersource','')}:</strong>
+	"<isloop items="${pdict.response.invalidField}" var="invalidfield">${invalidfield},</isloop>",
+</isif>
+</body></html>

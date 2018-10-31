@@ -151,6 +151,9 @@ var CybersourceHelper = {
     getTokenizationEnabled: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsTokenizationEnable').value;
     },
+    getSubscriptionTokenizationEnabled: function () {
+        return Site.getCurrent().getCustomPreferenceValue('CsSubscriptionTokenizationEnable').value;
+    },
     getProofXMLEnabled: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsPaEnableProofXML');
     },
@@ -1020,8 +1023,42 @@ var CybersourceHelper = {
         request.payPalAuthReversalService = payPalAuthReversalService;
         request.payPalAuthReversalService.run = true;
 
+    },
+    
+    /** ***************************************************************************
+	 * request  ,
+	 * purchase : PurchaseTotals_Object,
+	 * refCode     - Basket.UUID
+	 * Name: addCCAuthReversalServiceInfo
+	 *****************************************************************************/
+    addCCAuthReversalServiceInfo: function (serviceRequest, refCode, requestID) {
+    	serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+        __setClientData(serviceRequest, refCode);
+        ccAuthReversalService = new CybersourceHelper.csReference.CCAuthReversalService();
+        ccAuthReversalService.authRequestID = requestID;
+        serviceRequest.ccAuthReversalService = ccAuthReversalService;
+        serviceRequest.ccAuthReversalService.run = true;
+	},
+	
+    /** ***************************************************************************
+	 * Name: ccCaptureService
+	 * Description: Initiate the Capture for Credit Cards.
+	 *
+	 ****************************************************************************/
+    ccCaptureService : function(request, merchantRefCode, requestId, paymentType) {
+    	var ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+        ccCaptureService.authRequestID = requestId;
+        request.ccCaptureService = ccCaptureService;
+        request.paymentSolution = paymentType;
+        request.ccCaptureService.run = true;
+    },
+    ccCreditService : function(request, merchantRefCode, requestId, paymentType) {
+    	var ccCreditService = new CybersourceHelper.csReference.CCCreditService();
+        ccCreditService.captureRequestID = requestId;
+        request.ccCreditService = ccCreditService;
+        request.paymentSolution = paymentType;
+        request.ccCreditService.run = true;
     }
-
 };
 
 // Helper method to export the helper
@@ -1037,7 +1074,7 @@ function __setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '18.1.0';
+    request.clientLibraryVersion = '18.1.1';
     request.clientEnvironment = 'Linux';
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;
