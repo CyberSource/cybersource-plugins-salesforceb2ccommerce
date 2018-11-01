@@ -133,8 +133,8 @@ var CyberSourceConversionDetailReportService = LocalServiceRegistry.createServic
         url = url.replace(/{endTime}/, args.endTime);
         svc.setURL(url);
     },
-    parseResponse: function (client) {
-        return client.text;
+    parseResponse: function (service, response) {
+        return response.text;
     }
 });
 
