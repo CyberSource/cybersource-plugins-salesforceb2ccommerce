@@ -13,7 +13,8 @@ function CreateFlexKey() {
 	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");
 	    var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
-	    var signature, targetOrigin;
+        var signature, targetOrigin;
+        var merchantId = dw.system.Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
 	    if(request.isHttpSecure()){
 		   	 targetOrigin = "https://" + request.httpHost;
 		   } else {
@@ -24,7 +25,7 @@ function CreateFlexKey() {
 			signedHeaders.put('date', getTime());
 			signedHeaders.put('(request-target)', 'post /flex/v1/keys');
 			signedHeaders.put('digest', getDigest(digestString));
-			signedHeaders.put('v-c-merchant-id', "accenture_cybersource");
+			signedHeaders.put('v-c-merchant-id', merchantId);
 		var signature = generateSignature(signedHeaders, keyID, sharedSecret);
 		var headerString = "";
 		for each(var key in signedHeaders.keySet()){
