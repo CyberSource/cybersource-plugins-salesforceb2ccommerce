@@ -27,8 +27,7 @@ var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 /***/
 var CyberSourceFlexTokenService = LocalServiceRegistry.createService("cybersource.http.flextoken", {
 	createRequest: function(svc, requestObj, digestString){
-		svc.setURL("https://apitest.cybersource.com/flex/v1/keys");  
-		svc.setRequestMethod("POST");  
+		svc.setRequestMethod("POST");
 		svc.addHeader("Accept","application/json; charset=utf-8");
 		svc.addHeader("Content-Type", "application/json; charset=utf-8");
 		for each(var key in requestObj.keySet()){
