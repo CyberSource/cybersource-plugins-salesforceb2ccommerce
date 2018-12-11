@@ -52,13 +52,13 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 		var providerResult = Provider.Check(order);
 		if(!empty(providerResult)){
 			if(providerResult.pending){
-				res.redirect(URLUtils.https('COPlaceOrder-ReviewOrder', 'order_id', providerResult.Order.orderNo));
+				reviewOrder(providerResult.Order.orderNo, req, res, next)
 				return next();
 			} else if (providerResult.load3DRequest) {
 				res.render('cart/payerauthenticationredirect');
 				return next();
 			} else if (providerResult.submit) {
-				res.redirect(URLUtils.https('COPlaceOrder-SubmitOrder', 'order_id', providerResult.Order.orderNo));
+				submitOrder(providerResult.Order.orderNo, req, res, next);
 				return next();
 			} else if (providerResult.error) {
 				var args = {Order : providerResult.Order};
@@ -85,45 +85,6 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     } 
 });
 
-server.get('SubmitOrder', csrfProtection.generateToken, function (req, res, next) {
-		var currentBasket = BasketMgr.getCurrentBasket();
-		var order = OrderMgr.getOrder(req.querystring.order_id);
-        var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
-        var Transaction = require('dw/system/Transaction');
-        var Resource = require('dw/web/Resource');
-	    if (fraudDetectionStatus.status === 'fail') { 
-	        Transaction.wrap(function () { OrderMgr.failOrder(order); });
-	        // fraud detection failed
-	        req.session.privacyCache.set('fraudDetectionStatus', true);
-	        res.json({
-	            error: true,
-	            cartError: true,
-	            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-	            errorMessage: Resource.msg('error.technical', 'checkout', null)
-	        });
-	        return next();	
-        }
-
-	    // Places the order
-	    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-	    if (placeOrderResult.error) {
-	        res.json({
-	            error: true,
-	            errorMessage: Resource.msg('error.technical', 'checkout', null)
-	        });
-	        return next();
-	    }
-
-	    COHelpers.sendConfirmationEmail(order, req.locale.id);
-
-	    // Reset usingMultiShip after successful Order placement
-	    req.session.privacyCache.set('usingMultiShipping', false);
-		res.redirect(URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
-
-
-	    return next();
-});
-
 function failOrder(args){
 	var Cybersource = require('~/cartridge/scripts/Cybersource');
 	var orderResult = Cybersource.GetOrder(args.Order);
@@ -148,30 +109,29 @@ function failOrder(args){
 }
 
 /**
- * Leave order in created state in demandware and send order confirmation email
+ * Create Order and set to NOT CONFIRMED
  * @param args
  */
-server.get('ReviewOrder', csrfProtection.generateToken, function (req, res, next) {
+function reviewOrder(order_id, req, res, next) {
 	var currentBasket = BasketMgr.getCurrentBasket();
-	var order = OrderMgr.getOrder(req.querystring.order_id);
-	var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
-    if (fraudDetectionStatus.status === 'fail') {
-        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+	var order = OrderMgr.getOrder(order_id);
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+    var Transaction = require('dw/system/Transaction');
 
+    if (fraudDetectionStatus.status === 'fail') { 
+        Transaction.wrap(function () { OrderMgr.failOrder(order); });
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
-
         res.json({
             error: true,
             cartError: true,
             redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
             errorMessage: Resource.msg('error.technical', 'checkout', null)
         });
-
-        return next();
+        return next();	
     }
 
-    // Places the order
+    // Place the order
     var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
         res.json({
@@ -182,11 +142,64 @@ server.get('ReviewOrder', csrfProtection.generateToken, function (req, res, next
     }
 
     COHelpers.sendConfirmationEmail(order, req.locale.id);
+        
+    //  Set Order confirmation status to NOT CONFIRMED
+    var Order = require('dw/order/Order');
+    Transaction.wrap(function () {
+        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+    });
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
 	res.redirect(URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
     return next();
+}
+
+/**
+*Submit the order and send order confirmation email
+*@paramargs
+*/
+function submitOrder(order_id, req, res, next) {
+	var currentBasket = BasketMgr.getCurrentBasket();
+	var order = OrderMgr.getOrder(order_id);
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+    var Transaction = require('dw/system/Transaction');
+    var Resource = require('dw/web/Resource');
+
+    if (fraudDetectionStatus.status === 'fail') { 
+        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+        // fraud detection failed
+        req.session.privacyCache.set('fraudDetectionStatus', true);
+        res.json({
+            error: true,
+            cartError: true,
+            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
+            errorMessage: Resource.msg('error.technical', 'checkout', null)
+        });
+        return next();	
+    }
+    
+    // Place the order
+    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+    if (placeOrderResult.error) {
+        res.json({
+            error: true,
+            errorMessage: Resource.msg('error.technical', 'checkout', null)
+        });
+        return next();
+    }
+
+    COHelpers.sendConfirmationEmail(order, req.locale.id);
+    // Reset using MultiShip after successful Order placement
+    req.session.privacyCache.set('usingMultiShipping', false);
+	res.redirect(URLUtils.https('Order-Confirm', 'ID' , order.orderNo, 'token', order.orderToken));
+    return next();
+}
+
+
+server.get('SilentPostSubmitOrder', csrfProtection.generateToken, function (req, res, next) {
+	var order_id = session.privacy.orderId;
+	submitOrder(order_id, req, res, next);
 });
 
 module.exports = server.exports();

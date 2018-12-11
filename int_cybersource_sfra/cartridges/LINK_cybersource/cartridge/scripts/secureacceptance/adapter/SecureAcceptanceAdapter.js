@@ -354,13 +354,14 @@ function SilentPostResponse() {
 
                //Authorization
                 var silentPostResponse = secureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: paymentInstrument, Order: order, Basket: order });
-                if (silentPostResponse.authorized || silentPostResponse.process3DRedirection) {
+                if (silentPostResponse.authorized || silentPostResponse.review || silentPostResponse.process3DRedirection) {
                     var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
                     if(silentPostResponse.process3DRedirection){
                         return URLUtils.https('CheckoutServices-PayerAuthentication');
                     }
                 	secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
-                    return URLUtils.https('COPlaceOrder-SubmitOrder', 'order_id' , order.orderNo);
+                	session.privacy.orderId = order.orderNo;
+                    return URLUtils.https('COPlaceOrder-SilentPostSubmitOrder');
                     
                 } else {
                     return URLUtils.https('Checkout-Begin', 'stage', 'payment' , 'SecureAcceptanceError', 'true' );

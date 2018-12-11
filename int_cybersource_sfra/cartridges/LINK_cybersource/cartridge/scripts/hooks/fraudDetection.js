@@ -27,8 +27,6 @@ function fraudDetection(basket) {
             Logger.error("Error setting fraud decision.  CybersourceFraudDecision missing from session.  Default is set to 'ACCEPT'");
         }
     }
-        //  Reset decision session variable.
-    session.custom.CybersourceFraudDecision = "";
 
     if (decision == 'REVIEW') {
         status = 'flag';
