@@ -39,6 +39,11 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     createRequest: function (svc, requestObj) {
         var csReference = webreferences.CyberSourceTransaction;
         var service = csReference.getDefaultService();
+        
+        var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+        var CybersourceHelper = libCybersource.getCybersourceHelper();
+        CybersourceHelper.setEndpoint(service);
+
         svc.webReference = csReference;
         svc.serviceClient = service;
 
