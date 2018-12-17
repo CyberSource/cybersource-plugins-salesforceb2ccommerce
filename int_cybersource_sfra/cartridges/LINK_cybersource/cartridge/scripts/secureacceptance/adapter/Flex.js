@@ -72,7 +72,10 @@ function getTime() {
 	var StringUtils = require('dw/util/StringUtils');
 
 	try {
-	    var date = StringUtils.formatCalendar(new dw.util.Calendar(), "EEE, dd MMM yyyy HH:mm:ss z");
+        var local = request.locale;
+        request.setLocale('en_US');
+        var date = StringUtils.formatCalendar(new dw.util.Calendar(), "EEE, dd MMM yyyy HH:mm:ss z");
+        request.setLocale(local);
 		return date;
 	} catch (exception) {
         Logger.error('Error in Secure acceptance create request data' + exception.message);
