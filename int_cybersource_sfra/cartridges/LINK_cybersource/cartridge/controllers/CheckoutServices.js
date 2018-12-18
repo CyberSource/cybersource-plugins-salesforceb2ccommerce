@@ -544,7 +544,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     COHelpers.sendConfirmationEmail(order, req.locale.id);
 
         //  Set order confirmation status to not confirmed for REVIEW orders.
-    if (session.custom.CybersourceFraudDecision = "REVIEW") {
+    if (session.custom.CybersourceFraudDecision == "REVIEW") {
         var Order = require('dw/order/Order');
         Transaction.wrap(function () {
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
