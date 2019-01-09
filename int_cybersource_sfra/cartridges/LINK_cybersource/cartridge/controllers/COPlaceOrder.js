@@ -189,6 +189,14 @@ function submitOrder(order_id, req, res, next) {
         return next();
     }
 
+        //  Set order confirmation status to not confirmed for REVIEW orders.
+    if (session.custom.CybersourceFraudDecision == "REVIEW") {
+        var Order = require('dw/order/Order');
+        Transaction.wrap(function () {
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+        });
+    }
+
     COHelpers.sendConfirmationEmail(order, req.locale.id);
     // Reset using MultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
