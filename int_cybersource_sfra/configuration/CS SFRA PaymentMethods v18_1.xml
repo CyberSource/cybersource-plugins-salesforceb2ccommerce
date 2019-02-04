@@ -16,11 +16,11 @@
     </payment-method>
     
     <payment-method method-id="PAYPAL">
-        <name xml:lang="x-default">Paypal</name>
-        <name xml:lang="fr-FR">Paypal</name>
-        <name xml:lang="it-IT">Paypal</name>
-        <name xml:lang="ja-JP">Paypal</name>
-        <name xml:lang="zh-CN">Paypal</name>
+        <name xml:lang="x-default">PayPal</name>
+        <name xml:lang="fr-FR">PayPal</name>
+        <name xml:lang="it-IT">PayPal</name>
+        <name xml:lang="ja-JP">PayPal</name>
+        <name xml:lang="zh-CN">PayPal</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>PAYPAL_EXPRESS</processor-id>
         <custom-attributes>
@@ -30,11 +30,11 @@
     </payment-method>
     
     <payment-method method-id="PAYPAL_CREDIT">
-        <name xml:lang="x-default">Paypal Credit</name>
-        <name xml:lang="fr-FR">Paypal Credit</name>
-        <name xml:lang="it-IT">Paypal Credit</name>
-        <name xml:lang="ja-JP">Paypal Credit</name>
-        <name xml:lang="zh-CN">Paypal Credit</name>
+        <name xml:lang="x-default">PayPal Credit</name>
+        <name xml:lang="fr-FR">PayPal Credit</name>
+        <name xml:lang="it-IT">PayPal Credit</name>
+        <name xml:lang="ja-JP">PayPal Credit</name>
+        <name xml:lang="zh-CN">PayPal Credit</name>
         <enabled-flag>true</enabled-flag>
         <processor-id>PAYPAL_CREDIT</processor-id>
         <custom-attributes>
