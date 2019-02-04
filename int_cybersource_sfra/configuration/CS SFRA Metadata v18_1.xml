@@ -1079,6 +1079,14 @@
                 <min-length>0</min-length>
 				<default-value>1snn5n9w</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="CsEnableExpressPaypal">
+                <display-name xml:lang="x-default">CsEnableExpressPaypal</display-name>
+                <description xml:lang="x-default">Cyber Source Flag for Enable paypal expess in cart and Minicart page</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="CsEnableTaxation">
                 <display-name xml:lang="x-default">CS Tax Calculation Enabled</display-name>
                 <type>boolean</type>
@@ -1153,6 +1161,115 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalAddressOverride">
+                <display-name xml:lang="x-default">Paypal Address Override</display-name>
+                <description xml:lang="x-default">If this set to true , then address of buyer will be override by the shipping address provided in shipping page.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalHdrbackcolor">
+                <display-name xml:lang="x-default">Paypal Header background color</display-name>
+                <description xml:lang="x-default">Set the background color of header in paypal.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalHdrbordercolor">
+                <display-name xml:lang="x-default">Paypal Header border color</display-name>
+                <description xml:lang="x-default">Set the header Border Color</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalHdrimg">
+                <display-name xml:lang="x-default">Paypal Header Image</display-name>
+                <description xml:lang="x-default">Set the paypal Header Image</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalLc">
+                <display-name xml:lang="x-default">paypal locale</display-name>
+                <description xml:lang="x-default">Set the paypal Locale</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalLogoimg">
+                <display-name xml:lang="x-default">Paypal Logo Image</display-name>
+                <description xml:lang="x-default">Set the logo Image</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalNoshipping">
+                <display-name xml:lang="x-default">Paypal No Shipping</display-name>
+                <description xml:lang="x-default">if this set to true , buyer's shipping address will be suppress on Express Checkout pages in paypal.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalOrderType">
+                <display-name xml:lang="x-default">Paypal Order Type</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Standard Order</display>
+                        <value>STANDARD</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Custom Order</display>
+                        <value>CUSTOM</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalPagestyle">
+                <display-name xml:lang="x-default">Paypal page style</display-name>
+                <description xml:lang="x-default">Set the paypal page Style</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalPayflowcolor">
+                <display-name xml:lang="x-default">Paypal flow Color</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalPaymentOption">
+                <display-name xml:lang="x-default">Paypal Payment option</display-name>
+                <description xml:lang="x-default">This allows merchant to select payment option authorize or authorize + capture for Cybersource paypal payment methods</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Authorize</display>
+                        <value>Authorize</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Authorize and Capture</display>
+                        <value>AuthorizeAndCapture</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsPaypalReqconfirmshipping">
+                <display-name xml:lang="x-default">Request Confirm Shipping</display-name>
+                <description xml:lang="x-default">If this set to true, value of paypalReqconfirmshipping in Set Request will be set as 1 for confirm address in Paypal</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="CsPoaCity">
                 <display-name xml:lang="x-default">CS Tax Calculation Purchase Order Acceptance City</display-name>
@@ -1231,6 +1348,13 @@
                 <field-length>0</field-length>
                 <field-height>0</field-height>
                 <default-value>07071</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="CsRequestBillingAddress">
+                <display-name xml:lang="x-default">Request Billing address</display-name>
+                <description xml:lang="x-default">If this set to true, value of requestBillingAddress will set as 1 for requesting billing address from paypal.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="CsSAIframetFormAction">
                 <display-name xml:lang="x-default">CS SA Iframe form action</display-name>
@@ -1479,6 +1603,22 @@
                 <min-length>0</min-length>
 				<default-value>https://testsecureacceptance.cybersource.com/silent/token/update</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="isDecisionManagerEnable">
+                <display-name xml:lang="x-default">Decision Manager Enable for Paypal</display-name>
+                <description xml:lang="x-default">Decision Manager Enable for Paypal</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="payPalBillingAgreements">
+                <display-name xml:lang="x-default">Billing Agreement</display-name>
+                <description xml:lang="x-default">Enable/Disable PayPal Billing Agreements</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="csCardDecisionManagerEnable">
                 <display-name xml:lang="x-default">CS Decision Manager Enabled</display-name>
                 <type>boolean</type>
@@ -1506,6 +1646,201 @@
                         <value>NONE</value>
                     </value-definition>
                 </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaAPIKey">
+                <display-name xml:lang="x-default">cybVisaAPIKey</display-name>
+                <description xml:lang="x-default">The Visa Checkout account API key specified in cyberSource business center (Alphanumeric; maximum 100 characters)</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>100</field-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonColor">
+                <display-name xml:lang="x-default">cybVisaButtonColor</display-name>
+                <description xml:lang="x-default">The color of the Visa Checkout button. standard or neutral.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">standard</display>
+                        <value>standard</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">neutral</display>
+                        <value>neutral</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonHeight">
+                <display-name xml:lang="x-default">cybVisaButtonHeight</display-name>
+                <description xml:lang="x-default">Height of the button, in pixels, You must specify the height if you specify a value for width&#13;
+                    34&#13;
+                    47&#13;
+                    94</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">None</display>
+                        <value>None</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">34</display>
+                        <value>34</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">47</display>
+                        <value>47</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">94</display>
+                        <value>94</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonImgUrl">
+                <display-name xml:lang="x-default">cybVisaButtonImgUrl</display-name>
+                <description xml:lang="x-default">Sandbox	https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png&#13;
+                    LIVE	https://secure.checkout.visa.com/wallet-services-web/xo/button.png</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonOnCart">
+                <display-name xml:lang="x-default">CyberSource Visa Button display on minicart and cart</display-name>
+                <description xml:lang="x-default">CyberSource Visa Button display on minicart and cart</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonSize">
+                <display-name xml:lang="x-default">cybVisaButtonSize</display-name>
+                <description xml:lang="x-default">You can either specify size to display a standard size button, or you can specify height and width to specify a custom size. If you do not specify size or both height and width, the button size is 213 pixels. If you specify height or width, the value of size is ignored&#13;
+                    154 - small&#13;
+                    213 - medium (default)&#13;
+                    425 - High resolution or large</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">small</display>
+                        <value>154</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">medium (default)</display>
+                        <value>213</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">High resolution or large</display>
+                        <value>425</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaButtonWidth">
+                <display-name xml:lang="x-default">cybVisaButtonWidth</display-name>
+                <description xml:lang="x-default">Width of the button, in pixels, You must specify the width if you specify a value for height&#13;
+                    -less than 477 if height is 34; default value is 154&#13;
+                    -greater than 212 and less than 659 if height is 47; default value is 213&#13;
+                    -greater than 424 and less than 1317 if height is 94; default value is 425</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>154</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaCardBrands">
+                <display-name xml:lang="x-default">cybVisaCardBrands</display-name>
+                <description xml:lang="x-default">Override value for brands associated with card art to be displayed. If a brand matching the consumer's preferred card is specified, the card art is displayed on the button; otherwise, a generic button is displayed&#13;
+                    Select multiple ire required&#13;
+                    VISA&#13;
+                    MASTERCARD&#13;
+                    AMEX&#13;
+                    DISCOVER</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">VISA</display>
+                        <value>VISA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">MASTERCARD</display>
+                        <value>MASTERCARD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">AMEX</display>
+                        <value>AMEX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">DISCOVER</display>
+                        <value>DISCOVER</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaExternalProfileId">
+                <display-name xml:lang="x-default">cybVisaExternalProfileId</display-name>
+                <description xml:lang="x-default">Use profile's name, created externally by a merchant whom Visa Checkout uses to populate settings, such as accepted card brands and shipping regions. The properties set in this profile override properties in the merchant's current profile. (Alphanumeric; maximum 50 characters)</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <field-length>50</field-length>
+                <default-value>anujcyb</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaSdkJsLibrary">
+                <display-name xml:lang="x-default">cybVisaSdkJsLibrary</display-name>
+                <description xml:lang="x-default">Sandbox	https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js&#13;
+                    LIVE	https://assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaSecretKey">
+                <display-name xml:lang="x-default">cybVisaSecretKey</display-name>
+                <description xml:lang="x-default">The secret key specified VISA Checkout account profile</description>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaTellMeMoreLinkActive">
+                <display-name xml:lang="x-default">cybVisaTellMeMoreLinkActive</display-name>
+                <description xml:lang="x-default">Indicate whether Tell Me More Link to be displayed with VISA button&#13;
+                    true (default)&#13;
+                    false</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaThreeDSActive">
+                <display-name xml:lang="x-default">cybVisaThreeDSActive</display-name>
+                <description xml:lang="x-default">Whether Verified by Visa (VbV) is active for this transaction. If Verified by Visa is configured, you can use threeDSActive to deactivate it for the transaction; otherwise, VbV will be active if it has been configured</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="cybVisaThreeDSSuppressChallenge">
+                <display-name xml:lang="x-default">cybVisaThreeDSSuppressChallenge</display-name>
+                <description xml:lang="x-default">Whether a Verified by Visa (VbV) consumer authentication prompt is suppressed for this transaction. If true, VbV authentication is performed only when it is possible to do so without the consumer prompt.&#13;
+                    true - Do not display a consumer prompt.&#13;
+                    false - Allow a consumer prompt</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
             </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
@@ -1581,6 +1916,31 @@
 				<attribute attribute-id="SA_Flex_SharedSecret"/>
                 <attribute attribute-id="SA_Flex_KeyID"/>
                 <attribute attribute-id="SA_Flex_HostName"/>
+            </attribute-group>
+            <attribute-group group-id="CyberSource_VisaCheckout">
+                <display-name xml:lang="x-default">CyberSource: Visa Checkout</display-name>
+                <attribute attribute-id="cybVisaSdkJsLibrary"/>
+                <attribute attribute-id="cybVisaTellMeMoreLinkActive"/>
+                <attribute attribute-id="cybVisaButtonColor"/>
+                <attribute attribute-id="cybVisaButtonSize"/>
+                <attribute attribute-id="cybVisaButtonHeight"/>
+                <attribute attribute-id="cybVisaButtonImgUrl"/>
+                <attribute attribute-id="cybVisaCardBrands"/>
+                <attribute attribute-id="cybVisaButtonWidth"/>
+                <attribute attribute-id="cybVisaThreeDSSuppressChallenge"/>
+                <attribute attribute-id="cybVisaExternalProfileId"/>
+                <attribute attribute-id="cybVisaSecretKey"/>
+                <attribute attribute-id="cybVisaAPIKey"/>
+                <attribute attribute-id="cybVisaThreeDSActive"/>
+                <attribute attribute-id="cybVisaButtonOnCart"/>
+            </attribute-group>
+            <attribute-group group-id="CyberSource_paypal">
+                <display-name xml:lang="x-default">CyberSource: PayPal</display-name>
+                <attribute attribute-id="isDecisionManagerEnable"/>
+                <attribute attribute-id="payPalBillingAgreements"/>
+                <attribute attribute-id="CsPaypalOrderType"/>
+                <attribute attribute-id="CsFundingSource"/>
+                <attribute attribute-id="CsEnableExpressPaypal"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

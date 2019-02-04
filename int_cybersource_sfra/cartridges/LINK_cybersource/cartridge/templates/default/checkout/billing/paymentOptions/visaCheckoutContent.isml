@@ -1,0 +1,3 @@
+<div class="tab-pane visaCheckout-content" id="visaCheckout-content" role="tabpanel">
+	<isinclude url="${URLUtils.url('CYBVisaCheckout-Button')}"/>
+</div>

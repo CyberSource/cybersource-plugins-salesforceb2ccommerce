@@ -1,8 +1,8 @@
 <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
-<isset name="saStyleFlex" value="${CsSaType && CsSaType == "SA_FLEX" ? "style='display: none'" : '' }" scope="page" />
-<isset name="saStyle" value="${CsSaType && CsSaType == "SA_REDIRECT" || CsSaType == "SA_IFRAME" ? "style='display: none'" : '' }" scope="page" />
+<isset name="saStyleFlex" value="${CsSaType && CsSaType == 'SA_FLEX' ? "style='display: none'" : '' }" scope="page" />
+<isset name="saStyle" value="${CsSaType && CsSaType == 'SA_REDIRECT' || CsSaType == 'SA_IFRAME' ? "style='display: none'" : '' }" scope="page" />
 
-<isif condition="${CsSaType && CsSaType == "SA_FLEX"}">
+<isif condition="${CsSaType && CsSaType == 'SA_FLEX'}">
 		<isinclude url="${URLUtils.url('CYBSecureAcceptance-CreateFlexToken')}"/>
 </isif>
 <!--- Hidden input for credit card type --->

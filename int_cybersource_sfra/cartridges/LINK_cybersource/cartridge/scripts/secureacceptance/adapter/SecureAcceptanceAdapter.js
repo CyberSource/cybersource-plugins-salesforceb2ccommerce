@@ -34,7 +34,7 @@ function HandleRequest(additionalArgs) {
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor, additionalArgs) {
     var OrderMgr = require('dw/order/OrderMgr');
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var order = OrderMgr.getOrder(orderNumber);
     var paymentInstrument = paymentInstrument;
     var paymentMethod = paymentInstrument.paymentMethod;
@@ -210,7 +210,7 @@ function SAIframeResponse(responseObject, order) {
                 if (empty(orderPlacementStatus) || Status.ERROR !== orderPlacementStatus) {
                     return {
                         nextStep: CybersourceConstants.SA_GOTO,
-                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'sasubmit', 'order_id', order.orderNo, 'order_token', order.getOrderToken()),
+                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm', 'order_id', order.orderNo, 'order_token', order.getOrderToken()),
                         render: 'secureacceptance/saredirect'
                     }
                 } else {

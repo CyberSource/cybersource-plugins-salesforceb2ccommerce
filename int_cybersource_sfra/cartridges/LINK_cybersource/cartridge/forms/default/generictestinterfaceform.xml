@@ -2,7 +2,7 @@
 <form xmlns="http://www.demandware.com/xml/form/2008-04-19">
 	<field formid="merchantReferenceCode" type="string" mandatory="true" binding="merchantReferenceCode" max-length="50" />
 	<field formid="refundRequestID" type="string" mandatory="true" binding="refundRequestID" max-length="50" />
-	<field formid="orderRequestID" type="string" mandatory="true" binding="orderRequestID" max-length="50" />
+	<field formid="orderRequestID" type="string" mandatory="false" binding="orderRequestID" max-length="50" />
 	<field formid="authRequestID" type="string" mandatory="true" binding="authRequestID" max-length="50" />
 	<field formid="grandtotalamount"  type="string" mandatory="true" binding="grandtotalamount" max-length="50" />
 	<field formid="currency" type="string" mandatory="true" binding="currency" max-length="50" />
@@ -29,6 +29,7 @@
 			<option optionid="CreditCard" value="CC" label="CREDITCARD"/>
 			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
 			<option optionid="Klarna" value="KLI" label="KLARNA"/>
+			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
 		</options>
 	</field>
 	<field formid="checkstatuspaymenttype" type="string" mandatory="true" binding="checkstatuspaymenttype" max-length="50" >
@@ -40,6 +41,7 @@
 			<option optionid="EPS" value="EPS" label="EPS"/>
 			<option optionid="Sofort" value="SOF" label="SOFORT"/>
 			<option optionid="AliPay" value="AliPay" label="ALIPAY"/>
+			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
 		</options>
 	</field>
 		

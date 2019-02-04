@@ -138,15 +138,15 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             }
         }
     } else {
-        var billAddrForm = session.forms.billing.billingAddress;
+        var billAddrForm = session.forms.billing;
 
         billToObject.setFirstName(billAddrForm.addressFields.firstName.value);
         billToObject.setLastName(billAddrForm.addressFields.lastName.value);
         billToObject.setStreet1(billAddrForm.addressFields.address1.value);
         billToObject.setStreet2(billAddrForm.addressFields.address2.value);
         billToObject.setCity(billAddrForm.addressFields.city.value);
-        billToObject.setState(billAddrForm.addressFields.states.state.value);
-        billToObject.setPostalCode(billAddrForm.addressFields.postal.value);
+        billToObject.setState(billAddrForm.addressFields.states.stateCode.value);
+        billToObject.setPostalCode(billAddrForm.addressFields.postalCode.value);
         billToObject.setCountry(billAddrForm.addressFields.country.value);
         billToObject.setPhoneNumber(billAddrForm.addressFields.phone.value);
         if (customer.registered) {
@@ -410,8 +410,7 @@ function CreateKlarnaItemObject(Basket) {
     // declare the local variables
     var basket = Basket;
     var locale = GetRequestLocale();
-    var PaymentMgr = require('dw/order/PaymentMgr');
-    var selectedPaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
+    var selectedPaymentMethod = "KLARNA";
     var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
     var lineItems = basket.allLineItems.iterator();
     var ArrayList = require('dw/util/ArrayList');
@@ -877,7 +876,7 @@ function UpdateTaxForGiftCertificate(Basket) {
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
  */
 
-function calculatePurchaseTotal(lineItemCtnr) {
+function calculatePurchaseTotal(lineItemCtnr, paypal) {
     var locale = GetRequestLocale();
     var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
     var purchaseObject = new PurchaseTotals_Object(),
@@ -913,7 +912,7 @@ function calculatePurchaseTotal(lineItemCtnr) {
         }
         purchaseObject.setSubtotalAmount(StringUtils.formatNumber(subTotal.value, '#.00', locale));
     }
-    var amountOpen = calculateNonGiftCertificateAmount(lineItemCtnr);
+    var amountOpen = (paypal !== null && paypal !== undefined && paypal ? calculateNonGiftCertificateAmountPayPal(lineItemCtnr) : calculateNonGiftCertificateAmount(lineItemCtnr));
     purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amountOpen.value, '#.00', locale));
     return purchaseObject;
 }
@@ -947,6 +946,39 @@ function calculateNonGiftCertificateAmount(lineItemCtnr) {
     // calculate the amount to charge for the payment instrument
     // this is the remaining open order total which has to be paid
     var amountOpen = orderTotal.subtract(giftCertTotal);
+
+    return amountOpen;
+}
+
+/**
+ * Calculates amount which customer needs to pay through paypal express. This amount does not include Gift certificate/card amount.
+ * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
+ */
+function calculateNonGiftCertificateAmountPayPal(lineItemCtnr) {
+    // declare variable
+    var Money = require('dw/value/Money');
+    var totalAmount= new Money(0.0, lineItemCtnr.currencyCode);
+    // set the total amount
+    if (lineItemCtnr.totalGrossPrice.available) {
+        totalAmount = lineItemCtnr.totalGrossPrice;
+    } else {
+        totalAmount = lineItemCtnr.adjustedMerchandizeTotalPrice.add(lineItemCtnr.adjustedShippingTotalPrice);
+    }
+    var giftCertTotal = new Money(0.0, lineItemCtnr.currencyCode);
+    // get the list of all gift certificate payment instruments
+    var gcPaymentInstrs = lineItemCtnr.getGiftCertificatePaymentInstruments();
+    var iter = gcPaymentInstrs.iterator();
+    var orderPI = null;
+    // sum the total redemption amount
+    while (iter.hasNext()) {
+        orderPI = iter.next();
+        giftCertTotal = giftCertTotal.add(orderPI.getPaymentTransaction().getAmount());
+    }
+    // get the order total
+    var orderTotal = totalAmount;
+    // calculate the amount to charge for the payment instrument
+    // this is the remaining open order total which has to be paid
+	var amountOpen = totalAmount.subtract(giftCertTotal);
 
     return amountOpen;
 }
@@ -1110,6 +1142,15 @@ function getPurchaseTotal(lineItemCntr) {
     var purchaseObject = calculatePurchaseTotal(lineItemCntr);
     return purchaseObject;
 }
+
+/**
+*  Function to create purchase total object
+*/
+function getPurchaseTotalPayPal(lineItemCntr) {
+    var purchaseObject = calculatePurchaseTotal(lineItemCntr, true);
+    return purchaseObject;
+}
+
 /**
 * Function to create Item for Session request
 *
@@ -1174,7 +1215,12 @@ function getItemObject(basket) {
                 adjustedLineItemTaxPrice = lineItem.adjustedTax;
             }
             if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
-                itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(adjustedLineItemTaxPrice.getValue()), '#.00', locale));
+            	if(adjustedLineItemTaxPrice.available && adjustedLineItemTaxPrice.getValue() > 0) {
+            		itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(adjustedLineItemTaxPrice.getValue()), '#.00', locale));
+            	}
+                else {
+                	itemObject.setTaxAmount(StringUtils.formatNumber(0, '0.00', locale));
+                }
             }
             itemObject.setProductName(lineItem.productName);
             itemObject.setProductSKU(lineItem.productID);
@@ -1216,30 +1262,42 @@ function addAddressToCart(lineItemCntr, responseObj, overrideShipping) {
     if (empty(billingAddress)) {
         billingAddress = lineItemCntr.createBillingAddress();
     }
-    if (!empty(billTo.street1) && !empty(billTo.city) && !empty(billTo.state)
-        && !empty(billTo.postalCode) && !empty(billTo.country)) {
-        billingAddress.setFirstName(billTo.firstName);
-        billingAddress.setLastName(billTo.lastName);
-        billingAddress.setAddress1(billTo.street1);
-        billingAddress.setAddress2(billTo.street2);
-        billingAddress.setCity(billTo.city);
-        billingAddress.setPostalCode(billTo.postalCode);
-        billingAddress.setCountryCode(billTo.country);
-        billingAddress.setStateCode(billTo.state);
-        lineItemCntr.setCustomerEmail(billTo.email);
-    } else {
-        billingAddress.setFirstName(billTo.firstName);
-        billingAddress.setLastName(billTo.lastName);
-        billingAddress.setAddress1('1295 Charleston Rd');
-        billingAddress.setAddress2('');
-        billingAddress.setCity('Mountain View');
-        billingAddress.setStateCode('CA');
-        billingAddress.setPostalCode('94043');
-        billingAddress.setCountryCode('US');
-        billingAddress.setPhone('');
-    }
-    var defaultShipment,
-        shippingAddress;
+
+    /*Custom Address fields handling for Shipping and Billing for PayPal. Priortize basket billing address, if it exists,
+    	over paypal billing address. Validate all mandatory SFRA-billing fields. */
+	if(billAddressExistsInBasket(lineItemCntr)) {
+		if(!empty(billTo.email)) {
+			lineItemCntr.setCustomerEmail(billTo.email);
+		}
+	}
+	else {
+		//if (!empty(billTo.street1) && !empty(billTo.city) && !empty(billTo.state)
+       	// && !empty(billTo.postalCode) && !empty(billTo.country)) {
+			billingAddress.setFirstName(billTo.firstName);
+        	billingAddress.setLastName(billTo.lastName);
+        	billingAddress.setAddress1(billTo.street1);
+        	billingAddress.setAddress2(billTo.street2);
+        	billingAddress.setCity(billTo.city);
+        	billingAddress.setPostalCode(billTo.postalCode);
+        	billingAddress.setCountryCode(billTo.country);
+        	billingAddress.setStateCode(billTo.state);
+        	lineItemCntr.setCustomerEmail(billTo.email);
+        	billingAddress.setPhone(billTo.phoneNumber);
+   		/* } else {
+        	billingAddress.setFirstName(billTo.firstName);
+        	billingAddress.setLastName(billTo.lastName);
+        	billingAddress.setAddress1('1295 Charleston Rd');
+        	billingAddress.setAddress2('');
+        	billingAddress.setCity('Mountain View');
+        	billingAddress.setStateCode('CA');
+        	billingAddress.setPostalCode('94043');
+        	billingAddress.setCountryCode('US');
+        	billingAddress.setPhone('3333333333');
+        	lineItemCntr.setCustomerEmail(billTo.email);
+    	}*/
+	}
+    
+    var defaultShipment, shippingAddress;
     defaultShipment = lineItemCntr.getDefaultShipment();
     shippingAddress = defaultShipment.getShippingAddress();
     if (shippingAddress === null) {
@@ -1428,6 +1486,81 @@ function ToHashMap(object) {
     return hashmap;
 }
 
+//
+function validatePayPalShippingAddress(checkStatusResponse, lineItemCntr) {
+	var shipTo = checkStatusResponse.shipTo;
+	var defaultShipment, shippingAddress;
+    defaultShipment = lineItemCntr.getDefaultShipment();
+    shippingAddress = defaultShipment.getShippingAddress();
+    if(!empty(shippingAddress) && !empty(shippingAddress.firstName) && !empty(shippingAddress.lastName) && !empty(shippingAddress.address1)
+    		&& !empty(shippingAddress.city) && !empty(shippingAddress.postalCode) && !empty(shippingAddress.countryCode)
+    		&& !empty(shippingAddress.stateCode)) {
+		return true;	
+    }
+	else if (!empty(shipTo.firstName) && !empty(shipTo.lastName) && !empty(shipTo.street1) && !empty(shipTo.city) 
+			&& !empty(shipTo.state) && !empty(shipTo.postalCode) && !empty(shipTo.country)) {
+		return true;
+    }
+    return false;
+}
+
+/* handle phone & email*/
+function validatePayPalBillingAddress(checkStatusResponse, lineItemCntr) {
+	var billTo = checkStatusResponse.billTo;
+	var billingAddress = lineItemCntr.getBillingAddress();
+    if(!empty(billingAddress)) {
+    	if(!empty(billTo.email)) {
+    		var Transaction = require('dw/system/Transaction');
+    		Transaction.wrap(function () {
+				lineItemCntr.setCustomerEmail(billTo.email);
+    		});
+		}
+    	if(!empty(billingAddress.firstName) && !empty(billingAddress.lastName) && !empty(billingAddress.address1)
+    		&& !empty(billingAddress.city) && !empty(billingAddress.postalCode) && !empty(billingAddress.countryCode)
+    		&& !empty(billingAddress.stateCode) && !empty(billingAddress.phone) && !empty(lineItemCntr.customerEmail)) {
+        	return true;	
+    	}
+    }
+	else if (!empty(billTo.firstName) && !empty(billTo.lastName) && !empty(billTo.street1) && !empty(billTo.city) 
+			&& !empty(billTo.state) && !empty(billTo.postalCode) && !empty(billTo.country) && !empty(billTo.email) && !empty(billTo.phoneNumber)) {
+		return true;
+    }
+    return false;
+}
+
+/* handle phone & email*/
+function billAddressExistsInBasket(lineItemCntr) {
+	var billingAddress = lineItemCntr.getBillingAddress();
+    if (empty(billingAddress)) {
+        return false;
+    } else if(!empty(billingAddress.firstName) && !empty(billingAddress.lastName) && !empty(billingAddress.address1)
+    		&& !empty(billingAddress.city) && !empty(billingAddress.postalCode) && !empty(billingAddress.countryCode)
+    		&& !empty(billingAddress.stateCode) && !empty(billingAddress.phone)) {
+        return true;	
+    }
+    return false;
+}
+
+/* Part of custom Address validation for PayPal Express only. Handles redirection to billing page from 
+	shipping/billing and prompts or skips the paypal authorization.
+	If basket totals are same from the time of authorization, skips the payment from billing page. */
+function validatePayPalInstrument(basket, orderModel) {
+	 for (var i = 0; i < basket.paymentInstruments.length; i++) {
+        var paymentInstrument = basket.paymentInstruments[i];
+        var req = 'requestId' in paymentInstrument.paymentTransaction.custom && !empty(paymentInstrument.paymentTransaction.custom.requestId);
+        if((paymentInstrument.paymentMethod == 'PAYPAL' || paymentInstrument.paymentMethod == 'PAYPAL_CREDIT') && 'paymentTransaction' in paymentInstrument && 
+        	'requestId' in paymentInstrument.paymentTransaction.custom && !empty(paymentInstrument.paymentTransaction.custom.requestId)) {
+			if(paymentInstrument.paymentMethod == 'PAYPAL_CREDIT' && paymentInstrument.paymentTransaction.amount.toFormattedString() == orderModel.totals.grandTotal) {
+				return true;
+			} else if(paymentInstrument.paymentMethod == 'PAYPAL' && paymentInstrument.paymentTransaction.amount.toFormattedString() == orderModel.totals.grandTotal
+				&& !empty(paymentInstrument.paymentTransaction.custom.payerID) && !empty(paymentInstrument.paymentTransaction.custom.apSessionProcessorTID)) {
+					return true;
+			}
+        }
+	 }
+	return false;
+}
+
 module.exports = {
     CreateCybersourceShipFromObject: CreateCybersourceShipFromObject,
     CreateCyberSourceBillToObject: CreateCyberSourceBillToObject,
@@ -1450,11 +1583,16 @@ module.exports = {
     GetRequestLocale: GetRequestLocale,
     signedDataUsingHMAC256: signedDataUsingHMAC256,
     GetPurchaseTotal: getPurchaseTotal,
+    GetPurchaseTotalPayPal: getPurchaseTotalPayPal,
     GetItemObject: getItemObject,
     AddAddressToCart: addAddressToCart,
+    ValidatePayPalShippingAddress: validatePayPalShippingAddress,
+    ValidatePayPalBillingAddress: validatePayPalBillingAddress,
     LogResponse: LogResponse,
     CheckStatusServiceRequest: CheckStatusServiceRequest,
     HandleRequest: HandleRequest,
     sendMail: sendMail,
-    CalculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount
+    CalculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount,
+    CalculateNonGiftCertificateAmountPaypal: calculateNonGiftCertificateAmountPayPal,
+    ValidatePayPalInstrument : validatePayPalInstrument
 };

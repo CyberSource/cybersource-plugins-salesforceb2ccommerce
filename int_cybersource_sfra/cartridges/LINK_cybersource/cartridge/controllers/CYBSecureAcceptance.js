@@ -22,13 +22,12 @@ server.get('OpenIframe', function (req, res, next) {
             requestData: response.data,
             formAction: response.formAction
         });
-        next();
     } else {
         res.render('/error', {
             message: Resource.msg('subheading.error.general', 'error', null)
         });
-        next();
     }
+    next();
 });
 
 /**
@@ -47,10 +46,11 @@ server.get('MerchantPost', server.middleware.https, function (req, res, next) {
     if (secureAcceptanceHelper.validateSAMerchantPostRequest(request.httpParameterMap)) {
 		if (!secureAcceptanceHelper.saveSAMerchantPostRequest(request.httpParameterMap)) {
 			res.render('common/http_404');
-			next();
 		}
+    } else {
+    	res.render('common/http_200');
     }
-   res.render('common/http_200');
+	next();
 });
 
 /**

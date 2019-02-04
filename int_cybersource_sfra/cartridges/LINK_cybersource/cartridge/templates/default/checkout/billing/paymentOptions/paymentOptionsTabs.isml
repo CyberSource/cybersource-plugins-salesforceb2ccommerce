@@ -5,4 +5,13 @@
     <isif condition="${paymentOption.ID === 'DW_APPLE_PAY'}">
         <isinclude template="checkout/billing/paymentOptions/applePayTab" />
     </isif>
+    <isif condition="${paymentOption.ID === 'KLARNA'}">
+        <isinclude template="checkout/billing/paymentOptions/klarnaTab" />
+	</isif>
+    <isif condition="${paymentOption.ID === 'VISA_CHECKOUT'}">
+        <isinclude template="checkout/billing/paymentOptions/visaCheckoutTab" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'PAYPAL' && (dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')) == true}">
+        <isinclude template="checkout/billing/paymentOptions/payPalTab" />
+    </isif>
 </isloop>

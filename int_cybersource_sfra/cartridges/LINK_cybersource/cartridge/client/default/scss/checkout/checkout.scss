@@ -37,6 +37,12 @@
         .card.secure-acceptance-iframe {
             display: none;
         }
+        button#showSubmitPayment{
+            display: block;
+		}
+         button#hideSubmitPayment{
+            display: none;
+		}   
     }
     
     &[data-checkout-stage=payment] {

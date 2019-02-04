@@ -1,0 +1,5 @@
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link visaCheckout-tab" data-toggle="tab" href="#visaCheckout-content" role="tab">
+        ${paymentOption.name}
+    </a>
+</li>

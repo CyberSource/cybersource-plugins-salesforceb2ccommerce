@@ -240,19 +240,6 @@ function saconfirm(order) {
 }
 
 /**
- * User is redirected to submit order page. 
- */
-
-function sasubmit(order) {
-    var orderResult = Cybersource.GetOrder(order);
-    if (orderResult.error) {
-        return { carterror: true };
-    }
-    return { submit: true, Order: orderResult.Order };
-}
-
-
-/**
  * User is redirected to summary page with the error message, if order is not there then to cart page. 
  */
 function safail(order) {
@@ -285,9 +272,6 @@ function check(args) {
             break;
         case 'saconfirm':
             result = saconfirm(args);
-            break;
-        case 'sasubmit':
-            result = sasubmit(args);
             break;
         case 'safail':
             result = safail(args);

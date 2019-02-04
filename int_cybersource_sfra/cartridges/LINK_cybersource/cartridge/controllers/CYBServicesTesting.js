@@ -141,13 +141,31 @@ server.post('CaptureService', function(req, res, next) {
 	var paymentType = session.forms.generictestinterfaceform.capturepaymenttype.htmlValue;
 	var paymentTotal = session.forms.generictestinterfaceform.grandtotalamount.value;
 	var currency = session.forms.generictestinterfaceform.currency.value;
-	var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-	var serviceResponse = CardFacade.CCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+	var serviceResponse, captureReply, captureReplyTitle;
+	// capture the refund service response from test facade
+	if(paymentType == 'CC') {
+		var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+			serviceResponse = CardFacade.CCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+			captureReplyTitle = 'Credit card Capture Reply';
+			captureReply = 'ccCaptureReply';
+	} else if (paymentType == 'visacheckout') {
+		var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+		var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+			serviceResponse = VisaCheckoutFacade.VCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);	
+			captureReplyTitle = 'VisaCheckout Capture Reply';
+			captureReply = 'ccCaptureReply';
+	} else if (paymentType == 'PPL') {
+		var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+			serviceResponse = PayPalFacade.PayPalCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);	
+			captureReplyTitle = 'PayPal Capture Reply';
+			captureReply = 'apCaptureReply';
+	}
 	session.forms.generictestinterfaceform.clearFormElement();
 	if (!empty(serviceResponse)) {
 		res.render('services/transactionresult', {
-			serviceReply : 'ccCaptureReply',
-			response : serviceResponse
+			serviceReply : captureReply,
+			response : serviceResponse,
+			msgHeader : captureReplyTitle
 		});
 		return next();
 	}
@@ -195,13 +213,31 @@ server.post('CreditService', function(req, res, next) {
 	var paymentType = session.forms.generictestinterfaceform.capturepaymenttype.htmlValue;
 	var paymentTotal = session.forms.generictestinterfaceform.grandtotalamount.value;
 	var currency = session.forms.generictestinterfaceform.currency.value;
-	var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-	var serviceResponse = CardFacade.CCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+	var serviceResponse, refundReply, creditReplyTitle;
+    // capture the refund service response from test facade
+    if(paymentType == 'CC') {
+		var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+			serviceResponse = CardFacade.CCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+			creditReplyTitle = 'Credit card Credit/Refund Reply';
+			refundReply = 'ccCreditReply';
+	} else if (paymentType == 'visacheckout') {
+		var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+		var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+			serviceResponse = VisaCheckoutFacade.VCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);	
+			creditReplyTitle = 'VisaCheckout Credit/Refund Reply';
+			refundReply = 'ccCreditReply';
+	} else if (paymentType == 'PPL') {
+		var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+			serviceResponse = PayPalFacade.PayPalRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+			creditReplyTitle = 'PayPal Credit/Refund Reply';
+			refundReply = 'apRefundReply';
+	}
 	session.forms.generictestinterfaceform.clearFormElement();
 	if (!empty(serviceResponse)) {
 		res.render('services/transactionresult', {
-			serviceReply : 'ccCreditReply',
-			response : serviceResponse
+			serviceReply : refundReply,
+			response : serviceResponse,
+			msgHeader: creditReplyTitle
 		});
 		return next();
 	}
@@ -231,6 +267,55 @@ server.get('TestAuthReversal', server.middleware.https, function (req, res, next
 });
 
 /**
+ * Render the check status service form. 
+ */
+server.get('TestCheckStatusService', server.middleware.https, function (req, res, next) {
+
+     //  When in production, Redirect to home page.
+     if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+        res.redirect(URLUtils.url('Home-Show'));
+        return next();
+    }
+
+    var checkStatusServiceForm = server.forms.getForm('generictestinterfaceform');
+    checkStatusServiceForm.clear();
+    res.render('services/checkstatusserviceform', {
+    	continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CheckStatusService').toString(),
+    	checkStatusServiceForm: checkStatusServiceForm
+    });
+    return next();
+});
+
+server.post('CheckStatusService', function(req, res, next) {
+
+    //  When in production, Redirect to home page.
+    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+       res.redirect(URLUtils.url('Home-Show'));
+       return next();
+   }
+    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+	var Order = {};
+	var heading = 'test.checkstatusserviceresult';
+	var serviceReply = 'Check Status Service Reply';
+	var serviceResponse = {};
+	var response = {};
+
+	if(!empty(session.forms.generictestinterfaceform.merchantReferenceCode.value))
+	{
+		Order = dw.order.OrderMgr.getOrder(session.forms.generictestinterfaceform.merchantReferenceCode.value);
+	}
+	if(null !== Order)
+		serviceResponse = commonFacade.CheckPaymentStatusRequest(Order);
+				
+	if (!empty(serviceResponse)) {
+		res.render('services/transactionresult', {
+			response : serviceResponse,
+			msgHeader: serviceReply
+		});
+		return next();
+	}
+});
+/**
  * Test Services for Auth Reversal Service.
  */
 server.post('CCAuthReversalService', server.middleware.https, function (req, res, next) {
@@ -247,14 +332,31 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
     var paymentType = session.forms.generictestinterfaceform.authreversalpaymenttype.htmlValue;
     var currency = session.forms.generictestinterfaceform.currency.htmlValue;
     var amount = session.forms.generictestinterfaceform.grandtotalamount.value;
+	var serviceResponse, reversalReply, reversalReplyTitle;
     // capture the refund service response from test facade
-    var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-    var serviceResponse = CardFacade.CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
+    if(paymentType == 'CC') {
+		var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+			serviceResponse = CardFacade.CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
+			reversalReplyTitle = 'Credit card Reversal Reply';
+			reversalReply = 'ccAuthReversalReply';
+	} else if (paymentType == 'visacheckout') {
+		var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+		var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+			serviceResponse = VisaCheckoutFacade.VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid);	
+			reversalReplyTitle = 'VisaCheckout Reversal Reply';
+			reversalReply = 'ccAuthReversalReply';
+	} else if (paymentType == 'PPL') {
+		var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+		    serviceResponse = PayPalFacade.PayPalReversalService(requestID, merchantRefCode, paymentType, amount, currency);
+		    reversalReplyTitle = 'PayPal Reversal Reply';
+		    reversalReply = 'apAuthReversalReply';
+	}
     if (!empty(serviceResponse)) {
         // display the result page
-    	res.render('services/ccAuthReversalresult', {
-    		serviceReply : 'ccAuthReversalReply',
-    		response: serviceResponse
+    	res.render('services/transactionresult', {
+    		serviceReply : reversalReply,
+    		response: serviceResponse,
+    		msgHeader: reversalReplyTitle
         });
     	return next();
     } 

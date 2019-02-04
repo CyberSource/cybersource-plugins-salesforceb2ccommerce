@@ -34,7 +34,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 	var Site = require('dw/system/Site');
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	
 	var CybersourceHelper = libCybersource.getCybersourceHelper();	
 	//Objects to set in the Service Request inside facade
@@ -43,10 +43,10 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	billTo = result.billTo;
 	result = CommonHelper.CreateCybersourceShipToObject(basket);
 	shipTo = result.shipTo;
-	if (CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
-		result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
-		cardObject = result.card;
-	}
+	
+	result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
+	cardObject = result.card;
+	
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
 	purchaseObject = result.purchaseTotals;
 	result = CommonHelper.CreateCybersourceItemObject(basket);
@@ -423,7 +423,6 @@ function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency
 		
 	    return serviceResponse;
 }
-
 
 /**
  * Credit Card Capture call is made to cybersource and response is sent back.

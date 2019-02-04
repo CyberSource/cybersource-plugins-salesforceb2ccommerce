@@ -4,6 +4,7 @@
 	This line has to be updated to reference checkoutHelpers.js from the site cartridge's checkoutHelpers.js
 */
 var base = require('app_storefront_base/cartridge/scripts/checkout/checkoutHelpers');
+var renderTemplateHelper = require('*/cartridge/scripts/renderTemplateHelper');
 
 /**
  * saves payment instrument to customers wallet
@@ -19,9 +20,10 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
     var Site = require('dw/system/Site');
-    var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+    var Resource = require('dw/web/Resource');
+    var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-    if(CsSAType != null && CsSAType == "SA_FLEX") {
+    if(CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null)) {
     	billingData.paymentInformation.cardType.value = CardHelper.getCardType(billingData.paymentInformation.cardType.value);
     }
     var verifyDuplicates = false;
@@ -58,6 +60,11 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     if (!tokenizationResult.error && !empty(tokenizationResult.subscriptionID)) {
         storedPaymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
         payInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
+    } 
+    if(CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null)) {
+    	var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
+    	var flexString = JSON.parse(flexResponse);
+    	storedPaymentInstrument.setCreditCardToken(flexString.token);
     }
     if (verifyDuplicates) {
         var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
@@ -148,7 +155,7 @@ function validatePayment(req, currentBasket) {
 	var PaymentMgr = require('dw/order/PaymentMgr');
 	var PaymentInstrument = require('dw/order/PaymentInstrument');
 
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var applicablePaymentCards;
     var applicablePaymentMethods;
     var creditCardPaymentMethod = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD);
@@ -205,7 +212,74 @@ function validatePayment(req, currentBasket) {
     result.error = invalid;
     return result;
 }
+
+/**
+ * renders the user's stored payment Instruments
+ * @param {Object} req - The request object
+ * @param {Object} accountModel - The account model for the current customer
+ * @returns {string|null} newly stored payment Instrument
+ */
+function getOrderPaymentInstruments(req, paymentInstruments, paymentID) {
+    var result;
+        var context;
+        var template = 'checkout/billing/orderPaymentInstrument';
+
+        context = { paymentInstruments: paymentInstruments, paymentOption : paymentID};
+        result = renderTemplateHelper.getRenderedHtml(
+            context,
+            template
+        );
+
+    return result || null;
+}
+
+
+function getPayPalInstrument(basket) {
+	for(var i = 0; i < basket.paymentInstruments.length; i++) {
+        var paymentInstrument = basket.paymentInstruments[i];
+        if(paymentInstrument.paymentMethod == 'PAYPAL' || paymentInstrument.paymentMethod == 'PAYPAL_CREDIT')
+        	return paymentInstrument;
+	}
+}
+
+/**
+ * Validate PayPal email & phone number fields
+ * @param {Object} form - the form object with pre-validated form fields
+ * @returns {Object} the names of the invalid form fields
+ */
+function validatePPLForm(form) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Resource = require('dw/web/Resource');
+    var currentBasket = BasketMgr.getCurrentBasket();
+
+    return base.validateFields(form);
+}
+
+function handlePayPal(basket) {
+    var ccPaymentInstrs = basket.getPaymentInstruments();
+
+    // get all credit card payment instruments
+
+    var iter = ccPaymentInstrs.iterator();
+    var existingPI = null;
+    var PaymentInstrument = require('dw/order/PaymentInstrument');
+
+    // remove them
+    while (iter.hasNext()) {
+        existingPI = iter.next();
+        if (existingPI.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {
+            continue;
+        } else if (existingPI.paymentMethod.equals('PAYPAL') || existingPI.paymentMethod.equals('PAYPAL_CREDIT')) {
+            basket.removePaymentInstrument(existingPI);
+        }
+    }
+}
+
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
 base.handlePayments = handlePayments;
 base.validatePayment = validatePayment;
+base.getOrderPaymentInstruments = getOrderPaymentInstruments;
+base.validatePPLForm = validatePPLForm;
+base.getPayPalInstrument = getPayPalInstrument;
+base.handlePayPal = handlePayPal;
 module.exports = base;

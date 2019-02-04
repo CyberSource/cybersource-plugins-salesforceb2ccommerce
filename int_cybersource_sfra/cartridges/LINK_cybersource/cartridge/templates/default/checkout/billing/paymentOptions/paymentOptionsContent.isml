@@ -5,4 +5,13 @@
     <isif condition="${paymentOption.ID === 'DW_APPLE_PAY'}">
         <isinclude template="checkout/billing/paymentOptions/applePayContent" />
     </isif>
+    <isif condition="${paymentOption.ID === 'KLARNA'}">
+        <isinclude template="checkout/billing/paymentOptions/klarnaContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'VISA_CHECKOUT'}">
+        <isinclude template="checkout/billing/paymentOptions/visaCheckoutContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'PAYPAL'}">
+        <isinclude template="checkout/billing/paymentOptions/payPalContent" />
+    </isif>
 </isloop>

@@ -195,9 +195,9 @@ function updatePaymentInstrumentVisaDecrypt(cart, decryptedPaymentData, visaChec
                 cardType = "Discover";
                 break;
         }
-        session.forms.billing.paymentMethods.creditCard.type.value = cardType;
+        session.forms.billing.creditCardFields.cardType.value = cardType;
         // Populate payment instrument values
-        instrument.setCreditCardType(visa.VCCardType);
+        instrument.setCreditCardType(cardType);
         instrument.setCreditCardHolder(visa.VCNameOnCard);
         instrument.setCreditCardNumber("************" + visa.CardSuffix);
         var month: Number = parseFloat(visa.ExpirationMonth);

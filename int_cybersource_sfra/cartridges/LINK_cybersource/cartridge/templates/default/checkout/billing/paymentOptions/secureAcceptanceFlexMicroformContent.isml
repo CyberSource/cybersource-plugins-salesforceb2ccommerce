@@ -27,7 +27,6 @@
 </div>
 
 <iscomment>Secure Acceptance Flex Microform Scripts </iscomment>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	
 <isif condition="${dw.system.System.getInstanceType()!= 2}">
 	<script src="https://testflex.cybersource.com/cybersource/assets/microform/0.4.0/flex-microform.min.js"></script>

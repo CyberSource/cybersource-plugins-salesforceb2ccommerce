@@ -14,17 +14,109 @@ server.extend(page);
  * @param {Object} form - form object
  * @returns {boolean} a boolean representing card validation
  */
+
+/**
+ * PayPal custom address validation handling. Function validates all the billing address fields with email and phone number.
+ */
+server.post('ValidatePayPalBillingAddress', server.middleware.https, function (req, res, next) {
+	var billingFormErrors = {};
+	var pplFormErrors = {};
+	var paymentForm = server.forms.getForm('billing');
+	billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
+	
+	var pplPhoneandEmailForm = new Object();
+	pplPhoneandEmailForm.email = server.forms.getForm('billing').paypalBillingFields.paypalEmail;
+	pplPhoneandEmailForm.phone = server.forms.getForm('billing').paypalBillingFields.paypalPhone;
+	pplFormErrors = COHelpers.validatePPLForm(pplPhoneandEmailForm);
+	
+	//Update address fields as and when the fields are edited
+	var Transaction = require('dw/system/Transaction');
+	var BasketMgr = require('dw/order/BasketMgr');
+	var currentBasket = BasketMgr.getCurrentBasket();
+	var billingAddress = currentBasket.billingAddress;
+	var defaultShipment, shippingAddress;
+    defaultShipment = currentBasket.getDefaultShipment();
+    shippingAddress = defaultShipment.getShippingAddress();
+	Transaction.wrap(function () {
+		if (!billingAddress) {
+			billingAddress = currentBasket.createBillingAddress();
+		}
+		if(!empty(paymentForm.addressFields.firstName.value)) {
+			billingAddress.setFirstName(paymentForm.addressFields.firstName.value);
+		}
+		if(!empty(paymentForm.addressFields.lastName.value)) {
+			billingAddress.setLastName(paymentForm.addressFields.lastName.value);
+		}
+		if(!empty(paymentForm.addressFields.address1.value)) {
+			billingAddress.setAddress1(paymentForm.addressFields.address1.value);
+		}
+		if(!empty(paymentForm.addressFields.address2.value)) {
+			billingAddress.setAddress2(paymentForm.addressFields.address2.value);
+		}
+		if(!empty(paymentForm.addressFields.city.value)) {
+			billingAddress.setCity(paymentForm.addressFields.city.value);
+		}
+		if(!empty(paymentForm.addressFields.postalCode.value)) {
+			billingAddress.setPostalCode(paymentForm.addressFields.postalCode.value);
+		}
+		
+		if (Object.prototype.hasOwnProperty.call(paymentForm.addressFields, 'states')) {
+			billingAddress.setStateCode(paymentForm.addressFields.states.stateCode.value);
+		}
+		if(!empty(paymentForm.addressFields.country.value)) {
+			billingAddress.setCountryCode(paymentForm.addressFields.country.value);
+		}
+		if(!empty(paymentForm.paypalBillingFields.paypalEmail.value)) {
+			currentBasket.setCustomerEmail(paymentForm.paypalBillingFields.paypalEmail.value);
+		}
+		if(!empty(paymentForm.paypalBillingFields.paypalPhone.value)) {
+			billingAddress.setPhone(paymentForm.paypalBillingFields.paypalPhone.value);
+			if(!empty(shippingAddress))
+				shippingAddress.setPhone(paymentForm.paypalBillingFields.paypalPhone.value);
+		}
+		
+	});
+	
+	if (Object.keys(billingFormErrors).length || Object.keys(pplFormErrors).length) {
+	        // respond with form data and errors
+	        res.json({
+	            form: paymentForm,
+	            fieldErrors: [billingFormErrors, pplFormErrors],
+	            serverErrors: [],
+	            error: true
+	        });
+	} else {
+		session.privacy.paypalBillingIncomplete = false;
+		// Copy over billing address to shipping for Paypal billing agreement
+		
+		 res.json({
+	            form: paymentForm,
+	            fieldErrors: [],
+	            serverErrors: [],
+	            error: false
+	        });
+	}
+	return next();
+});
+ 
+
 server.replace('SubmitPayment', server.middleware.https, function (req, res, next) {
 	var Site = require('dw/system/Site');
+	var Resource = require('dw/web/Resource');
 	var paymentForm = server.forms.getForm('billing');
 	var paymentMethodID = server.forms.getForm('billing').paymentMethod.value; 
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var billingFormErrors = {};
     var creditCardErrors = {};
     var viewData = {};
     
+    if(paymentForm.paymentMethod.value == Resource.msg('paymentmethodname.paypal','cybersource',null)) {
+    	handlePayPal(req, res, next);
+    	return next();
+    }
+    
     //Secure Acceptance Flex Microform
-	if(CsSAType == 'SA_FLEX' && !req.form.storedPaymentUUID) {
+	if(CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null) && !req.form.storedPaymentUUID) {
 		var flexForm = new Object();
 		   flexForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
 		   flexForm.expirationMonth = server.forms.getForm('billing').creditCardFields.expirationMonth;
@@ -41,7 +133,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 		}
 	}
 	
-	if(CsSAType == 'SA_REDIRECT' || CsSAType == 'SA_IFRAME') {	    
+	if(CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) || CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null)) {	    
 	    var SAForm = new Object();
 		    SAForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
 		    SAForm.email = server.forms.getForm('billing').creditCardFields.email;
@@ -49,13 +141,14 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	}
     // verify billing form data
     billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
-    
+    if('paypalBillingFields' in paymentForm)
+    	delete paymentForm.paypalBillingFields;
 	    if(!req.form.storedPaymentUUID) {
-	    	if(paymentMethodID == "CREDIT_CARD") {
-	    		if(CsSAType == null || CsSAType == "SA_SILENTPOST") {
+	    	if(paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null)) {
+	    		if(CsSAType == null || CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)) {
 				// verify credit card form data
 	    			creditCardErrors = COHelpers.validateCreditCard(paymentForm);
-	    		} else if (CsSAType == 'SA_FLEX') {
+	    		} else if (CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null)) {
 	    			creditCardErrors = COHelpers.validateCreditCard(flexForm);
 	    		} else {
 	    		// verify payment method, email and phone
@@ -343,13 +436,14 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	            );
 	
 	            delete billingData.paymentInformation;
-	
+				var options = {'paidWithPayPal' : false, 'selectedPayment' : 'others'};
 	            res.json({
 	                renderedPaymentInstruments: renderedStoredPaymentInstrument,
 	                customer: accountModel,
 	                order: basketModel,
 	                form: billingForm,
-	                error: false
+	                error: false,
+	                options : options
 	            });
 	        });
 	    }
@@ -506,7 +600,20 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	            errorMessage: Resource.msg('error.technical', 'checkout', null)
 	      });
 	 	 return next();
-    }else if (handlePaymentResult.process3DRedirection){
+    } else if(handlePaymentResult.rejected) {
+    	Transaction.wrap(function () { OrderMgr.failOrder(order); });
+    	currentBasket = BasketMgr.getCurrentBasket();
+    	Transaction.wrap(function () {
+    		COHelpers.handlePayPal(currentBasket);
+    	});
+    	res.json({
+	          error: true,
+	          cartError : true,
+	          redirectUrl: URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', dw.web.Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString()
+	      });
+	    return next();
+    }
+    else if (handlePaymentResult.process3DRedirection){
         res.json({
         	error: false,
         	continueUrl: URLUtils.url('CheckoutServices-PayerAuthentication').toString()
@@ -540,7 +647,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         });
         return next();
     }
-
+	session.privacy.paypalShippingIncomplete = '';
+	session.privacy.paypalBillingIncomplete = '';
     COHelpers.sendConfirmationEmail(order, req.locale.id);
 
         //  Set order confirmation status to not confirmed for REVIEW orders.
@@ -552,10 +660,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
         //  Reset decision session variable.
     session.custom.CybersourceFraudDecision = "";
+    session.custom.SkipTaxCalculation = false;
+	session.custom.cartStateString = null;
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
-
+	var options = {'paidWithPayPal' : false, 'selectedPayment' : 'others'};
     // TODO: Exposing a direct route to an Order, without at least encoding the orderID
     //  is a serious PII violation.  It enables looking up every customers orders, one at a
     //  time.
@@ -563,7 +673,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         error: false,
         orderID: order.orderNo,
         orderToken: order.orderToken,
-        continueUrl: URLUtils.url('Order-Confirm').toString()
+        continueUrl: URLUtils.url('Order-Confirm').toString(),
+        options: options
     });
 
     return next();
@@ -586,4 +697,98 @@ server.get('PayerAuthentication', server.middleware.https, function (req, res, n
 	});
 	return next();
 });
+
+/*Route to handle paypal submission. This route is called only when either 
+	PayPal Express or PayPal billing agreement is called from either mini cart or cart page. */
+function handlePayPal(req, res, next) {
+	var billingFormErrors = {};
+	var viewData = {};
+	var Transaction = require('dw/system/Transaction');
+	var URLUtils = require('dw/web/URLUtils');
+	var BasketMgr = require('dw/order/BasketMgr');
+	var paymentForm = server.forms.getForm('billing');
+	
+	var pplFormErrors = {};
+	var pplPhoneandEmailForm = new Object();
+	pplPhoneandEmailForm.email = server.forms.getForm('billing').paypalBillingFields.paypalEmail;
+	pplPhoneandEmailForm.phone = server.forms.getForm('billing').paypalBillingFields.paypalPhone;
+	pplFormErrors = COHelpers.validatePPLForm(pplPhoneandEmailForm);
+	billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
+	
+	if (Object.keys(billingFormErrors).length || Object.keys(pplFormErrors).length) {
+		// respond with form data and errors
+		res.json({
+			form: paymentForm,
+			fieldErrors: [billingFormErrors, pplFormErrors],
+			serverErrors: [],
+			error: true
+		});
+	} else {
+		var currentBasket = BasketMgr.getCurrentBasket();
+		var billingAddress = currentBasket.billingAddress;
+		var billingForm = server.forms.getForm('billing');
+		viewData.address = {
+			firstName: { value: paymentForm.addressFields.firstName.value },
+			lastName: { value: paymentForm.addressFields.lastName.value },
+			address1: { value: paymentForm.addressFields.address1.value },
+			address2: { value: paymentForm.addressFields.address2.value },
+			city: { value: paymentForm.addressFields.city.value },
+			postalCode: { value: paymentForm.addressFields.postalCode.value },
+			countryCode: { value: paymentForm.addressFields.country.value }
+		};
+		if (Object.prototype.hasOwnProperty.call(paymentForm.addressFields, 'states')) {
+			viewData.address.stateCode =
+				{ value: paymentForm.addressFields.states.stateCode.value };
+		}
+		viewData.email = {
+			value: paymentForm.paypalBillingFields.paypalEmail.value
+		};
+		viewData.phone = {
+			value: paymentForm.paypalBillingFields.paypalPhone.value
+		}; 
+		res.setViewData(viewData);
+		Transaction.wrap(function () {
+			if (!billingAddress) {
+				billingAddress = currentBasket.createBillingAddress();
+			}
+			var billingData = res.getViewData();
+			billingAddress.setFirstName(billingData.address.firstName.value);
+			billingAddress.setLastName(billingData.address.lastName.value);
+			billingAddress.setAddress1(billingData.address.address1.value);
+			billingAddress.setAddress2(billingData.address.address2.value);
+			billingAddress.setCity(billingData.address.city.value);
+			billingAddress.setPostalCode(billingData.address.postalCode.value);
+			if (Object.prototype.hasOwnProperty.call(billingData.address, 'stateCode')) {
+				billingAddress.setStateCode(billingData.address.stateCode.value);
+			}
+			billingAddress.setCountryCode(billingData.address.countryCode.value);
+			billingAddress.setPhone(billingData.phone.value);
+			currentBasket.setCustomerEmail(billingData.email.value);
+		});
+	 	var Locale = require('dw/util/Locale');
+	 	var OrderModel = require('*/cartridge/models/order');
+	 	var AccountModel = require('*/cartridge/models/account');
+		var usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
+		if (usingMultiShipping === true && currentBasket.shipments.length < 2) {
+			req.session.privacyCache.set('usingMultiShipping', false);
+			usingMultiShipping = false;
+		}
+		var currentLocale = Locale.getLocale(req.locale.id);
+		var basketModel = new OrderModel(currentBasket, { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' });
+		var accountModel = new AccountModel(req.currentCustomer);
+		var paypalInstrument = COHelpers.getPayPalInstrument(currentBasket);
+		var renderedStoredPaymentInstrument = COHelpers.getRenderedPaymentInstruments(
+	                req,
+	                accountModel
+	            );
+		res.json({
+			renderedPaymentInstruments: renderedStoredPaymentInstrument,
+			customer: accountModel,
+			order: basketModel,
+			form: billingForm,
+			error: false
+		});
+	}
+	return;
+}
 module.exports = server.exports();

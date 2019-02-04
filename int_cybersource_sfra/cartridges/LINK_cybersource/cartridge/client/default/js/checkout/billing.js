@@ -13,15 +13,52 @@ base.paymentTabs = function () {
     $('.payment-options .nav-item').on('click', function (e) {
         e.preventDefault();
         var methodID = $(this).data('method-id');
+        $('.payment-information').data('payment-method-id', methodID);
         $('input[name*="billing_paymentMethod"]').val(methodID);
     	formHelpers.clearPreviousErrors('.payment-form');
         if ($(this).data('sa-type') === 'SA_IFRAME' || $(this).data('sa-type') == 'SA_REDIRECT') { 
         	$('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode').css("display", "none");
-        } else {
+        }
+		else {
         	$('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode').css("display", "block");
         }
+		
+        if(methodID === 'VISA_CHECKOUT'  || methodID == "KLARNA"){
+        	$('.next-step-button .submit-payment').attr('id','hideSubmitPayment');
+        }
+        else if(methodID == 'PAYPAL' && $(this).attr('data-auth') == 're-auth'){
+        	$('.next-step-button .submit-payment').attr('id','hideSubmitPayment');        	
+        }
+		else {
+        	$('.next-step-button .submit-payment').attr('id','showSubmitPayment');
+        }        
+        handlePayPalSelection(methodID);
     });
 };
+
+base.editBillingSummary = function(){
+	$('.payment-summary .edit-button').on('click',function(){
+		var liPaypal = $('#checkout-main[data-checkout-stage="payment"] li[data-method-id="PAYPAL"]');
+		if($(liPaypal).hasClass('activepaypal') && $(liPaypal).find('a').hasClass('active')){
+			 $('.payment-information').data('payment-method-id', 'PAYPAL');
+		}       
+	}); 
+};
+
+function handlePayPalSelection(methodID){
+	if(methodID == 'PAYPAL') {
+		if($('#billingAgreementCheckbox').length>0) {
+			$("#billingAgreementCheckbox").attr('checked',false);
+		}
+		if($('.paypal-address').length>0) {
+			$('.paypal-address div[class$="paypalBillingFields_paypalEmail"]').css("display", "block");
+			$('.paypal-address div[class$="paypalBillingFields_paypalPhone"]').css("display", "block");
+		}
+	} else {
+		$('.paypal-address div[class$="paypalBillingFields_paypalEmail"]').css("display", "none");
+		$('.paypal-address div[class$="paypalBillingFields_paypalPhone"]').css("display", "none");
+	}
+}
 
 /**
  * @function
@@ -60,6 +97,16 @@ base.addNewPaymentInstrument = function () {
     });
 };
 
+base.flipPayment = function () {
+    $('.btn.add-payment').on('click', function (e) {
+        e.preventDefault();
+        $('.payment-information').data('is-new-payment', true);
+        clearCreditCardForm();
+        $('.credit-card-form').removeClass('checkout-hidden');
+        $('.user-payment-instruments').addClass('checkout-hidden');
+    });
+};
+
 base.cancelNewPayment = function () {
     $('.cancel-new-payment').on('click', function (e) {
         e.preventDefault();
@@ -70,17 +117,104 @@ base.cancelNewPayment = function () {
     });
 };
 
+base.removePaypalButton = function(){
+	$('.payment-summary .edit-button').on('click',function(){  
+		if($('.payment-details span:contains(Credit)')){
+		    if($('#checkout-main[data-checkout-stage="payment"] a.paypal-tab').hasClass('active')){
+		    	$('#checkout-main[data-checkout-stage="payment"]').find('button.submit-payment').attr('id','hideSubmitPayment');
+		   } 
+		}
+		if($('.payment-details span:contains(PAYPAL)')){
+		    if($('#checkout-main[data-checkout-stage="payment"] a.paypal-tab').hasClass('active')){
+		    	$('#checkout-main[data-checkout-stage="payment"]').find('button.submit-payment').attr('id','showSubmitPayment');
+		   } 
+		}
+		var liPaypal = $('#checkout-main[data-checkout-stage="payment"] li[data-method-id="PAYPAL"]');
+		if(!$(liPaypal).hasClass('activepaypal') && $(liPaypal).find('a').hasClass('active')){
+			   $('#checkout-main[data-checkout-stage="payment"]').find('button.submit-payment').attr('id','hideSubmitPayment');
+			}	
+    }); 	
+};
+
+base.onpaypalClick = function(){
+	$('li[data-method-id="PAYPAL"] a').on('click',function(){
+		if(!$('li[data-method-id="PAYPAL"]').hasClass('activepaypal')){
+			 $('#checkout-main[data-checkout-stage="payment"]').find('button.submit-payment').attr('id','hideSubmitPayment');
+	    }
+	});
+};
+
+base.onAddressSelection = function() {
+	$(".addressSelector").change(function () {
+		saveBillingAddress();
+    });
+};
+
+function saveBillingAddress(){
+	if(isPayPalEnabled()) {
+		var paymentForm = $('#dwfrm_billing').serialize();
+		var url = $('.billing-information .addressSelector').attr('data-create-shipment-url');
+		$.ajax({
+			method: 'POST',
+			async: false,
+			data: paymentForm,
+			url: url,
+			success: function (data) {
+			},
+			error: function (err) {
+			},
+		});
+	}
+}
+
+function isPayPalEnabled() {
+	return $('#paypal_enabled').length>0 && document.getElementById("paypal_enabled").value == 'true' ? true : false;
+}
+
+base.onBillingAddressUpdate = function() {
+	 $('.billing-information').on('change', function () {
+	 	if(isPayPalEnabled()) {
+	 		var firstName = $('input[name$=_billing_addressFields_firstName]').val();
+	 		var lastName = $('input[name$=_billing_addressFields_lastName]').val();
+			var add1 = $('input[name$=_billing_addressFields_address1]').val();
+   			var add2 = $('input[name$=_billing_addressFields_address2]').val();
+    		var city = $('input[name$=_billing_addressFields_city]').val();
+    		var postalCode = $('input[name$=_billing_addressFields_postalCode]').val();
+    		var state = $('select[name$=_billing_addressFields_states_stateCode]').val();
+    		var country = $('select[name$=_billing_addressFields_country]').val(); 
+    	
+    		firstName = $.trim(firstName);
+    		lastName = $.trim(lastName);
+    		add1 = $.trim(add1);
+    		add2 = $.trim(add2);
+    		city = $.trim(city);
+    		postalCode = $.trim(postalCode);
+    		state = $.trim(state);
+    		country = $.trim(country);
+    		if(firstName && lastName && add1 && city && postalCode && state && country) {
+    			saveBillingAddress();
+    		}
+	 	}
+	 });
+};
+
 /**
  * @function
  * @description function to update payment details summary based on payment method
  */
-base.methods.updatePaymentInformation = function (order) {
+base.methods.updatePaymentInformation = function (order, options) {
 	 // update payment details
     var $paymentSummary = $('.payment-details');
     var htmlToAppend = '';
     var isCSType = false;
+    updatePaypal(options);
     var saType = $('.nav-item').data('sa-type');
-   
+    
+	    if(order.billing.payment && order.billing.payment.selectedPaymentInstruments
+		        && order.billing.payment.selectedPaymentInstruments.length > 0 && order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD' && saType != null && saType != 'SA_FLEX' ) {
+	    	$('.next-step-button .place-order').addClass(saType.toLowerCase()).removeClass('place-order');
+	    }
+    
         if (saType && saType != 'SA_SILENTPOST' && saType != 'SA_FLEX') {
         	isCSType = true;
         }
@@ -90,8 +224,15 @@ base.methods.updatePaymentInformation = function (order) {
 	        && order.billing.payment.selectedPaymentInstruments.length > 0){
 	    		htmlToAppend += '<span>Secure Acceptance ' + order.billing.payment.selectedPaymentInstruments[0].paymentMethod.replace('_', ' ') + '</span>';
 	    	} 
-    	} else if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
+    	} else if(order.billing.payment && order.billing.payment.selectedPaymentInstruments
+        	&& order.billing.payment.selectedPaymentInstruments.length > 0 && (order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL' || order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL_CREDIT')) {
+        	 htmlToAppend += '<span>' + order.billing.payment.selectedPaymentInstruments[0].paymentMethod + 
+        	 '</span>' + '<div><span>' + order.billing.payment.selectedPaymentInstruments[0].amount + '</span></div>';
+    	} 
+    	else if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
         && order.billing.payment.selectedPaymentInstruments.length > 0) {
+        $('.paypalDetails').addClass('show');
+        removeactivepaypal();
         htmlToAppend += '<span>' + order.resources.cardType + ' '
             + order.billing.payment.selectedPaymentInstruments[0].type
             + '</span><div>'
@@ -105,6 +246,26 @@ base.methods.updatePaymentInformation = function (order) {
 
     $paymentSummary.empty().append(htmlToAppend);
 };
+
+function updatePaypal(options){
+     if(undefined !== options && undefined !== options.selectedPayment && options.selectedPayment == 'PAYPAL' &&
+    	undefined !== options.paidWithPayPal && !options.paidWithPayPal) {
+		$('.paypalDetails').addClass('show');
+		$('.next-step-button .submit-payment').attr('id','showSubmitPayment');
+		$('.nav-item.activepaypal').attr('data-auth', 're-auth');
+	} 
+	var liPaypal = $('li[data-method-id="PAYPAL"]');
+	if($(liPaypal).hasClass('activepaypal')){
+		$('.payment-options a.paypal-tab')[0].click();
+		$('.payment-information').data('payment-method-id', 'PAYPAL');
+	}
+}
+
+function removeactivepaypal(){
+	$('.nav-item.activepaypal').attr('data-auth', 're-auth');
+	var liPaypal = $('li[data-method-id="PAYPAL"]');
+	liPaypal.removeClass('activepaypal');
+}
 
 /**
  * updates the billing address form values within payment forms

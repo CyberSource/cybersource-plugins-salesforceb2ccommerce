@@ -1,0 +1,12 @@
+<script type="text/javascript" src="${URLUtils.staticURL('/js/main.js')}"></script>
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
+    <script type="text/javascript" src="${script}"></script>
+</isloop>
+<iscomment>Move this to main.js</iscomment>
+<isscript>
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+ </isscript>
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+	<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+	<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+</isif>

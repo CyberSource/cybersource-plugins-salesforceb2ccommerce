@@ -10,6 +10,7 @@ var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var Site = require('dw/system/Site');
+
 /**
  * Creates a token.
  * @returns {string} a token
@@ -42,7 +43,7 @@ exports.CreatePaymentToken = function (module) {
  * @returns {Object} -  {fieldErrors: [], serverErrors: [], error: Boolean}
  */
 exports.Handle = function (basket, paymentInformation) {
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	var PaymentMethod = session.forms.billing.paymentMethod.value;
 	if (empty(PaymentMethod)) {
 		return {error: true};
@@ -67,7 +68,7 @@ exports.Handle = function (basket, paymentInformation) {
  * @returns {Object} -  {fieldErrors: [], serverErrors: [], error: Boolean}
  */
 exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) {
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
     var pi = paymentInstrument;
@@ -81,7 +82,8 @@ exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) 
     });
 
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-	if (CsSAType == null || CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX) ) {
+	if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) && 
+			(CsSAType == null || CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX))) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
         var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
         return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
     } else {
@@ -105,7 +107,7 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
 	 var expirationMonth = paymentInformation.expirationMonth.value;
 	 var expirationYear = paymentInformation.expirationYear.value;
 	 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
-	 var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	 var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	 var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
 
 	 if(CsSAType != CybersourceConstants.METHOD_SA_SILENTPOST && CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
@@ -163,7 +165,7 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
  * This function takes order No and payment instrument as Input
  */
 function SecureAcceptanceAuthorize (orderNumber, paymentInstrument, paymentProcessor) {
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	var PaymentMgr = require('dw/order/PaymentMgr'),
 		Transaction = require('dw/system/Transaction');
 	var paymentInstrument = paymentInstrument,

@@ -1,0 +1,6 @@
+<div class="credit-card-type">
+    <span><isprint value="${payment.paymentMethod}" /></span>
+</div>
+<div class="credit-card-number">
+	<span><isprint value="${payment.amount}" /></span>
+</div>

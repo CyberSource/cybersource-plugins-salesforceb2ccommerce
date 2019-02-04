@@ -15,6 +15,14 @@
         {
             "name": "dw.order.calculateTax",
             "script": "./cartridge/scripts/hooks/tax/taxes"
+        },
+        {
+            "name": "app.payment.processor.paypal_express",
+            "script": "./cartridge/scripts/hooks/payment/processor/PAYPAL_EXPRESS"
+        },
+        {
+            "name": "app.payment.processor.paypal_credit",
+            "script": "./cartridge/scripts/hooks/payment/processor/PAYPAL_CREDIT"
         }
     ]
 }

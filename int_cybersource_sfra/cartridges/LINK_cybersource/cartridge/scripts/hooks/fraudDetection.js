@@ -16,11 +16,13 @@ function fraudDetection(basket) {
     var errorMessage = '';
     var decision = 'ACCEPT';
     var status = 'success';
-    var dmEnabled = Site.current.getCustomPreferenceValue('csCardDecisionManagerEnable'); //
+    var dmEnabled = Site.current.getCustomPreferenceValue('csCardDecisionManagerEnable');
+    var dmEnabledForPP = Site.current.getCustomPreferenceValue('isDecisionManagerEnable');
+
 
     //  If DM is disabled, default status returned is 'success'.
     //  If DM is enabled, get the status saved in the session, form the last Auth call.
-    if (dmEnabled) {
+    if (dmEnabled || dmEnabledForPP) {
         if ('CybersourceFraudDecision' in session.custom) {
             decision = session.custom.CybersourceFraudDecision;
         } else {

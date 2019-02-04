@@ -10,11 +10,13 @@ function CreateFlexKey() {
 		var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
+		
 	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");
 	    var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
         var signature, targetOrigin;
         var merchantId = dw.system.Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
+
 	    if(request.isHttpSecure()){
 		   	 targetOrigin = "https://" + request.httpHost;
 		   } else {

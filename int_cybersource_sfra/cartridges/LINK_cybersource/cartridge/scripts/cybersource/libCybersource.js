@@ -1026,6 +1026,46 @@ var CybersourceHelper = {
     },
     
     /** ***************************************************************************
+	 * Name: payPalRefund/CreditService
+	 * Description: Initiate the Refund/Credit for transactionId .
+	 *
+	 ****************************************************************************/
+    payPalRefundService: function (request, merchantRefCode, requestId, paymentType) {
+        var payPalRefundService = new CybersourceHelper.csReference.APRefundService();
+        payPalRefundService.refundRequestID = requestId;
+        request.apRefundService = payPalRefundService;
+        request.apPaymentType = paymentType;
+        request.apRefundService.run = true;
+
+    },
+    
+    /** ***************************************************************************
+	 * Name: payPalReversalService
+	 * Description: Initiate the Reversal for transactionId .
+	 *
+	 ****************************************************************************/
+    payPalAuthReversalService : function(request, merchantRefCode, requestId, paymentType) {
+    	var apAuthReversalService = new CybersourceHelper.csReference.APAuthReversalService();
+		apAuthReversalService.authRequestID = requestId;
+		request.apAuthReversalService = apAuthReversalService;
+    	request.apPaymentType = paymentType;
+		request.apAuthReversalService.run = true;
+    },
+    
+    /** ***************************************************************************
+	 * Name: payPalCaptureService
+	 * Description: Initiate the Capture for transactionId .
+	 *
+	 ****************************************************************************/
+    payPalCaptureService : function(request, merchantRefCode, requestId, paymentType) {
+    	var apCaptureService = new CybersourceHelper.csReference.APCaptureService();
+    	apCaptureService.authRequestID = requestId;
+		request.apCaptureService = apCaptureService;
+    	request.apPaymentType = paymentType;
+		request.apCaptureService.run = true;
+    },
+    
+    /** ***************************************************************************
 	 * request  ,
 	 * purchase : PurchaseTotals_Object,
 	 * refCode     - Basket.UUID
@@ -1074,7 +1114,7 @@ function __setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '18.1.1';
+    request.clientLibraryVersion = '18.2.0';
     request.clientEnvironment = 'Linux';
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;

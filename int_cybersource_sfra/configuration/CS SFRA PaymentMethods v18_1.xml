@@ -15,6 +15,34 @@
         </custom-attributes>
     </payment-method>
     
+    <payment-method method-id="PAYPAL">
+        <name xml:lang="x-default">Paypal</name>
+        <name xml:lang="fr-FR">Paypal</name>
+        <name xml:lang="it-IT">Paypal</name>
+        <name xml:lang="ja-JP">Paypal</name>
+        <name xml:lang="zh-CN">Paypal</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>PAYPAL_EXPRESS</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+    
+    <payment-method method-id="PAYPAL_CREDIT">
+        <name xml:lang="x-default">Paypal Credit</name>
+        <name xml:lang="fr-FR">Paypal Credit</name>
+        <name xml:lang="it-IT">Paypal Credit</name>
+        <name xml:lang="ja-JP">Paypal Credit</name>
+        <name xml:lang="zh-CN">Paypal Credit</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>PAYPAL_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+    
     <payment-method method-id="DW_APPLE_PAY">
         <name xml:lang="x-default">Apple Pay</name>
         <enabled-flag>false</enabled-flag>
@@ -24,23 +52,9 @@
             <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
         </custom-attributes>
     </payment-method>
-
-    <payment-method method-id="SA_REDIRECT">
-        <name xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Redirect)</name>
-        <description xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile
-            (Redirect)</description>
-        <enabled-flag>false</enabled-flag>
-        <processor-id>CYBERSOURCE_CREDIT</processor-id>
-    </payment-method>
-
-    <payment-method method-id="SA_SILENTPOST">
-        <name xml:lang="x-default">Credit Card - Secure Acceptance Silent Order POST</name>
-        <enabled-flag>false</enabled-flag>
-        <processor-id>CYBERSOURCE_CREDIT</processor-id>
-    </payment-method>
-
-    <payment-method method-id="SA_IFRAME">
-        <name xml:lang="x-default">Credit Card - Secure Acceptance Web/Mobile (Iframe)</name>
+	
+	<payment-method method-id="VISA_CHECKOUT">
+        <name xml:lang="x-default">Visa Checkout</name>
         <enabled-flag>false</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>

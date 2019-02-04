@@ -193,7 +193,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
         var requestMap = new HashMap();
         var paymentMethod = paymentInstrument.paymentMethod;
         var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-		var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+		var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 		
         /*Region BM Setting START: request setting for based on BM configuration*/
         if (null !== sitePreferenceData) {
@@ -331,7 +331,7 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
     var reference_number;
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants'),
         CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'helper/CommonHelper');
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 
     /*Region BM Setting END:*/
     /*Region request creation START:*/
@@ -450,7 +450,7 @@ function GetSitePrefernceDetails(subscriptionToken) {
     var sitePreference = {};
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var CsTokenizationEnable: dw.value.EnumValue;
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     if (null !== CsSAType) {
         switch (CsSAType) {
             case CybersourceConstants.METHOD_SA_REDIRECT:
@@ -902,10 +902,11 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
     var result, PAReasonCode, PAVReasonCode, AuthorizationReasonCode, serviceResponse;
     var paEnabled = false;
     var Site = require('dw/system/Site');
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue("CsSAType").value;
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+	var paymentMethod = paymentInstrument.getPaymentMethod();
     if (!empty(CybersourceHelper.getPAMerchantID())) {
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-        if (CsSAType === null || CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
+        if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) && (CsSAType == null || CsSAType != CybersourceConstants.METHOD_SA_FLEX)) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
             result = CardHelper.PayerAuthEnable(session.forms.billing.creditCardFields.cardType.value);
 		} else if (CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX)) {
 			result = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
