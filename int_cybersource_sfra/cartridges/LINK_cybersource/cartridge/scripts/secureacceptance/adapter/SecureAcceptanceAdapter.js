@@ -210,7 +210,7 @@ function SAIframeResponse(responseObject, order) {
                 if (empty(orderPlacementStatus) || Status.ERROR !== orderPlacementStatus) {
                     return {
                         nextStep: CybersourceConstants.SA_GOTO,
-                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm', 'order_id', order.orderNo, 'order_token', order.getOrderToken()),
+                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'sasubmit', 'order_id', order.orderNo, 'order_token', order.getOrderToken()),
                         render: 'secureacceptance/saredirect'
                     }
                 } else {
