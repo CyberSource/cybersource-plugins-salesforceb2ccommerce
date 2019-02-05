@@ -6,7 +6,7 @@
 
 /* API Includes */
 var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
-var guard = require(CybersourceConstants.GUARD);
+var guard = require(CybersourceConstants.UNIT_TEST_GUARD);
 var app = require(CybersourceConstants.APP);
 var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
 var TestHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/helper/TestHelper');
@@ -683,29 +683,26 @@ function TestCheckStatusService()
  * Local methods require guard change below usage
  */
 
-exports.TestCCAuth=guard.ensure(['https'], TestCCAuth);
-exports.TestTax=guard.ensure(['https'], TestTax);
-exports.TestDAVCheck=guard.ensure(['https'], TestDAVCheck);
-exports.TestPA=guard.ensure(['https'], TestPA);
-exports.TestFingerprint=guard.ensure(['https'], TestFingerprint);
-exports.TestAlipayInitiateService=guard.ensure(['https'], TestAlipayInitiateService);
-exports.StartPOS=guard.ensure(['https'], StartPOS);
-exports.CreateSubscription=guard.ensure(['https'], CreateSubscription);
-exports.ViewSubscription=guard.ensure(['https'], ViewSubscription);
-exports.UpdateSubscription=guard.ensure(['https'], UpdateSubscription);
-exports.DeleteSubscription=guard.ensure(['https'], DeleteSubscription);
-exports.TestSATokenCreate=guard.ensure(['https'], TestSATokenCreate);
-exports.TestSATokenCreateResponse=guard.ensure(['https'], TestSATokenCreateResponse);
-exports.StartServices=guard.ensure(['https'], StartServices);
-exports.TestSaleService=guard.ensure(['https'], TestSaleService);
-exports.TestRefundService=guard.ensure(['https'], TestRefundService);
-exports.TestAuthorizeService=guard.ensure(['https'],TestAuthorizeService);
-exports.TestCancelService=guard.ensure(['https'],TestCancelService);
-exports.TestCaptureService=guard.ensure(['https'],TestCaptureService);
-exports.TestAuthReversalService=guard.ensure(['https'],TestAuthReversalService);
-exports.TestCheckStatusService=guard.ensure(['https'],TestCheckStatusService);
-exports.TestPOS=guard.ensure(['https'], TestPOS);
-exports.OnDemandPayment=guard.ensure(['https'], OnDemandPayment);
-
-
-
+exports.TestCCAuth=guard.ensure(['https', 'devInstance'], TestCCAuth);
+exports.TestTax=guard.ensure(['https', 'devInstance'], TestTax);
+exports.TestDAVCheck=guard.ensure(['https', 'devInstance'], TestDAVCheck);
+exports.TestPA=guard.ensure(['https', 'devInstance'], TestPA);
+exports.TestFingerprint=guard.ensure(['https', 'devInstance'], TestFingerprint);
+exports.TestAlipayInitiateService=guard.ensure(['https', 'devInstance'], TestAlipayInitiateService);
+exports.StartPOS=guard.ensure(['https', 'devInstance'], StartPOS);
+exports.CreateSubscription=guard.ensure(['https', 'devInstance'], CreateSubscription);
+exports.ViewSubscription=guard.ensure(['https', 'devInstance'], ViewSubscription);
+exports.UpdateSubscription=guard.ensure(['https', 'devInstance'], UpdateSubscription);
+exports.DeleteSubscription=guard.ensure(['https', 'devInstance'], DeleteSubscription);
+exports.TestSATokenCreate=guard.ensure(['https', 'devInstance'], TestSATokenCreate);
+exports.TestSATokenCreateResponse=guard.ensure(['https', 'devInstance'], TestSATokenCreateResponse);
+exports.StartServices=guard.ensure(['https', 'devInstance'], StartServices);
+exports.TestSaleService=guard.ensure(['https', 'devInstance'], TestSaleService);
+exports.TestRefundService=guard.ensure(['https', 'devInstance'], TestRefundService);
+exports.TestAuthorizeService=guard.ensure(['https', 'devInstance'],TestAuthorizeService);
+exports.TestCancelService=guard.ensure(['https', 'devInstance'],TestCancelService);
+exports.TestCaptureService=guard.ensure(['https', 'devInstance'],TestCaptureService);
+exports.TestAuthReversalService=guard.ensure(['https', 'devInstance'],TestAuthReversalService);
+exports.TestCheckStatusService=guard.ensure(['https', 'devInstance'],TestCheckStatusService);
+exports.TestPOS=guard.ensure(['https', 'devInstance'], TestPOS);
+exports.OnDemandPayment=guard.ensure(['https', 'devInstance'], OnDemandPayment);
