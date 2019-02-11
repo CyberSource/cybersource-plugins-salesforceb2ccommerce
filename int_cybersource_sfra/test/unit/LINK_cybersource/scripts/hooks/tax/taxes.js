@@ -180,7 +180,7 @@ describe('calculate tax hook', function () {
         'dw/rpc/SOAPUtil': soapUtilMock,
         'dw/svc/LocalServiceRegistry': localServiceRegistryMock
     });
-    var TaxFacade = proxyquire('../../../../../../../int_cybersource_sfra/cartridges/LINK_cybersource/cartridge/scripts/tax/facade/TaxFacade.js', {
+    var TaxFacade = proxyquire('../../../../../../../int_cybersource_sfra/cartridges/LINK_cybersource/cartridge/scripts/facade/TaxFacade.js', {
         'dw/system/Logger': loggerMock,
         '~/cartridge/scripts/cybersource/libCybersource': LibCybersource,
         '~/cartridge/scripts/helper/TaxHelper': TaxHelper,
@@ -200,7 +200,7 @@ describe('calculate tax hook', function () {
         'dw/system/Site': siteMock,
         '~/cartridge/scripts/helper/TaxHelper': TaxHelper,
         '~/cartridge/scripts/helper/CommonHelper': CommonHelper,
-        '~/cartridge/scripts/tax/facade/TaxFacade': TaxFacade,
+        '~/cartridge/scripts/facade/TaxFacade': TaxFacade,
         'result': result,
         'success': success,
         'taxationResponse': taxationResponse
