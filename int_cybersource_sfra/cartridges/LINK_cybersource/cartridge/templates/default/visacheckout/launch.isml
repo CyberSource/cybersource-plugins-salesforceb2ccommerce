@@ -6,13 +6,13 @@
 <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive()}">
     <isif condition="${!empty(pdict.VInitFormattedString)}">
         <script type="text/javascript">
-			var visaCheckoutSettings = <isprint value="${pdict.VInitFormattedString}" encoding="off" />;			
+			var visaCheckoutSettings = <isprint value="${pdict.VInitFormattedString}" encoding="htmlsinglequote" />;			
 			function onVisaCheckoutReady(){
 				if(null === visaCheckoutSettings || visaCheckoutSettings === undefined || visaCheckoutSettings.apikey === undefined || visaCheckoutSettings.apikey === ""){
 					return false;
 				}
 			 	V.init(
-					<isprint value="${pdict.VInitFormattedString}" encoding="off" />
+					<isprint value="${pdict.VInitFormattedString}" encoding="htmlsinglequote" />
 				);
 				V.on("payment.success", function(payment) {
 					$("#dwfrm_visacheckout_callId").val(payment['callid']);
