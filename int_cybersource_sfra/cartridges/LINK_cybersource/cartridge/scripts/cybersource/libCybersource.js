@@ -1114,7 +1114,7 @@ function __setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '18.2.0';
+    request.clientLibraryVersion = '19.1.0';
     request.clientEnvironment = 'Linux';
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;
