@@ -12,7 +12,7 @@
 		 	<isprint value="${payment.expirationMonth}" />/
 		</isif>
 		<isif condition="${!empty(payment.expirationYear)}" > 
-		 	<isprint value="${payment.expirationYear}" />
+		 	<isprint value="${payment.expirationYear}" formatter = "###0" />
 		</isif>
    </span>
 </div>

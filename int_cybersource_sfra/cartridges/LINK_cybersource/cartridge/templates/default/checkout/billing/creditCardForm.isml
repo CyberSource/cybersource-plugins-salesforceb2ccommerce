@@ -145,3 +145,16 @@
         </isif>
     </div>
 </div>
+
+<iscomment>Bank Transfer </iscomment>
+<div class="bankTransfer" id="bankTransfer" style="display:none">
+	<div id="eps"  style="display:none">
+		<isinclude template="checkout/billing/paymentOptions/epsContent" />
+	</div>
+	<div id="gpy"  style="display:none">
+		<isinclude template="checkout/billing/paymentOptions/giroPayContent" />
+	</div>
+	<div id="idl"  style="display:none">
+		<isinclude template="checkout/billing/paymentOptions/iDealContent" />
+	</div>
+</div>

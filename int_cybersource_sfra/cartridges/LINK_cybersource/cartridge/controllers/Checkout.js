@@ -24,6 +24,12 @@ server.append('Begin', function (req, res, next) {
 		req.session.privacyCache.set('usingMultiShipping', usingMultiShipping);
 	var currentLocale = Locale.getLocale(req.locale.id);
 	var basketModel = new OrderModel(currentBasket, { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' });
+	if(currentBasket.paymentInstrument != null && currentBasket.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
+		var cardType = currentBasket.paymentInstrument.creditCardType; 
+	    basketModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
+	    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = currentBasket.paymentInstrument.creditCardNumber;
+	}
+	
 	if(currentBasket.paymentInstrument != null && currentBasket.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
 		var cardType = currentBasket.paymentInstrument.creditCardType; 
 			session.forms.billing.creditCardFields.cardType.value = cardType;
@@ -59,7 +65,8 @@ server.append('Begin', function (req, res, next) {
             selectedPayment : selectedPayment,
             paypalBillingFields : paypalBillingFields,
             paidWithPayPal : paidWithPayPal,
-            applicablePaymentMethods : applicablePaymentMethods
+            applicablePaymentMethods : applicablePaymentMethods,
+            currentLocale : currentLocale
     };
     res.setViewData(viewData);
     next();

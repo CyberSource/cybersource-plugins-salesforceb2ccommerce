@@ -13,7 +13,7 @@ var Cybersource = require('~/cartridge/scripts/Cybersource');
 /**
  * Process redirect url response of secure acceptance redirect
  */
-function saredirect() {
+function saredirect(args) {
     var secureAcceptanceAdapter = require('~/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
     var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
     var returnVariable;
@@ -29,12 +29,19 @@ function saredirect() {
                 PlaceOrderError: !empty(PlaceOrderError) ? PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined")
             };
             break;
-        case CybersourceConstants.SA_GOTO: returnVariable = {
-            redirect: true,
-            location: secureAcceptanceResponse.location,
-            render: secureAcceptanceResponse.render
-        };
+        case CybersourceConstants.SA_GOTO: 
+        	returnVariable = {
+            	redirect: true,
+            	location: secureAcceptanceResponse.location,
+            	render: secureAcceptanceResponse.render
+        	};
             break;
+		case CybersourceConstants.SA_CANCEL: 
+			returnVariable = {
+				orderreview : true, 
+				location: secureAcceptanceResponse.location 
+			};
+			break;
         default: break;
     }
     return returnVariable;
@@ -74,16 +81,16 @@ function saiframe(args) {
 /**
  * Process redirect url response of alipay
  */
-function alipay(args) {
+function alipay(order) {
 
     var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var orderResult = Cybersource.GetOrder({ Order: args.Order });
+    var orderResult = Cybersource.GetOrder(order);
     if (orderResult.error) {
         return { carterror: true };
     }
     var order = orderResult.Order;
     //call check status service
-    var alipayResult = commonHelper.CheckStatusServiceRequest({ Order: order });
+    var alipayResult = commonHelper.CheckStatusServiceRequest(order);
 	/*show confirmation if check status service response is still pending,
 	 * for success, place the order and fail the order in case of failed response
 	 */
@@ -99,11 +106,11 @@ function alipay(args) {
 /**
  * Process redirect url response of bank transfer
  */
-function banktransfer(args) {
+function banktransfer(order) {
 
     var bankAdaptor = require('~/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
     // get the order
-    var orderResult = Cybersource.GetOrder({ Order: args.Order });
+    var orderResult = Cybersource.GetOrder(order);
     //check if payment method is not specific to bank transfer
     if (orderResult.error) {
         return { carterror: true };
@@ -171,11 +178,11 @@ function klarna(args) {
 /**
  * Process cancel or fail response from bank transfer
  */
-function cancelfail(args) {
+function cancelfail(order) {
 
     var orderResult = {};
     if (!request.httpParameterMap.cfk.booleanValue) {
-        orderResult = Cybersource.GetOrder({ Order: args.Order });
+        orderResult = Cybersource.GetOrder(order);
     } else {
         var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
         orderResult = klarnaAdaptor.GetKlarnaOrder({ Order: args.Order });

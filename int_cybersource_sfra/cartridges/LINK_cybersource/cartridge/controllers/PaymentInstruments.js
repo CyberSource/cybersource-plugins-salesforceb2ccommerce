@@ -174,6 +174,7 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
                 savePaymentInstrument({ PaymentInstrument: paymentInstrument, CreditCardFields: formInfo });
 
                 if (!empty(tokenizationResult.subscriptionID)) {
+                	paymentInstrument.custom.isCSToken = true;
                     paymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
                 }
                 if (verifyDuplicates) {
@@ -203,7 +204,8 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
 });
 
 server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
-    var array = require('*/cartridge/scripts/util/array');
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    var array = require(CybersourceConstants.SFRA_CORE + '/cartridge/scripts/util/array');
     var subscriptionError;
     var data = res.getViewData();
     if (data && !data.loggedin) {
@@ -232,9 +234,10 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
             subscriptionID = paymentToDelete.raw.creditCardToken;
         }
         //  Will make delete token call even if tokenization has been turned off since card was saved.
-        if ((enableTokenization.equals('YES') || !empty(subscriptionID)) && !empty(paymentToDelete)) {
-            //  If a card was saved while tokenization was disable it will not have a token.  No need to make delete call.
-            if (!empty(subscriptionID)) {
+        if (!empty(paymentToDelete) && (enableTokenization.equals('YES') || !empty(subscriptionID))) {
+            //  If a card was saved while tokenization was disabled it will not have a token.  No need to make delete call.
+            if (!empty(subscriptionID) && 'custom' in paymentToDelete.raw && 'isCSToken' in paymentToDelete.raw.custom
+        			&& paymentToDelete.raw.custom.isCSToken) {
                 var Cybersource_Subscription = require('LINK_cybersource/cartridge/scripts/Cybersource')
                 var deleteSubscriptionBillingResult = Cybersource_Subscription.DeleteSubscriptionAccount(subscriptionID);
                 if (deleteSubscriptionBillingResult.error) {

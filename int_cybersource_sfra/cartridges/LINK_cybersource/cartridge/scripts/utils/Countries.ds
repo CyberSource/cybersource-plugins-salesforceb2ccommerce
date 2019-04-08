@@ -571,6 +571,916 @@ var countries = [{
 			}
 		}
 	}
+},
+{
+	"countryCode": "NL",
+	"name": {
+		"nl_NL": "Netherland"
+	},
+	"continent": "europe",
+	"locales": ["nl_NL"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "DE",
+	"name": {
+		"de_DE": "Germany"
+	},
+	"continent": "europe",
+	"locales": ["de_DE"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "DE",
+	"name": {
+		"de_AT": "Austria"
+	},
+	"continent": "europe",
+	"locales": ["de_AT"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "BE",
+	"name": {
+		"fr_BE": "Belgium"
+	},
+	"continent": "europe",
+	"locales": ["fr_BE"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "ES",
+	"name": {
+		"es_ES": "Spain"
+	},
+	"continent": "europe",
+	"locales": ["es_ES"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "AT",
+	"name": {
+		"en_AT": "Austria"
+	},
+	"continent": "europe",
+	"locales": ["en_AT"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "BE",
+	"name": {
+		"de_BE": "Belgium"
+	},
+	"continent": "europe",
+	"locales": ["de_BE"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "BE",
+	"name": {
+		"en_BE": "Belgium"
+	},
+	"continent": "europe",
+	"locales": ["en_BE"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "BE",
+	"name": {
+		"nl_BE": "Belgium"
+	},
+	"continent": "europe",
+	"locales": ["nl_BE"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "DE",
+	"name": {
+		"en_DE": "Germany"
+	},
+	"continent": "europe",
+	"locales": ["en_DE"],
+	"currencyCode": "EUR",
+	"taxation": {
+		"type": "net"
+	},
+	"priceBooks": [
+		"usd-list-prices",
+		"usd-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
 }];
 var Locale = require('dw/util/Locale');
 

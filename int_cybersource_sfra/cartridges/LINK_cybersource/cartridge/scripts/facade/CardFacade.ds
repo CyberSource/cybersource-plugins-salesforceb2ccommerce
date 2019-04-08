@@ -85,23 +85,25 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	/********************************/
 	/* DAV-related WebService setup */
 	/********************************/	
+	
 	var enableDAV = CybersourceHelper.getDavEnable();
 	var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
-	
-	if( enableDAV=='YES' ) {
-		var ignoreDAVResult = false;
-		if( approveDAV=='APPROVE' ) {
-			ignoreDAVResult = true;
+	 if(Basket.paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay){
+		if( enableDAV=='YES' ) {
+			var ignoreDAVResult = false;
+			if( approveDAV=='APPROVE' ) {
+				ignoreDAVResult = true;
+			}
+			CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
 		}
-		CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
-	}
-	/* End of DAV WebService setup */
-	
-	/* AVS Service setup */
-	var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
-	var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
-	
-	CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+		/* End of DAV WebService setup */
+		
+		/* AVS Service setup */
+		var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+		var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+		
+		CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+	 }
 	/* End of AVS Service setup */
 	CardHelper.writeOutDebugLog(serviceRequest,orderNo);
 
@@ -124,8 +126,18 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+	   if(Basket.paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay){
+		    serviceRequest.paymentSolution = '012';
+		    var csReference  = webreferences.CyberSourceTransaction;
+			var request_encryptedPayment = new csReference.EncryptedPayment();
+		     request_encryptedPayment.data = session.privacy.encryptedDataGP;
+		     serviceRequest.encryptedPayment = request_encryptedPayment;
+	   }
+		
 		requestWrapper.request =serviceRequest;
+		
 		requestWrapper.merchantCredentials = merchantCrdentials;
+		
 		serviceResponse = service.call(requestWrapper);
 	}
 	catch(e)

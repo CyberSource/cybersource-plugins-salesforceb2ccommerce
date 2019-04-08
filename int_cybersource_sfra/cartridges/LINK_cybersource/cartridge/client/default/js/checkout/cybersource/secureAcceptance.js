@@ -5,9 +5,13 @@
  * @description function to redirect secure acceptance redirect form
  */
 function initSecureAcceptance() {
-	$('.sa_silentpost, .sa_redirect').on('click', function (e) {
-    	var CsSaType = $('.nav-item').data('sa-type');
-    	if ('CREDIT_CARD' != CsSaType) {
+	$('.sa_silentpost, .sa_redirect, .alipay, .gpy, .eps, .sof, .mch, .idl').on('click', function (e) {
+		e.stopImmediatePropagation();
+    	var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
+    	var paymentMethodID = $("input[name=dwfrm_billing_paymentMethod]").val();
+    	var paymentMethodIds = ['KLARNA', 'ALIPAY', 'GPY', 'EPS', 'SOF', 'IDL', 'MCH'];
+        var paymentMethod = $.inArray(paymentMethodID, paymentMethodIds) > -1
+    	if (('CREDIT_CARD' != CsSaType && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
     		var formaction = $(this).data('action');
 			setTimeout(function () {
 			  window.location.href = formaction;
@@ -22,7 +26,8 @@ function initSecureAcceptance() {
  */
 function initSecureAcceptanceIframe() {
 	$('.sa_iframe').on('click', function (e) {
-		var CsSaType = $('.nav-item').data('sa-type');
+		var creditCardItem = $('li[data-method-id="CREDIT_CARD"]');
+    	var CsSaType = $(creditCardItem).attr('data-sa-type');
     	if ('SA_IFRAME' == CsSaType) {
     		var formaction = $(this).data('action');
     			 $.ajax({

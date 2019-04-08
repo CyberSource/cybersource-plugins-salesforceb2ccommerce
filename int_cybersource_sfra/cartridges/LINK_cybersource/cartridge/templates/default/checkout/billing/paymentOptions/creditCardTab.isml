@@ -1,8 +1,6 @@
 <isset name="CsSaType" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAType').value}" scope="page" />
 <isif condition="${CsSaType == 'SA_SILENTPOST'}">
 	<isset name="CsSaUrl" value="${URLUtils.https('CYBSecureAcceptance-GetRequestDataForSilentPost')}" scope="page" />
-<iselseif condition="${CsSaType == 'SA_FLEX'}" >
-	<isset name="CsSaUrl" value="${URLUtils.https('CYBSecureAcceptance-GetRequestDataForFlexMicroForm')}" scope="page" />
 </isif>
 
 <li class="nav-item" data-method-id="${paymentOption.ID}" ${CsSaType ? 'data-sa-type=' + CsSaType : ''} ${CsSaType ? 'data-sa-url=' + CsSaUrl : ''} >

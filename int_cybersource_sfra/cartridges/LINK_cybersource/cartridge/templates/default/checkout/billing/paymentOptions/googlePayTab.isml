@@ -1,0 +1,9 @@
+<iscomment>
+     Google Pay
+      --------------------------------------------------------------
+</iscomment>
+<li class="nav-item googlepay-tab-wrapper" data-method-id="${paymentOption.ID}">
+	<a class="nav-link google-tab" data-toggle="tab" href="#googlepay-content" role="tab">  
+		${paymentOption.name}     
+	</a>
+</li>

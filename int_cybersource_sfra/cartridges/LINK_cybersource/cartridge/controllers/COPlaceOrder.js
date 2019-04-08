@@ -76,6 +76,9 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 					Location:providerResult.location
 				});
 				return next();
+			} else if(providerResult.orderreview) {
+				res.redirect(providerResult.location);
+				return next();
 			}
 		} else {
 			return;
@@ -122,22 +125,14 @@ function reviewOrder(order_id, req, res, next) {
         Transaction.wrap(function () { OrderMgr.failOrder(order); });
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
-        res.json({
-            error: true,
-            cartError: true,
-            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
+        res.redirect(URLUtils.https('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode));
         return next();	
     }
 
     // Place the order
     var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
-        res.json({
-            error: true,
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
+        res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
 
@@ -170,22 +165,14 @@ function submitOrder(order_id, req, res, next) {
         Transaction.wrap(function () { OrderMgr.failOrder(order); });
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
-        res.json({
-            error: true,
-            cartError: true,
-            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
+        res.redirect(URLUtils.https('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode));
         return next();	
     }
     
     // Place the order
     var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
     if (placeOrderResult.error) {
-        res.json({
-            error: true,
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
+        res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
 

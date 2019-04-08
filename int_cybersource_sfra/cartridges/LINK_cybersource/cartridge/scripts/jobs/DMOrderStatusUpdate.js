@@ -34,7 +34,8 @@ function orderStatusUpdate(jobParams) {
         var serviceParams = {};
         serviceParams.merchantId = jobParams.merchantId;
         serviceParams.username = jobParams.username;
-        serviceParams.password = jobParams.password;;
+        var Encoding = require('dw/crypto/Encoding');
+        serviceParams.password = Encoding.toURI(jobParams.password);
         serviceParams.startDate = time.startDate;
         serviceParams.startTime = time.startTime;
         serviceParams.endDate = time.enddate;

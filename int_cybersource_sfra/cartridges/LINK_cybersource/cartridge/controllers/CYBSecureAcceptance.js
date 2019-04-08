@@ -58,60 +58,11 @@ server.get('MerchantPost', server.middleware.https, function (req, res, next) {
 */
 server.get('CreateFlexToken', server.middleware.https, function (req, res, next) {
 	var Flex = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/Flex');
-	var result = Flex.CreateFlexKey();
+	var flexResult = Flex.CreateFlexKey();
 	res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent',{
-		result:result
+		flexTokenResult: flexResult
     });	
 	next();
-});
-
-/**
- * This method creates signature and payment instrument for flex and request is send to create the token with all data in hidden fields
- */
-server.post('GetRequestDataForFlexMicroForm', function (req, res, next) {
-	 var result = {},
-	 errorMsg,
-	 flex = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/Flex');
-	 if(!request.httpParameterMap.cctoken.value){
-		 var flexToken = request.httpParameterMap.flexToken;
-		 var flexTokenKey = JSON.parse(request.httpParameterMap.flextokenResponse);
-		 var publicKey = flexTokenKey.der.publicKey;
-	 }
-	 secureAcceptanceAdapter = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter');
-	 if (request.httpHeaders.get("x-requested-with").equals("XMLHttpRequest")) {
-		 var BasketMgr = require('dw/order/BasketMgr');
-		 var cart = BasketMgr.getCurrentBasket();
-			if (cart) {
-				var response = secureAcceptanceAdapter.GetRequestDataForFlexMicroForm(cart, req);
-				if(response.success){
-					res.render(response.nextStep, {
-			            requestData: response.data,
-			            cardObject:response.cardObject,
-			            formAction: response.formAction
-			        });
-				} else{
-					res.render('common/errorjson', {
-						ERRORCODE:response.errorMsg
-			        });
-				}
-			}
-		}
-		else{
-			res.render('common/errorjson', {
-				ERRORCODE:response.errorMsg
-	        });	
-		}
-	 next();
-});
-
-/**
- * This method receive response from the third party in http Parameter map, verify the signature , update the payment instrument with card value received, go to place order.
- */
-server.post('FlexMicroformResponse', server.middleware.https, function (req, res, next) {
-	 var BasketMgr = require('dw/order/BasketMgr');
-	 var cart = BasketMgr.getCurrentBasket();
-	 res.redirect(require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').FlexMicroformResponse(cart));
-	 next();
 });
 
 /*

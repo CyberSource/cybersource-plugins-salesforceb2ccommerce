@@ -65,10 +65,10 @@
 					    </div>
 					    <div class="col-md-8">
 					        <div class="form-group">
-					            <label class="form-control-label" for="capturepaymenttype">${Resource.msg('saleservice_paymentmethod','cybersource',null)}</label>
-					            <select class="form-control capturepaymenttype custom-select" id="capturepaymenttype"
-					            <isprint value=${pdict.creditServiceForm.capturepaymenttype.attributes} encoding="off"/> >
-					                <isloop items=${pdict.creditServiceForm.capturepaymenttype.options} var="paymentType">
+					            <label class="form-control-label" for="refundpaymenttype">${Resource.msg('saleservice_paymentmethod','cybersource',null)}</label>
+					            <select class="form-control refundpaymenttype custom-select" id="refundpaymenttype"
+					            <isprint value=${pdict.creditServiceForm.refundpaymenttype.attributes} encoding="off"/> >
+					                <isloop items=${pdict.creditServiceForm.refundpaymenttype.options} var="paymentType">
 					                    <option id="${paymentType.id}" value="${paymentType.htmlValue}">
 						                    ${paymentType.label}
 					                    </option>

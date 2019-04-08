@@ -109,6 +109,9 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
     var billingFormErrors = {};
     var creditCardErrors = {};
     var viewData = {};
+    if(empty(session.forms.billing.creditCardFields.securityCode.value)){
+    	session.forms.billing.creditCardFields.securityCode.value = request.httpParameterMap.securityCode.value;
+    }
     
     if(paymentForm.paymentMethod.value == Resource.msg('paymentmethodname.paypal','cybersource',null)) {
     	handlePayPal(req, res, next);
@@ -117,45 +120,69 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
     
     //Secure Acceptance Flex Microform
 	if(CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null) && !req.form.storedPaymentUUID) {
-		var flexForm = new Object();
-		   flexForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
-		   flexForm.expirationMonth = server.forms.getForm('billing').creditCardFields.expirationMonth;
-		   flexForm.expirationYear = server.forms.getForm('billing').creditCardFields.expirationYear;
-		   flexForm.securityCode = server.forms.getForm('billing').creditCardFields.securityCode;
-		   flexForm.email = server.forms.getForm('billing').creditCardFields.email;
-		   flexForm.phone = server.forms.getForm('billing').creditCardFields.phone;
-		if(server.forms.getForm('billing').creditCardFields.flexresponse.value) {
-			var flexResponse = server.forms.getForm('billing').creditCardFields.flexresponse.value;
+		if(paymentForm.creditCardFields.flexresponse.value) {
+			var flexResponse = paymentForm.creditCardFields.flexresponse.value;
 			var flexString = JSON.parse(flexResponse);
 			var keyId = flexString.keyId;
 			paymentForm.creditCardFields.cardNumber.value = flexString.maskedPan;
 			paymentForm.creditCardFields.cardType.value = flexString.cardType;
 		}
 	}
-	
-	if(CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) || CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null)) {	    
+	if(((paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) && (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) || CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null)))) || paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null)) {	    
 	    var SAForm = new Object();
-		    SAForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
-		    SAForm.email = server.forms.getForm('billing').creditCardFields.email;
-		    SAForm.phone = server.forms.getForm('billing').creditCardFields.phone;
+		    SAForm.paymentMethod = paymentForm.paymentMethod;
+		    SAForm.email = paymentForm.creditCardFields.email;
+		    SAForm.phone = paymentForm.creditCardFields.phone;
+	}
+	//BankTransfer
+	if(paymentMethodID == Resource.msg('paymentmethodname.idl','cybersource',null) ||
+			paymentMethodID == Resource.msg('paymentmethodname.sof','cybersource',null) ||
+			paymentMethodID == Resource.msg('paymentmethodname.eps','cybersource',null) ||
+			paymentMethodID == Resource.msg('paymentmethodname.gpy','cybersource',null) ||
+			paymentMethodID == Resource.msg('paymentmethodname.mch','cybersource',null)
+	) {
+		    	var BankTransferForm = new Object();
+		    	if(paymentMethodID == Resource.msg('paymentmethodname.eps','cybersource',null) ) {
+					BankTransferForm.epsBic = server.forms.getForm('billing').epsBic;	
+				} else if (paymentMethodID == Resource.msg('paymentmethodname.gpy','cybersource',null)) {
+					BankTransferForm.giropayBic = server.forms.getForm('billing').giropayBic;	
+				} else if (paymentMethodID == Resource.msg('paymentmethodname.idl','cybersource',null)) {
+					BankTransferForm.bankListSelection = server.forms.getForm('billing').bankListSelection;	
+				}
+		    	BankTransferForm.paymentMethod = server.forms.getForm('billing').paymentMethod;
+		    	BankTransferForm.email = server.forms.getForm('billing').creditCardFields.email;
+				BankTransferForm.phone = server.forms.getForm('billing').creditCardFields.phone;
+	} else{
+		delete paymentForm.epsBic;
+		delete paymentForm.giropayBic;
+		delete paymentForm.bankListSelection;
 	}
     // verify billing form data
     billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
     if('paypalBillingFields' in paymentForm)
     	delete paymentForm.paypalBillingFields;
 	    if(!req.form.storedPaymentUUID) {
-	    	if(paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null)) {
-	    		if(CsSAType == null || CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)) {
+	    	if(paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) 
+	    			&& (CsSAType == null 
+	    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)
+	    			|| CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null))) {
 				// verify credit card form data
 	    			creditCardErrors = COHelpers.validateCreditCard(paymentForm);
-	    		} else if (CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null)) {
-	    			creditCardErrors = COHelpers.validateCreditCard(flexForm);
-	    		} else {
+	    		
+	    		}  else if ((paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) 
+	    				&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
+	    				|| CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null))) 
+	    				|| paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null)) {
 	    		// verify payment method, email and phone
 	    			creditCardErrors = COHelpers.validateCreditCard(SAForm);
-	    		}
+	    		} else if (paymentMethodID == Resource.msg('paymentmethodname.idl','cybersource',null) ||
+	    				paymentMethodID == Resource.msg('paymentmethodname.sof','cybersource',null) ||
+	    				paymentMethodID == Resource.msg('paymentmethodname.eps','cybersource',null) ||
+	    				paymentMethodID == Resource.msg('paymentmethodname.gpy','cybersource',null) ||
+	    				paymentMethodID == Resource.msg('paymentmethodname.mch','cybersource',null)) {
+		    				creditCardErrors = COHelpers.validateCreditCard(BankTransferForm);
+		    	}
 	    	}
-	    }
     
 	    if (Object.keys(creditCardErrors).length || Object.keys(billingFormErrors).length) {
 	        // respond with form data and errors
@@ -368,6 +395,9 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	                && req.currentCustomer.raw.registered
 	                && billingData.saveCard
 	                && (paymentMethodID === 'CREDIT_CARD')
+	                && (CsSAType == null 
+		                    || CsSAType.equals(Resource.msg('cssatype.SA_FLEX','cybersource',null))
+	                   )
 	            ) {
 	                var customer = CustomerMgr.getCustomerByCustomerNumber(
 	                    req.currentCustomer.profile.customerNo
@@ -458,7 +488,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     var Transaction = require('dw/system/Transaction');
     var URLUtils = require('dw/web/URLUtils');
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-
+    var Site = require('dw/system/Site');
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var currentBasket = BasketMgr.getCurrentBasket();
 
     if (!currentBasket) {
@@ -564,16 +595,36 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     // Handles payment authorization
     var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
     if (handlePaymentResult.error) {
-        res.json({
-            error: true,
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
+    	
+    	if(order.paymentInstrument.paymentMethod != null 
+    			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
+    	    			&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
+    	    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
+    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
+    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
+    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
+    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
+    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
+    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+    	 ) {
+    		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+    	 } else {
+	        res.json({
+	            error: true,
+	            errorMessage: Resource.msg('error.technical', 'checkout', null)
+	        });
+    	 }
         return next();
-    } else if (handlePaymentResult.returnToPage){
+    }  else if (handlePaymentResult.returnToPage){
     	res.render('secureacceptance/secureAcceptanceIframeSummmary', {
-    		 Order : handlePaymentResult.order
+   		 Order : handlePaymentResult.order
 		});
-        return next();
+       return next();
+   } else if (handlePaymentResult.intermediate){
+	   res.render(handlePaymentResult.renderViewPath, {
+		   alipayReturnUrl : handlePaymentResult.alipayReturnUrl	
+	   });
+       return next();
     } else if (handlePaymentResult.intermediateSA) {
     	res.render(handlePaymentResult.renderViewPath, {
 			 Data:handlePaymentResult.data, FormAction:handlePaymentResult.formAction
@@ -584,23 +635,59 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     		requestData:handlePaymentResult.data, formAction:handlePaymentResult.formAction, cardObject:handlePaymentResult.cardObject
 		});
     	return next();
-   } else if (handlePaymentResult.declined) {
+   }
+    else if (handlePaymentResult.redirection) {
+    	res.redirect(handlePaymentResult.redirectionURL);
+    	return next();
+   }
+    else if (handlePaymentResult.declined) {
     	 session.custom.SkipTaxCalculation = false;
     	 Transaction.wrap(function () { OrderMgr.failOrder(order); });
+
+    	 if(order.paymentInstrument.paymentMethod != null 
+    			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
+    			&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
+    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
+    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
+    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
+    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
+    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
+    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
+    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+    	 ){
+    		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
+    	 } else {
     	 res.json({
              error: true,
              errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
          });
+    	 }
          return next();
-    } else if (handlePaymentResult.missingPaymentInfo) {
-   	     session.custom.SkipTaxCalculation = false;
+    } 
+	else if (handlePaymentResult.missingPaymentInfo) {
+   	    session.custom.SkipTaxCalculation = false;
 	   	 Transaction.wrap(function () { OrderMgr.failOrder(order); });
-	 	 res.json({
-	          error: true,
-	            errorMessage: Resource.msg('error.technical', 'checkout', null)
-	      });
+
+	   	 if(order.paymentInstrument.paymentMethod != null 
+	    			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
+	    	    			&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
+	    	    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
+	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
+	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
+	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
+	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
+	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
+	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+    	 ) {
+    		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
+    	 } else {
+		 	 res.json({
+		          error: true,
+		            errorMessage: Resource.msg('error.technical', 'checkout', null)
+		      });
+    	 }
 	 	 return next();
-    } else if(handlePaymentResult.rejected) {
+    } else if (handlePaymentResult.rejected) {
     	Transaction.wrap(function () { OrderMgr.failOrder(order); });
     	currentBasket = BasketMgr.getCurrentBasket();
     	Transaction.wrap(function () {
@@ -609,11 +696,10 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     	res.json({
 	          error: true,
 	          cartError : true,
-	          redirectUrl: URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', dw.web.Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString()
+	          redirectUrl: URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString()
 	      });
 	    return next();
-    }
-    else if (handlePaymentResult.process3DRedirection){
+    } else if (handlePaymentResult.process3DRedirection){
         res.json({
         	error: false,
         	continueUrl: URLUtils.url('CheckoutServices-PayerAuthentication').toString()
@@ -791,4 +877,267 @@ function handlePayPal(req, res, next) {
 	}
 	return;
 }
+
+
+/**
+ * Update shipping details in cart object
+ */
+function shippingUpdate(cart,shippingdetails) {
+	var shipment = cart.defaultShipment;
+	if (!empty(shipment.getShippingAddress())) {
+		return {success:true};
+	}
+	try {
+		var mobileAdaptor = require('*/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter');
+		var result = mobileAdaptor.UpdateShipping(shippingdetails);
+		return {success:true};
+	} catch(err) {
+		logger.error('Error creating shipment from Google pay address: {0}', err.message);
+		return {error:true, errorMsg:err.message};
+	}
+};
+
+server.post('GetGooglePayToken', function (req, res, next) {
+	    var Encoding = require('dw/crypto/Encoding');
+	    var repsonse = JSON.parse(request.httpParameterMap.paymentData); 
+	
+	    var paymentForm = server.forms.getForm('billing');
+
+	    var BasketMgr = require('dw/order/BasketMgr');
+	    var cart = BasketMgr.getCurrentBasket();
+	    var shippingdetails = repsonse.shippingAddress;//add condition for only cart
+	    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	    var URLUtils = require('dw/web/URLUtils');
+		var BasketMgr = require('dw/order/BasketMgr');
+		var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+		var mobileAdaptor = require('*/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter');
+		var cart = BasketMgr.getCurrentBasket();
+		var Transaction = require('dw/system/Transaction');
+		var logger = require('dw/system/Logger');
+		logger.error("Error in google Checkout payment: problem in billing details"+repsonse);
+		var result = mobileAdaptor.UpdateBilling(cart,repsonse.cardInfo,repsonse.email);
+		// call the call back method for initSession Service/check Status service
+		// only if shipping from cart
+		if(result.success){
+			
+			var result = shippingUpdate(cart,shippingdetails);
+			if (result.success) {
+				var cart = BasketMgr.getCurrentBasket();
+				//calculate cart and redirect to summary page
+			    COHelpers.recalculateBasket(cart);
+			    var StringUtils = require('dw/util/StringUtils');
+			    var GPtoken = repsonse.paymentMethodToken.token;
+			   session.privacy.encryptedDataGP = Encoding.toBase64(new dw.util.Bytes(GPtoken));
+			}else {
+			   logger.error("Error in google Checkout payment: problem in billing details");
+			   googlePayCheckoutError(req, res, next);
+			}
+			
+		     if(request.httpParameterMap.paymentData != null){				
+		    	res.json({
+			    	status:'success'
+			    });
+			    return next();
+			}
+		
+		}else {
+			logger.error("Error in google Checkout payment: problem in billing details");
+			googlePayCheckoutError(req, res, next);
+		}
+	
+});
+
+/**
+ * GooglePay Checkout returned error back to merchant site, further return user back to user journey starting page, either cart or billing page
+ */
+function googlePayCheckoutError(req, res, next) {
+	var BasketMgr = require('dw/order/BasketMgr');
+	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+	var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
+	var cart = BasketMgr.getCurrentBasket();
+	
+	var paymentForm = server.forms.getForm('billing');
+	
+	//basket uuid check for security handling
+	if (empty(cart.getPaymentInstruments(CybersourceConstants.METHOD_GooglePay))) {
+        COHelpers.recalculateBasket(cart);
+
+		var Status = require('dw/system/Status');
+		res.render('cart/cart', {
+			cart: cart,
+			RegistrationStatus: false,
+			BasketStatus: new Status(Status.ERROR, "GoogleCheckoutError")
+		});
+	} else {
+		Transaction.wrap(function () {
+	    	 CommonHelper.removeExistingPaymentInstruments(cart);
+		});
+        COHelpers.recalculateBasket(cart);
+		res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'VisaCheckoutError', true));
+	}
+	return next();
+}
+
+server.post('SubmitPaymentGP' ,function (req, res, next) {
+	var Site = require('dw/system/Site');
+	var Encoding = require('dw/crypto/Encoding');
+	var Resource = require('dw/web/Resource');
+	var paymentForm = server.forms.getForm('billing');
+	var paymentMethodID = server.forms.getForm('billing').paymentMethod.value; 
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+    var billingFormErrors = {};
+    var creditCardErrors = {};
+    var viewData = {};
+    var BasketMgr = require('dw/order/BasketMgr');
+	var paymentData = JSON.parse(request.httpParameterMap.googletoken);
+	var GPtoken = paymentData.paymentMethodToken.token;
+	session.privacy.encryptedDataGP = Encoding.toBase64(new dw.util.Bytes(GPtoken));
+
+    var cart = BasketMgr.getCurrentBasket();
+   	
+    billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
+	
+	if (Object.keys(billingFormErrors).length) {
+	        // respond with form data and errors
+	        res.json({
+	            form: paymentForm,
+	            fieldErrors: [billingFormErrors],
+	            serverErrors: [],
+	            error: true
+	        });
+	    }else {
+	        viewData.address = {
+	            firstName: { value: paymentForm.addressFields.firstName.value },
+	            lastName: { value: paymentForm.addressFields.lastName.value },
+	            address1: { value: paymentForm.addressFields.address1.value },
+	            address2: { value: paymentForm.addressFields.address2.value },
+	            city: { value: paymentForm.addressFields.city.value },
+	            postalCode: { value: paymentForm.addressFields.postalCode.value },
+	            countryCode: { value: paymentForm.addressFields.country.value }
+	        };
+	
+	        if (Object.prototype.hasOwnProperty
+	            .call(paymentForm.addressFields, 'states')) {
+	            viewData.address.stateCode =
+	                { value: paymentForm.addressFields.states.stateCode.value };
+	        }
+	
+	        viewData.paymentMethod = {
+	            value: paymentForm.paymentMethod.value,
+	            htmlName: paymentForm.paymentMethod.value
+	        };
+			
+	        viewData.email = {
+	            value: paymentForm.creditCardFields.email.value
+	        };
+	
+	        viewData.phone = { value: paymentForm.creditCardFields.phone.value };
+	
+	        viewData.saveCard = paymentForm.creditCardFields.saveCard.checked;
+	
+	        res.setViewData(viewData);
+	
+	        this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
+	            var BasketMgr = require('dw/order/BasketMgr');
+	            var CustomerMgr = require('dw/customer/CustomerMgr');
+	            var HookMgr = require('dw/system/HookMgr');
+	            var Resource = require('dw/web/Resource');
+	            var PaymentMgr = require('dw/order/PaymentMgr');
+	            var Transaction = require('dw/system/Transaction');
+	            var AccountModel = require('*/cartridge/models/account');
+	            var OrderModel = require('*/cartridge/models/order');
+	            var URLUtils = require('dw/web/URLUtils');
+	            var Locale = require('dw/util/Locale');
+	            var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+	            var currentBasket = BasketMgr.getCurrentBasket();
+	            var billingData = res.getViewData();
+	
+	            if (!currentBasket) {
+	                delete billingData.paymentInformation;
+	
+	                res.json({
+	                    error: true,
+	                    cartError: true,
+	                    fieldErrors: [],
+	                    serverErrors: [],
+	                    redirectUrl: URLUtils.url('Cart-Show').toString()
+	                });
+	                return;
+	            }
+	
+	            var billingAddress = currentBasket.billingAddress;
+	            var billingForm = server.forms.getForm('billing');
+	            var paymentMethodID = billingData.paymentMethod.value;
+	            var result;
+	
+	            billingForm.creditCardFields.cardNumber.htmlValue = '';
+	            billingForm.creditCardFields.securityCode.htmlValue = '';
+	
+	            Transaction.wrap(function () {
+	                if (!billingAddress) {
+	                    billingAddress = currentBasket.createBillingAddress();
+	                }
+	
+	                billingAddress.setFirstName(billingData.address.firstName.value);
+	                billingAddress.setLastName(billingData.address.lastName.value);
+	                billingAddress.setAddress1(billingData.address.address1.value);
+	                billingAddress.setAddress2(billingData.address.address2.value);
+	                billingAddress.setCity(billingData.address.city.value);
+	                billingAddress.setPostalCode(billingData.address.postalCode.value);
+	                if (Object.prototype.hasOwnProperty.call(billingData.address, 'stateCode')) {
+	                    billingAddress.setStateCode(billingData.address.stateCode.value);
+	                }
+	                billingAddress.setCountryCode(billingData.address.countryCode.value);
+	
+	                if (billingData.storedPaymentUUID) {
+	                    billingAddress.setPhone(req.currentCustomer.profile.phone);
+	                    currentBasket.setCustomerEmail(req.currentCustomer.profile.email);
+	                } else {
+	                    billingAddress.setPhone(billingData.phone.value);
+	                    currentBasket.setCustomerEmail(billingData.email.value);
+	                }
+	            });
+	
+	
+	            var processor = PaymentMgr.getPaymentMethod(paymentMethodID).getPaymentProcessor();
+	
+			//	Add hook to call google payment
+				var mobileAdaptor = require('*/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter');
+				var result = mobileAdaptor.UpdateBilling(currentBasket,paymentData.cardInfo,paymentData.email);
+	
+	            // Calculate the basket
+	            Transaction.wrap(function () {
+	                basketCalculationHelpers.calculateTotals(currentBasket);
+	            });
+	
+	            // Re-calculate the payments.
+	            var calculatedPaymentTransaction = COHelpers.calculatePaymentTransaction(currentBasket);
+	
+	            if (calculatedPaymentTransaction.error) {
+	                res.json({
+	                    form: paymentForm,
+	                    fieldErrors: [],
+	                    serverErrors: [Resource.msg('error.technical', 'checkout', null)],
+	                    error: true
+	                });
+	                return;
+	            }
+	            
+	            // return back google 
+	            if(result.success){
+		            if(request.httpParameterMap.paymentData != null){				
+			    	res.json({
+	                error: false
+	            });
+			    	
+					}
+		            
+	            }
+	           
+	        });
+		}
+		return next();
+});
+
 module.exports = server.exports();

@@ -6,7 +6,7 @@
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addJs('/js/checkout.js');
-        assets.addCss('/css/checkout/checkout.css');
+		assets.addCss('/css/checkout/checkout.css');
     </isscript>
 
     <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
@@ -56,10 +56,20 @@
 				<iselseif condition="${pdict.PlaceOrderError != null}">
 					<div class="error-form">${Resource.msg(pdict.PlaceOrderError.code,'checkout',null)}</div>
 			    </isif>
-			    
+
+                <iscomment>Place Order Error Display </iscomment>
+                <isif condition="${'PlaceOrderError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.PlaceOrderError.stringValue !== null}">
+					<div class="alert alert-danger PlaceOrderError"><isprint value="${pdict.CurrentHttpParameterMap.PlaceOrderError}"/></div>
+				</isif>
+				
 				<iscomment>Payer Auth Error Display </iscomment>
                 <isif condition="${'payerAuthError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.payerAuthError.stringValue !== null}">
 					<div class="alert alert-danger payerAuth"><isprint value="${pdict.CurrentHttpParameterMap.payerAuthError}"/></div>
+				</isif>
+				
+				<iscomment>Order Error Display </iscomment>
+				<isif condition="${'placeOrderError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.placeOrderError.stringValue !== null}">
+					<div class="alert alert-danger payerAuth"><isprint value="${pdict.CurrentHttpParameterMap.placeOrderError}"/></div>
 				</isif>
 				
                 <!-- Step 1: Shipping -->
@@ -96,8 +106,9 @@
                 <div class="row">
                     <div class="col-12 next-step-button">
                         <div>
-                            <button class="btn btn-primary btn-block submit-shipping" type="submit" name="submit" value="submit-shipping" <isif condition="${pdict.order.usingMultiShipping && !pdict.order.shippable}">disabled</isif>> ${Resource.msg('button.next.payment', 'checkout', null)}
+                            <button class="btn btn-primary btn-block submit-shipping" data-dav='${dw.system.Site.current.preferences.custom.CsDavEnable.value}' data-url="${URLUtils.url('CYBAddressVerification-VerifyAddress')}" type="submit" name="submit" value="submit-shipping" <isif condition="${pdict.order.usingMultiShipping && !pdict.order.shippable}">disabled</isif>> ${Resource.msg('button.next.payment', 'checkout', null)}
                             </button>
+
                            	<button class="btn btn-primary btn-block submit-payment ${pdict.paidWithPayPal ? 'checkout-hidden' : ''}" type="submit" name="submit" value="submit-payment">
                                	${Resource.msg('button.next.place.order', 'checkout', null)}
                            	</button>
@@ -139,5 +150,16 @@
         </div>
     </div>
     <isinclude template="checkout/shipping/shippingAddressTemplate" />
+    
+    <div class="DAVModalResourceStrings" 
+	     data-modalheader="${Resource.msg('dav.modalheader','cybersource',null)}"
+	     data-originaladdress="${Resource.msg('dav.originaladdress','cybersource',null)}" 
+	     data-useoriginaladdress="${Resource.msg('dav.useoriginaladdress','cybersource',null)}"
+	     data-standardaddress="${Resource.msg('dav.standardaddress','cybersource',null)}" 
+	     data-usestandardaddress="${Resource.msg('dav.usestandardaddress','cybersource',null)}"
+	     data-addressnotverified="${Resource.msg('dav.addressnotverified','cybersource',null)}"
+	     data-continuewithaddress="${Resource.msg('dav.continuewithaddress','cybersource',null)}">
+     </div>
+    
 
 </isdecorate>

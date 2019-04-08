@@ -23,6 +23,14 @@
         {
             "name": "app.payment.processor.paypal_credit",
             "script": "./cartridge/scripts/hooks/payment/processor/PAYPAL_CREDIT"
-        }
+		},
+		{
+            "name": "app.payment.processor.cybersource_alipay",
+            "script": "./cartridge/scripts/hooks/payment/processor/cybersource_alipay"
+        },
+		{
+			"name": "app.payment.processor.bank_transfer",
+			"script": "./cartridge/scripts/hooks/payment/processor/bank_transfer"
+		}
     ]
 }

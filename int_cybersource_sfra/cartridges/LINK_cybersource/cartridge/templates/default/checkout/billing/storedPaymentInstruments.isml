@@ -39,13 +39,9 @@
 </isloop>
 
 <iscomment> Cybersource Secure Acceptance </iscomment>
-<isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
-
 <div class="row">
     <div class="col-12">
-        <div class="form-group
-            <isif condition=${creditFields.selectedCardID.mandatory === true}>required</isif>
-            ${creditFields.selectedCardID.htmlName}">
+        <div class="form-group">
             <div class="selectedCardID-wrapper">
                 <input type="hidden" class="form-control selectedCardID" id="selectedCardID"
                     value="" name="dwfrm_billing_creditCardFields_selectedCardID" >

@@ -44,7 +44,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'RLFEE7Z4';
+        return 'B6AR3CUQ';
     },
 
     getDeveloperID: function () {
@@ -1092,12 +1092,39 @@ var CybersourceHelper = {
         request.paymentSolution = paymentType;
         request.ccCaptureService.run = true;
     },
+	
     ccCreditService : function(request, merchantRefCode, requestId, paymentType) {
     	var ccCreditService = new CybersourceHelper.csReference.CCCreditService();
         ccCreditService.captureRequestID = requestId;
         request.ccCreditService = ccCreditService;
         request.paymentSolution = paymentType;
         request.ccCreditService.run = true;
+    },
+
+    /** ***************************************************************************
+	 * Name: aliPayRefund/CreditService
+	 * Description: Initiate the Refund/Credit for transactionId .
+	 *	5446045635766630804009
+	 ****************************************************************************/
+    aliPayRefundService: function (request, requestId, paymentType) {
+        var aliPayRefundService = new CybersourceHelper.csReference.APRefundService();
+        aliPayRefundService.apInitiateRequestID = requestId;
+        request.apRefundService = aliPayRefundService;
+        request.apPaymentType = paymentType;
+        request.apRefundService.run = true;
+    },
+    
+    /** ***************************************************************************
+	 * Name: banktransferRefundService/CreditService
+	 * Description: Initiate the Refund/Credit for transactionId .
+	 *
+	 ****************************************************************************/
+    banktransferRefundService : function (request, merchantRefCode, requestId, paymentType) {
+        var banktransferRefundService = new CybersourceHelper.csReference.APRefundService();
+        banktransferRefundService.refundRequestID = requestId;
+        request.apRefundService = banktransferRefundService;
+        request.apPaymentType = paymentType;
+        request.apRefundService.run = true;
     }
 };
 
@@ -1114,7 +1141,7 @@ function __setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '19.1.0';
+    request.clientLibraryVersion = '19.2.0';
     request.clientEnvironment = 'Linux';
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;

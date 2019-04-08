@@ -83,7 +83,7 @@ exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) 
 
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 	if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) && 
-			(CsSAType == null || CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX))) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
+			(CsSAType == null || CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX))) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) || paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
         var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
         return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
     } else {

@@ -21,9 +21,17 @@ module.exports = function () {
             $.get(url, function (data) {
                 $('.minicart .popover').empty();
                 $('.minicart .popover').append(data);
+
                 var isPaypalEnabled = $('#paypal_enabled').length>0 && document.getElementById("paypal_enabled").value == 'true' ? true : false;
-                if(isPaypalEnabled)
-					paypalhelper.paypalMini();
+                var isGooglePayEnabled = $('#isGooglePayEnabled').length>0 && $('#isGooglePayEnabled').val() == 'true' ? true : false;
+                
+                if(isPaypalEnabled) {
+                    paypalhelper.paypalMini();
+                }
+                if(isGooglePayEnabled){
+					onGooglePayLoaded();
+                }
+                
                 $.spinner().stop();
             });
         }

@@ -58,7 +58,91 @@
         <enabled-flag>false</enabled-flag>
         <processor-id>CYBERSOURCE_CREDIT</processor-id>
     </payment-method>
+	
+	<payment-method method-id="DW_GOOGLE_PAY">
+        <name xml:lang="x-default">Google Pay</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>CYBERSOURCE_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
+    </payment-method>
 
+	<payment-method method-id="ALIPAY">
+        <name xml:lang="x-default">Alipay</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>CYBERSOURCE_ALIPAY</processor-id>
+    </payment-method>
+    
+    
+    <payment-method method-id="SOF">
+        <name xml:lang="x-default">SOFORT</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="paymentType">SOF</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+    
+    <payment-method method-id="MCH">
+        <name xml:lang="x-default">BANCONTACT</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="paymentType">MCH</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+    
+    <payment-method method-id="IDL">
+        <name xml:lang="x-default">IDEAL Bank Transfer</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">true</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default">sapient_nitro_1</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="paymentType">IDL</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+    
+    <payment-method method-id="EPS">
+        <name xml:lang="x-default">EPS</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">true</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="paymentType">EPS</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+    
+    <payment-method method-id="GPY">
+        <name xml:lang="x-default">GIROPAY</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>BANK_TRANSFER</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">true</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="paymentType">GPY</custom-attribute>
+        </custom-attributes>
+    </payment-method>
+	
     <payment-card card-type="JCB">
         <name xml:lang="x-default">JCB Card</name>
         <description xml:lang="x-default">JCB</description>
@@ -259,5 +343,8 @@
             <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
         </custom-attributes>
     </payment-card>
+	
+	
+	
 
 </payment-settings>

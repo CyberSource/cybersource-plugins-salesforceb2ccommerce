@@ -175,7 +175,13 @@ function updatePaymentInstrumentVisaDecrypt(cart, decryptedPaymentData, visaChec
 
     Transaction.wrap(function () {
         var instrument = cart.createPaymentInstrument(CybersourceConstants.METHOD_VISA_CHECKOUT, cart.totalGrossPrice);
-        var billingAddress = cart.createBillingAddress();
+        var billingAddress;
+        var vcCurrentPage = session.privacy.cyb_CurrentPage;
+		if(vcCurrentPage != 'CybBilling') {
+           billingAddress = cart.createBillingAddress();
+		} else {
+           billingAddress = cart.getBillingAddress();
+		}
         // Validate our payment instrument was previously properly created
         if (instrument == null || instrument.paymentMethod != CybersourceConstants.METHOD_VISA_CHECKOUT) {
             throw new Error("Invalid payment instrument for Visa Checkout");
@@ -195,7 +201,7 @@ function updatePaymentInstrumentVisaDecrypt(cart, decryptedPaymentData, visaChec
                 cardType = "Discover";
                 break;
         }
-        session.forms.billing.creditCardFields.cardType.value = cardType;
+       
         // Populate payment instrument values
         instrument.setCreditCardType(cardType);
         instrument.setCreditCardHolder(visa.VCNameOnCard);
@@ -397,6 +403,58 @@ function removeDuplicates(params) {
     }
 }
 
+function updatePaymentInstrumentGP(cart,cardInfo,email) {
+    // Retrieve the inputs
+    
+    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+
+    Transaction.wrap(function () {
+    	
+        var instrument = cart.createPaymentInstrument(CybersourceConstants.METHOD_GooglePay, cart.totalGrossPrice);
+        
+        // Validate our payment instrument was previously properly created
+        if (instrument == null || instrument.paymentMethod != CybersourceConstants.METHOD_GooglePay) {
+            throw new Error("Invalid payment instrument for Google Pay Checkout");
+        }
+        var cardType;
+        switch (cardInfo.cardNetwork) {
+            case "VISA":
+                cardType = "Visa";
+                break;
+            case "MASTERCARD":
+                cardType = "MasterCard";
+                break;
+            case "AMEX":
+                cardType = "Amex";
+                break;
+            case "DISCOVER":
+                cardType = "Discover";
+                break;
+        }
+        session.forms.billing.creditCardFields.cardType.value = cardType;
+        // Populate payment instrument values
+        instrument.setCreditCardType(cardType);
+        if(false){// add condition only for billing address name in google response
+        instrument.setCreditCardHolder(cardInfo.billingAddress.name);
+        }
+        instrument.setCreditCardNumber("************" + cardInfo.cardDetails);
+       
+        // Populate the billing address
+        var MobilePaymentHelper = require('../mobilepayments/helper/MobilePaymentsHelper');
+        var billingAddress = cart.billingAddress;
+     
+	     if (billingAddress == null) {
+	         billingAddress = cart.createBillingAddress();
+	         billingAddress = MobilePaymentHelper.CreateLineItemCtnrBillingAddress(billingAddress,cardInfo.billingAddress);
+	          if (!billingAddress.success) { return billingAddress; }
+	     }
+        
+        // set the email
+        cart.customerEmail = email;
+    });
+}
+
+
 
 module.exports = {
     UpdatePaymentTransactionCardCapture: UpdatePaymentTransactionCardCapture,
@@ -410,5 +468,6 @@ module.exports = {
     updatePaymentInstumenSACard: updatePaymentInstumenSACard,
     UpdateOrderBillingShippingDetails: UpdateOrderBillingShippingDetails,
     mobilePaymentOrderUpdate: MobilePaymentOrderUpdate,
-    removeDuplicates: removeDuplicates
+    removeDuplicates: removeDuplicates,
+    updatePaymentInstrumentGP:updatePaymentInstrumentGP
 };

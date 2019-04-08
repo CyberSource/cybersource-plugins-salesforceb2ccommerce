@@ -1,0 +1,52 @@
+<!--- TEMPLATENAME: paypalButtons.isml --->
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<isscript>
+    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+ </isscript>
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  
+				dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+	<div class="row">
+		<div class="col-12 checkout-continue">
+			<input type="hidden" value="${pdict.currentLocale}" name="currentLocale" id="currentLocale">
+			<isif condition="${miniCart}">
+			    <isset name="paypalClass" value="paypal-button-container-mini" scope="page"/>
+			<iselse/>
+			    <isset name="paypalClass" value="paypal-button-container-cart1" scope="page"/>
+			</isif>
+			<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && !empty(pdict.CurrentCustomer.profile) && !empty(pdict.CurrentCustomer.profile.custom.billingAgreementID)}"> 
+			    <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Paypal Express"  class="billingAgreementExpressCheckout" />
+			<iselse/>
+			    <div class="${paypalClass}"></div>
+			</isif>                 
+		</div>
+	</div>
+</isif>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('cybVisaButtonOnCart')}">
+	<div class="row">
+		<div class="col-12 checkout-continue">
+		        <!--  To display Visa Checkout Button -->
+	        <isif condition="${miniCart}" >
+	            <isinclude url="${URLUtils.url('CYBVisaCheckout-Button','buttonsource','minicart')}"/>
+	        	  <isinclude url="${URLUtils.url('CYBVisaCheckout-InitializeVisaToken')}"/>
+	        <iselse>
+	              <isinclude url="${URLUtils.url('CYBVisaCheckout-Button')}"/>
+	        </isif>
+	           
+		        <!--  END Visa Checkout code -->
+		</div>
+	</div>
+</isif>
+ 
+<isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
+<isif condition="${isGooglePayEnabled}"> 
+<div class="row">
+	<div class="col-12 checkout-continue">
+		<isif condition="${miniCart}" >
+			<input type="hidden" id="carttotal" value="${pdict.totals.subTotal}" />
+		<iselse>
+			<input type="hidden" id="carttotal" value="${pdict.totals.grandTotal}" />
+		</isif>	
+		<isinclude template="checkout/billing/paymentOptions/googleButton"/> 
+	</div>
+</div>
+</isif>

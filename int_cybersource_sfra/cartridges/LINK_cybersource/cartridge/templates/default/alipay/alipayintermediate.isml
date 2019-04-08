@@ -1,0 +1,18 @@
+<iscomment>
+	This template will submit the form on page onload
+</iscomment>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('alipayintermediate.title','cybersource',null)}</title>
+<h1 class="title-center">${Resource.msg('alipaysimulator.action','cybersource',null)}</h1>
+</head>
+<body class="cyb_alipayintermediate">
+	<form action="${pdict.alipayReturnUrl}" method="post" name="RedirectForm" target="_parent"></form>
+</body></html>

@@ -2,4 +2,4 @@
 	This template will populate the error log 
 </iscomment>
 Here is the log<br/>
-<isprint value="${pdict.Log}">
+<isprint value="${pdict.log}"> 

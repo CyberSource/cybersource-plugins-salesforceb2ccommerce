@@ -100,7 +100,8 @@ server.post(
 	 	
 		if(result.success) {
 			session.forms.billing.addressFields.copyFrom(cart.getBillingAddress());
-        	session.forms.billing.addressFields.states.copyFrom(cart.getBillingAddress());
+			if('states' in session.forms.billing.addressFields)
+        		session.forms.billing.addressFields.states.copyFrom(cart.getBillingAddress());
 			if('paypalShippingIncomplete' in session.privacy && session.privacy.paypalShippingIncomplete) {
 				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'shipping'));
 				return next();

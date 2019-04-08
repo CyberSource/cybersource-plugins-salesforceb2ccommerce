@@ -1,0 +1,71 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="/components/modules" sf-toolkit="off" />
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--[if gt IE 9]><!-->
+            <isinclude sf-toolkit="off" template="/common/scripts" />
+        <!--<![endif]-->
+        <isinclude template="/common/htmlHead" />
+        <isactivedatahead/>
+    </head>
+    <body>
+        <div class="page" data-action="${pdict.action}" data-querystring="${pdict.queryString}" >
+            <isinclude template="/components/header/pageHeader" />
+            <isreplace/>
+            <isinclude template="/components/footer/pageFooter" />
+        </div>
+        <div class="error-messaging"></div>
+        <div class="modal-background"></div>
+        <iscontentasset aid="cookie_hint" />
+
+        <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
+        <isif condition="${isGooglePayEnabled}"> 
+            <input type="hidden" name="isGooglePayEnabled" id="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}"/>
+        </isif>
+
+        <isif condition="${((dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  
+        				dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true) || 
+        				(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_GooglePay).isActive() && isGooglePayEnabled))}">
+            <script type="text/javascript" src="${URLUtils.staticURL('/js/minicartbuttons.js')}"></script>
+        </isif>
+        <!--[if lt IE 10]>
+            <isinclude sf-toolkit="off" template="/common/scripts" />
+        <![endif]-->
+        <isscript>
+            var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+        </isscript>
+            <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+            <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+        </isif>
+		<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+        <isif condition="${isGooglePayEnabled}"> 
+            <input type="hidden" name="googlePayMerchantID" id="googlePayMerchantID"  value="${dw.system.Site.getCurrent().getCustomPreferenceValue('googlePayMerchantID')}"/>
+            <input type="hidden" name="googlePaygatewayMerchantId" id="googlePaygatewayMerchantId" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsMerchantId')}" />
+            
+            <isif condition="${pdict.currentStage == null}" >
+                <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+                <script src="${URLUtils.staticURL('/custom/js/googlepay.js')}"></script>
+                
+                <script>
+                    var googlepayvariables = {
+                        currencyCode: "${session.getCurrency().getCurrencyCode()}",
+                        totalPriceStatus: 'FINAL',
+                        sessionCallBack : "${dw.web.URLUtils.url('CheckoutServices-GetGooglePayToken')}",
+                        returnURL : "${dw.web.URLUtils.https('Checkout-Begin', 'stage', 'placeOrder')}",
+                        cartURL : "${dw.web.URLUtils.https('Cart-Show')}"
+                    }	
+                    window.googlepayval = googlepayvariables;
+                </script>
+            </isif>
+        </isif>
+        
+        <iscomment>Visa Chekout</iscomment>
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('cybVisaButtonOnCart') && dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive()}">
+		 	<isinclude url="${URLUtils.url('CYBVisaCheckout-InitializeVisaToken')}"/>
+		</isif>
+        <isinclude url="${URLUtils.url('ConsentTracking-Check')}"/>
+    </body>
+
+</html>

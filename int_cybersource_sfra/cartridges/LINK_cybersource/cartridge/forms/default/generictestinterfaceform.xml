@@ -9,11 +9,14 @@
 	<field formid="paymenttype" type="string" mandatory="true" binding="paymenttype" max-length="50" />
 	<field formid="refundpaymenttype" type="string" mandatory="true" binding="refundpaymenttype" max-length="50" >
 		<options>
+			<option optionid="CreditCard" value="CC" label="CREDITCARD"/>
 			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
-			<option optionid="Klarna" value="KLI" label="KLARNA"/>
+			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
+			<option optionid="AliPay" value="APY" label="ALIPAY"/>
 			<option optionid="Bancontact" value="MCH" label="BANCONTACT"/>
 			<option optionid="Ideal" value="IDL" label="IDEAL"/>
 			<option optionid="Sofort" value="SOF" label="SOFORT"/>
+			<option optionid="Klarna" value="KLI" label="KLARNA"/>
 		</options>
 	</field>
 	<field formid="capturepaymenttype" type="string" mandatory="true" binding="capturepaymenttype" max-length="50" >
@@ -22,6 +25,8 @@
 			<option optionid="Klarna" value="KLI" label="KLARNA"/>
 			<option optionid="CreditCard" value="CC" label="CREDITCARD"/>
 			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
+			<option optionid="GooglePay" value="googlepay" label="GOOGLEPAY"/>
+			<option optionid="AliPay" value="APY" label="ALIPAY"/>
 		</options>
 	</field>
 	<field formid="authreversalpaymenttype" type="string" mandatory="true" binding="authreversalpaymenttype" max-length="50" >
@@ -30,6 +35,7 @@
 			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
 			<option optionid="Klarna" value="KLI" label="KLARNA"/>
 			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
+			<option optionid="GooglePay" value="googlepay" label="GOOGLEPAY"/>
 		</options>
 	</field>
 	<field formid="checkstatuspaymenttype" type="string" mandatory="true" binding="checkstatuspaymenttype" max-length="50" >

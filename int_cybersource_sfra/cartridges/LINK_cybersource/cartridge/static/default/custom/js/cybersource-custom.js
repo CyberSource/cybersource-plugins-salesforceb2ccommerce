@@ -66,11 +66,13 @@ var init = {
 initPayPalButtons : function() {
 	var isPaypalEnabled;
     isPaypalEnabled = $('#paypal_enabled').length>0 && document.getElementById("paypal_enabled").value == 'true' ? true : false;
+    var locale = $('#currentLocale').length>0 ? document.getElementById("currentLocale").value : '';
     var config = init.initConfig();
     config.paymentOption = {
         	express: true,
         	credit : false
-        };
+	};
+	config.locale=locale;
     if(isPaypalEnabled && $('.paypal-button-container-cart1').length>0){
         paypal.Button.render(config,'.paypal-button-container-cart1');	
     }
@@ -92,6 +94,7 @@ initPayPalButtons : function() {
         	express: false,
         	credit : true
         };
+        creditConfig.locale=locale;
         paypal.Button.render(creditConfig,'#paypal-credit-container');
     }
 },
@@ -135,7 +138,8 @@ initFunctions : function(){
         // For Secure Acceptance Iframe  
     if($("div").hasClass("SecureAcceptance_IFRAME")) {	
         var url_loc = document.getElementById("sa_iframeURL").value;
-        $(".SecureAcceptance_IFRAME").append('<iframe src='+url_loc+'  name="hss_iframe"  width="100%" height="730px" scrolling="no" />');
+        $(".SecureAcceptance_IFRAME").append('<iframe src='+url_loc+'  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
+
     }	
         // For Secure Acceptance Iframe 
     if($("body").hasClass("sa_iframe_request_form")) {	
@@ -217,14 +221,19 @@ initFunctions : function(){
 var paypalhelper = {
     paypalMini : function() {
     	var config = init.initConfig();
+    	var locale = $('#currentLocale').length>0 ? document.getElementById("currentLocale").value : '';
     	config.paymentOption = {
         	express: true,
         	credit : false
         };
-    	var isPaypalEnabled = document.getElementById("paypal_enabled").value;
-    	if(isPaypalEnabled && $('.paypal-button-container-mini').length>0){
-			paypal.Button.render(config,'.paypal-button-container-mini');
-		}
+        config.locale=locale;
+        var isPaypalEnabled = false;
+        if (document.getElementById("paypal_enabled") != null) {
+            isPaypalEnabled = document.getElementById("paypal_enabled").value;
+        }
+        if (isPaypalEnabled && $('.paypal-button-container-mini').length>0){
+            paypal.Button.render(config,'.paypal-button-container-mini');
+        }
     },
     validateForms : function(){
     	var currentForm = $('data-checkout-stage').attr('data-checkout-stage');
@@ -261,10 +270,19 @@ var paypalvalidator = {
 		});
 		return isValidForm;     
     },
+
     loadFormErrors : function(parentSelector, fieldErrors) {
 		$.each(fieldErrors, function (attr) {
 			$('*[name=' + attr + ']', parentSelector).addClass('is-invalid').siblings('.invalid-feedback').html(fieldErrors[attr]);
     	});
+	},
+	
+    paypalMini : function() {
+    	var config = init.initConfig();
+    	var isPaypalEnabled = document.getElementById("paypal_enabled").value;
+    	if(isPaypalEnabled && $('.paypal-button-container-mini').length>0){
+			paypal.Button.render(config,'.paypal-button-container-mini');
+		}
     },
     validateAddress : function(callback) {
     	 var paymentForm = $('#dwfrm_billing').serialize();
@@ -289,4 +307,7 @@ $(document).ready(function() {
     init.initConfig();
     init.initPayPalButtons();
     init.initFunctions();
+    if($('#isGooglePayEnabled').val() == "true"){
+    	onGooglePayLoaded();
+    }
 });

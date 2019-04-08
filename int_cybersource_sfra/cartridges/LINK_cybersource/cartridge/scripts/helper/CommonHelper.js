@@ -1369,15 +1369,15 @@ function LogResponse(merchantReferenceCode, requestID, requestToken, reasonCode,
  * 	This method check the payment status of initiated payment request through alipay and change the status in demandware for placed order to NEW, CREATED, FAILED
  *  after getting from service call response in relation to Alipay payment status such as COMPLETED, PENDING, ABANDONED and TRADE_NOT_EXIST.
  *  */
-function CheckStatusServiceRequest(args) {
-    var Order = args.Order;
+function CheckStatusServiceRequest(order) {
+    var Order = order;
     var paymentType;
     var PaymentInstrument = require('dw/order/PaymentInstrument');
-	/* for each(var paymentInstrument in Order.paymentInstruments){
+	 for each(var paymentInstrument in Order.paymentInstruments){
 		if(!paymentInstrument.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)){
 			paymentType = paymentInstrument.paymentTransaction.custom.apPaymentType;
 		}
-	}*/
+	}
     var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
     var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
 

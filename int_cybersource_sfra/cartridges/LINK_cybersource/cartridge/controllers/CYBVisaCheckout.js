@@ -119,6 +119,40 @@ function visaCheckoutError(req, res, next) {
 	return next();
 }
 
+/**
+* This method is used to create flex token
+*/
+server.get('InitializeVisaToken', server.middleware.https, function (req, res, next) {
+	var BasketMgr = require('dw/order/BasketMgr');
+	var currentBasket = BasketMgr.getCurrentBasket();
+	var VisaCheckout = require('~/cartridge/scripts/visacheckout/helper/VisaCheckoutHelper');
+    var visaCheckoutForm = server.forms.getForm('visacheckout');
+    var VInitFormattedString = '';
+    var signature = '';
+  	var result = VisaCheckout.Initialize();
+    if (result.success) {
+    	VInitFormattedString = result.VInitFormattedString;
+    	signature = result.signature;
+    }
+	var Locale = require('dw/util/Locale');
+    var currentLocale = Locale.getLocale(req.locale.id);
+    // TO handle the visa checkout click even on cart and billing page from mini cart
+    session.privacy.cyb_CurrentPage = '';
+    session.privacy.cyb_CurrentPage = 'CybCart'; 
+    //var viewData = res.getViewData();
+    var visaToken = {
+    		VInitFormattedString: VInitFormattedString,
+            Signature: signature,
+            visaCheckoutForm: visaCheckoutForm,
+            Basket: currentBasket,
+            currentLocale : currentLocale.ID
+    };
+    res.render('visacheckout/launch',{
+    	VisaTokenResult: visaToken
+    });	
+	next();
+});
+
 /*
  * Module exports
  */

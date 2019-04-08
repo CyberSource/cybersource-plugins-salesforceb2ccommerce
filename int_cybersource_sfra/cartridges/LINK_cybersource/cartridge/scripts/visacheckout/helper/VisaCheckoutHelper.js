@@ -64,38 +64,70 @@ function getInitializeSettings(requireDeliveryAddress) {
 */
 function createLineItemCtnrBillingAddress(lineItemCtnrAddress : dw.order.OrderAddress, decryptedData : Object) {
 	// validate the lineItemCtnrAddress exists
-	if (decryptedData.billTo == null) {
-		throw new Error('Billing Address not available in visa checkout decrypted payment data from cybersource');
+	var vcCurrentPage = session.privacy.cyb_CurrentPage;
+	if(vcCurrentPage != 'CybBilling') {
+		if (decryptedData.billTo == null) {
+			throw new Error('Billing Address not available in visa checkout decrypted payment data from cybersource');
+		}
+		
+		//address line 1 and line 2
+		lineItemCtnrAddress.setAddress1(decryptedData.billTo_Address1);
+		if (!empty(decryptedData.billTo_Address2)) {
+			lineItemCtnrAddress.setAddress2(decryptedData.billTo_Address2);
+		}
+		
+		//country, city, state, post code
+		lineItemCtnrAddress.setCity(decryptedData.billTo_City);
+		if (!empty(decryptedData.billTo_StateCode)) {
+			lineItemCtnrAddress.setStateCode(decryptedData.billTo_StateCode);
+		}
+		lineItemCtnrAddress.setPostalCode(decryptedData.billTo_PostalCode);
+		lineItemCtnrAddress.setCountryCode(decryptedData.billTo_CountryCode);
+		
+		//phone number 
+		if (!empty(decryptedData.billTo_Phone)) {
+			lineItemCtnrAddress.setPhone(decryptedData.billTo_Phone);
+		}
+		
+		//company name 
+		if (!empty(decryptedData.billTo_Company)) {
+			lineItemCtnrAddress.setCompanyName(decryptedData.billTo_Company);
+		}
+		
+		//first name
+		lineItemCtnrAddress.setFirstName(decryptedData.billTo_FirstName);
+		//last name
+		lineItemCtnrAddress.setLastName(decryptedData.billTo_LastName);
+	} else {
+		//address line 1 and line 2
+		lineItemCtnrAddress.setAddress1(lineItemCtnrAddress.address1);
+		if (!empty(lineItemCtnrAddress.address2)) {
+			lineItemCtnrAddress.setAddress2(lineItemCtnrAddress.address2);
+		}
+		
+		//country, city, state, post code
+		lineItemCtnrAddress.setCity(lineItemCtnrAddress.city);
+		if (!empty(lineItemCtnrAddress.stateCode)) {
+			lineItemCtnrAddress.setStateCode(lineItemCtnrAddress.stateCode);
+		}
+		lineItemCtnrAddress.setPostalCode(lineItemCtnrAddress.postalCode);
+		lineItemCtnrAddress.setCountryCode(lineItemCtnrAddress.countryCode);
+		
+		//phone number 
+		if (!empty(decryptedData.billTo_Phone)) {
+			lineItemCtnrAddress.setPhone(lineItemCtnrAddress.phone);
+		}
+		
+		//company name 
+		if (!empty(decryptedData.billTo_Company)) {
+			lineItemCtnrAddress.setCompanyName(lineItemCtnrAddress.companyName);
+		}
+		
+		//first name
+		lineItemCtnrAddress.setFirstName(lineItemCtnrAddress.firstName);
+		//last name
+		lineItemCtnrAddress.setLastName(lineItemCtnrAddress.lastName);
 	}
-	
-	//address line 1 and line 2
-	lineItemCtnrAddress.setAddress1(decryptedData.billTo_Address1);
-	if (!empty(decryptedData.billTo_Address2)) {
-		lineItemCtnrAddress.setAddress2(decryptedData.billTo_Address2);
-	}
-	
-	//country, city, state, post code
-	lineItemCtnrAddress.setCity(decryptedData.billTo_City);
-	if (!empty(decryptedData.billTo_StateCode)) {
-		lineItemCtnrAddress.setStateCode(decryptedData.billTo_StateCode);
-	}
-	lineItemCtnrAddress.setPostalCode(decryptedData.billTo_PostalCode);
-	lineItemCtnrAddress.setCountryCode(decryptedData.billTo_CountryCode);
-	
-	//phone number 
-	if (!empty(decryptedData.billTo_Phone)) {
-		lineItemCtnrAddress.setPhone(decryptedData.billTo_Phone);
-	}
-	
-	//company name 
-	if (!empty(decryptedData.billTo_Company)) {
-		lineItemCtnrAddress.setCompanyName(decryptedData.billTo_Company);
-	}
-	
-	//first name
-	lineItemCtnrAddress.setFirstName(decryptedData.billTo_FirstName);
-	//last name
-	lineItemCtnrAddress.setLastName(decryptedData.billTo_LastName);
 	return {success:true, lineItemCtnrAddress:lineItemCtnrAddress};
 };
 

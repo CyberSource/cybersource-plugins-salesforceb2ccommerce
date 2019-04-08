@@ -34,7 +34,7 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     var paymentInstruments = wallet.getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
     var enableTokenization = Site.getCurrent().getCustomPreferenceValue('CsTokenizationEnable').value;
     var processor = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD).getPaymentProcessor();
-    if (enableTokenization.equals('YES') && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
+    if (CsSAType == null && enableTokenization.equals('YES') && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
         verifyDuplicates = true;
         tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'billing');
     }
@@ -59,12 +59,13 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     );
     if (!tokenizationResult.error && !empty(tokenizationResult.subscriptionID)) {
         storedPaymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
+        storedPaymentInstrument.custom.isCSToken = true;
         payInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
-    } 
-    if(CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null)) {
-    	var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
-    	var flexString = JSON.parse(flexResponse);
-    	storedPaymentInstrument.setCreditCardToken(flexString.token);
+    }
+    if (CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
+        var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
+        var flexString = JSON.parse(flexResponse);
+        storedPaymentInstrument.setCreditCardToken(flexString.token);
     }
     if (verifyDuplicates) {
         var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
@@ -89,10 +90,11 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
  * @returns {Object} an error object
  */
 function handlePayments(order, orderNumber) {
-	var PaymentMgr = require('dw/order/PaymentMgr');
+    var PaymentMgr = require('dw/order/PaymentMgr');
     var HookMgr = require('dw/system/HookMgr');
     var Transaction = require('dw/system/Transaction');
     var OrderMgr = require('dw/order/OrderMgr');
+    var authorizationResult;
     var result = {};
 
     if (order.totalNetPrice !== 0.00) {
@@ -109,12 +111,12 @@ function handlePayments(order, orderNumber) {
                 var paymentProcessor = PaymentMgr
                     .getPaymentMethod(paymentInstrument.paymentMethod)
                     .paymentProcessor;
-                var authorizationResult;
                 if (paymentProcessor === null) {
                     Transaction.begin();
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
                     Transaction.commit();
-                } else {
+                }
+                else {
                     if (HookMgr.hasHook('app.payment.processor.' +
                             paymentProcessor.ID.toLowerCase())) {
                         authorizationResult = HookMgr.callHook(
@@ -124,7 +126,8 @@ function handlePayments(order, orderNumber) {
                             paymentInstrument,
                             paymentProcessor
                         );
-                    } else {
+                    } 
+                    else {
                         authorizationResult = HookMgr.callHook(
                             'app.payment.processor.default',
                             'Authorize'
@@ -151,11 +154,11 @@ function handlePayments(order, orderNumber) {
  * @returns {Object} an object that has error information
  */
 function validatePayment(req, currentBasket) {
-	var Site = require('dw/system/Site');
-	var PaymentMgr = require('dw/order/PaymentMgr');
-	var PaymentInstrument = require('dw/order/PaymentInstrument');
+    var Site = require('dw/system/Site');
+    var PaymentMgr = require('dw/order/PaymentMgr');
+    var PaymentInstrument = require('dw/order/PaymentInstrument');
 
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+    var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var applicablePaymentCards;
     var applicablePaymentMethods;
     var creditCardPaymentMethod = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD);
@@ -184,11 +187,11 @@ function validatePayment(req, currentBasket) {
         if (PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstrument.paymentMethod)) {
             invalid = false;
         }
-        
-        if(CsSAType){
-        	 invalid = false;
+
+        if (CsSAType) {
+            invalid = false;
         }
-        
+
         var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
 
         if (paymentMethod && applicablePaymentMethods.contains(paymentMethod)) {
@@ -221,25 +224,27 @@ function validatePayment(req, currentBasket) {
  */
 function getOrderPaymentInstruments(req, paymentInstruments, paymentID) {
     var result;
-        var context;
-        var template = 'checkout/billing/orderPaymentInstrument';
+    var context;
+    var template = 'checkout/billing/orderPaymentInstrument';
 
-        context = { paymentInstruments: paymentInstruments, paymentOption : paymentID};
-        result = renderTemplateHelper.getRenderedHtml(
-            context,
-            template
-        );
+    context = { paymentInstruments: paymentInstruments, paymentOption : paymentID};
+    result = renderTemplateHelper.getRenderedHtml(
+        context,
+        template
+    );
 
     return result || null;
 }
 
 
 function getPayPalInstrument(basket) {
-	for(var i = 0; i < basket.paymentInstruments.length; i++) {
+    for (var i = 0; i < basket.paymentInstruments.length; i++) {
         var paymentInstrument = basket.paymentInstruments[i];
-        if(paymentInstrument.paymentMethod == 'PAYPAL' || paymentInstrument.paymentMethod == 'PAYPAL_CREDIT')
-        	return paymentInstrument;
-	}
+        if (paymentInstrument.paymentMethod == 'PAYPAL' || paymentInstrument.paymentMethod == 'PAYPAL_CREDIT') {
+            return paymentInstrument;
+        }
+    }
+    return null;
 }
 
 /**
@@ -248,10 +253,6 @@ function getPayPalInstrument(basket) {
  * @returns {Object} the names of the invalid form fields
  */
 function validatePPLForm(form) {
-    var BasketMgr = require('dw/order/BasketMgr');
-    var Resource = require('dw/web/Resource');
-    var currentBasket = BasketMgr.getCurrentBasket();
-
     return base.validateFields(form);
 }
 

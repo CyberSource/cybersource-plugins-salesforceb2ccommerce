@@ -52,7 +52,7 @@ function validateMobilePaymentRequest(order) {
                 ERRORMSG: Resource.msgf('cyb.mobilePayment.errormsg.ordernotfound', 'cybMobilePayments', null, jsonObj.orderID)
             };
         } else {
-            if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_AndroidPay))) {
+            if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_GooglePay))) {
                 paymentMethod = CybersourceConstants.METHOD_AndroidPay;
             } else if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_ApplePay))) {
                 paymentMethod = CybersourceConstants.METHOD_ApplePay;
@@ -202,7 +202,80 @@ function PrepareAuthRequestObjects(lineItemCtnr) {
     var items = result.items;
     return { success: true, billTo: billTo, shipTo: shipTo, purchaseObject: purchaseObject, items: items };
 }
+
+function createLineItemCtnrShippingAddress(lineItemCtnrAddress : dw.order.OrderAddress, decryptedData : Object) {
+	// validate the lineItemCtnrAddress exists
+	if (decryptedData.shipTo === null) {
+		throw new Error('Shipping Address not available in visa checkout decrypted payment data from cybersource');
+	}
+	
+	//address line 1 and line 2
+	lineItemCtnrAddress.setAddress1(decryptedData.address1);
+	if (!empty(decryptedData.address2)) {
+		lineItemCtnrAddress.setAddress2(decryptedData.address2);
+	}
+	
+	//country, city, state, post code
+	lineItemCtnrAddress.setCity(decryptedData.locality);
+	lineItemCtnrAddress.setStateCode(decryptedData.administrativeArea);
+	lineItemCtnrAddress.setPostalCode(decryptedData.postalCode);
+	lineItemCtnrAddress.setCountryCode(decryptedData.countryCode);
+	
+	//phone number 
+	if (!empty(decryptedData.phoneNumber)) {
+		lineItemCtnrAddress.setPhone(decryptedData.phoneNumber);
+	}
+	
+	//first name
+	lineItemCtnrAddress.setFirstName(decryptedData.name.split(' ')[0]);
+	//last name
+	lineItemCtnrAddress.setLastName(decryptedData.name.split(' ')[1]);
+	return {success:true, lineItemCtnrAddress:lineItemCtnrAddress};
+};
+
+/**
+* Create or update basket BillingAddress Google Checkout decrypted payment data from cybersource
+* @param lineItemCtnrAddress : dw.order.OrderAddress
+* @param decryptedData : Object
+*/
+function createLineItemCtnrBillingAddress(lineItemCtnrAddress : dw.order.OrderAddress, billingInfo : Object) {
+	
+	//address line 1 and line 2
+	lineItemCtnrAddress.setAddress1(billingInfo.address1);
+	if (!empty(billingInfo.address2)) {
+		lineItemCtnrAddress.setAddress2(billingInfo.address2);
+	}
+	
+	//country, city, state, post code
+	lineItemCtnrAddress.setCity(billingInfo.locality);
+	if (!empty(billingInfo.administrativeArea)) {
+		lineItemCtnrAddress.setStateCode(billingInfo.administrativeArea);
+	}
+	lineItemCtnrAddress.setPostalCode(billingInfo.postalCode);
+	lineItemCtnrAddress.setCountryCode(billingInfo.countryCode);
+	
+	//phone number 
+	if (!empty(billingInfo.phoneNumber)) {
+		lineItemCtnrAddress.setPhone(billingInfo.phoneNumber);
+	}
+	
+	//company name 
+	if (!empty(billingInfo.companyName)) {
+		lineItemCtnrAddress.setCompanyName(billingInfo.companyName);
+	}
+	
+	//first name
+	lineItemCtnrAddress.setFirstName(billingInfo.name.split(' ')[0]);
+	//last name
+	var lastName = billingInfo.name.indexOf(' ') >= 0 ? billingInfo.name.substring(billingInfo.name.indexOf(' ')) : '';
+	//lineItemCtnrAddress.setLastName(billingInfo.name.split(' ')[1]);
+	lineItemCtnrAddress.setLastName(lastName);
+	return {success:true, lineItemCtnrAddress:lineItemCtnrAddress};
+};
+
 module.exports = {
     validateMobilePaymentRequest: validateMobilePaymentRequest,
-    PrepareAuthRequestObjects: PrepareAuthRequestObjects
+    PrepareAuthRequestObjects: PrepareAuthRequestObjects,
+    CreateLineItemCtnrShippingAddress:createLineItemCtnrShippingAddress,
+    CreateLineItemCtnrBillingAddress:createLineItemCtnrBillingAddress
 };

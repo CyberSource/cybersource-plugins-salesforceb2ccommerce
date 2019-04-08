@@ -114,7 +114,7 @@ function SAResponse(currentRequestParameterMap) {
     var result = SAHandleResponse(currentRequestParameterMap);
     if (result.success && !empty(result.responseObject)) {
         var orderNo = currentRequestParameterMap.req_reference_number.stringValue;
-        var order = OrderMgr.getOrder(orderNo);
+		var order = OrderMgr.getOrder(orderNo);
         var responseObject = result.responseObject;
         if ('saredirect'.equals(currentRequestParameterMap.provider.stringValue)) {
             var redirectResponse = SARedirectResponse(responseObject, order);
@@ -182,6 +182,15 @@ function SARedirectResponse(responseObject, order) {
                 return { nextStep: CybersourceConstants.SA_SUMMARY, data: PlaceOrderError };
             }
             break;
+		case 'CANCEL':
+			var orderNumber = responseObject.req_reference_number;
+    		Transaction.wrap(function () {
+				OrderMgr.failOrder(order); 
+			});
+			var BasketMgr = require('dw/order/BasketMgr');
+    		var currentBasket = BasketMgr.getCurrentBasket();
+    		return { nextStep: CybersourceConstants.SA_CANCEL, location : URLUtils.https('Cart-Show')};
+    		break;
         default: break;
     }
     return;
@@ -345,6 +354,11 @@ function SilentPostResponse() {
                     });
                 }
                 var paymentToken = !empty(httpParameterMap.payment_token.stringValue) ? httpParameterMap.payment_token.stringValue : httpParameterMap.req_payment_token.stringValue;
+                if (empty(paymentInstrument.creditCardToken)) {
+	                Transaction.wrap(function () {
+	                	 paymentInstrument.setCreditCardToken(paymentToken);
+	                });
+                }
                 var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
                 Transaction.wrap(function () {
                     PaymentInstrumentUtils.updatePaymentInstumenSACard(paymentInstrument, httpParameterMap.req_card_expiry_date.stringValue,

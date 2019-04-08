@@ -1,17 +1,23 @@
+<isset name="bankTransferContentLoaded" value="false" scope="page"/>
 <isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
+    
     <isif condition="${paymentOption.ID === 'CREDIT_CARD'}">
         <isinclude template="checkout/billing/paymentOptions/creditCardContent" />
-    </isif>
-    <isif condition="${paymentOption.ID === 'DW_APPLE_PAY'}">
+
+    <iselseif condition="${paymentOption.ID === 'DW_APPLE_PAY'}">
         <isinclude template="checkout/billing/paymentOptions/applePayContent" />
-    </isif>
-    <isif condition="${paymentOption.ID === 'KLARNA'}">
-        <isinclude template="checkout/billing/paymentOptions/klarnaContent" />
-    </isif>
-    <isif condition="${paymentOption.ID === 'VISA_CHECKOUT'}">
+
+    <iselseif condition="${paymentOption.ID === 'VISA_CHECKOUT'}">
         <isinclude template="checkout/billing/paymentOptions/visaCheckoutContent" />
-    </isif>
-    <isif condition="${paymentOption.ID === 'PAYPAL'}">
+
+    <iselseif condition="${paymentOption.ID === 'PAYPAL'}">
         <isinclude template="checkout/billing/paymentOptions/payPalContent" />
+
+    <iselseif condition="${paymentOption.ID === 'DW_GOOGLE_PAY'}">
+        <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
+        <isif condition="${isGooglePayEnabled}">
+            <isinclude template="checkout/billing/paymentOptions/googlePayContent" />
+        </isif>
     </isif>
+    
 </isloop>

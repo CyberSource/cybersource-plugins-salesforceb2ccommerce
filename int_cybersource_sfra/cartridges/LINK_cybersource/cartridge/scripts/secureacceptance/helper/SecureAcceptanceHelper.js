@@ -209,7 +209,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
                         providerVal = 'saiframe';
                     }
-                    if (sitePreferenceData.CsTokenizationEnable === "YES") {
+                    if (sitePreferenceData.CsSubscriptionTokenizationEnable === "YES") {
                         if (!empty(subscriptionToken)) {
                             transaction_type = transaction_type;
                             signed_field_names = signed_field_names + ",payment_token";
@@ -255,10 +255,12 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
 
                     break;
                 case CybersourceConstants.METHOD_SA_SILENTPOST:
-                    transaction_type = "create_payment_token";
                     if (!empty(subscriptionToken)) {
                         requestMap.put('payment_token', subscriptionToken);
                         transaction_type = "update_payment_token";
+                    }
+                    else {
+                        transaction_type = "create_payment_token";
                     }
                     if (!empty(lineItemCtnr) && !empty(lineItemCtnr.getCustomerNo())) {
                         signed_field_names = signed_field_names + ",consumer_id";
@@ -273,26 +275,6 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     }
                     signed_field_names = signed_field_names + ",override_custom_receipt_page";
                     requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
-                    break;
-                 case CybersourceConstants.METHOD_SA_FLEX:
-                    transaction_type = "create_payment_token";
-                    if (!empty(subscriptionToken)) {
-                        requestMap.put('payment_token', subscriptionToken);
-                        transaction_type = "update_payment_token";
-                    }
-                    if (!empty(lineItemCtnr) && !empty(lineItemCtnr.getCustomerNo())) {
-                        signed_field_names = signed_field_names + ",consumer_id";
-                        requestMap.put('consumer_id', lineItemCtnr.getCustomerNo());
-                    }
-                    requestMap.put('ignore_avs', true);
-                    requestMap.put('ignore_cvn', true);
-                    if (sitePreferenceData.csCardDecisionManagerEnable) {
-                        requestMap.put('skip_decision_manager', false);
-                    } else {
-                        requestMap.put('skip_decision_manager', true);
-                    }
-                    signed_field_names = signed_field_names + ",override_custom_receipt_page";
-                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-FlexMicroformResponse'));
                     break;
                 default:
                     transaction_type = "authorization";
@@ -345,11 +327,8 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
             reference_number = lineItemCtnr.orderNo;
             requestMap.put('reference_number', reference_number);
             requestMap.put('payment_method', 'card');
-        } else if (CsSAType === CybersourceConstants.METHOD_SA_FLEX) {
-        	reference_number = lineItemCtnr.UUID;
-            requestMap.put('reference_number', reference_number);
-            requestMap.put('payment_method', 'card');
-        } else {
+        }
+        else {
             reference_number = lineItemCtnr.orderNo;
             requestMap.put('reference_number', reference_number);
         }
@@ -455,6 +434,7 @@ function GetSitePrefernceDetails(subscriptionToken, saCountryCode) {
     var sitePreference = {};
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var CsTokenizationEnable: dw.value.EnumValue;
+    var CsSubscriptionTokenizationEnable: dw.value.EnumValue;
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var field_names;
 	if (saCountryCode == 'US' || saCountryCode == 'CA') {
@@ -496,21 +476,6 @@ function GetSitePrefernceDetails(subscriptionToken, saCountryCode) {
                     sitePreference["unsigned_field_names"] = "card_type,card_expiry_date,card_cvn";
                 }
                 break;
-            case CybersourceConstants.METHOD_SA_FLEX:
-                sitePreference["access_key"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_AccessKey");
-                sitePreference["profile_id"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_ProfileID");
-                sitePreference["secretKey"] = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_SecretKey");
-                if (empty(subscriptionToken)) {
-                    sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('Secure_Acceptance_Token_Create_Endpoint');
-                    sitePreference["signed_field_names"] = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country";
-                    sitePreference["unsigned_field_names"] = "card_type,card_expiry_date,card_cvn,card_number";
-                }
-                else {
-                    sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('Secure_Acceptance_Token_Update_Endpoint');
-                    sitePreference["signed_field_names"] = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country,payment_token";
-                    sitePreference["unsigned_field_names"] = "card_type,card_expiry_date,card_cvn";
-                }
-                break;
         }
     }
     sitePreference["CsAvsIgnoreResult"] = dw.system.Site.getCurrent().getCustomPreferenceValue("CsAvsIgnoreResult");
@@ -520,7 +485,8 @@ function GetSitePrefernceDetails(subscriptionToken, saCountryCode) {
     sitePreference["CsTokenizationEnable"] = CsTokenizationEnable.value;
     sitePreference["CsSAOverrideShippingAddress"] = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSAOverrideShippingAddress");
     sitePreference["CsSAOverrideBillingAddress"] = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSAOverrideBillingAddress");
-
+    CsSubscriptionTokenizationEnable = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSubscriptionTokenizationEnable");
+    sitePreference["CsSubscriptionTokenizationEnable"] = CsSubscriptionTokenizationEnable.value;
     return sitePreference;
 }
 
@@ -892,6 +858,7 @@ function HookIn3DRequest(args) {
         result = VisaCheckoutFacade.CCAuthRequest(args.Order, args.orderNo, CommonHelper.getIPAddress());
     } else {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var ipAddress = CommonHelper.getIPAddress();
         result = CardFacade.CCAuthRequest(args.Order, args.Order.orderNo, CommonHelper.getIPAddress(),
             args.SubscriptionID, args.payerEnrollResponse, args.payerValidationResponse, ReadFromBasket);
     }
@@ -917,8 +884,8 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
 	var paymentMethod = paymentInstrument.getPaymentMethod();
     if (!empty(CybersourceHelper.getPAMerchantID())) {
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-        if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) && (CsSAType == null || CsSAType != CybersourceConstants.METHOD_SA_FLEX)) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
-            result = CardHelper.PayerAuthEnable(session.forms.billing.creditCardFields.cardType.value);
+        if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) && (CsSAType == null || CsSAType != CybersourceConstants.METHOD_SA_FLEX)) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) || paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
+            result = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
 		} else if (CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX)) {
 			result = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
 		}
@@ -928,7 +895,8 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
             paEnabled = result.paEnabled;
         }
     }
-    if (paEnabled && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
+   
+    if (paEnabled && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT)) && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_GooglePay))) {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
         result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields);
         if (result.error) {

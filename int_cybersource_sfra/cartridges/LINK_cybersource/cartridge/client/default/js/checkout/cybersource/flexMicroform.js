@@ -1,6 +1,10 @@
 $(document).ready(function () {	
-	if($('.nav-item').data('sa-type') == 'SA_FLEX') {
-		var jwk = JSON.parse($('#flextokenObj').val());
+	var creditCardItem = $('li[data-method-id="CREDIT_CARD"]');
+	var CsSaType = $(creditCardItem).attr('data-sa-type'); 
+	if(CsSaType == 'SA_FLEX' && $('#flextokenObj').length != 0) {
+		 var jwk = JSON.parse($('#flextokenObj').val());
+		 var cardNumberplaceholder = $('#credit-card-content .cardNumber').attr('data-cardNumber');
+
 	     // SETUP MICROFORM
 	     FLEX.microform(
 	             {
@@ -8,7 +12,7 @@ $(document).ready(function () {
 	                 keystore: jwk,
 	                 container: '#cardNumber-container',
 	                 label: '#cardNumber',
-	                 placeholder: 'Enter Card Number here',
+	                 placeholder: cardNumberplaceholder,
 	                 styles: {
 	                     'input': {
 	                         'font-family': '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
@@ -31,8 +35,8 @@ $(document).ready(function () {
 	                 }
 	         		
 	         		function flexTokenCreation() {
-	         			var expMonth = $('#expirationMonth').val();
-	                    var expYear = $('#expirationYear').val();
+	         			 var expMonth = $('#expirationMonth').val();
+	                     var expYear = $('#expirationYear').val();
 	                     if(expMonth == '' || expYear == ''){
 	                    	 return false;
 	                     }
@@ -50,22 +54,38 @@ $(document).ready(function () {
 	                               // as hidden fields and the submission continued
 	                         	 if (err) {
 	                                 err.details.responseStatus.details.forEach(function(detail) {
-	         				          $(".card-number-wrapper .invalid-feedback").text("A Card Number is required").css('display','block');
-	         				        });
-	                                  return true;
+	         				           $('.card-number-wrapper .invalid-feedback').text('A Card Number is required').css('display','block');
+	         				         });
+	                                  $('.card-number-wrapper .invalid-feedback').text(err.details.responseStatus.message).css('display','block');
+	                                 return true;
 	                              } else {
 	                        		 var flexResponse = $('#flex-response').val(JSON.stringify(response));
 	                             	 var getFlexVal = JSON.parse($('#flex-response').val());
 	         						 $('#cardNumber').val(getFlexVal['maskedPan']);
 	         						 $('#cardType').val(getFlexVal['cardType']);
+	        	                	 $('.submit-payment').trigger('click');
 	                              }
-	                           });
-	                     return true;
+	                         });
+	                    	 return true;
 	         		}
+	         		 
+	         		$('.payment-summary .edit-button').on('click', function () {
+	         			$('#flex-response').val('');
+	         		});
 	         		
-	                 // intercept the form submission and make a tokenize request instead
-	                 $('#expirationYear, #expirationMonth').on('change', function () {
-	                	 flexTokenCreation();
+	             	// intercept the form submission and make a tokenize request instead
+	                 $('.submit-payment').on('click', function (event) {
+	                	 if($('#expirationMonth').val() != '' 
+	                		 && $('#expirationYear').val() != '' 
+	                		 && $('#securityCode').val()  != '' 
+	                		 && $('#flex-response').val() == '' 
+	                		 && ($('.data-checkout-stage').data('customer-type') === 'guest' 
+	                		 || ($('.data-checkout-stage').data('customer-type') === 'registered' 
+	                		 && $('.payment-information').data('is-new-payment')))) 
+	                	 {
+		                		 flexTokenCreation();
+		                		 event.stopImmediatePropagation();
+	                	 }
 	                  });
 	                }
 	           );	
