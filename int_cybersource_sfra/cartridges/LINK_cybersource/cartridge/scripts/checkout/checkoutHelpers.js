@@ -276,6 +276,23 @@ function handlePayPal(basket) {
     }
 }
 
+function clearPaymentAttributes(){
+	session.privacy.isPaymentRedirectInvoked = '';
+	session.privacy.paymentType = '';
+	session.privacy.orderID = '';
+}
+
+function reCreateBasket(order){
+	var Transaction = require('dw/system/Transaction');
+    var BasketMgr = require('dw/order/BasketMgr');
+    var OrderMgr = require('dw/order/OrderMgr');
+	Transaction.wrap(function () {
+		OrderMgr.failOrder(order); 
+	});
+	var BasketMgr = require('dw/order/BasketMgr');
+    return BasketMgr.getCurrentBasket();
+}
+
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
 base.handlePayments = handlePayments;
 base.validatePayment = validatePayment;
@@ -283,4 +300,6 @@ base.getOrderPaymentInstruments = getOrderPaymentInstruments;
 base.validatePPLForm = validatePPLForm;
 base.getPayPalInstrument = getPayPalInstrument;
 base.handlePayPal = handlePayPal;
+base.clearPaymentAttributes = clearPaymentAttributes;
+base.reCreateBasket = reCreateBasket;
 module.exports = base;

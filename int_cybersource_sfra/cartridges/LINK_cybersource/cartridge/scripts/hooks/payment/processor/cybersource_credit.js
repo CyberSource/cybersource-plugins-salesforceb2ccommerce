@@ -187,6 +187,9 @@ function SecureAcceptanceAuthorize (orderNumber, paymentInstrument, paymentProce
 		var saRedirectRequest = secureAcceptanceAdapter.Authorize(orderNumber, paymentInstrument, paymentProcessor,additionalArgs);
 		if (saRedirectRequest.success) {
 	  		 if (saRedirectRequest.requestData != null) {
+	  			 session.privacy.isPaymentRedirectInvoked = true;
+	  			 session.privacy.paymentType = 'SARedirect';
+	  			 session.privacy.orderID = orderNumber;
 	  			 var data = saRedirectRequest.requestData;
 	  		 	 var formAction = saRedirectRequest.formAction;
 			 		 return {

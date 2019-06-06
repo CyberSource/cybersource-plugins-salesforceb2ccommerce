@@ -51,4 +51,6 @@
 	<input type="hidden" id="paypal_callback" class="paypal_callback" value="${URLUtils.https('CYBPaypal-SessionCallback').toString()}" />
 	<input type="hidden" id="paypal_enabled" class="paypal_enabled" value="${'CsEnableExpressPaypal' in dw.system.Site.getCurrent().getPreferences().getCustom() 
 		&& dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnableExpressPaypal') ? true : false}" />
+	<input type="hidden" id="paypal_endpoint" class="paypal_endpoint" value="${'CsEndpoint' in dw.system.Site.getCurrent().getPreferences().getCustom() 
+		&& dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value == 'Production' ? 'production' : 'sandbox'}" />
 </isif>

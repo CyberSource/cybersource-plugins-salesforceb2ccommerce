@@ -491,16 +491,24 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     var Site = require('dw/system/Site');
 	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var currentBasket = BasketMgr.getCurrentBasket();
-
     if (!currentBasket) {
-        res.json({
-            error: true,
-            cartError: true,
-            fieldErrors: [],
-            serverErrors: [],
-            redirectUrl: URLUtils.url('Cart-Show').toString()
-        });
-        return next();
+    	if('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
+    		&& 'orderID' in session.privacy && null !== session.privacy.orderID) {
+			var order = OrderMgr.getOrder(session.privacy.orderID);
+			var currentBasket = COHelpers.reCreateBasket(order);
+			res.redirect(URLUtils.url('Cart-Show'));
+            return next();
+			
+    	} else {
+        	res.json({
+            	error: true,
+            	cartError: true,
+            	fieldErrors: [],
+            	serverErrors: [],
+            	redirectUrl: URLUtils.url('Cart-Show').toString()
+        	});
+        	 return next();
+		}
     }
 
     if (req.session.privacyCache.get('fraudDetectionStatus')) {

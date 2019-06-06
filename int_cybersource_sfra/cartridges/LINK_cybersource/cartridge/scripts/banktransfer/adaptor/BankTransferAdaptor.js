@@ -158,7 +158,8 @@ function AuthorizeRequest(orderNo,paymentInstrument){
     });
     //call sale service and process the response
     var response = CreateSaleServiceRequest(Order);
-    
+    session.privacy.isPaymentRedirectInvoked = true;
+	session.privacy.orderID = orderNo;
     return response;
 	
 }

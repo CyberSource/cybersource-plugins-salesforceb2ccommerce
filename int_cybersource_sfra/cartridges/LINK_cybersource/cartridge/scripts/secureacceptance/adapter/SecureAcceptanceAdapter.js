@@ -146,9 +146,11 @@ function SAResponse(currentRequestParameterMap) {
 
 function SARedirectResponse(responseObject, order) {
     var Order = require('dw/order/Order'),
-        Transaction = require('dw/system/Transaction'),
-        Status = require('dw/system/Status'),
-        OrderMgr = require('dw/order/OrderMgr');
+	Transaction = require('dw/system/Transaction'),
+	Status = require('dw/system/Status'),
+	OrderMgr = require('dw/order/OrderMgr');
+	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	COHelpers.clearPaymentAttributes();
     switch (responseObject.Decision) {
         case 'ACCEPT':
             if ((order.status.value === Order.ORDER_STATUS_CREATED) && responseObject.ReasonCode === "100") {
@@ -183,12 +185,7 @@ function SARedirectResponse(responseObject, order) {
             }
             break;
 		case 'CANCEL':
-			var orderNumber = responseObject.req_reference_number;
-    		Transaction.wrap(function () {
-				OrderMgr.failOrder(order); 
-			});
-			var BasketMgr = require('dw/order/BasketMgr');
-    		var currentBasket = BasketMgr.getCurrentBasket();
+    		var currentBasket = COHelpers.reCreateBasket(order);
     		return { nextStep: CybersourceConstants.SA_CANCEL, location : URLUtils.https('Cart-Show')};
     		break;
         default: break;

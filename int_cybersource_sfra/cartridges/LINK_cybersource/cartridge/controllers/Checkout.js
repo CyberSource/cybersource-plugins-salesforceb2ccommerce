@@ -114,4 +114,32 @@ server.post('SetBillingAddress', server.middleware.https, function (req, res, ne
 	next();
 });
 
+server.prepend('Begin', function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Locale = require('dw/util/Locale');
+    var Resource = require('dw/web/Resource');
+    var OrderMgr = require('dw/order/OrderMgr');
+    var URLUtils = require('dw/web/URLUtils');
+    var OrderModel = require('*/cartridge/models/order');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    var currentStage = req.querystring.stage;
+	var currentBasket = BasketMgr.getCurrentBasket();
+	if (!currentBasket) {
+    	if('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
+    		&& 'orderID' in session.privacy && null !== session.privacy.orderID) {
+			var order = OrderMgr.getOrder(session.privacy.orderID);
+			var currentBasket = COHelpers.reCreateBasket(order);
+			res.redirect(URLUtils.url('Cart-Show'));
+    	} else {
+        	res.json({
+            	error: true,
+            	cartError: true,
+            	fieldErrors: [],
+            	serverErrors: [],
+            	redirectUrl: URLUtils.url('Cart-Show').toString()
+        	});
+		}
+	}
+    next();
+});
 module.exports = server.exports();

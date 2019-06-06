@@ -3,9 +3,9 @@ var init = {
         var requestId,billingAgreementFlag,		//A Flag to show whether user has opted for Billing Agreement or not
         billingAgreementButton,					//The Billing Agreement Checkbox
         billingAgreementID,						//Billing Agreement ID
-        isPayPalCredit=false;
+        isPayPalCredit=false, endPoint = $('#paypal_endpoint').length>0 ? document.getElementById("paypal_endpoint").value : 'sandbox';
         var config = {
-        env: 'sandbox',
+        env: endPoint,
         commit: true,
         
 		validate: function(actions) {

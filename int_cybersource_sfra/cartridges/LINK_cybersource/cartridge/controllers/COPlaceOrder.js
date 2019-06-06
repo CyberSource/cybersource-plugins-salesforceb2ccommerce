@@ -48,6 +48,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     var order = OrderMgr.getOrder(req.querystring.order_id);
 	var Provider = require('LINK_cybersource/cartridge/scripts/Provider');
 	var providerParam = req.querystring.provider;
+	COHelpers.clearPaymentAttributes();
 	if(!empty(providerParam)) {
 		var providerResult = Provider.Check(order);
 		if(!empty(providerResult)){
