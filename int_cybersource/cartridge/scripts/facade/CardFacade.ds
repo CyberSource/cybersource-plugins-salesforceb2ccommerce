@@ -226,7 +226,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
-	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken());
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone);
 
 	var serviceResponse = null;
 	// send request
@@ -262,6 +262,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 		responseObject["PAXID"] = serviceResponse.payerAuthEnrollReply.xid;
 		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
 		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
+		responseObject["authenticationTransactionID"] = serviceResponse.payerAuthEnrollReply.authenticationTransactionID;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
@@ -274,13 +275,13 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
  * @param CreditCardForm : details of the card
  */
  
-function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String)
+function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String ,processorTransactionId :String)
 {
 	var orderNo = OrderNo;
     var amount = Amount;
     var creditCardForm = CreditCardForm;
-    var signedPaRes = dw.util.StringUtils.trim(PaRes);
-	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
+    var signedPaRes = PaRes!= null?dw.util.StringUtils.trim(PaRes):null;
+    signedPaRes = signedPaRes!= null?signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',""):"";
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
@@ -290,7 +291,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken);
+	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken,processorTransactionId);
 
 	var serviceResponse = null;
 	// send request

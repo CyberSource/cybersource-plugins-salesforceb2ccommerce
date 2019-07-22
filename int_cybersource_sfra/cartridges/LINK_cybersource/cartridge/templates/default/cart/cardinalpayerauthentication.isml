@@ -1,0 +1,71 @@
+<!--- TEMPLATENAME: cardinalpayerauthentication.isml --->
+<iscomment>
+	This template the template rendering the payer authentication page
+</iscomment>
+<isdecorate template="common/layout/checkout">
+	<iscontent type="text/html" charset="UTF-8" compact="true">
+	<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+	<isif condition="${'CardinalCruiseApiPath' in dw.system.Site.current.preferences.custom && !empty(dw.system.Site.current.preferences.custom.CardinalCruiseApiPath)}">
+		<script src="${dw.system.Site.current.preferences.custom.CardinalCruiseApiPath}"></script>
+	</isif>
+	
+	<div id="cyb_payerauth" class="cardinalpayerauth">
+			<input type="hidden" id="PaReq" value="${pdict.PAReq}">
+			<input type="hidden" id="AcsURL" value="${pdict.AcsURL}">
+			<input type="hidden" id="JWT" value="${pdict.jwtToken}">
+			<input type="hidden" id="order" value="${pdict.orderstring}">	
+			<input type="hidden" id="transactionId" value="${pdict.authenticationTransactionID}">
+		<form action="${URLUtils.https('COPlaceOrder-Submit','provider','card','PAXID',pdict.PAXID)}" method="POST" name="RedirectForm" target="_parent">            
+            <input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
+            <input type="hidden" name="order_token" value="${pdict.Order.orderToken}">
+            <input type="hidden" name="processorTransactionId"  id ="processorTransactionId" />
+        </form>	
+	</div>
+	
+	<script>
+	
+	 Cardinal.configure({ 
+		  	logging:{
+		        level: 'on'
+		    },
+		  	timeout: 4000,
+		    maxRequestRetries: 2
+		    
+	 });
+	
+		var acsUrl = document.getElementById("AcsURL").value;
+		var payload = document.getElementById("PaReq").value;
+		
+		var orderObject = JSON.parse(document.getElementById("order").value);
+	
+		var continueObject = {
+			 "AcsUrl":acsUrl,
+		     "Payload":payload
+		};
+	
+		var jwt = document.getElementById("JWT").value;
+	 	Cardinal.setup("init", {
+		    jwt: document.getElementById("JWT").value,
+		    order: orderObject
+	  	});	 
+	    Cardinal.on("payments.validated", function (data, jwt) {    
+	         if(data.ErrorDescription && data.ErrorDescription === "Success")    
+	         {
+	             document.getElementById("processorTransactionId").value = data.Payment.ProcessorTransactionId;
+	             document.RedirectForm.submit();     
+	         }
+	         else{
+	             
+	             
+	         }
+		});	 
+	  
+	  	Cardinal.on('payments.setupComplete', function(setupCompleteData){
+		  Cardinal.continue('cca',continueObject,orderObject,jwt);	  
+	  	}); 
+	  
+	  
+	
+	</script>
+</iscontent>
+</isdecorate>

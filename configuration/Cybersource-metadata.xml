@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
    
+    <type-extension type-id="Basket">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="CybersourceFraudDecision">
+                <display-name xml:lang="x-default">Cybersource Fraud Decision</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+    </type-extension>
+
     <type-extension type-id="CustomerPaymentInstrument">
         <system-attribute-definitions>
             <attribute-definition attribute-id="UUID">
@@ -47,7 +59,7 @@
                 <min-length>0</min-length>
             </attribute-definition>
         </custom-attribute-definitions>
-    </type-extension>   
+    </type-extension>
 
     <type-extension type-id="OrderPaymentInstrument">
         <system-attribute-definitions>
@@ -1072,11 +1084,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="CsDeviceFingerprintRedirectionType">
                 <display-name xml:lang="x-default">Device Fingerprint Redirection</display-name>
-                <description xml:lang="x-default">'none' for no redirection, 'static' for pipeline redirection, 'dynamic' for mapping-rule based redirection.&#13;
-A mapping rule based redirection requires a mapping rule at static mappings Site Urls-&gt;Static mapping:&#13;
-&#13;
-# Mapping for Cybersource Device Fingerprint Service&#13;
-/fp/** p,,,Cybersource-RedirectFpLocation,,,Location,{_url}</description>
+                <description xml:lang="x-default">'none' for no redirection, 'static' for pipeline redirection, 'dynamic' for mapping-rule based redirection.  Mapping for Cybersource Device Fingerprint Service /fp/** p,,,Cybersource-RedirectFpLocation,,,Location,{_url}</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1196,8 +1204,7 @@ A mapping rule based redirection requires a mapping rule at static mappings Site
             </attribute-definition>
             <attribute-definition attribute-id="CsPaSaveParesStatus">
                 <display-name xml:lang="x-default">CyberSource Save ParesStatus (PA)</display-name>
-                <description xml:lang="x-default">Save ParesStatus received as response from Pa Authenticate request and send it as param in ccAuth request call.&#13;
-This field should be enabled after verifying cybersource merchant account settings.</description>
+                <description xml:lang="x-default">Save ParesStatus received as response from Pa Authenticate request and send it as param in ccAuth request call.  This field should be enabled after verifying cybersource merchant account settings.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1348,7 +1355,7 @@ This field should be enabled after verifying cybersource merchant account settin
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>76208</default-value>
+                <default-value>07071</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsPooCity">
                 <display-name xml:lang="x-default">CyberSource Purchase Order Origin City (Tax)</display-name>
@@ -1388,7 +1395,7 @@ This field should be enabled after verifying cybersource merchant account settin
                 <min-length>0</min-length>
                 <field-length>0</field-length>
                 <field-height>0</field-height>
-                <default-value>76208</default-value>
+                <default-value>07071</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="CsRequestBillingAddress">
                 <display-name xml:lang="x-default">Request Billing address</display-name>
@@ -1678,9 +1685,7 @@ This field should be enabled after verifying cybersource merchant account settin
             </attribute-definition>
             <attribute-definition attribute-id="csMasterCardAuthIndicator">
                 <display-name xml:lang="x-default">Master Card Auth Indicator</display-name>
-                <description xml:lang="x-default">Preauthorization:  0 passed in request&#13;
-Final authorization:  1 passed in request&#13;
-Undefined authorization:omit authIndicator field from the request message</description>
+                <description xml:lang="x-default">Preauthorization:  0 passed in request. Final authorization:  1 passed in request.  Undefined authorization:omit authIndicator field from the request message</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1733,9 +1738,7 @@ Undefined authorization:omit authIndicator field from the request message</descr
             </attribute-definition>
             <attribute-definition attribute-id="cybVisaButtonColor">
                 <display-name xml:lang="x-default">cybVisaButtonColor</display-name>
-                <description xml:lang="x-default">The color of the Visa Checkout button&#13;
-standard (default)&#13;
-neutral</description>
+                <description xml:lang="x-default">The color of the Visa Checkout button. standard or neutral.</description>
                 <type>enum-of-string</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1791,6 +1794,14 @@ LIVE	https://secure.checkout.visa.com/wallet-services-web/xo/button.png</descrip
             <attribute-definition attribute-id="cybVisaButtonOnCart">
                 <display-name xml:lang="x-default">CyberSource Visa Button display on minicart and cart</display-name>
                 <description xml:lang="x-default">CyberSource Visa Button display on minicart and cart</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="CsEnableVisaCheckout">
+                <display-name xml:lang="x-default">Enable Cybersource Visa Checkout Feature</display-name>
+                <description xml:lang="x-default">Enable Cybersource Visa Checkout Feature</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -2118,6 +2129,26 @@ false - Allow a consumer prompt</description>
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+			<attribute-definition attribute-id="enableGooglePay">
+                <display-name xml:lang="x-default">EnableGooglePay</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="googlePayMerchantID">
+                <display-name xml:lang="x-default">googlePayMerchantID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="googlePaygatewayMerchantId">
+                <display-name xml:lang="x-default">googlePaygatewayMerchantId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Storefront Configs">
@@ -2151,6 +2182,8 @@ false - Allow a consumer prompt</description>
                 <attribute attribute-id="cybVisaAPIKey"/>
                 <attribute attribute-id="cybVisaThreeDSActive"/>
                 <attribute attribute-id="cybVisaButtonOnCart"/>
+				<attribute attribute-id="CsEnableVisaCheckout"/>
+				
             </attribute-group>
             <attribute-group group-id="CyberSource_SecureAcceptance">
                 <display-name xml:lang="x-default">CyberSource Secure Acceptance</display-name>
@@ -2247,6 +2280,12 @@ false - Allow a consumer prompt</description>
                 <attribute attribute-id="merchantDescriptorStreet"/>
                 <attribute attribute-id="merchantDescriptorCity"/>
                 <attribute attribute-id="merchantDescriptorCountry"/>
+            </attribute-group>
+			<attribute-group group-id="CyberSource_GooglePay">
+                <display-name xml:lang="x-default">CyberSource GooglePay</display-name>
+                <attribute attribute-id="enableGooglePay"/>
+                <attribute attribute-id="googlePayMerchantID"/>
+				<attribute attribute-id="googlePaygatewayMerchantId"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

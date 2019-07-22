@@ -208,6 +208,18 @@ var CybersourceHelper = {
     getMasterCardAuthIndicator: function () {
         return Site.getCurrent().getCustomPreferenceValue('csMasterCardAuthIndicator');
     },
+    getCruiseCredentialsApiKey : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CruiseApiKey");
+	},
+	getCruiseCredentialsApiIdentifier : function (){
+	   	return Site.getCurrent().getCustomPreferenceValue("CruiseApiIdentifier");
+	},
+	getCruiseCredentialsOrgUnitId : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CruiseOrgUnitId");
+	},
+    getCruiseCredentialsName : function (){
+        return Site.getCurrent().getCustomPreferenceValue("CruiseMerchantName");   	
+    },
 	/** ***************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.
@@ -608,7 +620,7 @@ var CybersourceHelper = {
     },
 
 
-    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken) {
+    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber) {
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(serviceRequest, orderNo);
@@ -631,6 +643,11 @@ var CybersourceHelper = {
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
+        serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
+		serviceRequest.payerAuthEnrollService.mobilePhone=phoneNumber;
+		var currentDevice = session.custom.device;
+		//serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(session.custom.device);
+		serviceRequest.payerAuthEnrollService.transactionMode= 'S';
     },
 
     addTestPayerAuthEnrollInfo: function (request, card) {
@@ -714,6 +731,7 @@ var CybersourceHelper = {
         // validate specific stuff
         request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
         request.payerAuthValidateService.signedPARes = signedPARes;
+        request.payerAuthValidateService.authenticationTransactionID = session.privacy.processorTransactionId;
 
         request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
         request.purchaseTotals.currency = amount.currencyCode;
@@ -1261,6 +1279,26 @@ function __copyPos(pos) {
         }
     }
     return request_pos;
+}
+
+function getTransactionMode(deviceType)
+{
+	var transactionMode;
+		switch(deviceType){
+		case 'desktop':
+			transactionMode='S';
+			break;
+		case 'mobile':
+			transactionMode='P';
+			break;
+		case 'tablet':
+			transactionMode='T';
+			break;
+		default:
+			transactionMode='S';
+			break;
+		}
+	return transactionMode;
 }
 
 module.exports = {

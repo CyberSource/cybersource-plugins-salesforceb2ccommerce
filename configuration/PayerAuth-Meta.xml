@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+
+
+    <type-extension type-id="SitePreferences">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="CardinalCruiseApiPath">
+                <display-name xml:lang="x-default">CardinalCruiseApiPath</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CruiseApiIdentifier">
+                <display-name xml:lang="x-default">CruiseApiIdentifier</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CruiseApiKey">
+                <display-name xml:lang="x-default">CruiseApiKey</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CruiseMerchantName">
+                <display-name xml:lang="x-default">CruiseMerchantName</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="CruiseOrgUnitId">
+                <display-name xml:lang="x-default">CruiseOrgUnitId</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+
+        </custom-attribute-definitions>
+        <group-definitions>
+
+            <attribute-group group-id="CruiseCredentials">
+                <display-name xml:lang="x-default">CruiseCredentials</display-name>
+                <attribute attribute-id="CruiseOrgUnitId"/>
+                <attribute attribute-id="CruiseApiKey"/>
+                <attribute attribute-id="CruiseApiIdentifier"/>
+                <attribute attribute-id="CruiseMerchantName"/>
+                <attribute attribute-id="CardinalCruiseApiPath"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+
+
+</metadata>

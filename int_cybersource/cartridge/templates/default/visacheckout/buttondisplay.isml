@@ -24,7 +24,7 @@
   </div>
 </div>
 <isif condition="${!empty(pdict.CurrentHttpParameterMap.visacheckout.value) && pdict.CurrentHttpParameterMap.visacheckout.value}" >
-	<script type="text/javascript">
+<script type="text/javascript">
 	window.onload = function() {
 		$(".visaCheckoutCartButton").find("img").trigger("click");
 	};

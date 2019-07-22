@@ -256,6 +256,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     break;
                 case CybersourceConstants.METHOD_SA_SILENTPOST:
                     if (!empty(subscriptionToken)) {
+                    	signed_field_names = signed_field_names + ",payment_token";
                         requestMap.put('payment_token', subscriptionToken);
                         transaction_type = "update_payment_token";
                     }
@@ -831,7 +832,7 @@ function AuthorizeCreditCard(args) {
         return CardHelper.CardResponse(result.order, paymentInstrument, result.serviceResponse);
     }
     else if (result.payerauthentication) {
-        session.privacy.process3DRequest = true;
+        session.privacy.process3DRequestParent = true;
         var handle3DResponse = {
             process3DRedirection: true,
         };
@@ -914,6 +915,7 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
             session.privacy.PAReq = serviceResponse.PAReq;
             session.privacy.PAXID = serviceResponse.PAXID;
             session.privacy.order_id = orderNo;
+            session.privacy.authenticationTransactionID = serviceResponse.authenticationTransactionID;
             return { payerauthentication: true, serviceResponse: serviceResponse };
         } else {
             Logger.error('An error occured during PayerAuthEnroll check. (ReasonCode: {0} , RequestID: {1}', serviceResponse.ReasonCode, serviceResponse.RequestID);

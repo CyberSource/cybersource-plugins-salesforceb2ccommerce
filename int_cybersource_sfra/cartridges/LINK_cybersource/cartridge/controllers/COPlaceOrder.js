@@ -48,6 +48,11 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     var order = OrderMgr.getOrder(req.querystring.order_id);
 	var Provider = require('LINK_cybersource/cartridge/scripts/Provider');
 	var providerParam = req.querystring.provider;
+	var processorTransactionId;
+	if('processorTransactionId' in request.httpParameterMap && !empty(request.httpParameterMap.processorTransactionId)){
+		processorTransactionId = request.httpParameterMap.processorTransactionId;
+		session.privacy.processorTransactionId = processorTransactionId;
+	}
 	COHelpers.clearPaymentAttributes();
 	if(!empty(providerParam)) {
 		var providerResult = Provider.Check(order);

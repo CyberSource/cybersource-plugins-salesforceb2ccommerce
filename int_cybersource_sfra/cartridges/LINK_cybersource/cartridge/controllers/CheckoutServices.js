@@ -480,6 +480,51 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	    return next();
 	});
 
+server.post('SilentPostAuthorize',server.middleware.https, function (req, res, next) {
+	var DFReferenceId = request.httpParameterMap.DFReferenceId;
+	session.privacy.DFReferenceId = DFReferenceId;
+	var URLUtils = require('dw/web/URLUtils');
+	var OrderMgr = require('dw/order/OrderMgr');
+	var Resource = require('dw/web/Resource');
+    var Transaction = require('dw/system/Transaction');
+	//Add null check here
+	var order = OrderMgr.getOrder(session.privacy.orderId);
+	session.privacy.orderId = '';
+	var silentPostResponse = COHelpers.handleSilentPostAuthorize(order);
+	
+	if(silentPostResponse.error || silentPostResponse.declined || silentPostResponse.rejected) {
+		Transaction.wrap(function () { OrderMgr.failOrder(order); });
+		session.privacy.orderId = '';
+	}
+	if (silentPostResponse.error) {
+		res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString());
+	}  
+	else if (silentPostResponse.declined) {
+		session.custom.SkipTaxCalculation = false;
+		res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
+		return next();
+    }else if (silentPostResponse.rejected) {
+	    res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString());
+	    return next();
+    }
+	else if (silentPostResponse.authorized || silentPostResponse.review || silentPostResponse.process3DRedirection) {
+		var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
+		if(silentPostResponse.process3DRedirection){
+			res.redirect(URLUtils.https('CheckoutServices-PayerAuthentication'));
+			return next();
+		}
+		COHelpers.addOrUpdateToken(order, customerObj, res);
+		session.privacy.orderId = order.orderNo;
+		res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
+		return next();
+                    
+	} else {
+		res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment' , 'SecureAcceptanceError', 'true' ));
+		return next();
+	}
+	return next();
+});
+
 server.replace('PlaceOrder', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var HookMgr = require('dw/system/HookMgr');
@@ -490,6 +535,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
     var Site = require('dw/system/Site');
 	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+	var paramMap = request.httpParameterMap;
+	var DFReferenceId;
+	if(request.httpParameterMap.DFReferenceId.submitted) {
+		DFReferenceId = request.httpParameterMap.DFReferenceId;
+		session.privacy.DFReferenceId = DFReferenceId;
+	}
     var currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
     	if('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
@@ -603,10 +654,9 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     // Handles payment authorization
     var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
     if (handlePaymentResult.error) {
-    	
     	if(order.paymentInstrument.paymentMethod != null 
     			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
-    	    			&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
+    	    			|| (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
     	    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
     	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
     	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
@@ -708,10 +758,9 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	      });
 	    return next();
     } else if (handlePaymentResult.process3DRedirection){
-        res.json({
-        	error: false,
-        	continueUrl: URLUtils.url('CheckoutServices-PayerAuthentication').toString()
-    	});
+		
+		res.redirect(URLUtils.url('CheckoutServices-PayerAuthentication'));
+		
         return next();
     }
     
@@ -752,10 +801,16 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
         });
     }
-        //  Reset decision session variable.
+	//  Reset decision session variable
     session.custom.CybersourceFraudDecision = "";
     session.custom.SkipTaxCalculation = false;
 	session.custom.cartStateString = null;
+
+	// Handle Authorized status for Payer Authentication flow
+	if(DFReferenceId !== undefined && handlePaymentResult.authorized) {
+		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
+        return next();
+	}
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
@@ -783,11 +838,56 @@ server.get('PayerAuthentication', server.middleware.https, function (req, res, n
 	session.privacy.AcsURL = '';
 	session.privacy.PAReq = '';
 	session.privacy.PAXID = '';
-	res.render('cart/payerauthentication', {
-		Order: order,
+	
+	var jwtUtil = require('*/cartridge/scripts/cardinal/JWTBuilder');
+	var cardinalUtil = require('*/cartridge/scripts/cardinal/CardinalUtils');
+	var OrderObject = cardinalUtil.getOrderObject(order);
+	var orderdetailsObject = cardinalUtil.getOrderDetailsObject(order,session.privacy.authenticationTransactionID);
+	OrderObject.setOrderDetails(orderdetailsObject);
+	var jwtToken = jwtUtil.generateTokenWithKey(OrderObject);
+
+	var orderstring = JSON.stringify(OrderObject);
+	var auth = session.privacy.authenticationTransactionID;
+	res.render('cart/cardinalpayerauthentication', {
 		AcsURL:AcsURL,
 		PAReq:PAReq,
-		PAXID: PAXID
+		PAXID: PAXID,
+		authenticationTransactionID : session.privacy.authenticationTransactionID,
+		jwtToken:jwtToken,
+		orderstring :orderstring,
+		Order: order
+	});
+	return next();
+});
+
+server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
+	var formaction=req.querystring.formaction;
+	var BasketMgr = require('dw/order/BasketMgr');
+	var URLUtils = require('dw/web/URLUtils');
+	var OrderMgr = require('dw/order/OrderMgr');
+	var order = OrderMgr.getOrder(session.privacy.order_id);
+	var action = '';
+	var currentBasket = !empty(BasketMgr.getCurrentBasket()) ? BasketMgr.getCurrentBasket() : order;
+	if(!empty(BasketMgr.getCurrentBasket())){
+		currentBasket = BasketMgr.getCurrentBasket();
+		action = URLUtils.url('CheckoutServices-PlaceOrder');
+	} else {
+		action = URLUtils.url('CheckoutServices-SilentPostAuthorize');
+	}
+	
+	var orderObject= "";
+        var jwtToken ="";
+        
+        	var jwtUtil = require('*/cartridge/scripts/cardinal/JWTBuilder');       
+            var cardinalUtil = require('*/cartridge/scripts/cardinal/CardinalUtils');        
+            jwtToken = jwtUtil.generateTokenWithKey();       
+            var OrderObject = cardinalUtil.getOrderObject(currentBasket);       
+            orderObject = JSON.stringify(OrderObject);
+	
+	res.render('payerauthentication/songbird', {
+		order: orderObject,
+		jwtToken : jwtToken,
+		action: action
 	});
 	return next();
 });

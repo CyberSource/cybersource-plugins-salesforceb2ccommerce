@@ -363,20 +363,9 @@ function SilentPostResponse() {
                         httpParameterMap.req_bill_to_forename.stringValue, httpParameterMap.req_bill_to_surname.stringValue);
                 });
 
-               //Authorization
-                var silentPostResponse = secureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: paymentInstrument, Order: order, Basket: order });
-                if (silentPostResponse.authorized || silentPostResponse.review || silentPostResponse.process3DRedirection) {
-                    var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
-                    if(silentPostResponse.process3DRedirection){
-                        return URLUtils.https('CheckoutServices-PayerAuthentication');
-                    }
-                	secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
-                	session.privacy.orderId = order.orderNo;
-                    return URLUtils.https('COPlaceOrder-SilentPostSubmitOrder');
-                    
-                } else {
-                    return URLUtils.https('Checkout-Begin', 'stage', 'payment' , 'SecureAcceptanceError', 'true' );
-                }
+				//Payer Auth 3DS updates
+				session.privacy.orderId = order.orderNo;
+				return URLUtils.https('CheckoutServices-InitPayerAuth');
             } else {
                 return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder' , 'SecureAcceptanceError', 'true' );
             }

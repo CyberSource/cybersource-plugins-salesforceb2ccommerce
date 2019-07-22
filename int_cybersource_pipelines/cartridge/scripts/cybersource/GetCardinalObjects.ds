@@ -1,0 +1,30 @@
+/*
+* Description of the module and the logic it provides
+*
+* @module cartridge/scripts/GetCardinalObjects
+* @input Basket : dw.order.Basket
+* @output order : String
+* @output jwtToken : String
+*/
+
+'use strict';
+
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.value );
+importPackage( dw.util );
+function execute( pdict : PipelineDictionary ) : Number
+{
+     var basket : Basket = pdict.Basket;
+    
+     var jwtUtil = require('int_cybersource/cartridge/scripts/cardinal/JWTBuilder'); 
+     var cardinalUtil = require('int_cybersource/cartridge/scripts/cardinal/CardinalUtils');
+        
+     var jwtToken : String = jwtUtil.generateTokenWithKey();
+     var OrderObject = cardinalUtil.getOrderObject(basket);
+     var order = JSON.stringify(OrderObject);
+     pdict.jwtToken = jwtToken;
+     pdict.order = order;
+        
+     return PIPELET_NEXT;
+}

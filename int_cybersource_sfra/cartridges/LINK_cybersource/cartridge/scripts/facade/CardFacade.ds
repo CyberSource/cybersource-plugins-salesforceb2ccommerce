@@ -251,7 +251,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
-	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken());
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');
@@ -296,6 +296,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 		responseObject["PAXID"] = serviceResponse.payerAuthEnrollReply.xid;
 		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
 		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
+		responseObject["authenticationTransactionID"] = serviceResponse.payerAuthEnrollReply.authenticationTransactionID;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
@@ -313,7 +314,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var orderNo = OrderNo;
     var amount = Amount;
     var creditCardForm = CreditCardForm;
-    var signedPaRes = dw.util.StringUtils.trim(PaRes);
+    var signedPaRes = !empty(PaRes) ? dw.util.StringUtils.trim(PaRes) : '';
 	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
 	//**************************************************************************//
 	// Set WebReference & Stub

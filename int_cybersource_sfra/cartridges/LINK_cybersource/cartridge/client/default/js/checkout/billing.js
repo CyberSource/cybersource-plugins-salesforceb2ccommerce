@@ -236,7 +236,7 @@ base.methods.updatePaymentInformation = function (order, options) {
 	    		&& order.billing.payment.selectedPaymentInstruments
 		        && order.billing.payment.selectedPaymentInstruments.length > 0 
 		        && order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD' 
-		        && saType != null && saType != 'SA_FLEX' ) {
+		        && saType != null) {
 	    			$('.next-step-button .place-order').addClass(saType.toLowerCase()).removeClass('place-order');
 	    } else if(order.billing.payment 
 	    		&& order.billing.payment.selectedPaymentInstruments

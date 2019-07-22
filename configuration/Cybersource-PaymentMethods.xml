@@ -175,6 +175,16 @@
             <custom-attribute attribute-id="paymentType">GPY</custom-attribute>
         </custom-attributes>
     </payment-method>
+	
+	<payment-method method-id="DW_GOOGLE_PAY">
+        <name xml:lang="x-default">Google Pay</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>CYBERSOURCE_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+        </custom-attributes>
+    </payment-method>
 
     <payment-card card-type="JCB">
         <name xml:lang="x-default">JCB Card</name>
@@ -326,6 +336,28 @@
     </payment-card>
 
     <payment-card card-type="MasterCard">
+        <name xml:lang="x-default">MasterCard</name>
+        <name xml:lang="fr-FR">Master Card</name>
+        <name xml:lang="it-IT">Master Card</name>
+        <name xml:lang="ja-JP">Master Card</name>
+        <name xml:lang="zh-CN">Master Card（万事达卡）</name>
+        <enabled-flag>true</enabled-flag>
+        <card-number-settings>
+            <enable-checksum-verification>true</enable-checksum-verification>
+            <number-length>
+                <length>16-19</length>
+            </number-length>
+            <number-prefix>
+                <prefix>51-55</prefix>
+            </number-prefix>
+        </card-number-settings>
+        <security-code-length>3</security-code-length>
+        <custom-attributes>
+            <custom-attribute attribute-id="csEnablePayerAuthentication">true</custom-attribute>
+        </custom-attributes>
+    </payment-card>
+
+        <payment-card card-type="Master Card">
         <name xml:lang="x-default">MasterCard</name>
         <name xml:lang="fr-FR">Master Card</name>
         <name xml:lang="it-IT">Master Card</name>

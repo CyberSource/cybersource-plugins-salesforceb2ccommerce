@@ -293,6 +293,41 @@ function reCreateBasket(order){
     return BasketMgr.getCurrentBasket();
 }
 
+function handleSilentPostAuthorize(order) {
+	var PaymentMgr = require('dw/order/PaymentMgr');
+    var HookMgr = require('dw/system/HookMgr');
+	var paymentInstrument;
+	if (null !== order) {
+		var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
+    }
+    var authorizationResult;
+    var result = {};
+    var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod).paymentProcessor;
+    if (HookMgr.hasHook('app.payment.processor.' + paymentProcessor.ID.toLowerCase())) {
+		authorizationResult = HookMgr.callHook(
+			'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
+			'SilentPostAuthorize',
+			order.orderNo,
+			paymentInstrument,
+			paymentProcessor
+		);
+	} 
+	return authorizationResult;	
+}
+
+function addOrUpdateToken(order, customerObj, res){
+	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+	var URLUtils = require('dw/web/URLUtils');
+	var paymentInstrument;
+	if (null !== order) {
+        paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
+    }
+	CardHelper.addOrUpdateToken(paymentInstrument, customerObj);
+		session.privacy.orderId = order.orderNo;
+		res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
+}
+
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
 base.handlePayments = handlePayments;
 base.validatePayment = validatePayment;
@@ -301,5 +336,7 @@ base.validatePPLForm = validatePPLForm;
 base.getPayPalInstrument = getPayPalInstrument;
 base.handlePayPal = handlePayPal;
 base.clearPaymentAttributes = clearPaymentAttributes;
+base.handleSilentPostAuthorize = handleSilentPostAuthorize;
 base.reCreateBasket = reCreateBasket;
+base.addOrUpdateToken = addOrUpdateToken;
 module.exports = base;

@@ -91,6 +91,18 @@ exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) 
     }
 };
 
+exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentProcessor) {
+	var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+	var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.getOrder(orderNumber);
+    var pi = paymentInstrument;
+    var paymentMethod = pi.getPaymentMethod();
+    if (empty(paymentMethod)) {
+        return { error: true };
+    }
+    return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
+};
+
 /**
  * Verifies billing and shipping details and 
  * possibly invalidates invalid form fields. 

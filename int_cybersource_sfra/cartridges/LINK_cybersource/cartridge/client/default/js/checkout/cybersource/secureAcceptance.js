@@ -20,6 +20,14 @@ function initSecureAcceptance() {
     });
 }
 
+function payerAuth() {
+	$('.credit_card, .sa_flex').on('click', function (e) {
+		e.stopImmediatePropagation();
+		var payerAuth = $(this).data('payerauth');
+		window.location.href = payerAuth;
+	});
+}
+
 /**
  * @function
  * @description function to Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
@@ -62,6 +70,7 @@ module.exports = {
     	 $('body').on('checkout:updateCheckoutView', function (e, data) {
             initSecureAcceptance();
             initSecureAcceptanceIframe();
+            payerAuth();
          });  	
     }
 };

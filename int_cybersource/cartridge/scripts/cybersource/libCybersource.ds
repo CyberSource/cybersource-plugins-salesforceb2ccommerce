@@ -208,6 +208,18 @@ var CybersourceHelper = {
 	getMasterCardAuthIndicator : function (){
 		return Site.getCurrent().getCustomPreferenceValue("csMasterCardAuthIndicator");
 	},
+	getCruiseCredentialsApiKey : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CruiseApiKey");
+	},
+	getCruiseCredentialsApiIdentifier : function (){
+	   	return Site.getCurrent().getCustomPreferenceValue("CruiseApiIdentifier");
+	},
+	getCruiseCredentialsOrgUnitId : function (){
+		return Site.getCurrent().getCustomPreferenceValue("CruiseOrgUnitId");
+	},
+    getCruiseCredentialsName : function (){
+        return Site.getCurrent().getCustomPreferenceValue("CruiseMerchantName");   	
+    },		
 	/*****************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.
@@ -262,19 +274,12 @@ var CybersourceHelper = {
 		Logger.debug('Connection to system "{0}"',endpoint);
 		var Stub = require('dw/rpc/Stub');
 
-		switch ( endpoint )
-		{
+		switch ( endpoint ) {
 			case "Production":
 				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor');
 				break;
 			case "Test" :
 				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor');
-				break;
-			case "Development":
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor');
-				break;
-			case "Missing":
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,dw.web.URLUtils.https('CyberSourceUtil-TestNullEndPoint').toString() );			
 				break;
 			default:
 				throw "Undefined Cybersource Endpoint \"" + endpoint + "\""; 
@@ -634,7 +639,7 @@ var CybersourceHelper = {
 	},
 	
 	
-	addPayerAuthEnrollInfo : function(serviceRequest : Object, orderNo : String, creditCardForm : dw.web.FormElement, countryCode : String, amount : dw.value.Money, subscriptionToken : String){
+	addPayerAuthEnrollInfo : function(serviceRequest : Object, orderNo : String, creditCardForm : dw.web.FormElement, countryCode : String, amount : dw.value.Money, subscriptionToken : String, phoneNumber : String){
 		serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 		
 		__setClientData( serviceRequest, orderNo );
@@ -657,6 +662,9 @@ var CybersourceHelper = {
 		items.push(item);
 		serviceRequest.item = items;
 		serviceRequest.payerAuthEnrollService.run=true;
+		serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceID;
+		serviceRequest.payerAuthEnrollService.mobilePhone=phoneNumber;
+		serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(session.custom.device);
 	},
 	
 	addTestPayerAuthEnrollInfo : function(request : Object, card : Object)
@@ -726,7 +734,7 @@ var CybersourceHelper = {
     return request;     
 	},
 	
-	addPayerAuthValidateInfo : function(request : Object, orderNo : String, signedPARes : String, creditCardForm : dw.web.FormElement, amount : dw.value.Money, subscriptionToken : String){
+	    addPayerAuthValidateInfo : function(request : Object, orderNo : String, signedPARes : String, creditCardForm : dw.web.FormElement, amount : dw.value.Money, subscriptionToken : String , transactionId : String){
 		request.merchantID = CybersourceHelper.getMerchantID();
 		
 		__setClientData( request, orderNo );
@@ -742,6 +750,7 @@ var CybersourceHelper = {
 		// validate specific stuff
 		request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
 		request.payerAuthValidateService.signedPARes = signedPARes;
+		request.payerAuthValidateService.authenticationTransactionID = transactionId;
 
 		request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
 		request.purchaseTotals.currency=amount.currencyCode;
@@ -1232,6 +1241,26 @@ function __copyPos( pos  )
 		}
 	}
 	return request_pos;
+}
+
+function getTransactionMode(deviceType)
+{
+	var transactionMode;
+		switch(deviceType){
+		case 'desktop':
+			transactionMode='S';
+			break;
+		case 'mobile':
+			transactionMode='P';
+			break;
+		case 'tablet':
+			transactionMode='T';
+			break;
+		default:
+			transactionMode='S';
+			break;
+		}
+	return transactionMode;
 }
 
 module.exports = {

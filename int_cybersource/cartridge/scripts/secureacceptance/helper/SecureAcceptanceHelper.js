@@ -252,7 +252,8 @@ try{
 				signed_field_names = signed_field_names + ",override_custom_cancel_page";
 				signed_field_names = signed_field_names + ",override_custom_receipt_page";
 				requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal,'order_token',orderToken));
-				requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider',providerVal,'order_token',orderToken));
+				// Updated for transaction not processed Scenario
+				requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit','order_id', lineItemCtnr.orderNo,'provider',providerVal,'order_token',orderToken));
 							
 			break;
 			case CybersourceConstants.METHOD_SA_SILENTPOST:
@@ -368,6 +369,8 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
 		requestMap.put('customer_ip_address', CommonHelper.GetIPAddress());
  	
 		var StringUtils = require('dw/util/StringUtils');
+		// Added for transaction not processed Scenario
+		var SecureEncoder = require('dw/util/SecureEncoder');
 		var result = CommonHelper.CreateCybersourceItemObject(lineItemCtnr);
 		var items : dw.util.List = result.items;
 		var item, itemId;
@@ -393,9 +396,10 @@ function CreateLineItemCtnrRequestData(lineItemCtnr, requestMap, paymentMethod, 
 					requestMap.put('item_'+itemId+'_code', item.getProductCode());
 				}
 				if (!empty(item.getProductName())) {
-					//signed_field_names = signed_field_names + ",item_"+itemId+"_name";
-					unsigned_field_names = unsigned_field_names + ",item_"+itemId+"_name";
-					requestMap.put('item_'+itemId+'_name', StringUtils.stringToHtml(item.getProductName()));
+					// Updated for transaction not processed Scenario
+					signed_field_names = signed_field_names + ",item_"+itemId+"_name";
+					//unsigned_field_names = unsigned_field_names + ",item_"+itemId+"_name";
+					requestMap.put('item_'+itemId+'_name', SecureEncoder.forUriComponentStrict(item.getProductName()));
 				}
 				if (!empty(item.getUnitPrice())) {
 					signed_field_names = signed_field_names + ",item_"+itemId+"_unit_price";
@@ -810,12 +814,13 @@ function AuthorizeCreditCard(args) {
     	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     	return CardHelper.CardResponse(result.order, paymentInstrument, result.serviceResponse);
     } else if (result.payerauthentication) {
-		session.privacy.process3DRequest=true;
+		session.privacy.process3DRequestParent=true;
 		var handle3DResponse={process3DRedirection:true,
 		Order: args.Order,
 		AcsURL:result.serviceResponse.AcsURL,
 		PAReq:result.serviceResponse.PAReq,
-		PAXID: result.serviceResponse.PAXID};
+		PAXID: result.serviceResponse.PAXID,
+		authenticationTransactionID:result.serviceResponse.authenticationTransactionID};
 		return handle3DResponse;
     }
     if (paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) && !result.success) {

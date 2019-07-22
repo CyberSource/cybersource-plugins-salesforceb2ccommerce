@@ -22,7 +22,7 @@
 * @output PAReq : String The paReq field - Payer authentication request message that you send to the ACS through the card association
 * @output XID : String The xid field - A unique transaction ID generated for each payment authentication request (PAReq) message. The PARes returned by issuing bank contains the XID of the PAReq.
 * @output ProxyPAN : String The proxyPAN field - Encrypted versio of credit card number used in the payer authentication request message
-*
+* @output authenticationTransactionID :String The authenticationTransactionID - A unique transaction ID generated for each payment authentication request message.
 */
 
 var Logger = require('dw/system/Logger');
@@ -60,6 +60,7 @@ function execute( pdict : PipelineDictionary ) : Number
 		pdict.XID =  result.serviceResponse.PAXID;
 		pdict.PAReq = result.serviceResponse.PAReq;
 		pdict.ProxyPAN = result.serviceResponse.ProxyPAN;
+		pdict.authenticationTransactionID = result.serviceResponse.authenticationTransactionID;
 	}
 
     return PIPELET_NEXT;

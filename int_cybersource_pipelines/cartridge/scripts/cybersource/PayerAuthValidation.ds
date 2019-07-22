@@ -37,7 +37,8 @@ function execute( pdict : PipelineDictionary ) : Number
 	var orderNo : String = pdict.OrderNo;
 	var amount : dw.value.Money = pdict.Amount;
 	var creditCardForm : dw.web.FormElement = pdict.CreditCardForm;
-	var result = CardFacade.PayerAuthValidation(pdict.PaRes, amount, orderNo, creditCardForm, pdict.CreditCardToken);
+	    var processorTransactionid :String = session.privacy.processorTransactionid;
+    var result = CardFacade.PayerAuthValidation(pdict.PaRes, amount, orderNo, creditCardForm, pdict.CreditCardToken,processorTransactionid);
 	if (result.error) {
 		Logger.error("[PayerAuthValidation.ds] error "+result.errorMsg);
 		return PIPELET_ERROR;

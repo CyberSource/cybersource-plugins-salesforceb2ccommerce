@@ -421,14 +421,18 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
             CommonHelper.UpdateOrderShippingAddress(serviceResponse.StandardizedAddress, order, session.forms.shipping.shippingAddress.shippingAddressUseAsBillingAddress.value);
         }
         if (serviceResponse.ReasonCode == '100' || serviceResponse.ReasonCode == '480') {
-            var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-            secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customer.authenticated ? customer : null);
+			addOrUpdateToken(paymentInstrument, customer.authenticated ? customer : null);
         }
         // returns response as authorized, error, declined based on ReasonCode
         return HandleCardResponse(serviceResponse);
     }
     // returns response as authorized, error, declined based on DAVReasonCode or ReasonCode
     return HandleDAVResponse(serviceResponse);
+}
+
+function addOrUpdateToken(paymentInstrument, customer) {
+	var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+	return secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customer);
 }
 
 module.exports = {
@@ -443,5 +447,6 @@ module.exports = {
     protocolResponse: protocolResponse,
     getNonGCPaymemtInstument: getNonGCPaymemtInstument,
     getCardType: getCardType,
-    ReturnCardType: returnCardType
+    ReturnCardType: returnCardType,
+    addOrUpdateToken : addOrUpdateToken
 };
