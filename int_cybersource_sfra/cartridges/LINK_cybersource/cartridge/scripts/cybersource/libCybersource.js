@@ -44,7 +44,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'B6AR3CUQ';
+        return '242HGQ1F';
     },
 
     getDeveloperID: function () {
@@ -620,7 +620,7 @@ var CybersourceHelper = {
     },
 
 
-    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber) {
+    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType) {
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(serviceRequest, orderNo);
@@ -646,8 +646,8 @@ var CybersourceHelper = {
         serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
 		serviceRequest.payerAuthEnrollService.mobilePhone=phoneNumber;
 		var currentDevice = session.custom.device;
-		//serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(session.custom.device);
-		serviceRequest.payerAuthEnrollService.transactionMode= 'S';
+		serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(deviceType);
+		//serviceRequest.payerAuthEnrollService.transactionMode= 'S';
     },
 
     addTestPayerAuthEnrollInfo: function (request, card) {
@@ -747,7 +747,7 @@ var CybersourceHelper = {
     },
 
     addPayerAuthReplyInfo: function (request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
-        commerceIndicator, xid, paresStatus) {
+        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId) {
         if (request.ccAuthService === null) {
             request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
         }
@@ -763,6 +763,12 @@ var CybersourceHelper = {
         if (eciRaw !== null) {
             request.ccAuthService.eciRaw = eciRaw;
         }
+        if(specificationVersion !== null){
+			request.ccAuthService.paSpecificationVersion = specificationVersion;
+		}
+		if(directoryTrnsctnId !== null){
+			request.ccAuthService.directoryServerTransactionID = directoryTrnsctnId;
+		}
         if (!empty(ucafAuthenticationData)) {
             request.ucaf = new CybersourceHelper.csReference.UCAF();
             request.ucaf.authenticationData = ucafAuthenticationData;
@@ -1159,7 +1165,7 @@ function __setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '19.2.0';
+    request.clientLibraryVersion = '19.3.0';
     request.clientEnvironment = 'Linux';
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;

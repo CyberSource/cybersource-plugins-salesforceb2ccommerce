@@ -12,13 +12,13 @@
 	<div id="cyb_payerauth" class="payerauth">
 			<input type="hidden" id="PaReq" value="${pdict.PAReq}">
 			<input type="hidden" id="AcsURL" value="${pdict.AcsURL}">
-			<input type="hidden" id="JWT" value="${pdict.jwtToken}">
+			<input type="hidden" id="jwtToken" value="${pdict.jwtToken}">
 			<input type="hidden" id="order" value="${pdict.orderstring}">	
 			<input type="hidden" id="transactionId" value="${pdict.authenticationTransactionID}">
-		<form action="${URLUtils.https('COPlaceOrder-Submit','provider','card')}" method="POST" name="RedirectForm" target="_parent">            
+		<form action="${URLUtils.https('COPlaceOrder-Submit','provider','card','PAXID',pdict.PAXID)}" method="POST" name="RedirectForm" target="_parent">            
             <input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
             <input type="hidden" name="order_token" value="${pdict.Order.orderToken}">
-            <input type="hidden" name="processorTransactionid"  id ="processorTransactionid" />
+            <input type="hidden" name="processorTransactionId"  id ="processorTransactionId" />
         </form>
         <form action="${URLUtils.https('COPlaceOrder-Fail')}" method="POST" name="FailForm" target="_parent">            
             <input type="hidden" name="order_token" value="${pdict.Order.orderToken}">
@@ -44,15 +44,15 @@
 		     "Payload":payload
 		};
 	
-		var jwt = document.getElementById("JWT").value;
+		var jwt = document.getElementById("jwtToken").value;
 	 	Cardinal.setup("init", {
-		    jwt: document.getElementById("JWT").value,
+		    jwt: document.getElementById("jwtToken").value,
 		    order: orderObject
 	  	});	 
 	    Cardinal.on("payments.validated", function (data, jwt) {     
 	         if(data.ErrorDescription && data.ErrorDescription === "Success")    
 	         {
-	             document.getElementById("processorTransactionid").value = data.Payment.ProcessorTransactionId;
+	             document.getElementById("processorTransactionId").value = data.Payment.ProcessorTransactionId;
 	             document.RedirectForm.submit();     
 	         }
 	         else{

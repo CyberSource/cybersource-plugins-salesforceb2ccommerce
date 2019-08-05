@@ -1120,7 +1120,7 @@ function signedDataUsingHMAC256(dataToSign, secretKey) {
     var mac = new dw.crypto.Mac(dw.crypto.Mac.HMAC_SHA_256);
 
     if (!empty(dataToSign) && !empty(secretKey)) {
-        signature = dw.crypto.Encoding.toBase64(mac.digest(new dw.util.Bytes(dataToSign, 'UTF-8'), new dw.util.Bytes(secretKey, 'UTF-8')));
+        signature = dw.crypto.Encoding.toBase64(mac.digest(dataToSign, new dw.util.Bytes(secretKey, 'UTF-8')));
     }
     return signature;
 }
@@ -1561,6 +1561,56 @@ function validatePayPalInstrument(basket, orderModel) {
 	return false;
 }
 
+function getDeviceType(currentRequest){
+	var deviceType : String = "desktop";
+    var iPhoneDevice : String = "iPhone";
+    var iPadDevice : String = "iPad";
+    var request : dw.system.Request = currentRequest;
+    var andriodDevice : String = "Android"; //Mozilla/5.0 (Linux; U; Android 2.3.4; en-us; ADR6300 Build/GRJ22) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1
+    
+    var httpUserAgent : String = request.httpUserAgent;
+    
+    //check if the device is iPhone
+    if (httpUserAgent.indexOf(iPhoneDevice) > 1) {
+    	
+    	deviceType = "mobile";
+
+    //check if the device is Android mobile device
+    } else if (httpUserAgent.indexOf(andriodDevice) > 1) {
+    	
+    	if (httpUserAgent.indexOf("mobile") > 1) 
+	    	deviceType = "mobile";
+
+    } else if (httpUserAgent.indexOf(iPadDevice) > 1) {
+
+    	deviceType = "tablet";
+    }
+    
+	return deviceType;
+}
+
+function getPaymentClass(paymentInstrument){
+	var Resource = require('dw/web/Resource');
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+	var paymentClass = '';
+	if(paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)) {
+		if(CsSAType != null)
+			paymentClass = CsSAType.toLowerCase();
+		else
+			paymentClass = Resource.msg('paymentmethodname.creditcard','cybersource',null).toLowerCase();
+	} 
+	else if(paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null))
+		paymentClass = Resource.msg('paymentmethodname.creditcard','cybersource',null).toLowerCase();
+	else if(paymentInstrument.paymentMethod != Resource.msg('paymentmethodname.visacheckout','cybersource',null).toLowerCase()
+		&& paymentInstrument.paymentMethod != Resource.msg('paymentmethodname.googlepay','cybersource',null).toLowerCase()
+		&& paymentInstrument.paymentMethod != Resource.msg('paymentmethodname.paypal','cybersource',null).toLowerCase()
+		&& paymentInstrument.paymentMethod != Resource.msg('paymentmethodname.paypalcredit','cybersource',null).toLowerCase()
+		&& paymentInstrument.paymentMethod != Resource.msg('paymentmethodname.creditcard','cybersource',null).toLowerCase()) {
+		paymentClass = paymentInstrument.paymentMethod.toLowerCase();
+	}
+	return paymentClass;
+}
+
 module.exports = {
     CreateCybersourceShipFromObject: CreateCybersourceShipFromObject,
     CreateCyberSourceBillToObject: CreateCyberSourceBillToObject,
@@ -1594,5 +1644,7 @@ module.exports = {
     sendMail: sendMail,
     CalculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount,
     CalculateNonGiftCertificateAmountPaypal: calculateNonGiftCertificateAmountPayPal,
-    ValidatePayPalInstrument : validatePayPalInstrument
+    ValidatePayPalInstrument : validatePayPalInstrument,
+    getDeviceType : getDeviceType,
+    GetPaymentClass : getPaymentClass
 };

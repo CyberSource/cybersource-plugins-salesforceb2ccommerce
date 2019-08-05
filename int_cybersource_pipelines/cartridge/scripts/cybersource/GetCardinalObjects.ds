@@ -5,6 +5,7 @@
 * @input Basket : dw.order.Basket
 * @output order : String
 * @output jwtToken : String
+* @output iscardinal : Boolean
 */
 
 'use strict';
@@ -19,12 +20,23 @@ function execute( pdict : PipelineDictionary ) : Number
     
      var jwtUtil = require('int_cybersource/cartridge/scripts/cardinal/JWTBuilder'); 
      var cardinalUtil = require('int_cybersource/cartridge/scripts/cardinal/CardinalUtils');
-        
+     var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+     var iscardinal : Boolean = false;
+     var selectedPaymentMethod = basket.getPaymentInstruments()[0].paymentMethod;
+     
+      if(selectedPaymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) || selectedPaymentMethod.equals(CybersourceConstants.METHOD_SA_SILENTPOST)
+        		|| selectedPaymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)){
+        	iscardinal = true;	
+     }  
+     
      var jwtToken : String = jwtUtil.generateTokenWithKey();
      var OrderObject = cardinalUtil.getOrderObject(basket);
      var order = JSON.stringify(OrderObject);
+     
      pdict.jwtToken = jwtToken;
      pdict.order = order;
+     pdict.iscardinal = iscardinal;
+     
         
      return PIPELET_NEXT;
 }

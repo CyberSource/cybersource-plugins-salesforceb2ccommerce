@@ -100,6 +100,15 @@ initPayPalButtons : function() {
 },
 
 initFunctions : function(){
+	
+
+	$(document).on('click', '.credit_card, .sa_flex', function (e) {
+		e.stopImmediatePropagation();
+		var payerAuth = $(this).data('payerauth');
+		window.location.href = payerAuth;
+	});
+
+	
     // for Alipay Intermediate
     if($("body").hasClass("cyb_alipayintermediate")) {
         var loaded = false;
@@ -173,7 +182,57 @@ initFunctions : function(){
         $('body').append(form);
         form.submit();
     });
+	
+	$(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .gpy, .eps, .sof, .mch, .idl', function (e) {
+		e.stopImmediatePropagation();
+    	var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
+    	var paymentMethodID = $("input[name=dwfrm_billing_paymentMethod]").val();
+    	var paymentMethodIds = ['KLARNA', 'ALIPAY', 'GPY', 'EPS', 'SOF', 'IDL', 'MCH'];
+        var paymentMethod = $.inArray(paymentMethodID, paymentMethodIds) > -1
+    	if (('CREDIT_CARD' != CsSaType && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
+    		var formaction = $(this).attr('data-action');
+			setTimeout(function () {
+			  window.location.href = formaction;
+			}, 500);
+      	}
+    });
 
+/**
+ * @function
+ * @description function to Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
+ */
+	$(document).on('click', '.sa_iframe', function (e) {
+		e.stopImmediatePropagation();
+		var creditCardItem = $('li[data-method-id="CREDIT_CARD"]');
+    	var CsSaType = $(creditCardItem).attr('data-sa-type');
+    	if ('SA_IFRAME' == CsSaType) {
+    		var formaction = $(this).attr('data-action');
+    			 $.ajax({
+    					url: formaction,
+    					type: "POST",
+    					success: function(xhr,data) {
+    						if(xhr) {
+    							if(xhr.error == true) {
+    								 $("#saspCardError").html(xhr.errorMsg);
+    								 $("#saspCardError").addClass('error');
+    							} else {
+    								  $("#secureAcceptanceIframe").html(xhr);
+    						   }
+    						} else {                         
+    				        	 $("#saspCardError").html(xhr.errorMsg);
+    							 $("#saspCardError").addClass('error');
+    				        }
+    						return true;
+    					},
+    				    error: function () {
+    				    	 $("#saspCardError").html(xhr.errorMsg).addClass('error');
+    					}
+    			  });
+    	} else {
+    		return true;
+    	}
+	});
+	
     $('#capturepaymenttype, #authreversalpaymenttype').change(function() {
             if($(this).val() == 'visacheckout')	{
                 $('#orderRequestID').attr('required','required');
@@ -302,6 +361,8 @@ var paypalvalidator = {
         $('.billing-information').on('change', handler);
     }
 };
+
+
 
 $(document).ready(function() {
     init.initConfig();

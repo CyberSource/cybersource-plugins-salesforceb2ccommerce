@@ -231,27 +231,35 @@ base.methods.updatePaymentInformation = function (order, options) {
     updatePaypal(options);
     var creditCardItem = $('li[data-method-id="CREDIT_CARD"]');
     var saType = $(creditCardItem).attr('data-sa-type');
+   
+	if(order.billing.payment 
+		&& order.billing.payment.selectedPaymentInstruments
+		&& order.billing.payment.selectedPaymentInstruments.length > 0 
+		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD' 
+		&& saType != null) {
+		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order ' + saType.toLowerCase();
+	} else if(order.billing.payment 
+		&& order.billing.payment.selectedPaymentInstruments
+		&& order.billing.payment.selectedPaymentInstruments.length > 0 
+		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'VISA_CHECKOUT' 
+		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'DW_GOOGLE_PAY' 
+		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'PAYPAL' 
+		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'CREDIT_CARD') {
+		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order ' + order.billing.payment.selectedPaymentInstruments[0].paymentMethod.toLowerCase();
+	} else if(order.billing.payment 
+		&& order.billing.payment.selectedPaymentInstruments
+		&& order.billing.payment.selectedPaymentInstruments.length > 0 
+		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD'){
+		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order credit_card';
+		}
+	else if(!$('.next-step-button .submit-order').hasClass('.place-order')){
+		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order place-order';
+	}
     
-	    if(order.billing.payment 
-	    		&& order.billing.payment.selectedPaymentInstruments
-		        && order.billing.payment.selectedPaymentInstruments.length > 0 
-		        && order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD' 
-		        && saType != null) {
-	    			$('.next-step-button .place-order').addClass(saType.toLowerCase()).removeClass('place-order');
-	    } else if(order.billing.payment 
-	    		&& order.billing.payment.selectedPaymentInstruments
-		        && order.billing.payment.selectedPaymentInstruments.length > 0 
-		        && order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'VISA_CHECKOUT' 
-		        && order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'DW_GOOGLE_PAY' 
-			    && order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'PAYPAL' 
-		        && order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'CREDIT_CARD') {
-			    	$('.next-step-button .place-order').addClass(order.billing.payment.selectedPaymentInstruments[0].paymentMethod.toLowerCase()).removeClass('place-order');
-	    }
-    
-        if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
-		        && order.billing.payment.selectedPaymentInstruments.length > 0 && order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD' && saType && saType != 'SA_SILENTPOST' && saType != 'SA_FLEX') {
-        	isCSType = true;
-        }
+	if (order.billing.payment && order.billing.payment.selectedPaymentInstruments
+		&& order.billing.payment.selectedPaymentInstruments.length > 0 && order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD' && saType && saType != 'SA_SILENTPOST' && saType != 'SA_FLEX') {
+		isCSType = true;
+	}
     
     if (isCSType) {
 	    	if(order.billing.payment && order.billing.payment.selectedPaymentInstruments

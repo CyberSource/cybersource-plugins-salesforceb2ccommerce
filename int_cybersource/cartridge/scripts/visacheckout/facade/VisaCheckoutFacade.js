@@ -367,6 +367,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 		responseObject["PAXID"] = serviceResponse.payerAuthEnrollReply.xid;
 		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
 		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
+        responseObject["authenticationTransactionID"] = serviceResponse.payerAuthEnrollReply.authenticationTransactionID;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
@@ -378,14 +379,13 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
  * @param Amount : Money
  * @param orderNo : String
  */
-function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,PaRes : String,Amount : dw.value.Money,OrderNo : String)
+function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,PaRes : String,Amount : dw.value.Money,OrderNo : String,processorTransactionId : String)
 {
 	var lineItemCtnrObj = LineItemCtnrObj;
     var orderNo = OrderNo;
     var amount = Amount;
-    var signedPaRes = dw.util.StringUtils.trim(PaRes);
-	//var signedPaRes : String =PaRes;
-	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
+    var signedPaRes = PaRes!= null?dw.util.StringUtils.trim(PaRes):null;
+    signedPaRes = signedPaRes!= null?signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',""):"";
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
@@ -398,7 +398,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,null,amount, null);
+    CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,null,amount, null,processorTransactionId);
 
 	//Objects to set in the Service Request inside facade
 	var shipTo, billTo, purchaseObject;

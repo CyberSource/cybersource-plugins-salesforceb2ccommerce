@@ -99,7 +99,11 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 				billToObject.setPostalCode ( billingAddress.postalCode );
 				billToObject.setCountry    ( billingAddress.countryCode );
 				billToObject.setPhoneNumber( billingAddress.phone );
-				billToObject.setEmail      ( basket.customerEmail );
+				
+				//billToObject.setEmail      ( basket.customerEmail );
+					//  Temporary 'fix'.  Initial integration is not sending email address when DM is set for PP.
+				billToObject.setEmail( "test@test.com" );
+				
 			} else {
 				billToObject.setFirstName  ( shippingAddress.firstName );
 				billToObject.setLastName   ( shippingAddress.lastName );

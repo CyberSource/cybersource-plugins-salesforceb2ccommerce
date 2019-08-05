@@ -456,6 +456,7 @@
           <key-binding alias="ServiceResponse" key="ServiceResponse"/>
           <key-binding alias="PAReasonCode" key="PAReasonCode"/>
           <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
+          <key-binding alias="authenticationTransactionID" key="authenticationTransactionID"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">
@@ -602,6 +603,7 @@
           <key-binding alias="RequestToken" key="RequestToken"/>
           <key-binding alias="StandardizedAddress" key="StandardizedAddress"/>
           <key-binding alias="SubscriptionID" key="SubscriptionIDToken"/>
+          <key-binding alias="CurrentHttpParameterMap.processorTransactionId.stringValue" key="processorTransactionId"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="error">

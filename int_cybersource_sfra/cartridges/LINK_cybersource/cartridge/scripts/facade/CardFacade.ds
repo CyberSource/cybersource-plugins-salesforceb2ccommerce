@@ -77,10 +77,13 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	if (payerValidationResponse) {
 		CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, payerValidationResponse.CAVV, payerValidationResponse.UCAFAuthenticationData, 
 			payerValidationResponse.UCAFCollectionIndicator, payerValidationResponse.ECIRaw, payerValidationResponse.PAVCommerceIndicator, 
-			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus);
+			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion,payerValidationResponse.directoryServerTransactionID);
 	} else if (payerEnrollResponse) {
-		CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, null, null, payerEnrollResponse.UCAFCollectionIndicator, null, payerEnrollResponse.PACommerceIndicator, 
-		payerEnrollResponse.PAXID, null);
+		CybersourceHelper.addPayerAuthReplyInfo(
+			serviceRequest, payerEnrollResponse.CAVV, payerEnrollResponse.UCAFAuthenticationData, payerEnrollResponse.UCAFCollectionIndicator, null, payerEnrollResponse.PACommerceIndicator, 
+			payerEnrollResponse.PAXID, null,payerEnrollResponse.specificationVersion,payerEnrollResponse.directoryServerTransactionID
+		);
+
 	}
 	/********************************/
 	/* DAV-related WebService setup */
@@ -251,7 +254,9 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
-	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone);
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+	var deviceType = CommonHelper.getDeviceType(request);
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone, deviceType);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');
@@ -297,7 +302,12 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
 		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
 		responseObject["authenticationTransactionID"] = serviceResponse.payerAuthEnrollReply.authenticationTransactionID;
+		responseObject["specificationVersion"] = serviceResponse.payerAuthEnrollReply.specificationVersion;
+		responseObject["directoryServerTransactionID"] = serviceResponse.payerAuthEnrollReply.directoryServerTransactionID;
+		responseObject["CAVV"] = serviceResponse.payerAuthEnrollReply.cavv;
+        responseObject["UCAFAuthenticationData"] = serviceResponse.payerAuthEnrollReply.ucafAuthenticationData;
 	}
+    
 	return {success:true, serviceResponse:responseObject};
 }
 
@@ -373,6 +383,8 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 		responseObject["PAVXID"] = serviceResponse.payerAuthValidateReply.xid;
 		responseObject["ECIRaw"] = serviceResponse.payerAuthValidateReply.eciRaw;
 		responseObject["ParesStatus"] = serviceResponse.payerAuthValidateReply.paresStatus;
+		responseObject["specificationVersion"] = serviceResponse.payerAuthValidateReply.specificationVersion;
+		responseObject["directoryServerTransactionID"] = serviceResponse.payerAuthValidateReply.directoryServerTransactionID;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
@@ -510,6 +522,7 @@ function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType
 	var serviceRequest = new csReference.RequestMessage();
 	
 	var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
+	
 	purchaseObject = purchaseObject.purchaseTotals;
 	serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
 	

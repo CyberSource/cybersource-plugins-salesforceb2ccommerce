@@ -141,8 +141,12 @@ function Process3DRequestParent(args) {
 		if ( paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_VISA_CHECKOUT) {
 			var PAResponsePARes = request.httpParameterMap.PaRes.value;
 			var PAXID = request.httpParameterMap.PAXID.value;
-            var transactionId = request.httpParameterMap.processorTransactionid.value;
-			
+            var transactionId = request.httpParameterMap.processorTransactionId.value != null? request.httpParameterMap.processorTransactionId.value : "";
+            if(empty(transactionId))
+            {
+            	var PlaceOrderError = result.PlaceOrderError !== null ? PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined");
+    			return {fail: true, PlaceOrderError : PlaceOrderError};
+            }	
 			var CardFacade = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/facade/CardFacade');
             var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken(),transactionId);
             if (result.success && result.serviceResponse.ReasonCode === 100) {
@@ -163,7 +167,8 @@ function Process3DRequestParent(args) {
 		} else if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
 			paymentInstrument = order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT)[0];
 			var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/helper/VisaCheckoutHelper');
-			return VisaCheckoutHelper.PayerAuthValidation(order, paymentInstrument);
+            var transactionId = request.httpParameterMap.processorTransactionId.value != null? request.httpParameterMap.processorTransactionId.value : "";
+            return VisaCheckoutHelper.PayerAuthValidation(order, paymentInstrument,transactionId);
 		}
 	} else {
 		return {home:true};

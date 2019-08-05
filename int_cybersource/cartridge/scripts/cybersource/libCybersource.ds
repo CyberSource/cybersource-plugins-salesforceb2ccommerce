@@ -47,7 +47,7 @@ var CybersourceHelper = {
 	},	
 
 	getPartnerSolutionID : function () {
-		return "79YWP2SR";
+		return "YBLB7DA8";
 	},	
 
 	getDeveloperID : function () {
@@ -766,7 +766,7 @@ var CybersourceHelper = {
 	},
 	
 	addPayerAuthReplyInfo : function(request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw, 
-											commerceIndicator, xid, paresStatus){
+											commerceIndicator, xid, paresStatus,specificationVersion,directoryTrnsctnId){
 		if(request.ccAuthService === null){
 			request.ccAuthService=new CybersourceHelper.csReference.CCAuthService();
 		}
@@ -781,6 +781,12 @@ var CybersourceHelper = {
 		}
 		if(eciRaw !== null){
 			request.ccAuthService.eciRaw = eciRaw;	
+		}
+		if(specificationVersion !== null){
+			request.ccAuthService.paSpecificationVersion = specificationVersion;
+		}
+		if(directoryTrnsctnId !== null){
+			request.ccAuthService.directoryServerTransactionID = directoryTrnsctnId;
 		}
 		if(!empty(ucafAuthenticationData)){
 			request.ucaf = new CybersourceHelper.csReference.UCAF();
@@ -1091,7 +1097,7 @@ function __setClientData( request, refCode, fingerprint)
 		request.developerID=developerID;
 	}
 	request.clientLibrary='Salesforce Commerce Cloud';
-	request.clientLibraryVersion='17.2.0';
+	request.clientLibraryVersion='19.3.0';
 	request.clientEnvironment='Linux';
 	if (fingerprint) {
 	  request.deviceFingerprintID = fingerprint;

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+
+    <job job-id="CyberSource: Decision Manager Order Update" priority="0">
+        <description>Update unconfirmed orders based on Accept / Reject decisions made in CS
+            Business Center.</description>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="RefArch"/>
+                <template-ref template-id="template_91"/>
+            </flow>
+            <flow-template template-id="template_91">
+                <step step-id="UpdateOrderStatus" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Update unconfirmed orders based on Accept / Reject decisions made
+                        in CS Business Center.</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module"
+                            >LINK_cybersource/cartridge/scripts/jobs/DMOrderStatusUpdate.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName"
+                            >orderStatusUpdate</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="merchantId"/>
+                        <parameter name="username"/>
+                        <parameter name="password"/>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>11:30:03.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="CyberSource: SecureAcceptance Merchant Post" priority="0">
+        <description>Secure Acceptance Merchant Post Notification Job</description>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="RefArch"/>
+                <template-ref template-id="template_43"/>
+            </flow>
+            <flow-template template-id="template_43">
+                <step step-id="SAMerchantPostJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Handle failed order</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module"
+                            >LINK_cybersource/cartridge/scripts/jobs/SAMerchantPostJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName"
+                            >SAMerchantPostJob</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>11:40:27.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="CyberSource: Check Order Status" priority="0">
+        <description>Job Scheduler to check the status of Ali Pay Initiate Payment request status
+            and Bank Transfer payment status.</description>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="CheckStatusJob" type="ExecuteScriptModule" enforce-restart="false">
+                <description>Check payment status for unconfirmed Bank transfer and Alipay
+                    orders.</description>
+                <parameters>
+                    <parameter name="ExecuteScriptModule.Module"
+                        >LINK_cybersource/cartridge/scripts/jobs/CheckStatusJob.js</parameter>
+                    <parameter name="ExecuteScriptModule.FunctionName"
+                        >checkPaymentStatusJob</parameter>
+                    <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                    <parameter name="ExecuteScriptModule.TimeoutInSeconds">1200</parameter>
+                    <parameter name="LagTime">5</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+                <send-mail>
+                    <from>demo@cybersource.com</from>
+                    <to>demo@cybersource.com</to>
+                </send-mail>
+            </on-running>
+            <on-retry enabled="false">
+                <send-mail>
+                    <from>demo@cybersource.com</from>
+                    <to>demo@cybersource.com</to>
+                </send-mail>
+            </on-retry>
+            <on-exit status="ERROR" enabled="false">
+                <send-mail>
+                    <from>demo@cybersource.com</from>
+                    <to>demo@cybersource.com</to>
+                </send-mail>
+            </on-exit>
+        </rules>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>21:43:11.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="CyberSource: Ideal Bank Option List Import" priority="0">
+        <description>Create Bank list for Ideal Payment Method</description>
+        <parameters/>
+        <split sequential="false">
+            <flow>
+                <context site-id="RefArch"/>
+                <template-ref template-id="template_43"/>
+            </flow>
+            <flow-template template-id="template_43">
+                <step step-id="SAMerchantPostJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Handle failed order</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module"
+                            >LINK_cybersource/cartridge/scripts/jobs/iDealBankOptionJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">run</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                        <parameter name="merchantId"/>
+                        <parameter name="merchantKey"/>
+                        <parameter name="paymentType"/>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>11:40:27.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+</jobs>

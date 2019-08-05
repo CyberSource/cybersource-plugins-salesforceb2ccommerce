@@ -8,6 +8,7 @@
 * @input PaRes : String The PaRes returned by the authentication
 * @input Amount : dw.value.Money The amount to authorize
 * @input OrderNo : String The order no
+* @input processorTransactionId : String A unique transaction ID generated for each payment authentication request message.
 *
 * @output ServiceResponse : Object Service Response object
 * @output Decision : String The decision of the complete request, one of ACCEPT, REJECT, or ERROR
@@ -41,11 +42,12 @@ function execute( pdict : PipelineDictionary ) : Number
 	var basket = pdict.Basket;
 	var orderNo : String = pdict.OrderNo;
 	var amount : dw.value.Money = pdict.Amount;
+	var processorTransactionId = pdict.processorTransactionId;
 	if(basket == null){
 		Logger.error("Please provide a Basket!");
 		return PIPELET_ERROR;
 	}
-	var result = VisaCheckoutFacade.PayerAuthValidationCCAuthRequest(basket, pdict.PaRes, amount, orderNo);
+	var result = VisaCheckoutFacade.PayerAuthValidationCCAuthRequest(basket, pdict.PaRes, amount, orderNo,processorTransactionId);
 	if (result.error) {
 		Logger.error("[PayerAuthValidation.ds] error "+result.errorMsg);
 		return PIPELET_ERROR;

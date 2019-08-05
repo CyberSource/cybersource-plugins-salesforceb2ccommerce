@@ -128,21 +128,25 @@ function generateTokenWithCertificate() {
 
 function generatejti(){
 	var jti;
-	jti = randomString(8)+"-"+randomString(4)+"-"+randomString(4)+"-"+randomString(4)+"-"+randomString(12);
+	jti = randomString(32);
 	return jti;
 }
 
-function randomString(length) {
-    var result = '';
-    var characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-   	var charactersLength = characters.length;
-   	for( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-   	}
-   	return result;
+function randomString(size) {
+  var randomString = '';
+  var randomchar = function() {
+    var n = Math.floor(Math.random() * 62);
+    if (n < 10) return n; //1-10
+    if (n < 36) return String.fromCharCode(n + 55); //A-Z
+    return String.fromCharCode(n + 61); //a-z
+  }
+  while (randomString.length < size) randomString += randomchar();
+  return randomString;
 }
 
 module.exports = {
 		generateTokenWithKey : generateTokenWithKey,
-		generateTokenWithCertificate : generateTokenWithCertificate
+		generateTokenWithCertificate : generateTokenWithCertificate,
+		generatejti : generatejti,
+		randomString : randomString
 };

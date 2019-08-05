@@ -48,14 +48,19 @@ server.append('Begin', function (req, res, next) {
     }).countryCode;
 	var PaymentMgr = require('dw/order/PaymentMgr');
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+	 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 	var paymentAmount = CommonHelper.CalculateNonGiftCertificateAmount(currentBasket);
 	var applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(customer, countryCode, paymentAmount.value);
 	var paypalBillingFields = 'paypalBillingIncomplete' in session.privacy && session.privacy.paypalBillingIncomplete ? true : false;
-	var paidWithPayPal = false, selectedPayment;
+	var paidWithPayPal = false, selectedPayment = 'others';
+	var paymentClass = 'place-order';
 	paidWithPayPal = CommonHelper.ValidatePayPalInstrument(currentBasket, basketModel);
-	if(currentBasket.paymentInstrument != null)
-		selectedPayment = basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null) || 
-							basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)? Resource.msg('paymentmethodname.paypal','cybersource',null) : 'others';
+	var nonGCPaymentInstrument = COHelpers.getNonGCPaymemtInstument(currentBasket);
+	if(nonGCPaymentInstrument != null) {
+		selectedPayment = nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null) || 
+							nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)? Resource.msg('paymentmethodname.paypal','cybersource',null) : 'others';
+		paymentClass = CommonHelper.GetPaymentClass(nonGCPaymentInstrument);
+	}
 	var viewData = res.getViewData();
     viewData = {
             VInitFormattedString: VInitFormattedString,
@@ -66,7 +71,8 @@ server.append('Begin', function (req, res, next) {
             paypalBillingFields : paypalBillingFields,
             paidWithPayPal : paidWithPayPal,
             applicablePaymentMethods : applicablePaymentMethods,
-            currentLocale : currentLocale
+            currentLocale : currentLocale,
+            paymentClass : paymentClass
     };
     res.setViewData(viewData);
     next();

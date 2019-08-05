@@ -309,6 +309,7 @@ function payerAuthEnroll(lineItemCtnrObj, paymentInstrument, orderNo) {
 	var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/facade/VisaCheckoutFacade');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var result, serviceResponse;
+	
 	result = VisaCheckoutFacade.PayerAuthEnrollCCAuthRequest(lineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo);
 	if (result.error) {
 		return result;
@@ -323,6 +324,7 @@ function payerAuthEnroll(lineItemCtnrObj, paymentInstrument, orderNo) {
         session.privacy.PAReq = serviceResponse.PAReq;
         session.privacy.PAXID = serviceResponse.PAXID;
         session.privacy.order_id = orderNo;
+        session.privacy.authenticationTransactionID = serviceResponse.authenticationTransactionID;
 		return {payerauthentication:true, serviceResponse:serviceResponse};
 	} else {
 		var CardHelper = require('~/cartridge/scripts/helper/CardHelper');

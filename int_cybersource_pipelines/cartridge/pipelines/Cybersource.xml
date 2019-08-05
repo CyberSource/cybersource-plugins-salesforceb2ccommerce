@@ -3777,7 +3777,7 @@ General Error</description>
                 <key-binding alias="null" key="From_9"/>
                 <key-binding alias="null" key="To_9"/>
                 <key-binding alias="CurrentSession.privacy.processorTransactionid" key="To_0"/>
-                <key-binding alias="CurrentHttpParameterMap.processorTransactionid.stringValue" key="From_0"/>
+                <key-binding alias="CurrentHttpParameterMap.processorTransactionId.stringValue" key="From_0"/>
               </pipelet-node>
               <node-display x="0" y="1"/>
             </node>

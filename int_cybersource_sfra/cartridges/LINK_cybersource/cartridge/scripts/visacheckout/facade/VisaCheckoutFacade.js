@@ -285,8 +285,10 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var csReference  = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+	var deviceType = CommonHelper.getDeviceType(request);
 	
-	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,null,null,amount, null);
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,null,null,amount, null,LineItemCtnrObj.billingAddress.phone, deviceType);
 
 	//Objects to set in the Service Request inside facade
 	var shipTo, billTo, purchaseObject;
@@ -368,6 +370,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 		responseObject["PAXID"] = serviceResponse.payerAuthEnrollReply.xid;
 		responseObject["PAReq"] = serviceResponse.payerAuthEnrollReply.paReq;
 		responseObject["ProxyPAN"] = serviceResponse.payerAuthEnrollReply.proxyPAN;
+		responseObject["authenticationTransactionID"] = serviceResponse.payerAuthEnrollReply.authenticationTransactionID;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
@@ -384,7 +387,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	var lineItemCtnrObj = LineItemCtnrObj;
     var orderNo = OrderNo;
     var amount = Amount;
-    var signedPaRes = dw.util.StringUtils.trim(PaRes);
+    var signedPaRes = !empty(PaRes) ? dw.util.StringUtils.trim(PaRes) : '';
 	//var signedPaRes : String =PaRes;
 	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
 	//**************************************************************************//

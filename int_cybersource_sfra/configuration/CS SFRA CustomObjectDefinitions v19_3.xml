@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <custom-type type-id="SA_MerchantPost">
+        <display-name xml:lang="x-default">SA_MerchantPost</display-name>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="OrderID">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="postParams">
+                <display-name xml:lang="x-default">postParams</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="processed">
+                <display-name xml:lang="x-default">processed</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="secureacceptance">
+                <attribute attribute-id="postParams"/>
+                <attribute attribute-id="processed"/>
+                <attribute attribute-id="OrderID"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+	
+	<custom-type type-id="BTBankList">
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>organization</storage-scope>
+        <key-definition attribute-id="BTBankList">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="BankID">
+                <display-name xml:lang="x-default">Bank Id</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="BankName">
+                <display-name xml:lang="x-default">Bank Name</display-name>
+                <description xml:lang="x-default">UUID of the same.</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="paymentType">
+                <display-name xml:lang="x-default">Payment Type</display-name>
+                <description xml:lang="x-default">Use to filter the bank options for specific bank. e.g. iDeal.</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="BankList">
+                <display-name xml:lang="x-default">Bank List</display-name>
+                <attribute attribute-id="BankName"/>
+                <attribute attribute-id="BTBankList"/>
+                <attribute attribute-id="BankID"/>
+                <attribute attribute-id="paymentType"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+</metadata>

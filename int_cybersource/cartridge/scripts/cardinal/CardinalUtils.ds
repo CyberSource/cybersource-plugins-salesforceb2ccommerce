@@ -120,13 +120,13 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 	var ccPaymentInstruments = basket.getPaymentInstruments();
 	
 	for each (var pi in ccPaymentInstruments) {
-		if(pi.paymentMethod.equals("CREDIT_CARD") || pi.paymentMethod.indexOf('SA_')>-1)
+		if(pi.paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) || pi.paymentMethod.indexOf('SA_')>-1 || pi.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT))
     	{
     		paymentinstrument = pi;
     	}
     	break;
 	}
-	if(paymentinstrument.paymentMethod.equals("CREDIT_CARD")) {
+	if(paymentinstrument.paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) || paymentinstrument.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
 		accountObject.setAccountNumber(paymentinstrument.creditCardNumber);
 		accountObject.setExpirationMonth(paymentinstrument.creditCardExpirationMonth);
 		accountObject.setExpirationYear(paymentinstrument.creditCardExpirationYear);
@@ -172,7 +172,7 @@ function getOrderDetailsObject(order,transactionId){
 	orderdetailsObject.setOrderNumber(order.orderNo);
 	orderdetailsObject.setAmount(order.totalNetPrice.value);
 	orderdetailsObject.setTransactionId(transactionId);
-	orderdetailsObject.setCurrencyCode('USD');
+	orderdetailsObject.setCurrencyCode(order.currencyCode);
 	orderdetailsObject.setOrderChannel('S');
 	deleteEmptyProperties(orderdetailsObject);
 	

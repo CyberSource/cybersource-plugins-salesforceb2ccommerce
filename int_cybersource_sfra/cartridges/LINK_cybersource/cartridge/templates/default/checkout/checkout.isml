@@ -121,8 +121,7 @@
 			                    <div id="secureAcceptanceIframe">
 								</div>
                 			</div>
-
-                            <button class="btn btn-primary btn-block place-order" data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}"
+                            <button id="submit-order" class="btn btn-primary btn-block ${pdict.paymentClass}" data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}"
                                data-payerauth="${URLUtils.url('CheckoutServices-InitPayerAuth')}" type="submit" name="submit" value="place-order">${Resource.msg('button.place.order', 'checkout', null)}
                             </button>
                         </div>

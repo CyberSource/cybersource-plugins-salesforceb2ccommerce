@@ -317,8 +317,8 @@ function handleSilentPostAuthorize(order) {
 }
 
 function addOrUpdateToken(order, customerObj, res){
-	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 	var URLUtils = require('dw/web/URLUtils');
+	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 	var paymentInstrument;
 	if (null !== order) {
         paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
@@ -326,6 +326,11 @@ function addOrUpdateToken(order, customerObj, res){
 	CardHelper.addOrUpdateToken(paymentInstrument, customerObj);
 		session.privacy.orderId = order.orderNo;
 		res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
+}
+
+function getNonGCPaymemtInstument(basket){
+	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+	return CardHelper.getNonGCPaymemtInstument(basket);
 }
 
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
@@ -339,4 +344,5 @@ base.clearPaymentAttributes = clearPaymentAttributes;
 base.handleSilentPostAuthorize = handleSilentPostAuthorize;
 base.reCreateBasket = reCreateBasket;
 base.addOrUpdateToken = addOrUpdateToken;
+base.getNonGCPaymemtInstument = getNonGCPaymemtInstument;
 module.exports = base;

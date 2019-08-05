@@ -829,6 +829,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     return next();
     
 });
+
 server.get('PayerAuthentication', server.middleware.https, function (req, res, next) {
 	var OrderMgr = require('dw/order/OrderMgr');
 	var order = OrderMgr.getOrder(session.privacy.order_id);
