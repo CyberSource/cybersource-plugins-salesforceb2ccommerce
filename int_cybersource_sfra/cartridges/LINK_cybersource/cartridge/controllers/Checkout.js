@@ -59,7 +59,10 @@ server.append('Begin', function (req, res, next) {
 	if(nonGCPaymentInstrument != null) {
 		selectedPayment = nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null) || 
 							nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)? Resource.msg('paymentmethodname.paypal','cybersource',null) : 'others';
-		paymentClass = CommonHelper.GetPaymentClass(nonGCPaymentInstrument);
+		if(!paypalBillingFields)
+		{
+			paymentClass = CommonHelper.GetPaymentClass(nonGCPaymentInstrument);
+		}
 	}
 	var viewData = res.getViewData();
     viewData = {
