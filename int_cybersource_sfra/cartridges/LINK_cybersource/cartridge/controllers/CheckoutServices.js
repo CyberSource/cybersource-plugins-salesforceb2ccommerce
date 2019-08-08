@@ -811,6 +811,11 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
         return next();
 	}
+	
+	if(handlePaymentResult.authorized) {
+		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
+        return next();
+	}
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);

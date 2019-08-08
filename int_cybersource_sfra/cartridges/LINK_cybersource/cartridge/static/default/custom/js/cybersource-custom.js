@@ -108,6 +108,13 @@ initFunctions : function(){
 		window.location.href = payerAuth;
 	});
 
+	$(document).on('click', '.dw_google_pay, .paypal', function (e) {
+		e.stopImmediatePropagation();
+		var formaction = $(this).attr('data-action');
+		setTimeout(function () {
+		  window.location.href = formaction;
+		}, 500);
+	});
 	
     // for Alipay Intermediate
     if($("body").hasClass("cyb_alipayintermediate")) {
