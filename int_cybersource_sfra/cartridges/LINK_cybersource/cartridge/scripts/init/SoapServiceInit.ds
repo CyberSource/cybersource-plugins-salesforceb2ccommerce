@@ -88,13 +88,9 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     parseResponse: function (service, response) {
         return response;
     },
-    /**
-    * Description  : Method to Create Mock request for cybersource.soap.transactionprocessor.generic service
-    * @returns {Object}
-    *
-    /**/
-    mockCall: function () {
-        return { status: 'Mocked' };
+
+    filterLogMessage: function(msg) {
+        return filterServiceLog(msg);
     }
 });
 
@@ -140,8 +136,77 @@ var CyberSourceConversionDetailReportService = LocalServiceRegistry.createServic
     },
     parseResponse: function (service, response) {
         return response.text;
+    },
+
+    filterLogMessage: function(msg) {
+        return filterServiceLog(msg);
     }
 });
+
+
+function filterServiceLog(msg) {
+        //  Filter Logging on production system.
+    if (dw.system.System.getInstanceType() == dw.system.System.PRODUCTION_SYSTEM) {
+            //  Filter Logic.
+        try {
+            if (empty(msg)){
+                return "Message Missing";
+            }
+            messageData = JSON.parse(msg);
+            
+            filteredData = {};
+            if (messageData.hasOwnProperty("encryptionType")) {
+                filteredData.encryptionType = messageData.encryptionType;
+            }
+            if (messageData.hasOwnProperty("targetOrigin")) {
+                filteredData.targetOrigin = messageData.targetOrigin;
+            }
+            if (messageData.hasOwnProperty("merchantReferenceCode")) {
+                filteredData.merchantReferenceCode = messageData.merchantReferenceCode;
+            }
+            if (messageData.hasOwnProperty("requestID")) {
+                filteredData.requestID = messageData.requestID;
+            }
+            if (messageData.hasOwnProperty("reasonCode")) {
+                filteredData.reasonCode = messageData.reasonCode;
+            }
+            if (messageData.hasOwnProperty("decision")) {
+                filteredData.decision = messageData.decision;
+            }
+
+            if (messageData.hasOwnProperty("purchaseTotals")) {
+                if (messageData.purchaseTotals.hasOwnProperty('currency')){
+                    filteredData.currency = messageData.purchaseTotals.currency;
+                }
+                if (messageData.purchaseTotals.hasOwnProperty('taxAmount')){
+                    filteredData.taxAmount = messageData.purchaseTotals.taxAmount;
+                }
+            }
+
+            if (messageData.hasOwnProperty("taxReply")) {
+                if (messageData.taxReply.hasOwnProperty('reasonCode')){
+                    filteredData.taxReasonCode = messageData.taxReply.reasonCode;
+                }
+                if (messageData.taxReply.hasOwnProperty('totalTaxAmount')){
+                    filteredData.totalTaxAmount = messageData.taxReply.totalTaxAmount;
+                }
+            }
+            
+            var filteredMessage = "PRODUCTION SYSTEM DETECTED.  DATA HAS BEEN FILTERED : ";
+            filteredMessage += JSON.stringify(filteredData);
+        
+            return filteredMessage;
+        }
+        catch(e) {
+                //  Message was not a JSON string.
+            return "Unable to parse Service log message."
+        }
+    }
+    else {
+            //  Return full message on other systems.
+        return msg;
+    }
+}
 
 
 exports.CyberSourceTransactionService = CyberSourceTransactionService;

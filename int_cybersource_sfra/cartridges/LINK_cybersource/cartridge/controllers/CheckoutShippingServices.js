@@ -31,8 +31,13 @@ server.append('SubmitShipping', function (req, res, next) {
 				}
 		);
 	var selectedPayment;
-	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-	if(currentBasket.paymentInstrument != null)
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+       //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(currentBasket.getPaymentInstruments()) ) {
+       paymentInstrument = currentBasket.getPaymentInstruments()[0];
+    }
+	if(paymentInstrument != null)
 		selectedPayment = basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL' || 
 							basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL_CREDIT'? 'PAYPAL' : 'others';
 	paidWithPayPal = CommonHelper.ValidatePayPalInstrument(currentBasket, basketModel);

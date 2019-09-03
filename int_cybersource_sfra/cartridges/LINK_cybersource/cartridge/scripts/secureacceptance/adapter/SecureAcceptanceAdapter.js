@@ -169,7 +169,7 @@ function SARedirectResponse(responseObject, order) {
             var isOrderFailed = false;
             if (order.status.value !== Order.ORDER_STATUS_FAILED) {
                 isOrderFailed = Transaction.wrap(function () {
-                    OrderMgr.failOrder(order);
+                    OrderMgr.failOrder(order, true);
                     return true;
                 });
             }
@@ -206,7 +206,7 @@ function SAIframeResponse(responseObject, order) {
                     var statusOrder = OrderMgr.placeOrder(order);
                     if (Status.ERROR === statusOrder) {
                         session.custom.SkipTaxCalculation = false;
-                        OrderMgr.failOrder(order);
+                        OrderMgr.failOrder(order, true);
                         return false;
                     } else {
                         order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);
@@ -250,7 +250,7 @@ function SAIframeResponse(responseObject, order) {
             var isOrderFailed = false;
             if (order.status.value !== Order.ORDER_STATUS_FAILED) {
                 isOrderFailed = Transaction.wrap(function () {
-                    OrderMgr.failOrder(order);
+                    OrderMgr.failOrder(order, true);
                     return true;
                 });
             }

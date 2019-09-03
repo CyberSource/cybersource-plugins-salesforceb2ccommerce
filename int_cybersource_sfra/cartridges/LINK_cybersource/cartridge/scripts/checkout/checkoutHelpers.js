@@ -101,7 +101,7 @@ function handlePayments(order, orderNumber) {
         var paymentInstruments = order.paymentInstruments;
 
         if (paymentInstruments.length === 0) {
-            Transaction.wrap(function () { OrderMgr.failOrder(order); });
+            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
             result.error = true;
         }
 
@@ -135,7 +135,7 @@ function handlePayments(order, orderNumber) {
                     }
 
                     if (authorizationResult.error) {
-                        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+                        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
                         result.error = true;
                         break;
                     }
@@ -287,7 +287,7 @@ function reCreateBasket(order){
     var BasketMgr = require('dw/order/BasketMgr');
     var OrderMgr = require('dw/order/OrderMgr');
 	Transaction.wrap(function () {
-		OrderMgr.failOrder(order); 
+		OrderMgr.failOrder(order, true); 
 	});
 	var BasketMgr = require('dw/order/BasketMgr');
     return BasketMgr.getCurrentBasket();

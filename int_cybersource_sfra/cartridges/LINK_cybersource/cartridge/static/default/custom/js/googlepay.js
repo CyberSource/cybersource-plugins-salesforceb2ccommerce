@@ -4,7 +4,7 @@
 /**
  * Payment methods accepted by your gateway
  *
- * @todo confirm support for both payment methods with your gateway
+ * confirm support for both payment methods with your gateway
  */
 var allowedPaymentMethods = ['CARD', 'TOKENIZED_CARD'];
 
@@ -12,7 +12,7 @@ var allowedPaymentMethods = ['CARD', 'TOKENIZED_CARD'];
  * Card networks supported by your site and your gateway
  *
  * @see {@link https://developers.google.com/pay/api/web/reference/object#CardRequirements|CardRequirements}
- * @todo confirm card networks supported by your site and gateway
+ * confirm card networks supported by your site and gateway
  */
 var allowedCardNetworks = ['AMEX', 'DISCOVER', 'JCB', 'MASTERCARD', 'VISA'];
 
@@ -27,7 +27,7 @@ var merchantID = $('#googlePayMerchantID').val();
  * The Google Pay API response will return an encrypted payment method capable of
  * being charged by a supported gateway after shopper authorization
  *
- * @todo check with your gateway on the parameters to pass
+ * check with your gateway on the parameters to pass
  * @see {@link https://developers.google.com/pay/api/web/reference/object#Gateway|PaymentMethodTokenizationParameters}
  */
 var tokenizationParameters = {
@@ -90,7 +90,7 @@ function addGooglePayButton() {
  */
 function getGooglePaymentDataConfiguration() {
   return {
-    // @todo a merchant ID is available for a production environment after approval by Google
+    // a merchant ID is available for a production environment after approval by Google
     // @see {@link https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist|Integration checklist}
     merchantId: merchantID,
     paymentMethodTokenizationParameters: tokenizationParameters,
@@ -195,6 +195,6 @@ function processPayment(paymentData) {
 		   }	 	  
 	   }	 
 	});
-  // @todo pass payment data response to gateway to process payment
+  // pass payment data response to gateway to process payment
 }
 

@@ -23,22 +23,28 @@ server.append('Begin', function (req, res, next) {
 	var usingMultiShipping = false; // Current integration support only single shpping
 		req.session.privacyCache.set('usingMultiShipping', usingMultiShipping);
 	var currentLocale = Locale.getLocale(req.locale.id);
-	var basketModel = new OrderModel(currentBasket, { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' });
-	if(currentBasket.paymentInstrument != null && currentBasket.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
-		var cardType = currentBasket.paymentInstrument.creditCardType; 
+    var basketModel = new OrderModel(currentBasket, { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' });
+        
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(currentBasket.getPaymentInstruments()) ) {
+        paymentInstrument = currentBasket.getPaymentInstruments()[0];
+    }
+	if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
+		var cardType = paymentInstrument.creditCardType; 
 	    basketModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
-	    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = currentBasket.paymentInstrument.creditCardNumber;
+	    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
 	}
 	
-	if(currentBasket.paymentInstrument != null && currentBasket.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
-		var cardType = currentBasket.paymentInstrument.creditCardType; 
+	if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
+		var cardType = paymentInstrument.creditCardType; 
 			session.forms.billing.creditCardFields.cardType.value = cardType;
 		    basketModel.resources.cardType = '';
 		    basketModel.resources.cardEnding = '';
 		    basketModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
-		    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = currentBasket.paymentInstrument.creditCardNumber;
-		    basketModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = currentBasket.paymentInstrument.creditCardExpirationMonth;
-		    basketModel.billing.payment.selectedPaymentInstruments[0].expirationYear = currentBasket.paymentInstrument.creditCardExpirationYear;
+		    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
+		    basketModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = paymentInstrument.creditCardExpirationMonth;
+		    basketModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
 	}
 	var Countries = require('~/cartridge/scripts/utils/Countries');
 	var countryCode = Countries.getCurrent({

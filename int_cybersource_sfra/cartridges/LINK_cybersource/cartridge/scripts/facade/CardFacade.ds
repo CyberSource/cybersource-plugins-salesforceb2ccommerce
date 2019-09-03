@@ -91,7 +91,12 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	
 	var enableDAV = CybersourceHelper.getDavEnable();
 	var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
-	 if(Basket.paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay){
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(basket.getPaymentInstruments()) ) {
+        paymentInstrument = basket.getPaymentInstruments()[0];
+    }
+	if(paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay){
 		if( enableDAV=='YES' ) {
 			var ignoreDAVResult = false;
 			if( approveDAV=='APPROVE' ) {
@@ -129,7 +134,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
-	   if(Basket.paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay){
+	   if(paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay){
 		    serviceRequest.paymentSolution = '012';
 		    var csReference  = webreferences.CyberSourceTransaction;
 			var request_encryptedPayment = new csReference.EncryptedPayment();
@@ -319,7 +324,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
  * @param CreditCardForm : details of the card
  */
  
-function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String)
+function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String,processorTransactionId: String)
 {
 	var orderNo = OrderNo;
     var amount = Amount;
@@ -335,7 +340,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken);
+	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken,processorTransactionId);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');

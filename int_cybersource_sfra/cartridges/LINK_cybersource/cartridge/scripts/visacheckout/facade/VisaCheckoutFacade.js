@@ -382,7 +382,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
  * @param Amount : Money
  * @param orderNo : String
  */
-function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,PaRes : String,Amount : dw.value.Money,OrderNo : String)
+function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr,PaRes : String,Amount : dw.value.Money,OrderNo : String,processorTransactionId : String)
 {
 	var lineItemCtnrObj = LineItemCtnrObj;
     var orderNo = OrderNo;
@@ -402,7 +402,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,null,amount, null);
+	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,null,amount, null, processorTransactionId);
 
 	//Objects to set in the Service Request inside facade
 	var shipTo, billTo, purchaseObject;

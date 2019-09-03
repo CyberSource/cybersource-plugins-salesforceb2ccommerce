@@ -53,7 +53,14 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 		processorTransactionId = request.httpParameterMap.processorTransactionId;
 		session.privacy.processorTransactionId = processorTransactionId;
 	}
-	COHelpers.clearPaymentAttributes();
+    COHelpers.clearPaymentAttributes();
+
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(order) && !empty(order.getPaymentInstruments()) ) {
+        paymentInstrument = order.getPaymentInstruments()[0];
+    }
+
 	if(!empty(providerParam)) {
 		var providerResult = Provider.Check(order);
 		if(!empty(providerResult)){
@@ -89,7 +96,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 		} else {
 			return;
 		}
-	} else if(order.paymentInstrument.paymentMethod === 'DW_APPLE_PAY'){
+	} else if( !empty(paymentInstrument) && paymentInstrument.paymentMethod === 'DW_APPLE_PAY' ){
         submitApplePayOrder(order,req, res, next);
     } 
 });
@@ -105,7 +112,7 @@ function failOrder(args){
 	var PlaceOrderError = args.PlaceOrderError!= null ? args.PlaceOrderError : new dw.system.Status(dw.system.Status.ERROR, "confirm.error.declined", "Payment Declined");
 	session.custom.SkipTaxCalculation=false;
 	var failResult = dw.system.Transaction.wrap(function () {
-		OrderMgr.failOrder(order);
+		OrderMgr.failOrder(order, true);
 		return {
 			error: true,
 			PlaceOrderError: PlaceOrderError
@@ -128,7 +135,7 @@ function reviewOrder(order_id, req, res, next) {
     var Transaction = require('dw/system/Transaction');
 
     if (fraudDetectionStatus.status === 'fail') { 
-        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
         res.redirect(URLUtils.https('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode));
@@ -168,7 +175,7 @@ function submitOrder(order_id, req, res, next) {
     var Resource = require('dw/web/Resource');
 
     if (fraudDetectionStatus.status === 'fail') { 
-        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
         res.redirect(URLUtils.https('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode));

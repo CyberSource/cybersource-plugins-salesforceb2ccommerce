@@ -220,7 +220,7 @@ function CreateCybersourceTaxationItems()
 		if(lineItem.lineItemClass === 'dw.order.ProductLineItem'){
 			item.productName = lineItem.productName;
 			item.productSKU = lineItem.productID;
-			item.productCode = "01"; // todo: fill in product code when available
+			item.productCode = "01"; 
 			
 		}else if(lineItem.lineItemClass === 'dw.order.ShippingLineItem'){
 			item.productName = lineItem.lineItemText;

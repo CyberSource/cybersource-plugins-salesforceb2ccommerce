@@ -54,7 +54,16 @@ exports.authorizeOrderPayment = function (order, responseData) {
     setBillingAddress(responseData.payment.billingContact);
     setShippingAddress(responseData.payment.shippingContact);
     Transaction.wrap(function () {
-        order.paymentInstrument.paymentTransaction.paymentProcessor = paymentMethod.getPaymentProcessor();
+         //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+        var paymentInstrument = null;
+        if ( !empty(order.getPaymentInstruments()) ) {
+            paymentInstrument = order.getPaymentInstruments()[0];
+            paymentInstrument.paymentTransaction.paymentProcessor = paymentMethod.getPaymentProcessor();
+        }
+        else {
+            return new Status(status);
+        }
+        paymentInstrument.paymentTransaction.paymentProcessor = paymentMethod.getPaymentProcessor();
     });
     authResponseStatus = require('~/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter').processPayment(order);
 

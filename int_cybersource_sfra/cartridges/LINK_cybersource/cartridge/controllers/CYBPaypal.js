@@ -108,8 +108,10 @@ server.post(
 			}
 			if('paypalBillingIncomplete' in session.privacy && session.privacy.paypalBillingIncomplete) {
 				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment'));
+                session.privacy.paypalminiCart = true;
 				return next();
 			}
+            session.privacy.paypalminiCart = false;
 			res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder'));
 		}else{
 			res.redirect(URLUtils.https('Cart-Show'));

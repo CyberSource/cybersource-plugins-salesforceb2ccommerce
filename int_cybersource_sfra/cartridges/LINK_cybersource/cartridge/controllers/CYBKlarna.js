@@ -17,8 +17,14 @@ server.post('GetSession', function (req, res, next) {
         //  Update billing address with posted form values and email param.
     updateBillingAddress(basket, req.querystring.email);
 
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(basket.getPaymentInstruments()) ) {
+        paymentInstrument = basket.getPaymentInstruments()[0];
+    }
+
         //  Make sure payment information has been set.
-    if ( empty(basket.paymentInstrument) || empty(basket.paymentInstrument.paymentMethod) || (basket.paymentInstrument.paymentMethod != "KLARNA") ) {
+    if ( empty(paymentInstrument) || empty(paymentInstrument.paymentMethod) || (paymentInstrument.paymentMethod != "KLARNA") ) {
         setKlarnaPaymentMethod(basket);
     }
 

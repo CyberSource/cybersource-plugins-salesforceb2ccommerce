@@ -493,7 +493,7 @@ server.post('SilentPostAuthorize',server.middleware.https, function (req, res, n
 	var silentPostResponse = COHelpers.handleSilentPostAuthorize(order);
 	
 	if(silentPostResponse.error || silentPostResponse.declined || silentPostResponse.rejected) {
-		Transaction.wrap(function () { OrderMgr.failOrder(order); });
+		Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 		session.privacy.orderId = '';
 	}
 	if (silentPostResponse.error) {
@@ -653,17 +653,22 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
     // Handles payment authorization
     var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(order.getPaymentInstruments()) ) {
+        paymentInstrument = order.getPaymentInstruments()[0];
+    }
     if (handlePaymentResult.error) {
-    	if(order.paymentInstrument.paymentMethod != null 
-    			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
+    	if(paymentInstrument.paymentMethod != null 
+    			&& (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
     	    			|| (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
     	    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
-    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
-    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
-    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
-    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
-    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
-    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
     	 ) {
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
     	 } else {
@@ -700,18 +705,18 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
    }
     else if (handlePaymentResult.declined) {
     	 session.custom.SkipTaxCalculation = false;
-    	 Transaction.wrap(function () { OrderMgr.failOrder(order); });
+    	 Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-    	 if(order.paymentInstrument.paymentMethod != null 
-    			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
+    	 if(paymentInstrument.paymentMethod != null 
+    			&& (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
     			&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
     			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
-    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
-    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
-    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
-    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
-    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
-    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
+    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
+    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
+    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
+    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
+    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
     	 ){
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
     	 } else {
@@ -724,18 +729,18 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     } 
 	else if (handlePaymentResult.missingPaymentInfo) {
    	    session.custom.SkipTaxCalculation = false;
-	   	 Transaction.wrap(function () { OrderMgr.failOrder(order); });
+	   	 Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-	   	 if(order.paymentInstrument.paymentMethod != null 
-	    			&& (order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
+	   	 if(paymentInstrument.paymentMethod != null 
+	    			&& (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard','cybersource',null)
 	    	    			&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
 	    	    			|| CsSAType == Resource.msg('cssatype.SA_SILENTPOST','cybersource',null)))
-	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
-	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
-	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
-	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
-	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
-	    	    			|| order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.eps','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
     	 ) {
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
     	 } else {
@@ -746,7 +751,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     	 }
 	 	 return next();
     } else if (handlePaymentResult.rejected) {
-    	Transaction.wrap(function () { OrderMgr.failOrder(order); });
+    	Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
     	currentBasket = BasketMgr.getCurrentBasket();
     	Transaction.wrap(function () {
     		COHelpers.handlePayPal(currentBasket);
@@ -766,7 +771,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
     if (fraudDetectionStatus.status === 'fail') {
-        Transaction.wrap(function () { OrderMgr.failOrder(order); });
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
@@ -812,7 +817,9 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
         return next();
 	}
 	
-	if(handlePaymentResult.authorized) {
+    if(handlePaymentResult.authorized && 
+            ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)
+                || ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null) && !session.privacy.paypalminiCart))) {
 		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
         return next();
 	}
@@ -820,9 +827,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
 	var options = {'paidWithPayPal' : false, 'selectedPayment' : 'others'};
-    // TODO: Exposing a direct route to an Order, without at least encoding the orderID
-    //  is a serious PII violation.  It enables looking up every customers orders, one at a
-    //  time.
+	
     res.json({
         error: false,
         orderID: order.orderNo,

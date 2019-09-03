@@ -715,7 +715,7 @@ var CybersourceHelper = {
         return request;
     },
 
-    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken) {
+    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken,processorTransactionId) {
         request.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(request, orderNo);
@@ -731,7 +731,7 @@ var CybersourceHelper = {
         // validate specific stuff
         request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
         request.payerAuthValidateService.signedPARes = signedPARes;
-        request.payerAuthValidateService.authenticationTransactionID = session.privacy.processorTransactionId;
+        request.payerAuthValidateService.authenticationTransactionID = processorTransactionId;
 
         request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
         request.purchaseTotals.currency = amount.currencyCode;

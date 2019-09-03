@@ -109,7 +109,7 @@ function updateOrderStatus(order){
 **/
 function FailSAOrder(order,responseObject){
 	// if Decision is not ACCEPT 
-	var orderStatus = OrderMgr.failOrder(order);									
+	var orderStatus = OrderMgr.failOrder(order, true);									
 	if(orderStatus.code === 'ERROR'){										
 		Logger.error('[SAmerchantPost.ds] DECISION REJECT -  FailOrder Called for order:', order.orderNo);
 		throw new Error('DECISION ERROR -  FailOrder Called for order');

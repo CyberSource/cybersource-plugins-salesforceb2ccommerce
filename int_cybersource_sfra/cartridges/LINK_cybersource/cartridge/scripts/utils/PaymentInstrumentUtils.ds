@@ -356,7 +356,7 @@ function MobilePaymentOrderUpdate(order, serviceResponse) {
     if (serviceResponse.ServiceResponse.serviceResponse.Decision.equalsIgnoreCase('ACCEPT')) {
         var orderPlacementStatus = Transaction.wrap(function () {
             if (OrderMgr.placeOrder(order) === Status.ERROR) {
-                OrderMgr.failOrder(order);
+                OrderMgr.failOrder(order, true);
                 return false;
             }
 
@@ -369,7 +369,7 @@ function MobilePaymentOrderUpdate(order, serviceResponse) {
         }
     } else if (!serviceResponse.ServiceResponse.serviceResponse.Decision.equalsIgnoreCase('REVIEW')) {
         Transaction.wrap(function () {
-            OrderMgr.failOrder(order);
+            OrderMgr.failOrder(order, true);
         });
     }
     return true;

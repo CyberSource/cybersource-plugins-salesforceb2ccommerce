@@ -195,7 +195,7 @@ function cancelfail(order) {
     var Transaction = require('dw/system/Transaction');
     var OrderMgr = require('dw/order/OrderMgr');
     var failResult = Transaction.wrap(function () {
-        OrderMgr.failOrder(order);
+        OrderMgr.failOrder(order, true);
         return {
             error: true,
             PlaceOrderError: orderResult.PlaceOrderError

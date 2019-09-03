@@ -38,8 +38,6 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 	var shippingAddress;
 	var it  = basket.getShipments().iterator();
 	
-	// TODO: This code purposely does not handle the case of
-	// multiple shipments per order
 	if(shippingAddress == null){
 		while(it.hasNext()){
 			var shipment = it.next();

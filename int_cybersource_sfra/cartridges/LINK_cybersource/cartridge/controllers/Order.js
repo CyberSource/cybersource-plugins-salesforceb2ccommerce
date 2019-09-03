@@ -20,20 +20,27 @@ server.append('Confirm', function (req, res, next) {
             order,
             { config: config, countryCode: currentLocale.country, containerView: 'order' }
         );
+
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(order.getPaymentInstruments()) ) {
+        paymentInstrument = order.getPaymentInstruments()[0];
+    }
+
    //Google Pay Credit Card Details
-    if(order.paymentInstrument != null && order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
-		var cardType = order.paymentInstrument.creditCardType; 
+    if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
+		var cardType = paymentInstrument.creditCardType; 
 		orderModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
-		orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = order.paymentInstrument.creditCardNumber;
+		orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
 	}
     //Visa Checkout Credit Card Details
-    if(order.paymentInstrument != null && order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
+    if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
 			orderModel.resources.cardType = '';
 			orderModel.resources.cardEnding = '';
-			orderModel.billing.payment.selectedPaymentInstruments[0].type = order.paymentInstrument.creditCardType;
-			orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = order.paymentInstrument.creditCardNumber;
-			orderModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = order.paymentInstrument.creditCardExpirationMonth;
-			orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = order.paymentInstrument.creditCardExpirationYear;
+			orderModel.billing.payment.selectedPaymentInstruments[0].type = paymentInstrument.creditCardType;
+			orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
+			orderModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = paymentInstrument.creditCardExpirationMonth;
+			orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
 	}
     viewData = {
     	order: orderModel
@@ -57,20 +64,27 @@ server.append('Details', function (req, res, next) {
             order,
             { config: config, countryCode: currentLocale.country, containerView: 'order' }
         );
+
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(order.getPaymentInstruments()) ) {
+        paymentInstrument = order.getPaymentInstruments()[0];
+    }
+
     //Google Pay Credit Card Details
-    if(order.paymentInstrument != null && order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
-		var cardType = order.paymentInstrument.creditCardType; 
+    if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
+		var cardType = paymentInstrument.creditCardType; 
 		orderModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
-		orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = order.paymentInstrument.creditCardNumber;
+		orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
 	}
    //Visa Checkout Credit Card Details
-    if(order.paymentInstrument != null && order.paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
+    if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
 			orderModel.resources.cardType = '';
 			orderModel.resources.cardEnding = '';
-			orderModel.billing.payment.selectedPaymentInstruments[0].type = order.paymentInstrument.creditCardType;
-			orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = order.paymentInstrument.creditCardNumber;
-			orderModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = order.paymentInstrument.creditCardExpirationMonth;
-			orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = order.paymentInstrument.creditCardExpirationYear;
+			orderModel.billing.payment.selectedPaymentInstruments[0].type = paymentInstrument.creditCardType;
+			orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
+			orderModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = paymentInstrument.creditCardExpirationMonth;
+			orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
 	}
     viewData = {
     	order: orderModel

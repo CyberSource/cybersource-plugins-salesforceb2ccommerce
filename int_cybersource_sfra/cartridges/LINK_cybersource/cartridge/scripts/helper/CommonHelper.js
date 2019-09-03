@@ -23,8 +23,14 @@ function CreateCybersourcePurchaseTotalsObject(Basket) {
     var purchaseObject = new PurchaseTotals_Object();
     var Money = require('dw/value/Money');
     var amount = new Money(0, basket.currencyCode);
+
+    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
     var ccPaymentInstruments = basket.getPaymentInstruments();
-    var selectedPaymentMethod = basket.paymentInstrument.paymentMethod;
+    if ( !empty(ccPaymentInstruments) ) {
+        paymentInstrument = ccPaymentInstruments[0];
+    }
+    var selectedPaymentMethod = paymentInstrument.paymentMethod;
     var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
     for (var i = 0; i < ccPaymentInstruments.length; i++) {
         var pi = ccPaymentInstruments[i];
@@ -322,7 +328,12 @@ function CreateCybersourceItemObject(Basket) {
     var basket = Basket;
     var locale = GetRequestLocale();
     var PaymentMgr = require('dw/order/PaymentMgr');
-    var selectedPaymentMethod = basket.paymentInstrument.paymentMethod;
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    var paymentInstrument = null;
+    if ( !empty(basket.getPaymentInstruments()) ) {
+        paymentInstrument = basket.getPaymentInstruments()[0];
+    }
+    var selectedPaymentMethod = paymentInstrument.paymentMethod;
     var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
     var lineItems = basket.allLineItems.iterator();
     var ArrayList = require('dw/util/ArrayList');
@@ -519,8 +530,7 @@ function CreateCybersourceShipToObject(Basket) {
     var shippingAddress = basket.defaultShipment.shippingAddress;
     var shippingMethod = basket.defaultShipment.shippingMethod;
     var it = basket.getShipments().iterator();
-    // TODO: This code purposely does not handle the case of
-    // multiple shipments per order
+    
     if (shippingAddress == null) {
         while (it.hasNext()) {
             var shipment = it.next();

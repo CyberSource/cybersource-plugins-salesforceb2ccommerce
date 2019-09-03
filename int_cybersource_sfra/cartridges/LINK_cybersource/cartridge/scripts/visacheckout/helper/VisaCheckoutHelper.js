@@ -279,9 +279,10 @@ function payerAuthValidation(lineItemCtnrObj, paymentInstrument) {
 	var orderNo = null !== lineItemCtnrObj.orderNo ? lineItemCtnrObj.orderNo : lineItemCtnrObj.getUUID();
 	var PAResponsePARes = request.httpParameterMap.PaRes.value;
 	var PAXID = request.httpParameterMap.PAXID.value;
+	var transactionId = request.httpParameterMap.processorTransactionId.value != null? request.httpParameterMap.processorTransactionId.value : "";
 	
 	var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/facade/VisaCheckoutFacade');
-	var result = VisaCheckoutFacade.PayerAuthValidationCCAuthRequest(lineItemCtnrObj, PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo);
+	var result = VisaCheckoutFacade.PayerAuthValidationCCAuthRequest(lineItemCtnrObj, PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo,transactionId);
 	if (result.success) {
 		var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 		result = CardHelper.CardResponse(lineItemCtnrObj, paymentInstrument, result.serviceResponse);
