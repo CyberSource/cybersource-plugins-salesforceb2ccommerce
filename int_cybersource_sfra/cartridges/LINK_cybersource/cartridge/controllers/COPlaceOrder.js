@@ -46,7 +46,7 @@ function submitApplePayOrder(order,req, res, next){
 
 server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     var order = OrderMgr.getOrder(req.querystring.order_id);
-	var Provider = require('LINK_cybersource/cartridge/scripts/Provider');
+	var Provider = require('*/cartridge/scripts/Provider');
 	var providerParam = req.querystring.provider;
 	var processorTransactionId;
 	if('processorTransactionId' in request.httpParameterMap && !empty(request.httpParameterMap.processorTransactionId)){

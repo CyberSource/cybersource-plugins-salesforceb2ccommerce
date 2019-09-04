@@ -113,7 +113,7 @@ server.replace('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
             subscriptionError = session.custom.SubscriptionError;
             session.custom.SubscriptionError = null;
         }
-        var migrateCard = require('LINK_cybersource/cartridge/scripts/helper/migrateOldCardToken');
+        var migrateCard = require('*/cartridge/scripts/helper/migrateOldCardToken');
         migrateCard.MigrateOldCardToken(paymentInstruments);
     }
     res.render('account/payment/payment', {
@@ -238,7 +238,7 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
             //  If a card was saved while tokenization was disabled it will not have a token.  No need to make delete call.
             if (!empty(subscriptionID) && 'custom' in paymentToDelete.raw && 'isCSToken' in paymentToDelete.raw.custom
         			&& paymentToDelete.raw.custom.isCSToken) {
-                var Cybersource_Subscription = require('LINK_cybersource/cartridge/scripts/Cybersource')
+                var Cybersource_Subscription = require('*/cartridge/scripts/Cybersource')
                 var deleteSubscriptionBillingResult = Cybersource_Subscription.DeleteSubscriptionAccount(subscriptionID);
                 if (deleteSubscriptionBillingResult.error) {
                     subscriptionError = deleteSubscriptionBillingResult.reasonCode + "-" + deleteSubscriptionBillingResult.decision;

@@ -17,7 +17,7 @@ var Site = require('dw/system/Site');
  */
 exports.CreatePaymentToken = function (module) {
     var subscriptionID, subscriptionError, createSubscriptionResult;
-    var Cybersource_Subscription = require('LINK_cybersource/cartridge/scripts/Cybersource');
+    var Cybersource_Subscription = require('*/cartridge/scripts/Cybersource');
     if(module.equalsIgnoreCase('account')){
     	createSubscriptionResult = Cybersource_Subscription.CreateSubscriptionMyAccount();
     } else {
@@ -49,7 +49,7 @@ exports.Handle = function (basket, paymentInformation) {
 		return {error: true};
 	}
 	if (CsSAType == null) {
-		var Cybersource = require('LINK_cybersource/cartridge/scripts/Cybersource');
+		var Cybersource = require('*/cartridge/scripts/Cybersource');
 		return Cybersource.HandleCard(basket, paymentInformation);
 	} else {
 		return SecureAcceptanceHandle(basket, paymentInformation);
