@@ -538,7 +538,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	var paramMap = request.httpParameterMap;
 	var DFReferenceId;
 	if(request.httpParameterMap.DFReferenceId.submitted) {
-		DFReferenceId = request.httpParameterMap.DFReferenceId;
+		DFReferenceId = request.httpParameterMap.DFReferenceId.stringValue;
 		session.privacy.DFReferenceId = DFReferenceId;
 	}
     var currentBasket = BasketMgr.getCurrentBasket();

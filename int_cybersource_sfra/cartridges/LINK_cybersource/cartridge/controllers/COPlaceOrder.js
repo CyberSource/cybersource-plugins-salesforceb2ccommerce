@@ -49,10 +49,6 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 	var Provider = require('*/cartridge/scripts/Provider');
 	var providerParam = req.querystring.provider;
 	var processorTransactionId;
-	if('processorTransactionId' in request.httpParameterMap && !empty(request.httpParameterMap.processorTransactionId)){
-		processorTransactionId = request.httpParameterMap.processorTransactionId;
-		session.privacy.processorTransactionId = processorTransactionId;
-	}
     COHelpers.clearPaymentAttributes();
 
         //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
