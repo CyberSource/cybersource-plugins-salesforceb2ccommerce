@@ -1,4 +1,7 @@
 <isdecorate template="common/layout/page">
+
+    <isset name="miniCart" value="${false}" scope="page" />
+
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
         assets.addCss('/css/cart.css');

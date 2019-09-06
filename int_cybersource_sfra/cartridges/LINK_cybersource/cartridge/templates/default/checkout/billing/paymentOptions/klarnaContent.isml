@@ -1,6 +1,13 @@
 <div class="tab-pane klarna-content" id="klarna-content" role="tabpanel">
     
     <script src="${dw.system.Site.current.preferences.custom.klarnaJSAPIPath}" async></script>
+
+    <isif condition="${'klarnaJSAPIPath' in dw.system.Site.current.preferences.custom 
+                    && !empty(dw.system.Site.current.preferences.custom.klarnaJSAPIPath)
+                    && dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive()}">
+        <script src="${dw.system.Site.current.preferences.custom.klarnaJSAPIPath}" async></script>
+    </isif>
+
     <script src="${URLUtils.staticURL('custom/js/klarna.js')}"></script>
     
     <p class="error error-message" id="klarna-error-message">There was an error generating your Klarna session.</p>
