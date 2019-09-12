@@ -166,6 +166,10 @@ initFunctions : function(){
         $('#loading').css('display', 'block');
         document.ePayment.submit();
     }
+    
+    if($("body").hasClass("noPayerAuthRedierct")) {	
+        document.noPayerAuthRedirect.submit();
+    }
         //FOR POS
     $("#entry-mode-pos_unittest select.input-select").change( function(){
         if(this.value == "swiped") {
