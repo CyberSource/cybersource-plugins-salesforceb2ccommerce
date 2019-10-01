@@ -53,6 +53,18 @@
         </custom-attributes>
     </payment-method>
 	
+    <payment-method method-id="KLARNA">
+        <name xml:lang="x-default">Klarna</name>
+        <enabled-flag>true</enabled-flag>
+        <processor-id>KLARNA_CREDIT</processor-id>
+        <custom-attributes>
+            <custom-attribute attribute-id="isBicEnabled">false</custom-attribute>
+            <custom-attribute attribute-id="isSupportedBankListRequired">false</custom-attribute>
+            <custom-attribute attribute-id="merchantID" xml:lang="x-default"></custom-attribute>
+            <custom-attribute attribute-id="merchantKey" xml:lang="x-default"></custom-attribute>
+        </custom-attributes>
+    </payment-method>
+
 	<payment-method method-id="VISA_CHECKOUT">
         <name xml:lang="x-default">Visa Checkout</name>
         <enabled-flag>false</enabled-flag>

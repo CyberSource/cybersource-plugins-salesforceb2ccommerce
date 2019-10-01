@@ -7,6 +7,7 @@ var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
 */
 exports.Handle = function (basket, paymentInformation) {
 
+	session.privacy.klarnaAuthToken = request.httpParameterMap.klarnaAuthToken.value;
     var response = klarnaAdaptor.HandleRequest(basket, true);
     return response;
 };
@@ -17,7 +18,7 @@ exports.Handle = function (basket, paymentInformation) {
 exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) {
 
         //  Get the token from parameter map.
-    var token = request.httpParameterMap.klarnaAuthToken.value;
+    var token = session.privacy.klarnaAuthToken;
 
         //  Call method to handle the request
     var response = klarnaAdaptor.AuthorizeRequest(orderNumber, paymentInstrument, token);

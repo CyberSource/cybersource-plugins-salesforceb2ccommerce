@@ -166,10 +166,6 @@ initFunctions : function(){
         $('#loading').css('display', 'block');
         document.ePayment.submit();
     }
-    
-    if($("body").hasClass("noPayerAuthRedierct")) {	
-        document.noPayerAuthRedirect.submit();
-    }
         //FOR POS
     $("#entry-mode-pos_unittest select.input-select").change( function(){
         if(this.value == "swiped") {
@@ -194,8 +190,8 @@ initFunctions : function(){
         form.submit();
     });
 	
-	$(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .gpy, .eps, .sof, .mch, .idl', function (e) {
-		e.stopImmediatePropagation();
+	$(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .gpy, .eps, .sof, .mch, .idl , .klarna', function (e) {
+        e.stopImmediatePropagation();
     	var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
     	var paymentMethodID = $("input[name=dwfrm_billing_paymentMethod]").val();
     	var paymentMethodIds = ['KLARNA', 'ALIPAY', 'GPY', 'EPS', 'SOF', 'IDL', 'MCH'];
@@ -253,38 +249,12 @@ initFunctions : function(){
                 $('.orderRequestID').removeClass('show').addClass('hidden');
             }
     });
-
-    /*
-        *This code has been used to initialize, load and authorize klarna widget
-        *and to process preapproval token returned by klarna auth service 
-    */
-    if($('#processorToken').length > 0){
-        var klarnaToken = $('#processorToken').val();
-        var token ={};
-        token.client_token=klarnaToken;
-        Klarna.Credit.init(token);
-        Klarna.Credit.load({
-            container: "#klarna_container"
-            }, function(res) {
-                if (res["show_form"] == true){
-                    document.getElementById("auth_button").innerHTML = "<br><button id=\"klarnaPayButton\" type=\"button\" name=\"buy\">Pay</button>";
-                    $("#klarnaPayButton").click(function(){
-                        authorizeKlarnaOrder();												
-                    });	
-                
-                
-                }
-            
-        });
-        window.authorizeKlarnaOrder =  function (){
-                Klarna.Credit.authorize(function(res) {
-                    if(res["approved"] == true){
-                    document.getElementById("klarnaAuthToken").value=res["authorization_token"];
-                    $('.submit-order button[type="submit"]').trigger("click");
-                    }
-                });
-            }
-    }
+    
+    if($('#checkout-main').attr('data-checkout-stage') === 'placeOrder')
+    {
+    	var placeOrderBtn = $('#checkout-main').find('#submit-order');
+    	$(placeOrderBtn).closest('.row').find('.next-step-button').removeClass('next-step-button');	
+    }    
  }
 };
 

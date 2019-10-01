@@ -32,6 +32,11 @@
 			<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 		</isif>
 		<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+		
+		<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive()}">
+			<script src="${URLUtils.staticURL('/custom/js/klarna.js')}"></script>
+		</isif>
+		   
 
         <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
         <isif condition="${isGooglePayEnabled}"> 

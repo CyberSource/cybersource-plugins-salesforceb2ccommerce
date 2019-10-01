@@ -2,7 +2,7 @@
 
 var Logger = dw.system.Logger.getLogger('Cybersource');
 
-function getOrderObject(Basket : dw.order.LineItemCtnr){
+function getOrderObject(Basket : dw.order.LineItemCtnr,creditCardForm){
 	
 	var basket = Basket;
 	
@@ -19,7 +19,6 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 	var OrderDetailsObject = require('int_cybersource/cartridge/scripts/cardinal/OrderDetailsObject');
 	var CartItemObject = require('int_cybersource/cartridge/scripts/cardinal/CartItemObject');
 	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
-	var app = require(CybersourceConstants.APP);
 	
 	var orderObject = new OrderObject;
 	var consumerObject = new ConsumerObject;
@@ -30,9 +29,16 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 	var tokenObject = new TokenObject;
 	var orderdetailsObject = new OrderDetailsObject;
 	var cartObject = new CartItemObject;
+	var cardSecurityCode;
 	
-	var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
-	var cardSecurityCode = creditCardForm.get('cvn').value();
+	if(creditCardForm.cvn != null)
+	{
+		cardSecurityCode = creditCardForm.cvn.value;
+	}
+	else
+	{
+	    cardSecurityCode = creditCardForm.get('cvn').value();
+	}
 	
 	var billingaddress = basket.getBillingAddress();
 	var shippingAddress;
@@ -139,7 +145,7 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 		deleteEmptyProperties(tokenObject);
 	} else if(paymentinstrument.paymentMethod.indexOf('SA_')>-1){
 		var customerObj = (!empty(customer) && customer.authenticated)?customer:null;
-		setCCAttributes(paymentinstrument, customerObj, accountObject, tokenObject);
+		setCCAttributes(paymentinstrument, customerObj, accountObject, tokenObject,cardSecurityCode);
 		deleteEmptyProperties(accountObject);
 		deleteEmptyProperties(tokenObject);
 	}
@@ -195,9 +201,9 @@ function deleteEmptyProperties(object){
 	}
 }
 
-function setCCAttributes(orderPaymentInstrument, CustomerObj, accountObject, tokenObject) {
+function setCCAttributes(orderPaymentInstrument, CustomerObj, accountObject, tokenObject, cardSecurityCode) {
 	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
-	var app = require(CybersourceConstants.APP);
+
 	if (orderPaymentInstrument.getPaymentMethod().indexOf('SA_')>-1) {
 		if(!empty(CustomerObj) && !empty(orderPaymentInstrument) && orderPaymentInstrument.getPaymentMethod().indexOf("SA")>-1
 				&& !empty(orderPaymentInstrument.getCreditCardType()) && !empty(orderPaymentInstrument.getCreditCardNumber())  
@@ -223,8 +229,6 @@ function setCCAttributes(orderPaymentInstrument, CustomerObj, accountObject, tok
 				}
 			}
 			
-			var creditCardForm = app.getForm('billing.paymentMethods.creditCard');
-			var cardSecurityCode = creditCardForm.get('cvn').value();
 			if (!empty(matchedPaymentInstrument)) {
 					accountObject.setAccountNumber(matchedPaymentInstrument.getCreditCardNumber().charAt(0).equals("*") && !empty(orderPaymentInstrument.getCreditCardNumber()) ? orderPaymentInstrument.getCreditCardNumber() : matchedPaymentInstrument.getCreditCardNumber());
 				accountObject.setExpirationMonth(!empty(orderPaymentInstrument.getCreditCardExpirationMonth()) ? orderPaymentInstrument.getCreditCardExpirationMonth() : matchedPaymentInstrument.getCreditCardExpirationMonth());

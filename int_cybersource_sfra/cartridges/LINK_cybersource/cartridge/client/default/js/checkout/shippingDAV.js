@@ -169,3 +169,9 @@ $('#checkout-main').find('.submit-shipping').on('click',function(e){
 $('#checkout-main .shipping-summary').find('span.edit-button').on('click',function(){
 		$('#checkout-main').find('.submit-shipping').removeClass('moveToPayment');	 
 });
+
+$('.payment-summary .edit-button').on('click', function () {	
+	var submitPaymentBtn = $('#checkout-main').find('.submit-payment');
+	$(submitPaymentBtn).closest('.row').children().addClass('next-step-button');	
+});
+

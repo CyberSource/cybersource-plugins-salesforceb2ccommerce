@@ -19,10 +19,12 @@ function execute( pdict : PipelineDictionary ) : Number
      var basket : Order = pdict.Basket;
      var transactionId = pdict.authenticationTransactionID;
     
+     var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
      var jwtUtil = require('int_cybersource/cartridge/scripts/cardinal/JWTBuilder'); 
      var cardinalUtil = require('int_cybersource/cartridge/scripts/cardinal/CardinalUtils');
+     var creditCardForm = session.forms.billing.paymentMethods.creditCard;
         
-     var OrderObject = cardinalUtil.getOrderObject(basket);
+     var OrderObject = cardinalUtil.getOrderObject(basket,creditCardForm);
      var orderdetailsObject = cardinalUtil.getOrderDetailsObject(basket,transactionId);
      OrderObject.setOrderDetails(orderdetailsObject);
      var jwtToken = jwtUtil.generateTokenWithKey(OrderObject);

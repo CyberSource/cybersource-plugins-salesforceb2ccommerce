@@ -67,7 +67,56 @@ function AuthorizeRequest(orderNo,paymentInstrument,token){
 */
 function CreateInitSessionServiceRequest(Basket){
 	
+    // declare variables
+    var signature = CreateKlarnaSecureKey(Basket);
+    var purchaseObject;
+    var URLUtils = require('dw/web/URLUtils');
+    var cancelURL = URLUtils.https('COPlaceOrder-Submit','provider','cancelfail','signature',encodeURIComponent(signature),'cfk',true).toString();
+    var successURL = URLUtils.https('COPlaceOrder-Submit','provider','klarna','signature',encodeURIComponent(signature)).toString();
+    var failureURL = URLUtils.https('COPlaceOrder-Submit','provider','cancelfail','signature',encodeURIComponent(signature),'cfk',true).toString();
+    //setting the value of payment type after getting from common constant
+    var klarnaPaymentType = CybersourceConstants.KLARNA_PAYMENT_TYPE;
+    //set basket UUID
+    var UUID = Basket.UUID;
+    var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
+    var billTo = new BillTo_Object();
+    // create billto, item and purchase total object
+    billTo.setCountry(Basket.billingAddress.countryCode);
+    billTo.setState(Basket.billingAddress.stateCode);
+    billTo.setPostalCode(Basket.billingAddress.postalCode)
+    var result = CommonHelper.CreateCybersourcePurchaseTotalsObject(Basket);
+    purchaseObject = result.purchaseTotals;
+    result = CommonHelper.CreateKlarnaItemObject(Basket);
+    var items = result.items;
+    //create a session object and set the value accordingly
+    var sessionObject = {};
+    sessionObject.billTo = billTo;
+    sessionObject.purchaseObject = purchaseObject;
+    sessionObject.items = items;
+    sessionObject.klarnaPaymentType = klarnaPaymentType;
+    sessionObject.cancelURL = cancelURL;
+    sessionObject.successURL = successURL;
+    sessionObject.failureURL = failureURL;
+    sessionObject.UUID = UUID;
+    
+    // call session method of facade to create session request
+    var response = klarnaFacade.klarnaInitSessionService(sessionObject);
+    
+    //return the response as per decision and reason code
+    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+        //set the processor token into session variable
+        session.privacy.processorToken = response.apSessionsReply.processorToken;
+        session.privacy.requestID = response.requestID;
+        return {submit: true};
+    } else {
+        var Status = require('dw/system/Status');
+        return {error: true,KlarnaSessionError:new Status(Status.ERROR, 'confirm.error.declined')};
+    }
+}
+
+function CreateUpdateSessionServiceRequest(Basket){
 	// declare variables
+	
 	var signature = CreateKlarnaSecureKey(Basket);
 	var shipTo, billTo, purchaseObject;
 	var URLUtils = require('dw/web/URLUtils');
@@ -87,7 +136,7 @@ function CreateInitSessionServiceRequest(Basket){
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(Basket);
 	purchaseObject = result.purchaseTotals;
 	result = CommonHelper.CreateKlarnaItemObject(Basket);
-	var items : dw.util.List = result.items;
+	var items = result.items;
 	//create a session object and set the value accordingly
 	var sessionObject = {};
 	sessionObject.billTo = billTo;
@@ -101,7 +150,7 @@ function CreateInitSessionServiceRequest(Basket){
 	sessionObject.UUID = UUID;
 	
 	// call session method of facade to create session request
-	var response = klarnaFacade.klarnaInitSessionService(sessionObject);
+	var response = klarnaFacade.klarnaUpdateSessionService(sessionObject);
 	
 	//return the response as per decision and reason code
 	if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
@@ -134,7 +183,7 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(Order);
 	purchaseObject = result.purchaseTotals;
 	result = CommonHelper.CreateKlarnaItemObject(Order);
-	var items : dw.util.List = result.items;
+	var items  = result.items;
 	var decisionManagerRequired = dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaDecisionManagerRequired');
 	//create auth object and set the value of different object
 	var authorizationObject = {};
@@ -154,9 +203,9 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 	
 	/*return the response as per decision and reason code, redirect the user to
 	 merchant site for payment completion*/
-	if (authResponse.decision === 'ACCEPT' && authResponse.reasonCode.get() === 100) {
+	if ((authResponse.decision === 'ACCEPT' && authResponse.reasonCode.get() === 100) || (authResponse.decision == 'REVIEW' && authResponse.reasonCode.get() == 480)) {
 		session.privacy.order_id = Order.orderNo;
-		var isRedirectionRequired = dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaRedirectionRequired');
+		var isRedirectionRequired = true;// dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaRedirectionRequired');
 		switch(authResponse.apAuthReply.paymentStatus)
 		{
 			case 'authorized':
@@ -296,5 +345,6 @@ module.exports = {
 		CreateKlarnaSecureKey: CreateKlarnaSecureKey,
 		HandleRequest : HandleRequest,
 		AuthorizeRequest : AuthorizeRequest,
-		GetKlarnaOrder : GetKlarnaOrder
+		GetKlarnaOrder : GetKlarnaOrder,
+        CreateUpdateSessionServiceRequest :CreateUpdateSessionServiceRequest
 };

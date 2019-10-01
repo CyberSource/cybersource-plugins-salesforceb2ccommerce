@@ -26,17 +26,15 @@ function execute( pdict : PipelineDictionary ) : Number
      
       if(selectedPaymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) || selectedPaymentMethod.equals(CybersourceConstants.METHOD_SA_SILENTPOST)
         		|| selectedPaymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)){
-        	iscardinal = true;	
-     }  
+        	iscardinal = true;
+        	var jwtToken : String = jwtUtil.generateTokenWithKey();
+        	var creditCardForm = session.forms.billing.paymentMethods.creditCard;
+     		var OrderObject = cardinalUtil.getOrderObject(basket,creditCardForm);
+     		var order = JSON.stringify(OrderObject);
      
-     var jwtToken : String = jwtUtil.generateTokenWithKey();
-     var OrderObject = cardinalUtil.getOrderObject(basket);
-     var order = JSON.stringify(OrderObject);
-     
-     pdict.jwtToken = jwtToken;
-     pdict.order = order;
-     pdict.iscardinal = iscardinal;
-     
-        
+     		pdict.jwtToken = jwtToken;
+     		pdict.order = order;
+     		pdict.iscardinal = iscardinal;	
+     }     
      return PIPELET_NEXT;
 }

@@ -25,6 +25,55 @@ function KlarnaServiceInterface(request)
 */
 function klarnaInitSessionService(sessionObject)
 {
+    //declare variables for libcybersource and helper
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    // declare soap reference variable
+    var csReference = webreferences.CyberSourceTransaction;
+    // create reference of request object 
+    var request = new csReference.RequestMessage();
+    //declare helper variable
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    //set the merchant id
+    request.merchantID = CybersourceHelper.getMerchantID();
+    //set client data
+    libCybersource.setClientData(request, sessionObject.UUID);
+    //set purchase total
+    request.purchaseTotals = libCybersource.copyPurchaseTotals(sessionObject.purchaseObject);
+    //set payment type
+    request.apPaymentType = sessionObject.klarnaPaymentType;
+    //set bill to and ship to objects
+    var apSessionsService = new CybersourceHelper.csReference.APSessionsService();
+    if(sessionObject.billTo != null)
+    {
+        request.billTo  = libCybersource.copyBillTo( sessionObject.billTo );
+    }
+    //set item object
+    var items = [];
+    if(!empty(sessionObject.items))
+    {
+        var iter : dw.util.Iterator = sessionObject.items.iterator();
+        while(iter.hasNext())
+        {
+            items.push(libCybersource.copyItemFrom(iter.next()));
+        }
+    }
+    request.item = items;
+    //set cancel, success and failure URL
+    apSessionsService.cancelURL = sessionObject.cancelURL;
+    apSessionsService.successURL = sessionObject.successURL;
+    apSessionsService.failureURL = sessionObject.failureURL;
+    apSessionsService.sessionsType="N";
+    request.apSessionsService= apSessionsService;    
+    request.apSessionsService.run = true;
+    
+    //call klarna service to get the response
+    var response = KlarnaServiceInterface(request);
+    // return response
+    return response;
+}
+
+function klarnaUpdateSessionService(sessionObject)
+{
 	//declare variables for libcybersource and helper
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	// declare soap reference variable
@@ -63,6 +112,11 @@ function klarnaInitSessionService(sessionObject)
 	apSessionsService.cancelURL = sessionObject.cancelURL;
 	apSessionsService.successURL = sessionObject.successURL;
 	apSessionsService.failureURL = sessionObject.failureURL;
+    if(sessionObject.billTo != null && sessionObject.shipTo !=null)
+    {
+        apSessionsService.sessionsType="U";
+    }
+    apSessionsService.sessionsRequestID = session.privacy.requestID;
 	request.apSessionsService= apSessionsService;	
 	request.apSessionsService.run = true;
 	
@@ -134,5 +188,6 @@ function klarnaAuthorizationService(authorizationObject)
 
 module.exports = {
 		klarnaInitSessionService : klarnaInitSessionService,
+        klarnaUpdateSessionService : klarnaUpdateSessionService,
 		klarnaAuthorizationService : klarnaAuthorizationService
 	};

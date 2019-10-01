@@ -29,12 +29,7 @@ function HandleRequest(Basket,isHandleRequired) {
 		callSessionService = CommonHelper.HandleRequest(Basket);
 	}
 		//call session service in case of success response
-	if(callSessionService.success){
-		var response = CreateInitSessionServiceRequest(Basket);
-		return response;
-	} else {
-		return {error:true};
-	}
+	return callSessionService;
 }
 
 /*
@@ -151,12 +146,16 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 	
 	//call method to set order level attribute
 	AuthorizeKlarnaOrderUpdate(Order,authResponse);
-	
+    
+        // Save decision so fraud handling hook can adjust order status later.
+    session.custom.CybersourceFraudDecision = authResponse.decision;
+
 	/*return the response as per decision and reason code, redirect the user to
 	 merchant site for payment completion*/
-	if (authResponse.decision === 'ACCEPT' && authResponse.reasonCode.get() === 100) {
+    if ((authResponse.decision == 'ACCEPT' && authResponse.reasonCode.get() == 100) || (authResponse.decision == 'REVIEW' && authResponse.reasonCode.get() == 480))  {
+
 		session.privacy.order_id = Order.orderNo;
-		var isRedirectionRequired = dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaRedirectionRequired');
+		var isRedirectionRequired = true;  //dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaRedirectionRequired');
 		switch(authResponse.apAuthReply.paymentStatus)
 		{
 			case 'authorized':
@@ -175,13 +174,16 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 			case 'failed':
 				return {error: true};
 		}
-	} else if(authResponse.decision === 'REJECT'){
-			return {declined: true};
-	} else if(authResponse.decision === 'ERROR'){
-		return {error: true};
-	} else if(authResponse.decision === 'REVIEW'){
-		return {review : true};
-	}
+    }
+    else if(authResponse.decision === 'REJECT'){
+		return {declined: true};
+    } 
+    else if(authResponse.decision === 'ERROR'){
+		return {declined: true};
+    }
+    else {
+        return {declined: true};
+    }
 }
 
 /*
@@ -191,9 +193,9 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 function CheckStatusServiceRequest(Order){
 	
 	//create helper variable
-	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.ds');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	//call check status service
-	var response = CommonHelper.CheckStatusServiceRequest({Order:Order});
+	var response = CommonHelper.CheckStatusServiceRequest(Order);
 	//return response
 	return response;
 }
@@ -262,8 +264,8 @@ function KlarnaOrderUpdate(order,responseObject)
 /**
  * Retrive order based on session privacy order_id.
  */
-function GetKlarnaOrder(args) {
-	var order = args.Order;
+function GetKlarnaOrder(order) {
+	var order = order;
 	if (empty(order)) {
 		if (!empty(session.privacy.order_id)) {
 			//GetOrder

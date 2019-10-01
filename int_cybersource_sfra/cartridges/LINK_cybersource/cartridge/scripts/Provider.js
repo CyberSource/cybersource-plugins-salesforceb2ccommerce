@@ -134,12 +134,12 @@ function banktransfer(order) {
 /**
  * Process redirect url response of bank transfer
  */
-function klarna(args) {
+function klarna(order) {
 
     var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     // get the order
-    var orderResult = klarnaAdaptor.GetKlarnaOrder({ Order: args.Order });
+    var orderResult = klarnaAdaptor.GetKlarnaOrder(order);
     //check if payment method is not specific to bank transfer
     if (orderResult.error) {
         return { carterror: true };

@@ -245,7 +245,7 @@ base.methods.updatePaymentInformation = function (order, options) {
 		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'DW_GOOGLE_PAY' 
 		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'PAYPAL' 
 		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod != 'CREDIT_CARD') {
-		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order ' + order.billing.payment.selectedPaymentInstruments[0].paymentMethod.toLowerCase();
+		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order ' + order.billing.payment.selectedPaymentInstruments[0].paymentMethod.toLowerCase();   	
 	} else if(order.billing.payment 
 		&& order.billing.payment.selectedPaymentInstruments
 		&& order.billing.payment.selectedPaymentInstruments.length > 0 
@@ -289,6 +289,15 @@ base.methods.updatePaymentInformation = function (order, options) {
     }
 
     $paymentSummary.empty().append(htmlToAppend);
+    
+    var checkoutStage = $('#checkout-main').attr('data-checkout-stage');
+    var placeOrderflag = $('#submit-order').hasClass('place-order');
+    if( checkoutStage === 'payment' && !placeOrderflag)
+    {
+    	var placeOrderBtn = $('#checkout-main').find('#submit-order');
+    	$(placeOrderBtn).closest('.row').find('.next-step-button').removeClass('next-step-button');	
+    }
+   
 };
 
 function updatePaypal(options){

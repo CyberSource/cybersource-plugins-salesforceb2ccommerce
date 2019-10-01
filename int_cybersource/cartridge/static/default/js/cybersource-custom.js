@@ -204,22 +204,63 @@ $(document).ready(function () {
 					document.getElementById("auth_button").innerHTML = "<br><button id=\"klarnaPayButton\" type=\"button\" name=\"buy\">Pay</button>";
 					$("#klarnaPayButton").click(function(){
 						authorizeKlarnaOrder();												
-					});	
-					
-					
-				}
-				
+					});				
+				}		
 		});
-    	window.authorizeKlarnaOrder =  function (){
-			  Klarna.Credit.authorize(function(res) {
-				 if(res["approved"] == true){
-					document.getElementById("klarnaAuthToken").value=res["authorization_token"];
-					$('.submit-order button[type="submit"]').trigger("click");
-				  }
-				});
+    	window.authorizeKlarnaOrder =  function (){ 		
+    		 $.ajax({
+                 method: 'POST',
+                 url: Urls.klarnaupdate,
+                 success: function (data) {
+                     if(data.submit)
+                     {
+                    	 Klarna.Credit.authorize(function(res) {
+            				 if(res["approved"] == true){
+            					document.getElementById("klarnaAuthToken").value=res["authorization_token"];
+            					$('.submit-order button[type="submit"]').trigger("click");
+            				 }
+            				 else
+            				 {
+            					 $("#klarnaPayButton").hide();
+            				 }
+                    	 });
+                     }
+                     else
+                     {
+                    	 $("#klarnaPayButton").hide();
+                    	 var error = document.getElementById("errormsg");
+        	        	 var errorformdiv = document.getElementsByClassName("error-form");
+        	        	 if(errorformdiv.length>0)
+        	        	 {
+        	        		 errorformdiv[0].innerText = Resources.DECLINED_ERROR;
+        	        	 }
+        	        	 else
+        	        	 {
+        	        		 var d = document.createElement("div");
+        		        	 d.className = "error-form";
+        		        	 d.innerText = Resources.DECLINED_ERROR;
+        		        	 error.appendChild(d);
+        	        	 }
+                     }
+                 },
+                 error: function (err) {
+                	 $("#klarnaPayButton").hide();
+                	 var error = document.getElementById("errormsg");
+    	        	 var errorformdiv = document.getElementsByClassName("error-form");
+    	        	 if(errorformdiv.length>0)
+    	        	 {
+    	        		 errorformdiv[0].innerText = Resources.TECHINAL_ERROR;
+    	        	 }
+    	        	 else
+    	        	 {
+    	        		 var d = document.createElement("div");
+    		        	 d.className = "error-form";
+    		        	 d.innerText = Resources.TECHINAL_ERROR;
+    		        	 error.appendChild(d);
+    	        	 }
+                 }
+             });
+			  
 		 }
-    }
-	
-	
-	
+    }	
 });

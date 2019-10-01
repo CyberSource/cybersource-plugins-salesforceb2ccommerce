@@ -1719,7 +1719,7 @@
             <xsd:element name="overridePaymentMethod" type="xsd:string" minOccurs="0"/>
             <xsd:element name="paymentOptionID" type="xsd:string" minOccurs="0"/>
             <xsd:element name="sessionsType" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="sessionRequestID" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="sessionsRequestID" type="xsd:string" minOccurs="0"/>
         </xsd:sequence>
         <xsd:attribute name="run" type="tns:boolean" use="required"/>
     </xsd:complexType>

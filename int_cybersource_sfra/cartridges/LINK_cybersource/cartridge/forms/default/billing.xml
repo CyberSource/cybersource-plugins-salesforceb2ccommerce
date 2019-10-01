@@ -25,4 +25,7 @@
 				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" binding="giropayBic"/>
 	<field formid="epsBic" label="payment.bicnumber" type="string" mandatory="true" 
 				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" binding="epsBic" />
+				
+	<field formid="klarnaEmail" label="payment.klarnaemail" type="string" binding="email"
+           max-length="254" missing-error="error.card.info.missing.email" />
 </form>

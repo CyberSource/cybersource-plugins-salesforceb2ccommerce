@@ -12,17 +12,13 @@
             </flow>
             <flow-template template-id="template_91">
                 <step step-id="UpdateOrderStatus" type="ExecuteScriptModule" enforce-restart="false">
-                    <description>Update unconfirmed orders based on Accept / Reject decisions made
-                        in CS Business Center.</description>
+                    <description>Update unconfirmed orders based on Accept / Reject decisions made in CS Business Center.</description>
                     <parameters>
                         <parameter name="ExecuteScriptModule.Module"
                             >LINK_cybersource/cartridge/scripts/jobs/DMOrderStatusUpdate.js</parameter>
                         <parameter name="ExecuteScriptModule.FunctionName"
                             >orderStatusUpdate</parameter>
                         <parameter name="ExecuteScriptModule.Transactional">false</parameter>
-                        <parameter name="merchantId"/>
-                        <parameter name="username"/>
-                        <parameter name="password"/>
                     </parameters>
                 </step>
             </flow-template>

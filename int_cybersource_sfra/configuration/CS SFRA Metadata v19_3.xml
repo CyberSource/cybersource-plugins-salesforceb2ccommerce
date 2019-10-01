@@ -1710,6 +1710,23 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+            <attribute-definition attribute-id="isKlarnaDecisionManagerRequired">
+                <display-name xml:lang="x-default">Klarna Decision Manager Required</display-name>
+                <description xml:lang="x-default">Klarna Decision Manager Required</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="klarnaJSAPIPath">
+                <display-name xml:lang="x-default">Klarna JS API Path</display-name>
+                <description xml:lang="x-default">Klarna JS API Path</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://credit.klarnacdn.net/lib/v1/api.js</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="cybVisaAPIKey">
                 <display-name xml:lang="x-default">cybVisaAPIKey</display-name>
                 <description xml:lang="x-default">The Visa Checkout account API key specified in cyberSource business center (Alphanumeric; maximum 100 characters)</description>
@@ -2150,6 +2167,11 @@
                 <attribute attribute-id="googlePayMerchantID"/>
                 <attribute attribute-id="googlePaygatewayMerchantId"/>
 			</attribute-group>
+            <attribute-group group-id="CyberSource_Klarna">
+                <display-name xml:lang="x-default">CyberSource: Klarna</display-name>
+                <attribute attribute-id="isKlarnaDecisionManagerRequired"/>
+                <attribute attribute-id="klarnaJSAPIPath"/>
+            </attribute-group>
 			<attribute-group group-id="CyberSource_VisaCheckout">
                 <display-name xml:lang="x-default">CyberSource: Visa Checkout</display-name>
                 <attribute attribute-id="cybVisaSdkJsLibrary"/>
@@ -2168,7 +2190,6 @@
                 <attribute attribute-id="cybVisaButtonOnCart"/>
                 <attribute attribute-id="CsEnableVisaCheckout"/>
             </attribute-group>
-            
             <attribute-group group-id="CyberSource_BankTransfer">
                 <display-name xml:lang="x-default">CyberSource: Bank Transfer</display-name>
                 <attribute attribute-id="merchantDescriptorPostalCode"/>

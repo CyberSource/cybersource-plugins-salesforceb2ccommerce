@@ -31,6 +31,10 @@
 		{
 			"name": "app.payment.processor.bank_transfer",
 			"script": "./cartridge/scripts/hooks/payment/processor/bank_transfer"
+		},
+		{
+			"name": "app.payment.processor.klarna_credit",
+			"script": "./cartridge/scripts/hooks/payment/processor/klarna_credit"
 		}
     ]
 }

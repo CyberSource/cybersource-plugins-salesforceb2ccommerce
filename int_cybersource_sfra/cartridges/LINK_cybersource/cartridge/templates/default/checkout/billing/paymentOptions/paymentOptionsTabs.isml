@@ -40,6 +40,9 @@
 
     <iselseif condition="${paymentOption.ID === 'EPS'}">
         <isinclude template="checkout/billing/paymentOptions/epsTab" />
+        
+    <iselseif condition="${paymentOption.ID === 'KLARNA'}">
+        <isinclude template="checkout/billing/paymentOptions/klarnaTab" />
     </isif>
 
 </isloop>
