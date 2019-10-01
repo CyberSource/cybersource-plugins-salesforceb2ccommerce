@@ -86,9 +86,12 @@ function HandleCheckStatusServiceResponse(order) {
     else if(paymentResponse.error){
             // Fail order and Log event.
         try {
-            Transaction.wrap(function () {
-                order.setStatus(Order.ORDER_STATUS_CANCELLED);									
-            });
+            if (order.status != Order.ORDER_STATUS_CANCELLED) {
+                Transaction.wrap(function () {
+                    //order.setStatus(Order.ORDER_STATUS_CANCELLED);
+                    OrderMgr.cancelOrder(order);
+                });
+            }
         }
         catch (e) {
             Logger.error('[APCheckStatusJob.ds] Error failing Order: ' + e.message);
