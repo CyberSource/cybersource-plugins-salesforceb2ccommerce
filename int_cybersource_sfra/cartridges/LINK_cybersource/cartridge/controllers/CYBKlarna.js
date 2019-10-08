@@ -8,6 +8,7 @@ var klarnaFacade = require('~/cartridge/scripts/klarna/facade/KlarnaFacade');
 var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 
 
 server.post('GetSession', function (req, res, next) {
@@ -28,6 +29,10 @@ server.post('GetSession', function (req, res, next) {
     }
         //  Update billing address with posted form values and email param.
     updateBillingAddress(basket);
+    
+    
+	// updating Payment Transaction amount for purchase object
+    var calculatedPaymentTransaction = COHelpers.calculatePaymentTransaction(basket);
 
         //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
@@ -122,8 +127,18 @@ server.post('UpdateSession', function (req, res, next) {
     
 	    // Create billto, shipto, item and purchase total object
     var result = CommonHelper.CreateCyberSourceBillToObject(basket,true);
-	billTo = result.billTo;
-	billTo.setLanguage(CommonHelper.GetRequestLocale());
+    billTo = result.billTo;
+
+        //  Use Klarna languge set in payment method custom attribute.
+    var language = CommonHelper.GetRequestLocale();
+    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(basket.paymentInstrument.paymentMethod);
+    if (!empty(paymentMethod) && paymentMethod.custom !== null && 'klarnaLocale' in paymentMethod.custom) {
+    	if (!empty(paymentMethod.custom.klarnaLocale.value)) {
+        	language = paymentMethod.custom.klarnaLocale.value;
+        }
+    }
+    billTo.setLanguage(language);
+
 	result = CommonHelper.CreateCybersourceShipToObject(basket);
 	shipTo = result.shipTo;
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);

@@ -346,6 +346,55 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="klarnaLocale">
+                <display-name xml:lang="x-default">Bill-to Language</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>true</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Danish-Denmark</display>
+                        <value>DA-DK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">German-Austria</display>
+                        <value>DE-AT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">German-Germany</display>
+                        <value>DE-DE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">English-United Kingdom</display>
+                        <value>EN-GB</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">English-United States</display>
+                        <value>EN-US</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Finnish-Finland</display>
+                        <value>FI-FI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Norwegian-Norway</display>
+                        <value>NB-NO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dutch-Netherlands</display>
+                        <value>NL-NL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Swedish-Finland</display>
+                        <value>SV-FI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Swedish-Sweden</display>
+                        <value>SV-SE</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="paymentType">
                 <display-name xml:lang="x-default">Payment Type</display-name>
                 <description xml:lang="x-default">Payment Type</description>
@@ -399,6 +448,10 @@
                 <display-name xml:lang="x-default">Cybersource Crendentials</display-name>
                 <attribute attribute-id="merchantID"/>
                 <attribute attribute-id="merchantKey"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna">
+                <display-name xml:lang="x-default">Klarna</display-name>
+                <attribute attribute-id="klarnaLocale"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

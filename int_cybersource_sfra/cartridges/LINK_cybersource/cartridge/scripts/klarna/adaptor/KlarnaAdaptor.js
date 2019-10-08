@@ -76,7 +76,20 @@ function CreateInitSessionServiceRequest(Basket){
 	// create billto, shipto, item and purchase total object
 	var result = CommonHelper.CreateCyberSourceBillToObject(Basket,true);
 	billTo = result.billTo;
-	billTo.setLanguage(CommonHelper.GetRequestLocale());
+    
+    
+   //billTo.setLanguage(CommonHelper.GetRequestLocale());
+    
+        //  Use Klarna languge set in payment method custom attribute.
+    var language = CommonHelper.GetRequestLocale();
+    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(Basket.paymentInstrument.paymentMethod);
+    if (!empty(paymentMethod) && paymentMethod.custom !== null && 'klarnaLocale' in paymentMethod.custom) {
+    	if (!empty(paymentMethod.custom.klarnaLocale.value)) {
+        	language = paymentMethod.custom.klarnaLocale.value;
+        }
+    }
+    billTo.setLanguage(language);
+
 	result = CommonHelper.CreateCybersourceShipToObject(Basket);
 	shipTo = result.shipTo;
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(Basket);
@@ -122,8 +135,21 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 	
 	// create billto, shipto, item and purchase total object
 	var result = CommonHelper.CreateCyberSourceBillToObject(Order,true);
-	billTo = result.billTo;
-	billTo.setLanguage(CommonHelper.GetRequestLocale());
+    billTo = result.billTo;
+    
+
+    //billTo.setLanguage(CommonHelper.GetRequestLocale());
+    
+        //  Use Klarna languge set in payment method custom attribute.
+    var language = CommonHelper.GetRequestLocale();
+    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(Order.paymentInstrument.paymentMethod);
+    if (!empty(paymentMethod) && paymentMethod.custom !== null && 'klarnaLocale' in paymentMethod.custom) {
+    	if (!empty(paymentMethod.custom.klarnaLocale.value)) {
+        	language = paymentMethod.custom.klarnaLocale.value;
+        }
+    }
+    billTo.setLanguage(language);
+
 	result = CommonHelper.CreateCybersourceShipToObject(Order);
 	shipTo = result.shipTo;
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(Order);

@@ -721,7 +721,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof','cybersource',null)
     			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
     			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
-    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.klarna','cybersource',null)
     	 ){
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
     	 } else {
