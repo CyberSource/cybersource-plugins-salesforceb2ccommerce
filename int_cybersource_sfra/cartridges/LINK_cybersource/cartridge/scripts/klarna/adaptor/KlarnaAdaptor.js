@@ -53,6 +53,9 @@ function AuthorizeRequest(orderNo,paymentInstrument,token){
     //call authorization service and process the response
     var response = AuthorizationServiceRequest(Order,token);
     
+    session.custom.SkipTaxCalculation = false;
+	session.custom.cartStateString = null;
+    
     return response;
 	
 }
