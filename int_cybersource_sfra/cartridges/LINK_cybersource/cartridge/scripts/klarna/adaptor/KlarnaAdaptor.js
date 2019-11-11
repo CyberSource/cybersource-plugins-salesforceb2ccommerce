@@ -85,7 +85,7 @@ function CreateInitSessionServiceRequest(Basket){
     
         //  Use Klarna languge set in payment method custom attribute.
     var language = CommonHelper.GetRequestLocale();
-    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(Basket.paymentInstrument.paymentMethod);
+    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(Basket.getPaymentInstruments()[0].paymentMethod);
     if (!empty(paymentMethod) && paymentMethod.custom !== null && 'klarnaLocale' in paymentMethod.custom) {
     	if (!empty(paymentMethod.custom.klarnaLocale.value)) {
         	language = paymentMethod.custom.klarnaLocale.value;
@@ -145,7 +145,7 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
     
         //  Use Klarna languge set in payment method custom attribute.
     var language = CommonHelper.GetRequestLocale();
-    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(Order.paymentInstrument.paymentMethod);
+    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(Order.getPaymentInstruments()[0].paymentMethod);
     if (!empty(paymentMethod) && paymentMethod.custom !== null && 'klarnaLocale' in paymentMethod.custom) {
     	if (!empty(paymentMethod.custom.klarnaLocale.value)) {
         	language = paymentMethod.custom.klarnaLocale.value;

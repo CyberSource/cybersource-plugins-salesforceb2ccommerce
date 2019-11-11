@@ -7,6 +7,7 @@
 var dwsvc = require ("dw/svc");
 var HashMap = require ("dw/util/HashMap");
 var SOAPUtil = require ("dw/rpc/SOAPUtil");
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 /**
  *
  *	SOAP Services
@@ -20,7 +21,7 @@ var SOAPUtil = require ("dw/rpc/SOAPUtil");
 *
 /*********************************************************************************/
 
-dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic", {
+var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersource.soap.transactionprocessor.generic', {
 /*
 * Description  : Method to Initialize cybersource.soap.transactionprocessor service
 * Input 	   : None
@@ -100,7 +101,7 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic",
 *
 /*********************************************************************************/
 
-dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.pos", {
+var CyberSourceTransactionPOSService = LocalServiceRegistry.createService("cybersource.soap.transactionprocessor.pos", {
 /*
 * Description  : Method to Initialize cybersource.soap.transactionprocessor service
 * Input 	   : None
@@ -198,42 +199,47 @@ dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.pos", {
 *
 /*********************************************************************************/
 
-dwsvc.ServiceRegistry.configure("cybersource.conversiondetailreport", {
-                createRequest: function(svc:HTTPService, args){
-                                // Default request method is post
-                                 svc.setRequestMethod("POST");
-                                 svc.addHeader("Content-Type", "text/xml");
+var CyberSourceConversionDetailReportService = LocalServiceRegistry.createService('cybersource.conversiondetailreport', {
+        
+        
+        createRequest: function(svc:HTTPService, args){
+            // Default request method is post
+            svc.setRequestMethod("POST");
+            svc.addHeader("Content-Type", "text/xml");
              
               
-        var url = svc.getURL();    
-        var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    	var CybersourceHelper = libCybersource.getCybersourceHelper();
-    	var paramArray = [];
-        var urlParms = url.match(/{[^{}]+}/g) || paramArray;      
+        	var url = svc.getURL();    
+        	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    		var CybersourceHelper = libCybersource.getCybersourceHelper();
+    		var paramArray = [];
+        	var urlParms = url.match(/{[^{}]+}/g) || paramArray;      
                 
-        //remove url parms with blank values
-        urlParms = (url + '&').match(/[\x3F&][^=&]*=(?=&)/g) || paramArray;
+        	//remove url parms with blank values
+        	urlParms = (url + '&').match(/[\x3F&][^=&]*=(?=&)/g) || paramArray;
        
-        urlParms.forEach(function(value, index) {
+        	urlParms.forEach(function(value, index) {
               url = url.replace(value.replace(/[\x3F&]/g, ''), ''); //1) strip away ? and & from parm 2) strip result from url
-        });
-        url = url.replace(/&{2,}/g, '&'); //replace && with &
-        url = url.replace(/\x3F&/g, '?'); //replace ?& with ?
-        url = url.replace(/&$/, ''); //replace & at the end with blank        
+        	});
+        	url = url.replace(/&{2,}/g, '&'); //replace && with &
+        	url = url.replace(/\x3F&/g, '?'); //replace ?& with ?
+        	url = url.replace(/&$/, ''); //replace & at the end with blank        
         
-        //set timestamp parm
+        	//set timestamp parm
        
-        url = url.replace(/{merchantID}/, args.merchantId);
-        url = url.replace(/{username}/, args.username);
-        url = url.replace(/{password}/, args.password);
-        url = url.replace(/{startDate}/, args.startDate);
-        url = url.replace(/{startTime}/, args.startTime);
-        url = url.replace(/{endDate}/, args.endDate);
-        url = url.replace(/{endTime}/, args.endTime);
-              svc.setURL(url);                         
+        	url = url.replace(/{merchantID}/, args.merchantId);
+        	url = url.replace(/{username}/, args.username);
+        	url = url.replace(/{password}/, args.password);
+        	url = url.replace(/{startDate}/, args.startDate);
+        	url = url.replace(/{startTime}/, args.startTime);
+        	url = url.replace(/{endDate}/, args.endDate);
+        	url = url.replace(/{endTime}/, args.endTime);
+            svc.setURL(url);                         
        },
        parseResponse: function(svc:HTTPService, client:dw.net.HTTPClient) {   
 	        return client.text;
        }
 });
 
+exports.CyberSourceTransactionService = CyberSourceTransactionService;
+exports.CyberSourceConversionDetailReportService = CyberSourceConversionDetailReportService;
+exports.CyberSourceTransactionPOSService = CyberSourceTransactionPOSService;

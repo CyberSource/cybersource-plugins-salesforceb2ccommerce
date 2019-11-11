@@ -1,7 +1,7 @@
 'use strict';
-var dwsvc = require ("dw/svc");
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * This method create the input for the cybersource visa checkout payment method, It validates the data and the card details.
@@ -96,7 +96,7 @@ function CCAuthRequest(Basket,OrderNo,IPAddress)
 	var serviceResponse = null;
 	try
 	{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
@@ -146,7 +146,7 @@ function VCDecryptRequest(orderNo,wrappedKey,data,callID)
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
@@ -336,7 +336,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
@@ -429,7 +429,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;

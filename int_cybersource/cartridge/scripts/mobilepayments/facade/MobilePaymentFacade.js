@@ -6,6 +6,7 @@ var CybersourceConstants = require('../../utils/CybersourceConstants');
 var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceHelper = libCybersource.getCybersourceHelper();
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 	
 /**
@@ -111,8 +112,7 @@ function createMobilePaymentAuthRequest(authRequestParams)
 	var serviceResponse = null;
 	try
 	{
-		var dwsvc = require ("dw/svc");
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		var service = CSServices.CyberSourceTransactionService;
 		// getting merchant id and key for specific payment method
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(authRequestParams.MobilePaymentType);
 		var requestWrapper={};

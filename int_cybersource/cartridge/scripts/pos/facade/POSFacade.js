@@ -1,5 +1,6 @@
 var Status = require('dw/system/Status');
 var Logger = require('dw/system/Logger');
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * Creatres the request input for POS authorization call and parses its response, sets them in map and returns to the calling method.
@@ -34,8 +35,7 @@ function POSAuthRequest(location, orderNo, cardObject, purchaseObject, posObject
 	var serviceResponse = null;
 	try
 	{
-		var dwsvc = require ("dw/svc");
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.pos"); 
+		var service = CSServices.CyberSourceTransactionPOSService; 
 		var requestObj = {location:location,requestObj:serviceRequest};
 		serviceResponse = service.call(requestObj);
 	}

@@ -1,4 +1,8 @@
-
+/**
+ * iDealBankOptionJob.js
+ * This script file gets the Bank details list which supports ideal Bank Transfer and store them as Custom objects in the cloud
+ *  
+ */
 var iDealBankOptionJob = (function(){
 	var that = {};
 	var CustomObjectMgr = require('dw/object/CustomObjectMgr');
@@ -25,11 +29,12 @@ var iDealBankOptionJob = (function(){
 		var _run = function(jobParams, otherParams){
 			var _request = request;				
 			var txn = require('dw/system/Transaction');
-			var UUIDUtils = require('dw/util/UUIDUtils');			
+			var UUIDUtils = require('dw/util/UUIDUtils');	
+			var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 			txn.wrap(function(){				
 				try{
 					var serviceRequest = require('../jobs/helper/BankOptionsRequestBuilder').GetOptionsRequestObj(jobParams);;															
-					var service = require("dw/svc").ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+					var service = CSServices.CyberSourceTransactionService;
 					var requestWrapper={};
 					serviceRequest.merchantID = jobParams.merchantId;
 	                requestWrapper.request = serviceRequest;

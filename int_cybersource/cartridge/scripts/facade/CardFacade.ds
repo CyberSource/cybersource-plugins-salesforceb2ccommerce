@@ -1,7 +1,7 @@
 'use strict';
-var dwsvc = require ("dw/svc");
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 /**
  * This method create the input for the cybersource credit card payment method, validates it and gets response from the service.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr
@@ -106,7 +106,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	var serviceResponse = null;
 	try
 	{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		var service = CSServices.CyberSourceTransactionService;
 		// getting merchant id and key for specific payment method
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
 		var requestWrapper={};
@@ -170,7 +170,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr,billTo : Object,shipTo : Obje
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
@@ -231,7 +231,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
@@ -300,7 +300,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var serviceResponse = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
 		var requestWrapper={};
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;

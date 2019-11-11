@@ -111,7 +111,7 @@ server.post('UpdateSession', function (req, res, next) {
     var basket = BasketMgr.getCurrentBasket();
 
         //  Make sure payment information has been set.
-    if ( empty(basket.paymentInstrument) || empty(basket.paymentInstrument.paymentMethod) || (basket.paymentInstrument.paymentMethod != "KLARNA") ) {
+    if ( empty(basket.getPaymentInstruments() ) || empty(basket.getPaymentInstruments()[0].paymentMethod) || (basket.getPaymentInstruments()[0].paymentMethod != "KLARNA") ) {
         setKlarnaPaymentMethod(basket);
     }
 
@@ -131,7 +131,7 @@ server.post('UpdateSession', function (req, res, next) {
 
         //  Use Klarna languge set in payment method custom attribute.
     var language = CommonHelper.GetRequestLocale();
-    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(basket.paymentInstrument.paymentMethod);
+    var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(basket.getPaymentInstruments()[0].paymentMethod);
     if (!empty(paymentMethod) && paymentMethod.custom !== null && 'klarnaLocale' in paymentMethod.custom) {
     	if (!empty(paymentMethod.custom.klarnaLocale.value)) {
         	language = paymentMethod.custom.klarnaLocale.value;

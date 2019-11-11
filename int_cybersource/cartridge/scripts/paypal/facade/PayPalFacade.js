@@ -4,6 +4,7 @@ var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstan
 var csReference = webreferences.CyberSourceTransaction;
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceHelper = libCybersource.getCybersourceHelper();
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 /**
  * Capture all theinformation relate dto paypal payment method.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
@@ -13,9 +14,8 @@ function payPalSerivceInterface(request)
 	var serviceResponse = null;
 	//setting response in response object
 	try{
-		var dwsvc		= require ("dw/svc");
 		// Load the service configuration
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		
 		var paymentMethod= session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
 		// getting merchant id and key for specific payment method

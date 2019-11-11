@@ -6,8 +6,8 @@ var HashMap = require('dw/util/HashMap');
 var Logger = require('dw/system/Logger');
 var Order = require('dw/order/Order');
 var OrderMgr = require('dw/order/OrderMgr');
-var dwsvc		= require ("dw/svc");
 var Transaction = require('dw/system/Transaction');
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 
 function conversionDetailReport(jobParams)
@@ -46,7 +46,7 @@ function conversionDetailReport(jobParams)
 			serviceParams.endTime = time.endtime;
 			// call conversion report service
 			Logger.debug('postValues sent to CyberSource for On Demand Conversion report :: ');
-			var service = dwsvc.ServiceRegistry.get('cybersource.conversiondetailreport');
+			var service = CSServices.CyberSourceConversionDetailReportService;
             responseObj = service.call(serviceParams);
             // handle error scenarios in case of error return from service
       		handleErrorCases(responseObj);

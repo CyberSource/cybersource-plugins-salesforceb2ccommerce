@@ -2,7 +2,6 @@
 
 
 var Logger = require('dw/system/Logger');
-var dwsvc		= require ("dw/svc");
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
@@ -429,7 +428,7 @@ function TestPOSAuth(card,purchaseTotals,pos)
 	var cardObject = card;
 	var purchaseObject = purchaseTotals;
 	var posObject = pos;
-	
+	var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 	
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
@@ -439,7 +438,7 @@ function TestPOSAuth(card,purchaseTotals,pos)
 	var serviceResponse = {};
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.pos"); 
+		var service = CSServices.CyberSourceTransactionPOSService;; 
 		var requestObj = {location:location,requestObj:serviceRequest};
 		serviceResponse = service.call(requestObj);
 	}catch(e){
@@ -1135,8 +1134,8 @@ and return response
 
 function getServiceResponse(request,paymentMethod)
 {
-	var dwsvc = require ("dw/svc");
-	var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+	var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+	var service = CSServices.CyberSourceTransactionService;
 	var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(paymentMethod);
 	var requestWrapper={};
 	var response = {};

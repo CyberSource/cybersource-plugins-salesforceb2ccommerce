@@ -10,6 +10,7 @@ var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 var taxHelper = require('~/cartridge/scripts/helper/TaxHelper');
 var Logger = dw.system.Logger.getLogger('Cybersource');
+var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 function TaxationRequest(cart)
 {
     // read pipeline dictionary input parameter
@@ -23,8 +24,7 @@ function TaxationRequest(cart)
 	var taxationResponse = null;
 	// send request
 	try{
-		var dwsvc = require ("dw/svc");
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials();
 		var requestWrapper={};
 		requestWrapper.request =taxRequest;

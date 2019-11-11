@@ -2,8 +2,8 @@
 
 * **Description:** We are more than a global payment gateway — we’re an Integrated payment management platform for the digital economy, built on secure Visa infrastructure, with the payment reach and fraud insights of a $350B+ global processing network.
 * **Categories:** Payment Processing, Fraud Detection, Address Validation, Tax Computation
-* **Version:** 19.3.0
-* **Last Certification Date:** AUG-2019
+* **Version:** 19.3.3
+* **Last Certification Date:** OCT-2019
 * **JavaScript Controllers Friendly:** **YES**
 
 ### Contribution guidelines ###
@@ -17,4 +17,4 @@ Thank you for helping improve the quality of this cartridge!
 
 ### Contact ###
 
-* Lindsey Rodgers: <demandware@cybersource.com>
+* Lindsey Rodgers: <SFCC@cybersource.com>

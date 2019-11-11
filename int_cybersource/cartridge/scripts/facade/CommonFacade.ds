@@ -45,11 +45,11 @@ function CallCYBService(paymentMethod,request)
 	var serviceResponse = null;
 	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+	var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
    	var CybersourceHelper = libCybersource.getCybersourceHelper();	
 	try
 	{
-		var dwsvc		= require ("dw/svc");
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic");
+		var service = CSServices.CyberSourceTransactionService;
 		//get the merchant credentials from helper method
 		var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(paymentMethod);
 		var requestWrapper={};

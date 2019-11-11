@@ -12,11 +12,11 @@
 * 	@output missingField : Array
 *
 */
-var dwsvc = require ("dw/svc");
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
 var libCybersource = require(CybersourceConstants.CS_CORE_SCRIPT+'cybersource/libCybersource');
 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
+var CSServices = require('int_cybersource/cartridge/scripts/init/SoapServiceInit');
 function execute( pdict : PipelineDictionary ) : Number
 {
 	var subscriptionID : String = "9909000136755587";
@@ -56,7 +56,7 @@ function execute( pdict : PipelineDictionary ) : Number
 	var response = null;
 	// send request
 	try{
-		var service = dwsvc.ServiceRegistry.get("cybersource.soap.transactionprocessor.generic"); 
+		var service = CSServices.CyberSourceTransactionService; 
 		response = service.call(request);
 	}catch(e){
 		Logger.error("[OnDemandSubscription.ds] Error in subscription request ( {0} )",e.message);
