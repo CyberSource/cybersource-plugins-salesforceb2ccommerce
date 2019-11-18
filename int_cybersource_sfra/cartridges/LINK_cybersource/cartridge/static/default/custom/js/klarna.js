@@ -87,15 +87,21 @@ $(document).ready(function() {
             	$.spinner().stop();
                 if(!data.error)
                 {
-                	 Klarna.Credit.authorize(function(res) {
+                	 Klarna.Credit.authorize(function(res) {       		 
                          if (res["approved"] == true) {
                          	document.getElementById("klarnaAuthToken").value=res["authorization_token"];
-                             $("#klarna-pay-authorize").hide(); 
+                         	$("#klarna-pay-authorize").hide(); 
                              $('.submit-payment').trigger("click");
                          }
                          else
                          {
-                         	$("#klarna-pay-authorize").hide();
+                        	 if (res["show_form"] == true) {
+                        		 $("#klarna-pay-authorize").show();
+                        	 }
+                        	 else
+                        	 {
+                        		 $("#klarna-pay-authorize").hide();
+                        	 }	
                          }          
                      }); 
                 }

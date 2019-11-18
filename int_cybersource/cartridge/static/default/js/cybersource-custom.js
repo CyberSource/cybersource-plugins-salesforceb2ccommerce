@@ -221,7 +221,13 @@ $(document).ready(function () {
             				 }
             				 else
             				 {
-            					 $("#klarnaPayButton").hide();
+            					 if (res["show_form"] == true) {
+                            		 $("#klarnaPayButton").show();
+                            	 }
+                            	 else
+                            	 {
+                            		 $("#klarnaPayButton").hide();
+                            	 }		 
             				 }
                     	 });
                      }
