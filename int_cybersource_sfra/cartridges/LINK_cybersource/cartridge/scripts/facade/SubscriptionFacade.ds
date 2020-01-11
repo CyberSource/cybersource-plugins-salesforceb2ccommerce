@@ -4,6 +4,7 @@ var dwsvc = require ("dw/svc");
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var UUIDUtils = require('dw/util/UUIDUtils');
 
 /**
  * This function creates subscription on basis of billto,card object,amount and currency of the order.
@@ -23,7 +24,7 @@ function CreateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
-	CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billToObject, purchaseObject, cardObject, "test");
+	CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billToObject, purchaseObject, cardObject, UUIDUtils.createUUID());
 	
 	var serviceResponse = null;
 	// send request
@@ -71,7 +72,7 @@ function DeleteSubscription(subscriptionID)
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
-	CybersourceHelper.addPaySubscriptionDeleteService(serviceRequest, "test", subscriptionID);
+	CybersourceHelper.addPaySubscriptionDeleteService(serviceRequest,UUIDUtils.createUUID(), subscriptionID);
 	
 	var serviceResponse = null;
 	// send request
@@ -179,7 +180,7 @@ function ViewSubscription(subscriptionID)
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
-	CybersourceHelper.addPaySubscriptionRetrieveService(serviceRequest, "test", subscriptionID);
+	CybersourceHelper.addPaySubscriptionRetrieveService(serviceRequest, UUIDUtils.createUUID() , subscriptionID);
 	
 	var serviceResponse = null;
 	// send request

@@ -506,7 +506,7 @@ function buildDataFromResponse(httpParameterMap) {
     if (!empty(signedFieldNames)) {
         signedFieldsArr = signedFieldNames.split(",");
         for each(var signedFieldName: String in signedFieldsArr) {
-            dataToSign.add(signedFieldName + "=" + httpParameterMap.get(signedFieldName));
+            dataToSign.add(signedFieldName + "=" + httpParameterMap.get(signedFieldName).rawValue);
         }
         data = commaSeparate(dataToSign);
     }

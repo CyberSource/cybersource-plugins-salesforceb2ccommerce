@@ -18,10 +18,5 @@
 		<span id="loading" style="visibility: block; text-align: center;">
     		<img src="${URLUtils.staticURL('/images/loading.gif')}" id="Img5" data-transition="slide" />
 	    </span>
-<script type="text/javascript">
-	$(document).ready(function() {
-		$("#ePayment").submit();
-	});
-</script>
 </body>
 </html>

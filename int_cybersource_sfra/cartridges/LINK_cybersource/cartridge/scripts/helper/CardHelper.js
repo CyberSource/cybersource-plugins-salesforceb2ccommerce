@@ -214,7 +214,7 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
         var Card_Object = require('~/cartridge/scripts/cybersource/Cybersource_Card_Object');
         cardObject = new Card_Object();
         if (empty(subscriptionToken)) {
-            cardObject.setAccountNumber(accounNumber);
+            cardObject.setAccountNumber(accounNumber.replace(/\s/g,''));
         }
         cardObject.setFullName(fullName);
         cardObject.setExpirationMonth(expiryMonth);
@@ -253,6 +253,12 @@ function returnCardType(cardType) {
                 break;
             case 'maestro':
                 cardTypeNew = '042';
+                break;
+            case 'jcb':
+                cardTypeNew = '007';
+                break;
+            case 'dinersclub':
+                cardTypeNew = '005';
                 break;
         }
     }
@@ -338,8 +344,14 @@ function getCardType(cardTypeValue) {
         case '004':
             cardType = 'Discover';
             break;
+        case '005':
+            cardType = 'DinersClub';
+            break;
         case '042':
             cardType = 'Maestro';
+            break;
+        case '007':
+            cardType = 'JCB';
             break;
         default:
             cardType = '';

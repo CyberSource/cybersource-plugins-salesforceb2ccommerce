@@ -11,6 +11,7 @@ server.extend(page);
 server.append('SubmitShipping', function (req, res, next) {
 	var BasketMgr = require('dw/order/BasketMgr');
 	var Locale = require('dw/util/Locale');
+	var Resource = require('dw/web/Resource');
 	var OrderModel = require('*/cartridge/models/order');
 	var currentBasket = BasketMgr.getCurrentBasket();
 	var viewData = res.getViewData();
@@ -30,6 +31,13 @@ server.append('SubmitShipping', function (req, res, next) {
 					containerView: 'basket'
 				}
 		);
+		
+	var taxError = false;
+    if (session.custom.isTaxCalculationFailed)
+    {
+    	session.custom.isTaxCalculationFailed = false;
+    	taxError = true;
+    }
 	var selectedPayment;
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
@@ -44,7 +52,39 @@ server.append('SubmitShipping', function (req, res, next) {
 	session.privacy.paypalShippingIncomplete = false;
 	var options = {'paidWithPayPal' : paidWithPayPal, 'selectedPayment': selectedPayment};
     viewData.options = options;
+    viewData.taxError = taxError;
+    if (taxError) {
+    	viewData.taxErrorMsg = Resource.msg('error.message.taxcalculation.fail','cybersource',null);
+    }
     res.setViewData(viewData);
+	next();
+});
+
+server.append('UpdateShippingMethodsList', function (req, res, next) {
+	var BasketMgr = require('dw/order/BasketMgr');
+	var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
+	var Transaction = require('dw/system/Transaction');
+	var currentBasket = BasketMgr.getCurrentBasket();
+	
+	var billingAddress = currentBasket.billingAddress;
+	var address = ShippingHelper.getAddressFromRequest(req);
+	
+	Transaction.wrap(function () {		
+		if (!empty(billingAddress) && session.custom.updateBillingAddress) {			
+				session.custom.updateBillingAddress = false;
+			 	billingAddress.setFirstName(address.firstName);
+		        billingAddress.setLastName(address.lastName);
+		        billingAddress.setAddress1(address.address1);
+		        billingAddress.setAddress2(address.address2);
+		        billingAddress.setCity(address.city);
+		        billingAddress.setPostalCode(address.postalCode);
+		        billingAddress.setStateCode(address.stateCode);
+		        billingAddress.setCountryCode(address.countryCode);
+		        if (!billingAddress.phone) {
+		            billingAddress.setPhone(address.phone);
+		        }
+		}
+    });	
 	next();
 });
 

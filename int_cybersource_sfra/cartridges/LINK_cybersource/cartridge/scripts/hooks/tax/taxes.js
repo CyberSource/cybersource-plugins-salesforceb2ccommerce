@@ -26,16 +26,20 @@ function calculateTax(cart) {
             }
             if (!empty(cart) && !empty(cart.getAllProductLineItems()) && !empty(cart.defaultShipment) && !empty(cart.defaultShipment.shippingAddress)) {
                 result = CommonHelper.CreateCartStateString(cart);
+                session.custom.isTaxCalculationFailed = false;
+                session.custom.updateBillingAddress = false;
                 if (result.success && !empty(result.CartStateString)) {
-                    cartStateString = result.CartStateString;
+                    cartStateString = result.CartStateString;    
                     if (((!empty(session.custom.SkipTaxCalculation) || !session.custom.SkipTaxCalculation)) && typeof session.custom.SkipTaxCalculation !== 'undefined') {
                         var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
                         var taxationResponse = TaxFacade.TaxationRequest(cart);
                         if (taxationResponse.success && taxationResponse.response !== null) {
                             session.custom.cartStateString = cartStateString;
-                            session.custom.SkipTaxCalculation = true;
+                            session.custom.SkipTaxCalculation = true;     
                             return new Status(Status.OK);
                         }
+                        session.custom.isTaxCalculationFailed = true;
+                        session.custom.updateBillingAddress = true;
                         return new Status(Status.ERROR);
                     }
                 } else {

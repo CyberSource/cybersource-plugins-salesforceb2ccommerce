@@ -143,6 +143,22 @@ function DecryptPayload()
 					if (!empty(basket) && !empty(decryptedPaymentData.MerchantReferenceCode) && basket.getUUID().equals(decryptedPaymentData.MerchantReferenceCode))
 					{
 		    			result = UpdateBilling(basket,callId,decryptedPaymentData);
+                      	if(decryptedPaymentData.shipTo == null && decryptedPaymentData.billTo != null){
+							//If shipTo is empty, use billing address as shipping address 
+							decryptedPaymentData.shipTo_Address1 = decryptedPaymentData.billTo_Address1;
+							decryptedPaymentData.shipTo_Address2 = decryptedPaymentData.billTo_Address2;
+							decryptedPaymentData.shipTo_City = decryptedPaymentData.billTo_City;
+							decryptedPaymentData.shipTo_StateCode = decryptedPaymentData.billTo_StateCode;
+							decryptedPaymentData.shipTo_County = decryptedPaymentData.billTo_County;
+							decryptedPaymentData.shipTo_PostalCode = decryptedPaymentData.billTo_PostalCode;
+							decryptedPaymentData.shipTo_CountryCode = decryptedPaymentData.billTo_CountryCode;
+							decryptedPaymentData.shipTo_Company = decryptedPaymentData.billTo_Company;
+							decryptedPaymentData.shipTo_Phone = decryptedPaymentData.billTo_Phone;
+							decryptedPaymentData.shipTo_Email = decryptedPaymentData.billTo_Email;
+							decryptedPaymentData.shipTo_FirstName = decryptedPaymentData.billTo_FirstName; 
+							decryptedPaymentData.shipTo_LastName = decryptedPaymentData.billTo_LastName;
+							decryptedPaymentData.shipTo = decryptedPaymentData.billTo;
+						}
 		    			result.decryptedPaymentData = decryptedPaymentData;
 		    			result.basket = basket;
 					}else

@@ -2,6 +2,8 @@
 
 var page = module.superModule;
 var server = require('server');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var Site = require('dw/system/Site');
 
 server.extend(page);
 
@@ -14,10 +16,11 @@ server.append('Begin', function (req, res, next) {
 	var VisaCheckout = require('~/cartridge/scripts/visacheckout/helper/VisaCheckoutHelper');
 	var VInitFormattedString = '', signature = '';
 	var result = VisaCheckout.Initialize(false);//no delivery address in lightbox
+	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	if (result.success) {
 		VInitFormattedString = result.VInitFormattedString;
 		signature = result.signature;
-	}
+	}	
 	// TO handle the visa checkout click even on cart and billing page from mini cart
     session.privacy.cyb_CurrentPage = 'CybBilling'; 
 	var usingMultiShipping = false; // Current integration support only single shpping
@@ -26,26 +29,37 @@ server.append('Begin', function (req, res, next) {
     var basketModel = new OrderModel(currentBasket, { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' });
         
         //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
-    var paymentInstrument = null;
+	var paymentInstrument = null;
+	var cardType = null; 
     if ( !empty(currentBasket.getPaymentInstruments()) ) {
         paymentInstrument = currentBasket.getPaymentInstruments()[0];
-    }
+	}
+	if (paymentInstrument != null){
+		cardType = paymentInstrument.creditCardType;
+		if (paymentInstrument.paymentMethod == 'CREDIT_CARD'){
+			if (CsSAType && (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME) || CsSAType.equals(CybersourceConstants.METHOD_SA_REDIRECT))){
+				cardType = 'Secure Acceptance';
+			}
+		}
+		basketModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
+	}
 	if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)){
-		var cardType = paymentInstrument.creditCardType; 
+		
 	    basketModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
 	    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
 	}
 	
 	if(paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout','cybersource',null)) {
-		var cardType = paymentInstrument.creditCardType; 
 			session.forms.billing.creditCardFields.cardType.value = cardType;
 		    basketModel.resources.cardType = '';
 		    basketModel.resources.cardEnding = '';
-		    basketModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
+		    
 		    basketModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
 		    basketModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = paymentInstrument.creditCardExpirationMonth;
 		    basketModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
 	}
+
+	
 	var Countries = require('~/cartridge/scripts/utils/Countries');
 	var countryCode = Countries.getCurrent({
         CurrentRequest: {

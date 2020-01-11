@@ -69,6 +69,7 @@ function OpenIframe(currentOrderNo)
 		if (null !== order && null !== paymentInstrument) {
 			var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 			var subscriptionToken = CommonHelper.GetSubscriptionToken( cardUUID, customer);
+			session.custom.isIframe = true;
 			saRequest = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument,order,null,subscriptionToken);
 			if (saRequest.success && saRequest.requestData !== null) {
 				returnObject.data = saRequest.requestData;

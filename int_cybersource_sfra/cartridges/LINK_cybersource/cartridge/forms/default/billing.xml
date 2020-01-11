@@ -10,13 +10,12 @@
 	<field formid="bicNumber" label="payment.bicnumber" type="string" mandatory="false" 
 				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" />
 
-    <include formid="addressFields" name="address"/>
-
     <field formid="paymentMethod" type="string" mandatory="true" />
 
     <include formid="creditCardFields" name="creditCard"/>
 
     <field formid="subscribe" type="boolean" checked="false" default-value="false" mandatory="false" />
+
     
      <!-- BANK TRANSFER-->
      <field formid="bankListSelection" label="payment.bankselection" type="string" mandatory="false" 

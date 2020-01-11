@@ -1,5 +1,6 @@
 <!--- applicable credit cards--->
 <div class="tab-pane ${pdict.selectedPayment != 'PAYPAL' ? 'active' : ''} credit-card-content" id="credit-card-content" role="tabpanel">
+  <fieldset class="payment-form-fields">
     <!--- payment method is credit card --->
     <input type="hidden" class="form-control"
             name="${pdict.forms.billingForm.paymentMethod.htmlName}"
@@ -27,4 +28,5 @@
             <button class="btn btn-block cancel-new-payment btn-outline-primary ${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? '' : 'checkout-hidden'}" type="button">${Resource.msg('button.back.to.stored.payments', 'checkout', null)}</button>
         </isif>
     </fieldset>
+  </fieldset>
 </div>

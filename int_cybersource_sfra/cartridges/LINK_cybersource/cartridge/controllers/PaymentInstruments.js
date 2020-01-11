@@ -100,12 +100,12 @@ function savePaymentInstrument(params) {
     paymentInstrument.setCreditCardExpirationYear(creditCardFields.expirationYear);
 }
 
-server.replace('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
+server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
     var subscriptionError = null;
     var URLUtils = require('dw/web/URLUtils');
     var Resource = require('dw/web/Resource');
     var AccountModel = require('*/cartridge/models/account');
-    var enableTokenization: String = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
+    var enableTokenization = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
     if (enableTokenization.equals('YES')) {
         var wallet = customer.getProfile().getWallet();
         var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
@@ -136,14 +136,14 @@ server.replace('List', userLoggedIn.validateLoggedIn, consentTracking.consent, f
     next();
 });
 
-server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
+server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
     var formErrors = require('*/cartridge/scripts/formErrors');
     var HookMgr = require('dw/system/HookMgr');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var dwOrderPaymentInstrument = require('dw/order/PaymentInstrument');
     var verifyDuplicates = false;
     var tokenizationResult = { subscriptionID: "", error: "" };
-
+    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
     var paymentForm = server.forms.getForm('creditCard');
     var result = getDetailsObject(paymentForm);
 
@@ -160,27 +160,29 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
             );
 
             var processor = PaymentMgr.getPaymentMethod(dwOrderPaymentInstrument.METHOD_CREDIT_CARD).getPaymentProcessor();
-            var enableTokenization: String = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
+            var enableTokenization = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
             if (enableTokenization.equals('YES') && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
                 verifyDuplicates = true;
                 tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'account');
             }
-
+            Transaction.begin();
+            PaymentInstrumentUtils.removeDuplicates(formInfo);
+            
+            Transaction.commit();
             if (!tokenizationResult.error) {
                 var wallet = customer.getProfile().getWallet();
-                var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
                 Transaction.begin();
+                if (verifyDuplicates) {
+                    PaymentInstrumentUtils.removeDuplicates(formInfo);
+                }
                 var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
                 savePaymentInstrument({ PaymentInstrument: paymentInstrument, CreditCardFields: formInfo });
-
+                
                 if (!empty(tokenizationResult.subscriptionID)) {
-                	paymentInstrument.custom.isCSToken = true;
+                    paymentInstrument.custom.isCSToken = true;
                     paymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
                 }
-                if (verifyDuplicates) {
-                    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
-                    PaymentInstrumentUtils.removeDuplicates({ PaymentInstruments: paymentInstruments, CreditCardFields: formInfo });
-                }
+              
                 Transaction.commit();
                 res.json({
                     success: true,
@@ -203,41 +205,39 @@ server.replace('SavePayment', csrfProtection.validateAjaxRequest, function (req,
     return next();
 });
 
-server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
-	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var array = require(CybersourceConstants.SFRA_CORE + '/cartridge/scripts/util/array');
-    var subscriptionError;
-    var data = res.getViewData();
-    if (data && !data.loggedin) {
-        res.json();
-        return next();
-    }
-
-    var UUID = req.querystring.UUID;
-    var subscriptionID;
+server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+    var array = require('*/cartridge/scripts/util/array');
     var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
+    var UUID = req.querystring.UUID;
     var paymentToDelete = array.find(paymentInstruments, function (item) {
         return UUID === item.UUID;
     });
-    res.setViewData(paymentToDelete);
-    this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
+
+    this.removeListener('route:BeforeComplete');
+    this.on('route:BeforeComplete', function () {
+        var subscriptionError;
+        var subscriptionID;
         var CustomerMgr = require('dw/customer/CustomerMgr');
         var Transaction = require('dw/system/Transaction');
         var Resource = require('dw/web/Resource');
         var payment = res.getViewData();
+
         var customer = CustomerMgr.getCustomerByCustomerNumber(
             req.currentCustomer.profile.customerNo
         );
+
         var wallet = customer.getProfile().getWallet();
-        var enableTokenization: String = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
+        var enableTokenization = dw.system.Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
+
         if (!empty(paymentToDelete)) {
             subscriptionID = paymentToDelete.raw.creditCardToken;
         }
+
         //  Will make delete token call even if tokenization has been turned off since card was saved.
         if (!empty(paymentToDelete) && (enableTokenization.equals('YES') || !empty(subscriptionID))) {
             //  If a card was saved while tokenization was disabled it will not have a token.  No need to make delete call.
             if (!empty(subscriptionID) && 'custom' in paymentToDelete.raw && 'isCSToken' in paymentToDelete.raw.custom
-        			&& paymentToDelete.raw.custom.isCSToken) {
+                && paymentToDelete.raw.custom.isCSToken) {
                 var Cybersource_Subscription = require('*/cartridge/scripts/Cybersource')
                 var deleteSubscriptionBillingResult = Cybersource_Subscription.DeleteSubscriptionAccount(subscriptionID);
                 if (deleteSubscriptionBillingResult.error) {
@@ -252,7 +252,8 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
                 wallet.removePaymentInstrument(payment.raw);
             });
         }
-        if (wallet.getPaymentInstruments().length === 0) {
+        let paymentInstruments = wallet.getPaymentInstruments();
+        if (paymentInstruments.length === 0) {
             res.json({
                 UUID: UUID,
                 message: Resource.msg('msg.no.saved.payments', 'payment', null)
@@ -266,8 +267,8 @@ server.replace('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req
         else {
             res.json({ UUID: UUID });
         }
+
     });
     return next();
 });
-
 module.exports = server.exports();

@@ -41,7 +41,13 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 	var orderLevelAdjustmentPrice = null;
 	while( orderLevelIterator.hasNext() ) {
 	    var oLevelPriceAdjustment = orderLevelIterator.next();
-	    orderLevelAdjustmentPrice = oLevelPriceAdjustment.price;
+	    
+	    if (empty(orderLevelAdjustmentPrice)) {
+            orderLevelAdjustmentPrice = oLevelPriceAdjustment.price;
+        } else {
+            orderLevelAdjustmentPrice = orderLevelAdjustmentPrice.add(oLevelPriceAdjustment.price);
+        }
+        
 	}			
 	// END adjust order level promos
 	

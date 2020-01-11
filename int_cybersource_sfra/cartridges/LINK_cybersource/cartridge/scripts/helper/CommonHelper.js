@@ -120,7 +120,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
                 if (customer.registered) {
                     billToObject.setEmail(customer.profile.email);
                 } else {
-                    billToObject.setEmail('test@test.com');
+                    billToObject.setEmail('noreply@cs.com');
                 }
             }
             if (!empty(basket.getCustomerNo())) {
@@ -140,7 +140,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             if (customer.registered) {
                 billToObject.setEmail(customer.profile.email);
             } else {
-                billToObject.setEmail('test@test.com');
+                billToObject.setEmail('noreply@cs.com');
             }
         }
     } else {
@@ -159,7 +159,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             billToObject.setCustomerID(customer.ID);
             billToObject.setEmail(customer.profile.email);
         } else {
-            billToObject.setEmail('test@test.com');
+            billToObject.setEmail('noreply@cs.com');
         }
     }
     billToObject.setIpAddress(GetIPAddress());
@@ -616,8 +616,23 @@ function CreateCartStateString(Basket) {
 
     // Append shipping totals and basket totals to string (adjustedMerchandizeTotalPrice includes order level price adjustments). Basket Net total checked as catch all for both taxation policies not including taxe.
 
-    cartStateString += basket.adjustedShippingTotalPrice.valueOrNull + '|' + basket.adjustedMerchandizeTotalPrice.valueOrNull + '|' + basket.totalNetPrice.valueOrNull + '|' + basket.defaultShipment.shippingAddress.stateCode + '|' + basket.defaultShipment.shippingAddress.city.toLowerCase() + '|' + basket.defaultShipment.shippingAddress.countryCode + '|' + basket.defaultShipment.shippingAddress.postalCode + '|' + basket.defaultShipment.shippingMethodID;
+    cartStateString += basket.adjustedShippingTotalPrice.valueOrNull + '|' + basket.adjustedMerchandizeTotalPrice.valueOrNull + '|' + basket.totalNetPrice.valueOrNull + '|' + basket.defaultShipment.shippingAddress.stateCode + '|';
+    if (basket.defaultShipment.shippingAddress.city){
+        cartStateString += basket.defaultShipment.shippingAddress.city.toLowerCase() + '|'
+    } else {
+        return { error: true, CartStateString: cartStateString };
+    }
 
+    cartStateString +=  basket.defaultShipment.shippingAddress.countryCode + '|';
+
+    if (basket.defaultShipment.shippingAddress.postalCode){
+        cartStateString += basket.defaultShipment.shippingAddress.postalCode + '|'
+    } else {
+        return { error: true, CartStateString: cartStateString };
+    }
+    
+    cartStateString +=  basket.defaultShipment.shippingMethodID;
+    
     // Check if the cartStateString in session is the same as the newly calculated cartStateString.
     // If the strings are the same, then the cart has not changed and tax calculation will be skipped
     Logger.debug('CartStateStrings: ( {0}----{1} )', session.custom.cartStateString, cartStateString);

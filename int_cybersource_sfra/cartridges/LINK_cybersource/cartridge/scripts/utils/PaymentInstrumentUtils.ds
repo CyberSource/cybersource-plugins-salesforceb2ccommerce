@@ -377,14 +377,13 @@ function MobilePaymentOrderUpdate(order, serviceResponse) {
 
 /**
  * Removes a duplicate customer credit card payment instrument.
- * @param {Object} params
- * @param {dw.customer.CustomerPaymentInstrument} params.PaymentInstrument - credit card object.
- * @param {dw.web.FormGroup} params.CreditCardFormFields - new credit card form.
+ * @param {Object} creditCardFields
  */
-function removeDuplicates(params) {
+function removeDuplicates(creditCardFields) {
     var wallet = customer.getProfile().getWallet();
-    var paymentInstruments = params.PaymentInstruments;
-    var creditCardFields = params.CreditCardFields;
+    var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD).toArray().sort(function(a,b){
+        return b.getCreationDate() - a.getCreationDate();
+    });
     var ccNumber = creditCardFields.cardNumber;
     var isDuplicateCard = false;
     var oldCard;

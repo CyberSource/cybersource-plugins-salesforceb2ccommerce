@@ -1,0 +1,153 @@
+#!/bin/bash
+read -p 'Project name: ' projectname
+read -p 'Github token: ' githubtoken
+read -p 'Do you want to deploy? (y/n): ' deploy
+if [ "$deploy" == "y" ]
+then
+    echo -e "\n Deployment box?... \n"
+    read -p 'host: ' sfhost
+    read -p 'username: ' sfusername
+    read -p 'password: ' sfpassword
+    read -p 'codeversion: ' sfcodeversion
+
+    echo -e "\n Deployment versions?... \n"
+    read -p 'SFRA storefront commit id: ' sfraStoreFront
+    read -p 'SFRA CYBS cartridge commit id: ' sfraCYBS
+fi
+echo -e "\n Starting... \n"
+
+DWCONNECTION="{\n
+        \t\"hostname\": \"$sfhost\",\n
+        \t\"username\": \"$sfusername\",\n
+        \t\"password\": \"$sfpassword\",\n
+        \t\"code-version\": \"$sfcodeversion\"\n
+}"
+
+BASEDIR=$(pwd)/$projectname
+SRCDIR=$BASEDIR/src
+WORKSPACEDIR=$BASEDIR/workspace
+SFRACARTRIDGE=$SRCDIR/sfcc/int_cybersource_sfra
+SFRAFOLDER=$SRCDIR/storefront-reference-architecture
+BASECARTRIDGE=$SFRAFOLDER/cartridges/app_storefront_base
+MODULESCARTRIDGE=$SRCDIR/storefront-reference-architecture/cartridges/modules
+
+
+# This function might not work with Linux
+function replaceBasePath() {
+    sed -i '?' s?'"base": ""'?'"base": "'$BASECARTRIDGE'"'?g $SFRACARTRIDGE/package.json
+}
+
+function createWorkspace() { 
+    mkdir $BASEDIR
+    mkdir $SRCDIR
+    mkdir $WORKSPACEDIR
+    # Workspace directory
+    echo '{
+        "folders": [
+            {
+                "name": "Sandbox - FileSystem",
+                "uri": "ccfs://current-sandbox"
+            },
+            {
+                "path": "workspace"
+            }
+        ],
+        "settings": {}
+    }' > $BASEDIR/$projectname.code-workspace
+    echo -e $DWCONNECTION >  $WORKSPACEDIR/dw.json
+    mkdir $WORKSPACEDIR/.vscode
+    echo '{
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "type": "prophet",
+                "request": "launch",
+                "name": "Attach to Sandbox"
+            }
+        ]
+    }' > $WORKSPACEDIR/.vscode/launch.json
+}
+
+function cloneRepos() { 
+        echo "Please connect to visa internal network before continuing" 
+        read -p "Press enter to continue"
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/eslint-plugin-sitegenesis.git $SRCDIR/eslint-plugin-sitegenesis &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/lib_productlist.git $SRCDIR/lib_productlist &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin-applepay.git $SRCDIR/plugin-applepay &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin_datadownload.git $SRCDIR/plugin_datadownload &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin_giftregistry.git $SRCDIR/plugin_giftregistry &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin_instorepickup.git $SRCDIR/plugin_instorepickup &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin_productcompare.git $SRCDIR/plugin_productcompare &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin_sitemap.git $SRCDIR/plugin_sitemap &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/plugin_wishlists.git $SRCDIR/plugin_wishlists &
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/sfra-jsdoc.git $SRCDIR/sfra-jsdoc &
+        
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/storefront-reference-architecture.git $SRCDIR/storefront-reference-architecture
+        ln -s $SRCDIR/storefront-reference-architecture $WORKSPACEDIR
+
+        
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/sgmf-scripts.git $SRCDIR/sgmf-scripts
+        ln -s $SRCDIR/sgmf-scripts $WORKSPACEDIR
+        
+        git clone https://$githubtoken@github.com/SalesforceCommerceCloud/storefrontdata.git $SRCDIR/storefrontdata
+        ln -s $SRCDIR/storefrontdata $WORKSPACEDIR
+
+        git clone https://stash.trusted.visa.com/scm/tecbaea/sfcc.git $SRCDIR/sfcc
+
+        ln -s $SFRACARTRIDGE $WORKSPACEDIR
+
+        if [ "$deploy" == "y" ]
+        then
+            cd $SRCDIR/storefront-reference-architecture
+                git checkout $sfraStoreFront
+            cd $SRCDIR/sfcc/
+                git checkout $sfraCYBS
+        fi
+        replaceBasePath
+}
+
+function upload(){
+    ln -s $WORKSPACEDIR/dw.json $SFRACARTRIDGE/dw.json
+    ln -s $WORKSPACEDIR/dw.json $SFRAFOLDER/dw.json
+
+    cd $SFRACARTRIDGE
+    sgmf-scripts --uploadCartridge  LINK_cybersource
+    cd $SFRAFOLDER
+    sgmf-scripts --uploadCartridge  modules
+    sgmf-scripts --uploadCartridge  app_storefront_base
+}
+
+function installSfraAndCyb(){
+        echo "Please connect to public network before continuing" 
+        read -p "Press enter to continue"
+        replaceBasePath
+        echo "installing cyb link"
+        # Needed to fix CA issues
+        export NODE_TLS_REJECT_UNAUTHORIZED='0'
+        npm --prefix $SRCDIR/sfcc/int_cybersource_sfra/ install
+
+        # Installing SFRA dependencing
+        # Needed to fix CA issues
+        export NODE_TLS_REJECT_UNAUTHORIZED='0'
+
+        # install packages        
+        npm --prefix $SRCDIR/storefront-reference-architecture install 
+        npm --prefix $SRCDIR/storefront-reference-architecture install node-sass
+        
+        # tools
+        npm --prefix $SRCDIR/storefront-reference-architecture install sgmf-scripts
+
+        # compiling fonts and sccs
+        npm --prefix $SRCDIR/storefront-reference-architecture run compile:js 
+        npm --prefix $SRCDIR/storefront-reference-architecture run compile:scss
+        npm --prefix $SRCDIR/storefront-reference-architecture run compile:fonts
+}
+
+# RUN
+createWorkspace
+cloneRepos
+if [ "$deploy" == "y" ]
+then
+    installSfraAndCyb
+    upload
+fi

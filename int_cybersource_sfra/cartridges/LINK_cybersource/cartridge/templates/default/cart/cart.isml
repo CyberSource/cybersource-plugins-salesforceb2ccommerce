@@ -83,8 +83,8 @@
                     <br/>
                 </div>
             </div>
+        	<isinclude template="cart/cartRemoveProductModal"/>
         </div>
-        <isinclude template="cart/cartRemoveProductModal"/>
         <isinclude template="cart/cartRemoveCouponModal"/>
     </isif>
     <div class="container">

@@ -123,6 +123,7 @@ function DAVCheck(args) {
  */
 function Process3DRequestParent(args) {
 	session.privacy.process3DRequestParent = false;
+	var Status = require('dw/system/Status');
 	if (request.httpParameterMap.MD.stringValue === session.sessionID) {
 		var order = args.Order;
 		var paymentInstrument;
@@ -144,8 +145,7 @@ function Process3DRequestParent(args) {
             var transactionId = request.httpParameterMap.processorTransactionId.value != null? request.httpParameterMap.processorTransactionId.value : "";
             if(empty(transactionId))
             {
-            	var PlaceOrderError = result.PlaceOrderError !== null ? PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined");
-    			return {fail: true, PlaceOrderError : PlaceOrderError};
+    			return {fail: true, PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined")};
             }	
 			var CardFacade = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/facade/CardFacade');
             var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken(),transactionId);
@@ -161,7 +161,7 @@ function Process3DRequestParent(args) {
 					return {review: true};
 				}
 			}
-			var Status = require('dw/system/Status');
+			
 			var PlaceOrderError = result.PlaceOrderError !== null ? PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined");
 			return {fail: true, PlaceOrderError : PlaceOrderError};
 		} else if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {

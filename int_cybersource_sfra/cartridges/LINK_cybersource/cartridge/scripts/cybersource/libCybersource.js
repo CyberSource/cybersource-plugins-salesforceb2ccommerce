@@ -44,7 +44,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return '242HGQ1F';
+        return '6T5WKACW';
     },
 
     getDeveloperID: function () {
@@ -708,6 +708,12 @@ var CybersourceHelper = {
             case 'Maestro':
                 request.card.cardType = '042';
                 break;
+            case 'JCB':
+                request.card.cardType = '007';
+                break;
+            case 'DinersClub':
+                request.card.cardType = '005';
+                break;
             default:
                 request.card.cardType = '001';
                 break;
@@ -1161,12 +1167,15 @@ function __setClientData(request, refCode, fingerprint) {
     request.merchantReferenceCode = refCode;
     request.partnerSolutionID = getCybersourceHelper().getPartnerSolutionID();
     var developerID = getCybersourceHelper().getDeveloperID();
+    var Resource = require('dw/web/Resource');
     if (!empty(developerID)) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '19.3.0';
+    request.clientLibraryVersion = '20.1.0';
     request.clientEnvironment = 'Linux';
+    request.partnerSDKversion =  Resource.msg('global.version.number','version',null);
+    request.clientApplicationVersion = 'SFRA';
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;
     }

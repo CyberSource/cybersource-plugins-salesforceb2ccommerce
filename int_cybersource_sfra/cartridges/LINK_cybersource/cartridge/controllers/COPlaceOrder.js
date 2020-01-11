@@ -75,7 +75,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
 				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', dw.web.Resource.msg('payerauthentication.carderror', 'cybersource', null)));
 				return next();
 			} else if (providerResult.cancelfail) {
-				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderResult', providerResult.PlaceOrderError));
+				res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'SecureAcceptanceError', providerResult.cancelfail));
 				return next();
 			} else if (providerResult.carterror) {
 				res.redirect(URLUtils.url('Cart-Show'));
@@ -138,13 +138,6 @@ function reviewOrder(order_id, req, res, next) {
         return next();	
     }
 
-    // Place the order
-    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-        res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
-        return next();
-    }
-
     COHelpers.sendConfirmationEmail(order, req.locale.id);
         
     //  Set Order confirmation status to NOT CONFIRMED
@@ -204,6 +197,11 @@ function submitOrder(order_id, req, res, next) {
 server.get('SilentPostSubmitOrder', csrfProtection.generateToken, function (req, res, next) {
 	var order_id = session.privacy.orderId;
 	submitOrder(order_id, req, res, next);
+});
+
+server.get('SilentPostReviewOrder', csrfProtection.generateToken, function (req, res, next) {
+	var order_id = session.privacy.orderId;
+	reviewOrder(order_id, req, res, next);
 });
 
 module.exports = server.exports();

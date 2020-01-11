@@ -14,6 +14,8 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
                 amex: 'Amex',
                 discover: 'Discover',
                 maestro: 'Maestro',
+                jcb: 'JCB',
+                dinersclub: 'DinersClub',
                 unknown: 'Unknown'
             };
 

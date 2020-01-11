@@ -109,12 +109,13 @@ function parseJSONResponse(message, orderHashMap) {
                     if (order !== null) {
                         //new decision ACCEPT decision applied to order
                         if (conversionDetails['newDecision'] === 'ACCEPT') {
+                          	OrderMgr.placeOrder(order);
                             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
                             logger.info('Order number: ( {0} ) is successfully placed  ', orderNumber);
                             //new decision REJECT decision applied to order
                         } else if (conversionDetails['newDecision'] === 'REJECT') {
                             //  Cancel Order.
-                            order.setStatus(Order.ORDER_STATUS_CANCELLED);
+                            OrderMgr.failOrder(order);
                             var reviewerComment = conversionDetails['reviewerComments'];
                             order.cancelDescription = reviewerComment;
                             logger.info('Order number: ( {0} ) is canceled   ', orderNumber);

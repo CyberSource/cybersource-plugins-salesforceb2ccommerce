@@ -108,7 +108,7 @@ initFunctions : function(){
 		window.location.href = payerAuth;
 	});
 
-	$(document).on('click', '.dw_google_pay, .paypal', function (e) {
+	$(document).on('click', '.dw_google_pay, .paypal, .paypal_credit', function (e) {
 		e.stopImmediatePropagation();
 		var formaction = $(this).attr('data-action');
 		setTimeout(function () {

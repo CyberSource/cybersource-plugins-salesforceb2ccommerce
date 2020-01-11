@@ -33,6 +33,16 @@ $(document).ready(function () {
 	                     // handle error
 	                     return;
 	                 }
+	                 
+	              // update UI with the detected card info
+	                 microformInstance.on('cardTypeChange', function(data) {    	
+	                	 if (data.card.length === 1) {	 	                		 
+	                		 var cardType = data.card[0].name;
+	                		 $('.card-number-wrapper').attr('data-type', cardType);           		            	
+	                	 }else {
+	                		 $('.card-number-wrapper').attr('data-type', 'unknown');
+	                	 }
+	                });
 	         		
 	         		function flexTokenCreation() {
 	         			 var expMonth = $('#expirationMonth').val();

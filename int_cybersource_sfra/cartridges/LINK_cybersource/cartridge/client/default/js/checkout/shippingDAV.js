@@ -50,14 +50,14 @@ function getModalHtmlElement() {
 function fillModalElement(verifyAddressUrl) {
     $.spinner().start();
     var params = {
-    	firstName : $('#shippingFirstName').val(),
-    	lastName : $('#shippingLastName').val(),
-    	address1 : $('#shippingAddressOne').val(),
-    	address2 : $('#shippingAddressTwo').val(),
-    	city : $('#shippingAddressCity').val(),
-    	state : $('#shippingState').val(),
-    	zipCode : $('#shippingZipCode').val(),
-    	countryCode : $('#shippingCountry').val(),
+    	firstName : $('[id^=shippingFirstName]').val(),
+    	lastName : $('[id^=shippingLastName]').val(),
+    	address1 : $('[id^=shippingAddressOne]').val(),
+    	address2 : $('[id^=shippingAddressTwo]').val(),
+    	city : $('[id^=shippingAddressCity]').val(),
+    	state : $('[id^=shippingState]').val(),
+    	zipCode : $('[id^=shippingZipCode]').val(),
+    	countryCode : $('[id^=shippingCountry]').val(),
     	modalHeader : $('.DAVModalResourceStrings').attr('data-modalheader'),
     	originalAddress : $('.DAVModalResourceStrings').attr('data-originaladdress'),
     	useOriginalAddress : $('.DAVModalResourceStrings').attr('data-useoriginaladdress'),
@@ -123,12 +123,12 @@ function fillModalElement(verifyAddressUrl) {
         		moveToBilling();
         	});	
         	$('#deliveryAddressVerificationModal').find('.useStdAddress').on('click',function(){
-        		$('#shippingAddressOne').val(data.serviceResponse.standardizedAddress1);
-        		$('#shippingAddressTwo').val(data.serviceResponse.standardizedAddress2);
-        		$('#shippingAddressCity').val(data.serviceResponse.standardizedCity);
-        		$('#shippingState').val(data.serviceResponse.standardizedState); 
-        		$('#shippingZipCode').val(data.serviceResponse.standardizedPostalCode);
-        		$('#shippingCountry').val(data.serviceResponse.standardizedCountry);
+        		$('[id^=shippingAddressOne]').val(data.serviceResponse.standardizedAddress1);
+        		$('[id^=shippingAddressTwo]').val(data.serviceResponse.standardizedAddress2);
+        		$('[id^=shippingAddressCity]').val(data.serviceResponse.standardizedCity);
+        		$('[id^=shippingState]').val(data.serviceResponse.standardizedState); 
+        		$('[id^=shippingZipCode]').val(data.serviceResponse.standardizedPostalCode);
+        		$('[id^=shippingCountry]').val(data.serviceResponse.standardizedCountry);
         		moveToBilling();
         	});
         },
@@ -155,6 +155,19 @@ function modalClose(){
 	});	
 }
 
+function reCreateBasket() {
+	 var reCreateBasketUrl = $('.js-recreatebasketurl').val();
+	 if (reCreateBasketUrl != null && reCreateBasketUrl.length > 0) {
+		$.ajax({
+		        url: reCreateBasketUrl,
+		        method: 'GET',
+		        success: function() {},
+		        error: function() {}
+		});
+		$('#secureAcceptanceIframe').empty();
+	 }
+}
+
 $('#checkout-main').find('.submit-shipping').on('click',function(e){	
 		  var enableDAV = $(this).attr("data-dav");
 		  if(enableDAV == "YES" && !($(this).hasClass('moveToPayment'))){
@@ -167,11 +180,13 @@ $('#checkout-main').find('.submit-shipping').on('click',function(e){
 	});	
 
 $('#checkout-main .shipping-summary').find('span.edit-button').on('click',function(){
-		$('#checkout-main').find('.submit-shipping').removeClass('moveToPayment');	 
+		$('#checkout-main').find('.submit-shipping').removeClass('moveToPayment');	
+		reCreateBasket();
 });
 
 $('.payment-summary .edit-button').on('click', function () {	
 	var submitPaymentBtn = $('#checkout-main').find('.submit-payment');
-	$(submitPaymentBtn).closest('.row').children().addClass('next-step-button');	
+	$(submitPaymentBtn).closest('.row').children().addClass('next-step-button');
+	reCreateBasket();
 });
 

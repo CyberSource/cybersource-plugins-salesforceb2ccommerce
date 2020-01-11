@@ -107,7 +107,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 				{
 					//billToObject.setEmail      ( basket.customerEmail );
 					//  Temporary 'fix'.  Initial integration is not sending email address when DM is set for PP.	
-					billToObject.setEmail( "test@test.com" );
+					billToObject.setEmail( "noreply@cs.com" );
 				}		
 			} else {
 				billToObject.setFirstName  ( shippingAddress.firstName );
@@ -123,7 +123,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 				if (customer.registered) {
 					billToObject.setEmail      ( customer.profile.email );
 				} else { 
-					billToObject.setEmail      ( "test@test.com" );
+					billToObject.setEmail      ( "noreply@cs.com" );
 				}
 			}
 			if (!empty(basket.getCustomerNo())) {
@@ -145,7 +145,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 			if (customer.registered) {
 				billToObject.setEmail      ( customer.profile.email );
 			} else { 
-				billToObject.setEmail      ( "test@test.com" );
+				billToObject.setEmail      ( "noreply@cs.com" );
 			}
 		}
 	}
@@ -166,7 +166,7 @@ function CreateCyberSourceBillToObject(Basket : dw.order.LineItemCtnr, ReadFromB
 			billToObject.setCustomerID(customer.ID);
 			billToObject.setEmail      ( customer.profile.email );
 		} else { 
-			billToObject.setEmail('test@test.com');
+			billToObject.setEmail('noreply@cs.com');
 		}
 	
 	}
@@ -1492,6 +1492,19 @@ function ToHashMap(object) {
 
     return hashmap;
 };
+
+// recreating Basket from the order id stored in Session Object
+function reCreateBasket() {
+    if ('isIframe' in session.custom && session.custom.isIframe) {
+        var OrderMgr = require('dw/order/OrderMgr');
+        var order = OrderMgr.getOrder(session.privacy.order_id);
+        var Transaction = require('dw/system/Transaction');
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order, true); 
+        });
+        session.custom.isIframe = false;
+    }
+}
  
 module.exports = {
 	CreateCybersourceShipFromObject : CreateCybersourceShipFromObject,
@@ -1514,12 +1527,13 @@ module.exports = {
 	GetSubscriptionToken: GetSubscriptionToken,
 	GetRequestLocale:GetRequestLocale,
 	signedDataUsingHMAC256:signedDataUsingHMAC256,
-	GetPurchaseTotal :getPurchaseTotal,
-	GetItemObject:getItemObject,
-	AddAddressToCart:addAddressToCart,
-	LogResponse:LogResponse,
-	CheckStatusServiceRequest : CheckStatusServiceRequest,
-	HandleRequest : HandleRequest,
-	sendMail : sendMail,
-	CalculateNonGiftCertificateAmount : calculateNonGiftCertificateAmount
+	GetPurchaseTotal: getPurchaseTotal,
+	GetItemObject: getItemObject,
+	AddAddressToCart: addAddressToCart,
+	LogResponse: LogResponse,
+	CheckStatusServiceRequest: CheckStatusServiceRequest,
+	HandleRequest: HandleRequest,
+	sendMail: sendMail,
+	CalculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount,
+	reCreateBasket: reCreateBasket
 };

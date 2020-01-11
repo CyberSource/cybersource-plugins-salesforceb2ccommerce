@@ -104,6 +104,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	var Site = require('dw/system/Site');
 	var Resource = require('dw/web/Resource');
 	var paymentForm = server.forms.getForm('billing');
+	var logger = require('dw/system/Logger');
 	var paymentMethodID = server.forms.getForm('billing').paymentMethod.value; 
 	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var billingFormErrors = {};
@@ -126,6 +127,9 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 			var keyId = flexString.keyId;
 			paymentForm.creditCardFields.cardNumber.value = flexString.maskedPan;
 			paymentForm.creditCardFields.cardType.value = flexString.cardType;
+		}
+		else {
+			logger.info("Flex response has no value when submitting payment");
 		}
 	}
 	if(((paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) && (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) || CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null)))) || paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null)) {	    
@@ -188,7 +192,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	        // respond with form data and errors
 	        res.json({
 	            form: paymentForm,
-	            fieldErrors: [billingFormErrors, creditCardErrors],
+	            fieldErrors: [billingFormErrors, creditCardErrors, res.fieldErrors],
 	            serverErrors: [],
 	            error: true
 	        });
@@ -311,7 +315,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	                    billingAddress.setPhone(req.currentCustomer.profile.phone);
 	                    currentBasket.setCustomerEmail(req.currentCustomer.profile.email);
 	                } 
-	                else if(currentBasket.customerEmail)
+	                else if(currentBasket.customerEmail && paymentMethodID == Resource.msg('paymentmethodname.klarna','cybersource',null))
 	                {
 	                	billingAddress.setPhone(billingData.phone.value);
 	                }
@@ -482,12 +486,12 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	            });
 	        });
 	    }
-	    return next();
+		return next();
 	});
 
 server.post('SilentPostAuthorize',server.middleware.https, function (req, res, next) {
 	var DFReferenceId = request.httpParameterMap.DFReferenceId;
-	session.privacy.DFReferenceId = DFReferenceId;
+	session.privacy.DFReferenceId = DFReferenceId.stringValue;
 	var URLUtils = require('dw/web/URLUtils');
 	var OrderMgr = require('dw/order/OrderMgr');
 	var Resource = require('dw/web/Resource');
@@ -520,6 +524,12 @@ server.post('SilentPostAuthorize',server.middleware.https, function (req, res, n
 		}
 		COHelpers.addOrUpdateToken(order, customerObj, res);
 		session.privacy.orderId = order.orderNo;
+		
+		if (silentPostResponse.review) {
+			res.redirect(URLUtils.https('COPlaceOrder-SilentPostReviewOrder'));
+			return next();
+		}
+		
 		res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
 		return next();
                     
@@ -538,7 +548,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     var Transaction = require('dw/system/Transaction');
     var URLUtils = require('dw/web/URLUtils');
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-    var Site = require('dw/system/Site');
+	var Site = require('dw/system/Site');
 	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	var paramMap = request.httpParameterMap;
 	var DFReferenceId;
@@ -577,20 +587,27 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 
         return next();
     }
-
-    var validationOrderStatus = HookMgr.callHook(
-        'app.validate.order',
-        'validateOrder',
-        currentBasket
-    );
-    if (validationOrderStatus.error) {
-        res.json({
-            error: true,
-            errorMessage: validationOrderStatus.message
-        });
-        return next();
-    }
-
+	
+	//If SFRA version is 3.2 ,then skip new way of validating order.
+	if(Resource.msg('global.version.number','version',null) !='3.1.0'){
+		var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
+		var validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket, require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
+		if (validationOrderStatus.error) {
+            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', validationOrderStatus.message));
+			return next();
+		}
+	}else{
+		var validationOrderStatus = HookMgr.callHook(
+			'app.validate.order',
+			'validateOrder',
+			currentBasket
+		);
+		if (validationOrderStatus.error) {
+          	res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', validationOrderStatus.message));
+			return next();
+		}
+	}
+	
     // Check to make sure there is a shipping address
     if (currentBasket.defaultShipment.shippingAddress === null) {
         res.json({
@@ -793,14 +810,17 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     }
 
     // Places the order
-    var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-    if (placeOrderResult.error) {
-        res.json({
-            error: true,
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
-        return next();
+    if (handlePaymentResult.authorized) {
+    	var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+    	if (placeOrderResult.error) {
+            res.json({
+                error: true,
+                errorMessage: Resource.msg('error.technical', 'checkout', null)
+            });
+            return next();
+        }
     }
+    
 	session.privacy.paypalShippingIncomplete = '';
 	session.privacy.paypalBillingIncomplete = '';
     COHelpers.sendConfirmationEmail(order, req.locale.id);
@@ -818,14 +838,15 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	session.custom.cartStateString = null;
 
 	// Handle Authorized status for Payer Authentication flow
-	if(DFReferenceId !== undefined && handlePaymentResult.authorized) {
+	if (DFReferenceId !== undefined && (handlePaymentResult.authorized || handlePaymentResult.review)) {
 		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
         return next();
 	}
 	
-    if(handlePaymentResult.authorized && 
-            ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)
-                || ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null) && !session.privacy.paypalminiCart))) {
+    if ((handlePaymentResult.authorized || handlePaymentResult.review) && 
+			( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)
+				|| ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null)
+				|| ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)) && !session.privacy.paypalminiCart))) {
 		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
         return next();
 	}

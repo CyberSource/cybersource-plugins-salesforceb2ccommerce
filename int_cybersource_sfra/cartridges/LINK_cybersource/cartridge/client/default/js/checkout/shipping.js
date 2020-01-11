@@ -23,8 +23,17 @@ base.methods.shippingFormResponse = function(defer, data) {
         if (data.cartError) {
             window.location.href = data.redirectUrl;
             defer.reject();
-        }
-    } else {
+        }    
+    } 
+    else if (data.taxError) {
+    	$(".error-message").css({"display": "block", "margin-top": "0"});
+    	var errorPara = $(".error-message-text");
+        if (errorPara.length > 0) {
+        	errorPara[0].innerText = data.taxErrorMsg;
+        }  
+        defer.reject();
+    }
+    else {
         // Populate the Address Summary
         $('body').trigger('checkout:updateCheckoutView',
             { order: data.order, customer: data.customer, options:data.options });

@@ -65,6 +65,16 @@ server.get('CreateFlexToken', server.middleware.https, function (req, res, next)
 	next();
 });
 
+server.get('ReCreateBasket', server.middleware.https, function (req, res, next) {
+	var OrderMgr = require('dw/order/OrderMgr');
+	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+	var order = OrderMgr.getOrder(session.privacy.order_id);
+	var currentBasket = COHelpers.reCreateBasket(order);	
+	res.json({
+		success: true
+	});
+	next();
+});
 /*
  * Module exports
  */

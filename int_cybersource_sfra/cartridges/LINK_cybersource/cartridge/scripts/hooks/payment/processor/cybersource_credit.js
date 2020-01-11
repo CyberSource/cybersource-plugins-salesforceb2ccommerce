@@ -121,7 +121,57 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
 	 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
 	 var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	 var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
-
+	 var cardErrors = {};
+	 var serverErrors = [];
+	 var creditCardStatus;
+	if(CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST)){
+		var paymentCard = PaymentMgr.getPaymentCard(cardType);
+		if (!paymentInformation.creditCardToken) {
+		   if (paymentCard) {
+			   creditCardStatus = paymentCard.verify(
+				   expirationMonth,
+				   expirationYear,
+				   cardNumber,
+				   cardSecurityCode
+			   );
+		   } else {
+			   cardErrors[paymentInformation.cardNumber.htmlName] =
+				   Resource.msg('error.invalid.card.number', 'creditCard', null);
+   
+			   return { fieldErrors: [cardErrors], serverErrors: serverErrors, error: true };
+		   }
+   
+		   if (creditCardStatus.error) {
+			   collections.forEach(creditCardStatus.items, function (item) {
+				   switch (item.code) {
+					   case PaymentStatusCodes.CREDITCARD_INVALID_CARD_NUMBER:
+						   cardErrors[paymentInformation.cardNumber.htmlName] =
+							   Resource.msg('error.invalid.card.number', 'creditCard', null);
+						   break;
+   
+					   case PaymentStatusCodes.CREDITCARD_INVALID_EXPIRATION_DATE:
+						   cardErrors[paymentInformation.expirationMonth.htmlName] =
+							   Resource.msg('error.expired.credit.card', 'creditCard', null);
+						   cardErrors[paymentInformation.expirationYear.htmlName] =
+							   Resource.msg('error.expired.credit.card', 'creditCard', null);
+						   break;
+   
+					   case PaymentStatusCodes.CREDITCARD_INVALID_SECURITY_CODE:
+						   cardErrors[paymentInformation.securityCode.htmlName] =
+							   Resource.msg('error.invalid.security.code', 'creditCard', null);
+						   break;
+					   default:
+						   serverErrors.push(
+							   Resource.msg('error.card.information.error', 'creditCard', null)
+						   );
+				   }
+			   });
+   
+			   return { fieldErrors: [cardErrors], serverErrors: serverErrors, error: true };
+		   }
+	   }
+	}
+	
 	 if(CsSAType != CybersourceConstants.METHOD_SA_SILENTPOST && CsSAType != CybersourceConstants.METHOD_SA_FLEX) {
 	         var transStatus = Transaction.wrap(function () {
 	    	 CommonHelper.removeExistingPaymentInstruments(cart);

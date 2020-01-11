@@ -15,7 +15,8 @@ TEMPLATENAME: secureAcceptanceIframeSummary.isml
 		</a>
 	</div>
 	<div class="SecureAcceptance_IFRAME">
-	<input type="hidden" name="sa_iframeURL" id="sa_iframeURL" value="${dw.web.URLUtils.https('CYBSecureAcceptance-OpenIframe').toString()}"  /> 
+	<input type="hidden" name="sa_iframeURL" id="sa_iframeURL" value="${dw.web.URLUtils.https('CYBSecureAcceptance-OpenIframe').toString()}"  />
+    <input type="hidden" name="reCreateBasketURL" class="js-recreatebasketurl" value="${dw.web.URLUtils.https('CYBSecureAcceptance-ReCreateBasket').toString()}"/>  
 	</div>
 	<isset name="iframeURL" value="${dw.web.URLUtils.https('CYBSecureAcceptance-OpenIframe').toString()}" scope="page" />
 	
