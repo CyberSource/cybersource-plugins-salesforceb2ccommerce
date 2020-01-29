@@ -1,0 +1,90 @@
+<iscomment>TEMPLATENAME: launch.isml</iscomment>
+<isscript>
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+</isscript>
+
+<isif condition="${(session.privacy.cyb_CurrentPage!=null) && (session.privacy.cyb_CurrentPage.equals('CybCart'))}" >
+	<isset name="visaToken" value="${pdict.VisaTokenResult}" scope="page" />
+<iselseif condition="${(session.privacy.cyb_CurrentPage!=null) && (session.privacy.cyb_CurrentPage.equals('CybBilling'))}">
+    <isset name="visaToken" value="${pdict}" scope="page" />
+<iselse>
+    <isset name="visaToken" value="${''}" scope="page" />
+</isif>
+
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive()}">
+    <isif condition="${!empty(visaToken.VInitFormattedString)}">
+        <script>
+			var visaCheckoutSettings = <isprint value="${visaToken.VInitFormattedString}" encoding="htmlsinglequote" />;			
+			function onVisaCheckoutReady(){
+				if(null === visaCheckoutSettings || visaCheckoutSettings === undefined || visaCheckoutSettings.apikey === undefined || visaCheckoutSettings.apikey === ""){
+					return false;
+				}
+			 	V.init(
+					<isprint value="${visaToken.VInitFormattedString}" encoding="htmlsinglequote" />
+				);
+				V.on("payment.success", function(payment) {
+					$("#dwfrm_visacheckout_callId").val(payment['callid']);
+					$("#dwfrm_visacheckout_encryptedPaymentWrappedKey").val(payment['encKey']);
+					$("#dwfrm_visacheckout_encryptedPaymentData").val(payment['encPaymentData']);
+					if (payment['partialShippingAddress'] != null) {
+						$("#dwfrm_visacheckout_countryCode").val(payment['partialShippingAddress']['countryCode']);
+						$("#dwfrm_visacheckout_postalCode").val(payment['partialShippingAddress']['postalCode']);
+					}
+					if (${visaToken.Basket != null}) {
+						$("#dwfrm_visacheckout_basketUUID").val('${visaToken.Signature}');
+					}
+					$(".visaCheckoutDecrypt").submit();
+				}
+				);
+				V.on("payment.cancel", function(payment) { /* do nothing */});
+				V.on("payment.error", function(payment, error) {
+					window.location = '${dw.web.URLUtils.https("CYBVisaCheckout-Error")}';
+				});
+			}
+		</script>
+    </isif>
+    <form action="${dw.web.URLUtils.https('CYBVisaCheckout-Decrypt')}" method="post" id="visaCheckoutDecrypt" class="visaCheckoutDecrypt" novalidate>
+        <div class="col-12">
+            <div class="form-group">
+                <div class="callId">
+                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_callId"
+                        value="" name="dwfrm_visacheckout_callId"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="encryptedPaymentWrappedKey">
+                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_encryptedPaymentWrappedKey"
+                        value="" name="dwfrm_visacheckout_encryptedPaymentWrappedKey"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="encryptedPaymentData">
+                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_encryptedPaymentData"
+                        value="" name="dwfrm_visacheckout_encryptedPaymentData"/>
+                </div> 
+            </div>
+            <div class="form-group">
+                <div class="countryCode">
+                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_countryCode"
+                        value="" name="dwfrm_visacheckout_countryCode"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="postalCode">
+                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_postalCode"
+                        value="" name="dwfrm_visacheckout_postalCode"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="basketUUID">
+                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_basketUUID"
+                        value="" name="dwfrm_visacheckout_basketUUID"/>
+                </div>
+            </div>
+        </div>		
+    </form>
+    
+    <isset name="visaJavascriptSDK" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('cybVisaSdkJsLibrary')}" scope="page"/>
+    <script type="text/javascript" src="${visaJavascriptSDK}"></script>
+
+</isif>

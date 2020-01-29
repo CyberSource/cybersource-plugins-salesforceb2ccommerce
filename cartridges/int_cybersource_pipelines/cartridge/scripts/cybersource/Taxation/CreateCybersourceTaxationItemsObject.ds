@@ -1,0 +1,21 @@
+/**
+*	CreateCybersourceTaxationItemsObject.ds
+*	This script creates the Taxation Items Objects and set it to output objects.
+*
+*    @input Basket : dw.order.LineItemCtnr
+*    @output itemmap : dw.util.HashMap
+*    @output itemarray : Array
+*/
+var TaxHelper = require('int_cybersource/cartridge/scripts/helper/TaxHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	var result = TaxHelper.CreateCybersourceTaxationItemsObject(pdict.Basket);
+		if(result.success)
+		{
+			pdict.itemarray = result.itemarray;
+			pdict.itemmap = result.itemmap;
+		}
+    		return PIPELET_NEXT;
+}

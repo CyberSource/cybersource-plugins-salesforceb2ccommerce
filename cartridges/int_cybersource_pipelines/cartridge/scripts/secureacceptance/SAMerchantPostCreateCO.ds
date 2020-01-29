@@ -1,0 +1,23 @@
+/**
+* Demandware Script File
+* This script create the custom object for merchant post parameters once basic validation passed on parameters arrived.
+*
+* For example:
+*
+*/
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants'),
+	secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+	
+function execute( args : PipelineDictionary ) : Number
+{
+
+    if (secureAcceptanceHelper.validateSAMerchantPostRequest(request.httpParameterMap)) {
+		if (!secureAcceptanceHelper.saveSAMerchantPostRequest(request.httpParameterMap)) {
+			return PIPELET_ERROR;
+		
+		}
+    } else {
+    	return PIPELET_ERROR;
+    }
+   return PIPELET_NEXT;
+}

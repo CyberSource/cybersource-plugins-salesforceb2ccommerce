@@ -1,7 +1,0 @@
-{
-    "hooks": "~/hooks.json",
-    "init": [
-        "~/cartridge/scripts/init/SoapServiceInit.ds",
-        "~/cartridge/scripts/init/RestServiceInit.ds"
-    ]
-}

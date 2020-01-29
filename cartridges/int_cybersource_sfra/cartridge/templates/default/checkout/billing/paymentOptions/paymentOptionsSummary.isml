@@ -1,0 +1,43 @@
+<div class="payment-details">
+    <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
+        
+        <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
+            <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'DW_APPLE_PAY'}">
+            <isinclude template="checkout/billing/paymentOptions/applePaySummary" />
+        
+        <iselseif condition="${payment.paymentMethod === 'KLARNA'}">
+            <isinclude template="checkout/billing/paymentOptions/klarnaSummary" />
+        
+        <iselseif condition="${payment.paymentMethod === 'VISA_CHECKOUT'}">
+            <isinclude template="checkout/billing/paymentOptions/visaCheckoutSummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'PAYPAL' || payment.paymentMethod === 'PAYPAL_CREDIT'}">
+            <isinclude template="checkout/billing/paymentOptions/payPalSummary" />
+            
+        <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
+        <iselseif condition="${isGooglePayEnabled && payment.paymentMethod === 'DW_GOOGLE_PAY'}">
+                <isinclude template="checkout/billing/paymentOptions/googlePaySummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'ALIPAY'}">
+            <isinclude template="checkout/billing/paymentOptions/aliPaySummary" />
+        
+        <iselseif condition="${payment.paymentMethod === 'SOF'}">
+            <isinclude template="checkout/billing/paymentOptions/bankTransferSummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'IDL'}">
+            <isinclude template="checkout/billing/paymentOptions/bankTransferSummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'MCH'}"> 
+            <isinclude template="checkout/billing/paymentOptions/bankTransferSummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'GPY'}">
+            <isinclude template="checkout/billing/paymentOptions/bankTransferSummary" />
+
+        <iselseif condition="${payment.paymentMethod === 'EPS'}">
+            <isinclude template="checkout/billing/paymentOptions/bankTransferSummary" />
+        </isif>
+
+    </isloop>
+</div>

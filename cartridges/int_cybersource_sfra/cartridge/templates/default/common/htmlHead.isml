@@ -1,0 +1,56 @@
+<meta charset="UTF-8"/>
+
+<meta http-equiv="x-ua-compatible" content="ie=edge"/>
+
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<iscomment>The page meta data will be replaced by rule based content if it's available</iscomment>
+<isif condition="${dw.system.System.getInstanceType() != dw.system.System.PRODUCTION_SYSTEM}">
+    <title>${pdict.CurrentPageMetaData.title} | ${Resource.msg('global.site.name', 'version', null)} | ${Resource.msg('global.version.number', 'version', null)}</title>
+<iselse/>
+  <title><isprint value="${pdict.CurrentPageMetaData.title}" encoding="htmlcontent" /></title>
+</isif>
+
+<meta name="description" content="${pdict.CurrentPageMetaData.description ? pdict.CurrentPageMetaData.description : Resource.msg('global.storename','common',null)}"/>
+<meta name="keywords" content="${pdict.CurrentPageMetaData.keywords ? pdict.CurrentPageMetaData.keywords : Resource.msg('global.storename','common',null)}"/>
+
+<iscomment>Additional Rule based page meta tags</iscomment>
+<isloop items="${pdict.CurrentPageMetaData.pageMetaTags}" var="pageMetaTag">
+    <isif condition="${pageMetaTag.name}">
+        <meta name="<isprint value="${pageMetaTag.ID}">" content="<isprint value="${pageMetaTag.content}">">
+    <iselseif condition="${pageMetaTag.property}"/>
+        <meta property="<isprint value="${pageMetaTag.ID}">" content="<isprint value="${pageMetaTag.content}">">
+    </isif>
+</isloop>
+
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-196x196.png')}" sizes="196x196" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-96x96.png')}" sizes="96x96" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-32x32.png')}" sizes="32x32" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-16x16.png')}" sizes="16x16" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-128.png')}" sizes="128x128" />
+
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/global.css')}" />
+<isloop items="${ require('*/cartridge/scripts/assets.js').styles }" var="style">
+    <link rel="stylesheet" href="${style}" />
+</isloop>
+
+<isif condition="${'GoogleVerificationTag' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.GoogleVerificationTag!=''}">
+    <meta name="google-site-verification" content="<isprint value="${dw.system.Site.current.preferences.custom.GoogleVerificationTag}"/>" />
+</isif>
+<iscomment> Include Device Fingerprint </iscomment>
+<isinclude url="${URLUtils.url('CYBDeviceFingerprint-GetFingerprint')}" />
+
+<iscomment>Visa Checkout clickjacking prevention</iscomment>
+<isinclude template="visacheckout/clickjackingPrevent" />
+
+<isscript>
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+ </isscript>
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+	<input type="hidden" id="paypal_express" class="paypal_express" value="${URLUtils.url('CYBPaypal-InitiatePaypalExpress').toString()}" />
+	<input type="hidden" id="paypal_callback" class="paypal_callback" value="${URLUtils.https('CYBPaypal-SessionCallback').toString()}" />
+	<input type="hidden" id="paypal_enabled" class="paypal_enabled" value="${'CsEnableExpressPaypal' in dw.system.Site.getCurrent().getPreferences().getCustom() 
+		&& dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnableExpressPaypal') ? true : false}" />
+	<input type="hidden" id="paypal_endpoint" class="paypal_endpoint" value="${'CsEndpoint' in dw.system.Site.getCurrent().getPreferences().getCustom() 
+		&& dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value == 'Production' ? 'production' : 'sandbox'}" />
+</isif>

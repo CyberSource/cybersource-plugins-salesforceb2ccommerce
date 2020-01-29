@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+<head>
+<title>${Resource.msg('sa.redirect.form.title','cybersource',null)}</title>
+<body class="cyb_sa_redirect">
+<input type="hidden" name="redirect_url_sa" id="redirect_url_sa" value="${pdict.Location}" />
+</body>
+</html>

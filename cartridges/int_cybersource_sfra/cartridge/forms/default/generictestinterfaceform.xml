@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="merchantReferenceCode" type="string" mandatory="true" binding="merchantReferenceCode" max-length="50" />
+	<field formid="refundRequestID" type="string" mandatory="true" binding="refundRequestID" max-length="50" />
+	<field formid="orderRequestID" type="string" mandatory="false" binding="orderRequestID" max-length="50" />
+	<field formid="authRequestID" type="string" mandatory="true" binding="authRequestID" max-length="50" />
+	<field formid="grandtotalamount"  type="string" mandatory="true" binding="grandtotalamount" max-length="50" />
+	<field formid="currency" type="string" mandatory="true" binding="currency" max-length="50" />
+	<field formid="paymenttype" type="string" mandatory="true" binding="paymenttype" max-length="50" />
+	<field formid="refundpaymenttype" type="string" mandatory="true" binding="refundpaymenttype" max-length="50" >
+		<options>
+			<option optionid="CreditCard" value="CC" label="CREDITCARD"/>
+			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
+			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
+			<option optionid="AliPay" value="APY" label="ALIPAY"/>
+			<option optionid="Bancontact" value="MCH" label="BANCONTACT"/>
+			<option optionid="Ideal" value="IDL" label="IDEAL"/>
+			<option optionid="Sofort" value="SOF" label="SOFORT"/>
+			<option optionid="Klarna" value="KLI" label="KLARNA"/>
+		</options>
+	</field>
+	<field formid="capturepaymenttype" type="string" mandatory="true" binding="capturepaymenttype" max-length="50" >
+		<options>
+			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
+			<option optionid="Klarna" value="KLI" label="KLARNA"/>
+			<option optionid="CreditCard" value="CC" label="CREDITCARD"/>
+			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
+			<option optionid="GooglePay" value="googlepay" label="GOOGLEPAY"/>
+			<option optionid="AliPay" value="APY" label="ALIPAY"/>
+		</options>
+	</field>
+	<field formid="authreversalpaymenttype" type="string" mandatory="true" binding="authreversalpaymenttype" max-length="50" >
+		<options>
+			<option optionid="CreditCard" value="CC" label="CREDITCARD"/>
+			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
+			<option optionid="Klarna" value="KLI" label="KLARNA"/>
+			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
+			<option optionid="GooglePay" value="googlepay" label="GOOGLEPAY"/>
+		</options>
+	</field>
+	<field formid="checkstatuspaymenttype" type="string" mandatory="true" binding="checkstatuspaymenttype" max-length="50" >
+		<options>
+			<option optionid="Klarna" value="KLI" label="KLARNA"/>
+			<option optionid="Bancontact" value="MCH" label="BANCONTACT"/>
+			<option optionid="Giropay" value="GPY" label="GIROPAY"/>
+			<option optionid="Ideal" value="IDL" label="IDEAL"/>
+			<option optionid="EPS" value="EPS" label="EPS"/>
+			<option optionid="Sofort" value="SOF" label="SOFORT"/>
+			<option optionid="AliPay" value="AliPay" label="ALIPAY"/>
+			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
+		</options>
+	</field>
+		
+	<!-- actions provided by the generictestinterface form-->
+	<action formid="submit" label="forms.find" valid-form="true"/>
+</form>

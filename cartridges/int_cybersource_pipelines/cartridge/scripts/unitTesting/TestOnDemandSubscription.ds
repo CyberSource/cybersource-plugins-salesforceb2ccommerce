@@ -1,0 +1,22 @@
+/**
+*	OnDemandSubscription.ds
+*	Perfroms the on demand subscription info service and returns the response.
+*
+* 	@output Result : Object
+*
+*/
+
+
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var Logger = dw.system.Logger.getLogger('Cybersource');
+var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var onDemandServiceObject = {};
+	onDemandServiceObject.response = TestFacade.TestOnDemandSubscription().response;
+	pdict.Result = onDemandServiceObject.response;
+
+	return PIPELET_NEXT;
+}

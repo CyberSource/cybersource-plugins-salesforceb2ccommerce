@@ -1,0 +1,7 @@
+.card-number-wrapper {
+    &[data-type="maestro"]::after {
+        background-image: url("../../images/payment-types.png");
+        background-size: auto;
+        background-position: -95px -156px;
+    }
+}

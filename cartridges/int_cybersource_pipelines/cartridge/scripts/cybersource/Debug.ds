@@ -1,0 +1,37 @@
+/**
+*	 Debug.ds
+	 Performs debug on taxation request
+	 
+*    @input OrderNo : String
+*    @input request : Object
+*    @input response : Object
+* 	 @input Basket : dw.order.LineItemCtnr The basket whose tax is to be calculated
+* 	 @input  billTo : Object
+* 	 @input  shipTo : Object
+* 	 @input  card : Object
+* 	 @input  shipFrom : Object
+*    @input  itemArray: Array
+*    @input  itemMap : dw.util.List
+*    @input  purchaseTotals : Object
+*    @input  taxService : Object
+
+*/
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	var billToObject: BillTo_Object = pdict.billTo;
+	var shipToObject: ShipTo_Object = pdict.shipTo;
+	var cardObject: Card_Object = pdict.card;
+	var purchaseObject: PurchaseTotals_Object = pdict.purchaseTotals;
+	var itemArray : Array = pdict.itemArray;
+	var itemMap : List = pdict.itemMap;
+	var shipFrom : ShipFrom_Object = pdict.shipFrom;
+	var taxService : TaxService_Object = pdict.taxService;
+	var basket : LineItemCtnr = pdict.Basket;	
+	var orderno : String = pdict.OrderNo;	
+	
+	CommonHelper.Debug(orderno,pdict.request,pdict.response,basket,billToObject, shipToObject,cardObject,shipFrom,itemArray, itemMap ,purchaseObject, taxService);
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,27 @@
+/**
+ VisaCheckoutDecryptRequest.ds
+*
+* Decrypts Visa Checkout payment data
+* @output VisaCheckoutDecryptedPaymentData : Object The decrypted output
+* @output Basket : dw.order.Basket
+*
+*/
+
+var BasketMgr = require('dw/order/BasketMgr'); 
+var Resource = require('dw/web/Resource');
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var VisaCheckoutAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/adaptor/VisaCheckoutAdaptor');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var assignValueObject = VisaCheckoutAdaptor.DecryptPayload();
+	if(assignValueObject.success)
+	{
+		args.VisaCheckoutDecryptedPaymentData = assignValueObject.decryptedPaymentData;
+		args.Basket = assignValueObject.basket;
+		return PIPELET_NEXT;
+	}else
+		return PIPELET_ERROR;
+
+}

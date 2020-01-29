@@ -1,5 +1,0 @@
-{
-   "init": [
-      "./cartridge/scripts/init/SoapServiceInit.ds"
-   ]
-}

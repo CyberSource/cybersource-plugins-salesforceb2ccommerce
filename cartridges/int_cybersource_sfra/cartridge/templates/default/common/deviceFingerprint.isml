@@ -1,0 +1,7 @@
+
+<isif condition="${pdict.getDeviceFingerprint}">
+    <script src="${pdict.url}"></script>
+    <noscript>
+        <iframe style="width: 100px; height: 100px; border: 0; position:absolute; top: -5000px;" src="${pdict.url}"></iframe>
+    </noscript>
+</isif>

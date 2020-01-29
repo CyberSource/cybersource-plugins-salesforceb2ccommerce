@@ -1,0 +1,19 @@
+/**
+*	CreateCybersourcePaymentCardObject.ds
+*	This script creates the PaymentCardObject data object and set it to CybersourceCard output object.
+*
+*    @input formType : String          
+*    @output CybersourceCard : Object
+*/
+var CardHelper = require('int_cybersource/cartridge/scripts/helper/CardHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	
+	var result = CardHelper.CreateCybersourcePaymentCardObject(pdict.formType);
+		if(result.success)
+		{
+			pdict.CybersourceCard = result.card;
+		}
+    return PIPELET_NEXT;
+}

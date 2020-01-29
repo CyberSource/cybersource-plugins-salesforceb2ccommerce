@@ -1,0 +1,46 @@
+/**
+*	CreateSubscription.ds
+*	Perfroms the pay subscription create service and returns the response.
+*
+* @input 	billTo : Object
+* @input 	card : Object
+* @input 	purchaseTotals : Object
+* @output SubscriptionIDToken :String
+* @output decision :String
+* @output invalidField : Array;
+* @output missingField : Array
+* @output reasonCode : Object
+* @output requestID : Object
+* @output requestToken : Object
+*
+*/
+
+var SubscriptionFacade = require('int_cybersource/cartridge/scripts/facade/SubscriptionFacade');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    var billToObject = pdict.billTo;
+	var cardObject = pdict.card;
+	var purchaseObject = pdict.purchaseTotals;
+	var serviceResponse = null;
+
+	var result = SubscriptionFacade.CreateSubscription(billToObject, cardObject, purchaseObject);
+	
+	if(result.error){
+		return PIPELET_ERROR;
+	}
+		serviceResponse = result.serviceResponse;
+		if (!empty(serviceResponse.SubscriptionIDToken))
+		{
+			pdict.SubscriptionIDToken = serviceResponse.SubscriptionIDToken;
+		}
+		pdict.decision = serviceResponse.decision;
+		pdict.invalidField = serviceResponse.invalidField;
+		pdict.missingField = serviceResponse.missingField;
+		pdict.reasonCode = serviceResponse.reasonCode;
+		pdict.requestID = serviceResponse.requestID;
+		pdict.requestToken = serviceResponse.requestToken;
+	
+	return PIPELET_NEXT;
+}
+

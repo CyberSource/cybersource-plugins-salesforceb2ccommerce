@@ -1,0 +1,7 @@
+<isset name="csEndPoint" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value}" scope="page" />
+
+<isif condition="${!empty(csEndPoint) && csEndPoint.equals('Test')}">
+	<isredirect location="${pdict.alipayReturnUrl}"/>
+<iselse>
+	<isredirect location="${pdict.RedirectURL}"/>
+</isif>

@@ -1,0 +1,33 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
+<iscomment>
+	This template will populate the Unit Test result of CCAuth
+</iscomment>
+<!--  UI -->
+
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.ReasonCode}"><br>
+
+${Resource.msg('test.authreasoncode','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.AuthorizationReasonCode}"><br>
+
+${Resource.msg('test.authamount','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.AuthorizationAmount}"><br>
+
+${Resource.msg('test.authcode','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.AuthorizationCode}"><br>
+
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.Decision}"><br>
+
+${Resource.msg('test.requestid','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.RequestID}"><br>
+
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.RequestToken}"><br>
+</body></html>

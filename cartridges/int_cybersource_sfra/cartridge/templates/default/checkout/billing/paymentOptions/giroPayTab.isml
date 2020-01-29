@@ -1,0 +1,11 @@
+<!--- TEMPLATENAME: giroPayTab.isml --->
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link giropay-tab" data-toggle="tab" href="#credit-card-content" role="tab">
+        <img class="giropay-options"
+                src="${URLUtils.staticURL('/images/giropay.png')}"
+                height="32"
+                alt="${paymentOption.name}"
+                title="${paymentOption.name}"
+        >
+    </a>
+</li>

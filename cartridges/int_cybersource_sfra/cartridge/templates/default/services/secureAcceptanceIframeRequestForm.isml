@@ -1,0 +1,18 @@
+<html>
+<head>
+	<title>${Resource.msg('sa.iframe.form.title','cybersource',null)}</title>
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>	
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+</head>
+<body class="sa_iframe_request_form">
+	<form class="secure_acceptance_iframe_request" name="form_iframe" method="post" action="${pdict.formAction}"> 
+		<isif condition="${!empty(pdict.requestData)}"> 
+			<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
+				<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="on"/>' />
+			</isloop>
+		</isif>
+	</form>	 
+
+</body>
+</html>

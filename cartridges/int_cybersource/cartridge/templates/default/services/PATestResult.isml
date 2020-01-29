@@ -1,0 +1,79 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
+<iscomment>
+	This template will populate the PA Unit Test Results 
+</iscomment>
+${Resource.msg('test.AcsURL','cybersource',null)}
+<isprint value="${pdict.PAResponse.AcsURL}"><br>
+
+${Resource.msg('test.CommerceIndicator','cybersource',null)}
+<isprint value="${pdict.PAResponse.CommerceIndicator}"><br>
+
+${Resource.msg('test.PADecision','cybersource',null)}
+<isprint value="${pdict.PAResponse.PADecision}"><br>
+
+${Resource.msg('test.ProofXML','cybersource',null)}
+<isprint value="${pdict.PAResponse.ProofXML}"><br>
+
+${Resource.msg('test.ProxyPAN','cybersource',null)}
+<isprint value="${pdict.PAResponse.ProxyPAN}"><br>
+
+${Resource.msg('test.PAReasonCode','cybersource',null)}
+<isprint value="${pdict.PAResponse.PAReasonCode}"><br>
+
+${Resource.msg('test.PARequestID','cybersource',null)}
+<isprint value="${pdict.PAResponse.PARequestID}"><br>
+
+${Resource.msg('test.PARequestToken','cybersource',null)}
+<isprint value="${pdict.PAResponse.PARequestToken}"><br>
+
+${Resource.msg('test.PAXID','cybersource',null)}
+<isprint value="${pdict.PAResponse.PAXID}"><br>
+
+${Resource.msg('test.PAVReasonCode','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVReasonCode}"><br>
+
+${Resource.msg('test.PAVRequestID','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVRequestID}"><br>
+
+${Resource.msg('test.PAVRequestToken','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVRequestToken}"><br>
+
+${Resource.msg('test.PAVDecision','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVDecision}"><br>
+
+<isif condition="${pdict.PAVResponse.payerAuthValidateReply!=null}">
+${Resource.msg('test.PAVResult','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVResult}"><br>
+
+${Resource.msg('test.PAVStatusMessage','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVStatusMessage}"><br>
+
+${Resource.msg('test.CAVV','cybersource',null)}
+<isprint value="${pdict.PAVResponse.CAVV}"><br>
+
+${Resource.msg('test.PAVCommerceIndicator','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVCommerceIndicator}"><br>
+
+${Resource.msg('test.ECIRaw','cybersource',null)}
+<isprint value="${pdict.PAVResponse.ECIRaw}"><br>
+
+${Resource.msg('test.ParesStatus','cybersource',null)}
+<isprint value="${pdict.PAVResponse.ParesStatus}"><br>
+
+
+${Resource.msg('test.UCAFAuthenticationData','cybersource',null)}
+<isprint value="${pdict.PAVResponse.UCAFAuthenticationData}"><br>
+
+${Resource.msg('test.UCAFCollectionIndicator','cybersource',null)}
+<isprint value="${pdict.PAVResponse.UCAFCollectionIndicator}"><br>
+
+${Resource.msg('test.PAVXID','cybersource',null)}
+<isprint value="${pdict.PAVResponse.PAVXID}"><br>
+</isif>
+</body></html>

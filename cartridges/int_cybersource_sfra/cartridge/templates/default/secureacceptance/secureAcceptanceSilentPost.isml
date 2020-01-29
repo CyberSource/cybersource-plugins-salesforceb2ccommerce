@@ -1,0 +1,28 @@
+<iscomment>TEMPLATENAME: secureAcceptanceRequestForm.isml </iscomment>
+<html>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>	
+	<head>
+    </head>
+		<body class="cyb_sa_request_form">
+		<div id="secureAcceptancePost">
+			<form method="post" id="ePayment" action="${pdict.formAction}" name="ePayment" target="_parent">
+				<isif condition="${!empty(pdict.requestData)}"> 
+					<isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
+						<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="on"/>' />
+					</isloop>
+				</isif>	
+				
+				<isif condition="${!empty(pdict.cardObject)}">
+					<input type="hidden" id="card_type" name="card_type" value="${pdict.cardObject.cardType}">
+					<input type="hidden" id="card_cvn" name="card_cvn" value="${pdict.cardObject.cvNumber}">
+					<isif  condition="${!empty(pdict.cardObject.accountNumber)}" >
+						<input type="hidden" id="card_number" name="card_number" value="${pdict.cardObject.accountNumber}">
+					 </isif> 
+					<input type="hidden" id="card_expiry_date" name="card_expiry_date" value="${pdict.cardObject.expirationMonth.length == 1 ? '0'+pdict.cardObject.expirationMonth + '-' + pdict.cardObject.expirationYear : pdict.cardObject.expirationMonth + '-' + pdict.cardObject.expirationYear}">
+				</isif>
+			</form>
+	</div>   
+	</body>
+</html>

@@ -1,0 +1,33 @@
+/**
+* Performs the authorization of POS transaction.
+*	@input entryMode 			: String
+*	@input cardPresent 			: String
+*	@input terminalCapability	: String
+*	@input trackData			: String
+*	@input catLevel 			: String
+*	@input terminalID			: String
+*	@input 	currency 			: String
+*	@input 	amount 				: String
+*	@input accountNumber 		: String
+*	@input cardType 			: String
+*	@input expiryMonth 			: String
+*	@input expiryYear 			: String
+*	@input cvnNumber 			: String
+*	@input storeLocation 		: String
+*	@output posAuthResponse 	: Object
+*/
+
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var POSAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'pos/adaptor/POSAdaptor');
+function execute( args : PipelineDictionary ) : Number
+{
+	//**************************************************************************//
+	// read pipeline dictionary input parameter	
+	//**************************************************************************//   
+	var result = POSAdaptor.InitiatePOSAuthRequest(args);
+	if(result !== null && result.success && result.serviceResponse !== null){
+			args.posAuthResponse = result.serviceResponse;
+			return PIPELET_NEXT;
+	}
+		return PIPELET_ERROR;
+}

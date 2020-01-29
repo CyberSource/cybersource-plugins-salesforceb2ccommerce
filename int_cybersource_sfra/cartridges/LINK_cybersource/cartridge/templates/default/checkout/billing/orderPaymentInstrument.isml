@@ -1,9 +1,0 @@
-<isloop items="${pdict.paymentInstruments}" var="paymentInstrument" status="loopSate">
-	<isif condition="${paymentInstrument.paymentMethod == pdict.paymentOption}">
-		<div class="credit-card-type">
-		    <span><isprint value="${paymentInstrument.paymentMethod}" /></span>
-		</div>
-		<div class="credit-card-number">
-		</div>
-	</isif>
-</isloop>

@@ -1,0 +1,77 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
+<iscomment>
+	This template will populate the Unit Test result
+</iscomment>
+<!--  UI -->
+<h1>
+	<isif condition="${!empty(pdict.msgHeader)}" >
+		<isprint value="${pdict.msgHeader}"><br>
+	</isif>
+</h1>
+<isif condition="${!empty(pdict.response['merchantReferenceCode'])}" >
+	<strong>${Resource.msg('pos_resultpage_label_merchantrefcode','cybersource',null)}</strong>
+	<isprint value="${pdict.response['merchantReferenceCode']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response['requestID'])}" >
+	<strong>${Resource.msg('test.requestid','cybersource',null)}:</strong>
+	<isprint value="${pdict.response['requestID']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response['decision'])}" >
+	<strong>${Resource.msg('test.decision','cybersource',null)}:</strong>
+	<isprint value="${pdict.response['decision']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response['reasonCode'])}" >
+	<strong>${Resource.msg('test.reasoncode','cybersource',null)}:</strong>
+	<isprint value="${pdict.response['reasonCode']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response['requestToken'])}" >
+	<strong>${Resource.msg('test.requesttoken','cybersource',null)}:</strong>
+	<isprint value="${pdict.response['requestToken']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response[pdict.serviceReply]['paymentStatus'])}" >
+	<strong>${Resource.msg('test.paymentstatus','cybersource',null)}:</strong>
+	<isprint value="${pdict.response[pdict.serviceReply]['paymentStatus']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response[pdict.serviceReply]['processorTransactionID'])}" >
+	<strong>${Resource.msg('test.transactionid','cybersource',null)}:</strong>
+	<isprint value="${pdict.response[pdict.serviceReply]['processorTransactionID']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response[pdict.serviceReply]['reconciliationID'])}" >
+	<strong>${Resource.msg('test.reconciliationid','cybersource',null)}:</strong>
+	<isprint value="${pdict.response[pdict.serviceReply]['reconciliationID']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response[pdict.serviceReply]['amount'])}" >
+	<strong>${Resource.msg('test.CaptureAmount','cybersource',null)}:</strong>
+	<isprint value="${pdict.response[pdict.serviceReply]['amount']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response[pdict.serviceReply]['reasonCode'])}" >
+	<strong>${Resource.msg('test.ServiceReplyObjectReasonCode','cybersource',null)}:</strong>
+	<isprint value="${pdict.response[pdict.serviceReply]['reasonCode']}"><br>
+</isif>
+
+<isif condition="${!empty(pdict.response.missingField)}">
+	<strong>${Resource.msg('MissingFieldsArray','cybersource','')}:</strong>
+	"<isloop items="${pdict.response.missingField}" var="missingfield">${missingfield},</isloop>",
+</isif>
+
+<isif condition="${!empty(pdict.response.invalidField)}">
+	<strong>${Resource.msg('InvalidFieldsArray','cybersource','')}:</strong>
+	"<isloop items="${pdict.response.invalidField}" var="invalidfield">${invalidfield},</isloop>",
+</isif>
+</body>
+</html>

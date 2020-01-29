@@ -1,0 +1,33 @@
+/**
+* Performs the authorization of the credit card. If present payer authentication information is
+* sumbitted in the auth request.
+* @input 	billTo : Object
+* @input 	shipTo : Object
+* @input 	purchaseTotals : Object
+
+* @output requestData : dw.util.HashMap
+* @output formAction :String
+*/
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var testFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
+	var testHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/helper/TestHelper');
+	var billToObject = pdict.billTo;
+	var shipToObject = pdict.shipTo;
+	var purchaseObject = pdict.purchaseTotals;
+	
+	var billToObject = testHelper.CreateCyberSourceBillToObject().billTo;
+	var shipToObject = testHelper.CreateCyberSourceShipToObject().shipTo;
+	var purchaseObject = testHelper.CreateCyberSourcePurchaseTotalsObject().purchaseTotals;
+	var result = testFacade.TestSACreateToken( billToObject, shipToObject, purchaseObject );
+	if(result.success){
+			/*set request parameter*/
+			pdict.Data = result.requestMap;
+			pdict.FormAction = result.formAction;
+		return PIPELET_NEXT;
+	}
+
+	return PIPELET_ERROR;
+}

@@ -1,0 +1,56 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	This template will populate the test result of a POS transaction
+</iscomment>
+<label><strong>${Resource.msg('pos_resultpage_heading','cybersource','')}</strong></label><br>
+<label><strong>${Resource.msg('pos_resultpage_label_merchantrefcode','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.MerchantReferenceCode}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_decision','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.Decision}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_reasoncode','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.ReasonCode}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_requestid','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.RequestID}"><br/><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_receiptnumber','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.ReceiptNumber}"><br/><br/>
+
+<isif condition="${!empty(pdict.posAuthResponse.ccAuthReply)}">
+<label><strong>${Resource.msg('pos_resultpage_label_authreasoncode','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthReasonCode}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_currency','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.PurchaseTotalsCurrency}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authamount','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthAmount}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authcode','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthCode}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_avscode','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AVSCode}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_avscoderaw','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AVSCodeRaw}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authcardgroup','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthCardGroup}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authcardcategory','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthCardCategory}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authpaymentid','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthPaymentTransID}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authreconid','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthReconciliationID}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_authprocessorresponse','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.AuthProcessorResponse}"><br/><br/>
+</isif>
+
+<isif condition="${!empty(pdict.posAuthResponse.ccCaptureReply)}">
+<label><strong>${Resource.msg('pos_resultpage_label_capturereconid','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.CaptureReconciliationID}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_captureamount','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.CaptureAmount}"><br/>
+<label><strong>${Resource.msg('pos_resultpage_label_capturereasoncode','cybersource','')}</strong></label><isprint value="${pdict.posAuthResponse.CaptureReasonCode}"><br/>
+</isif>
+
+<isif condition="${!empty(pdict.posAuthResponse.invalidField)}">
+	<label><strong>${Resource.msg('pos_resultpage_label_invalidfield','cybersource','')}</strong></label>
+	<isloop items="${pdict.posAuthResponse.invalidField}" alias="invalidField">									
+		<isprint value="${invalidField}">,
+	</isloop>
+	<br>
+</isif>
+
+<isif condition="${!empty(pdict.posAuthResponse.missingField)}">
+	<label><strong>${Resource.msg('pos_resultpage_label_missingfield','cybersource','')}</strong></label>
+	<isloop items="${pdict.posAuthResponse.missingField}" alias="missingField">									
+		<isprint value="${missingField}">,
+	</isloop>
+	<br>
+</isif>
+
+<br/>
+<a href="${dw.web.URLUtils.https('CYBServicesTesting-StartPOS')}">${Resource.msg('pos_resultpage_back','cybersource','')}</a>
+
+</body></html>

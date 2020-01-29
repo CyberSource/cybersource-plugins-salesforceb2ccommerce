@@ -1,0 +1,25 @@
+<iscomment>
+	This template will populate the Unit Test result of CCAuth
+</iscomment>
+<!--  UI -->
+
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.ReasonCode}"><br>
+
+${Resource.msg('test.authreasoncode','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.AuthorizationReasonCode}"><br>
+
+${Resource.msg('test.authamount','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.AuthorizationAmount}"><br>
+
+${Resource.msg('test.authcode','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.AuthorizationCode}"><br>
+
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.Decision}"><br>
+
+${Resource.msg('test.requestid','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.RequestID}"><br>
+
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.CCAuthResponse.RequestToken}"><br>

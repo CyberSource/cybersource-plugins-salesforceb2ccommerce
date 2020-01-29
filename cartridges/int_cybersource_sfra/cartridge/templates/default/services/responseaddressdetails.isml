@@ -1,0 +1,41 @@
+<iscomment>
+TEMPLATENAME: ResponseAddressDetails.isml
+	This template will populate the Unit Test result of Shipping Address 
+</iscomment>
+
+<isif condition="${!empty((pdict.addressObj.firstName) || (pdict.addressObj.lastName)) }" >
+	${pdict.addressObj.firstName} ${pdict.addressObj.lastName}<br/>
+</isif>
+
+<isif condition="${!empty(pdict.addressObj.street1)}">
+	${pdict.addressObj.street1}<br/>
+</isif>
+
+<isif condition="${!empty(pdict.addressObj.street2)}">
+	${pdict.addressObj.street2}<br/>
+</isif>
+
+<isif condition="${!empty(pdict.addressObj.city)}">
+	${pdict.addressObj.city}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.state)}">
+	${pdict.addressObj.state}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.country)}">
+	${pdict.addressObj.country}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.postalCode)}">
+	${pdict.addressObj.postalCode}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.phoneNumber)}">
+	${Resource.msg('test.phoneNumber','cybersource',null)} ${pdict.addressObj.phoneNumber}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.email)}">
+	${Resource.msg('test.email','cybersource',null)} ${pdict.addressObj.email}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.shippingMethod)}">
+	${Resource.msg('test.shippingMethod','cybersource',null)} ${pdict.addressObj.shippingMethod}<br/>
+</isif>
+<isif condition="${!empty(pdict.addressObj.shippingMethod)}">
+	${Resource.msg('test.ipAddress','cybersource',null)} ${pdict.addressObj.ipAddress}
+</isif>

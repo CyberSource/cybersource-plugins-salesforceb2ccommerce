@@ -1,0 +1,15 @@
+<!--- TEMPLATENAME: bankTransferContent.isml --->
+	<iscomment>link and script for BIC widget</iscomment>
+	<link rel="stylesheet" href="https://bankauswahl.giropay.de/widget/v2/style.css" />
+	<script src="https://bankauswahl.giropay.de/widget/v2/girocheckoutwidget.js"></script>
+<isscript>
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+	var bankTransferHelper = require(CybersourceConstants.CS_CORE_SCRIPT + '/banktransfer/helper/BankTransferHelper');
+	var paymentMethodType = dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.EPS_PAYMENT_TYPE);							
+</isscript>
+<div class="eps-content" id="eps-content eps">
+<isif condition="${paymentMethodType.custom.isBicEnabled}">	
+		<label class="form-control-label">${Resource.msg('payment.bicnumber','cybersource',null)}</label>		
+		<input type="text" class="form-control epsbic"  id="eps_bic" name="dwfrm_billing_epsBic" value="" onkeyup="girocheckout_widget(this, event, 'bic', '3')" required="true">																					
+	</isif>
+</div>

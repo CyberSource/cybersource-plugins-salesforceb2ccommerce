@@ -1,0 +1,47 @@
+/**
+* 	CreateHMACSignature.ds
+* 	For request creation: pass Order , paymentInstrument to create redirect signature and set output in requestData
+*	For response creation : pass currentHttpParameter receives in secure acceptance response to create and match signature and set output in signatureAuthorize
+*	@input  LineItemCtnr : dw.order.LineItemCtnr
+*	@input PaymentInstrument : dw.order.PaymentInstrument This is a sample comment.
+*	@input CurrentHttpParameterMap :dw.web.HttpParameterMap
+*	@input CardUUID : String
+*	@output requestData : dw.util.HashMap
+*	@output signatureAuthorize : Boolean
+*	@output formAction : String
+*  	@output ERRORCODE : Array
+*
+*/
+
+var Resource = require('dw/web/Resource');
+var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
+
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	//get the order lineitem from Line Item object
+	var lineItemCtnr = pdict.LineItemCtnr;
+	var paymentInstrument = pdict.PaymentInstrument;
+	var saResponseMap = pdict.CurrentHttpParameterMap;
+	var subscriptionToken = CommonHelper.GetSubscriptionToken( pdict.CardUUID, customer);
+	
+	var result = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument,lineItemCtnr,saResponseMap,subscriptionToken);
+	if(result.success){
+		if(result.requestData !== null){
+			/*set request parameter*/
+			pdict.requestData = result.requestData;
+			pdict.formAction = result.formAction;
+		}
+		/*set to true if signature matched in resposnse*/
+		else if(result.signatureAuthorize){
+			pdict.signatureAuthorize = result.signatureAuthorize;
+		}
+		return PIPELET_NEXT;
+	}
+	var errorMsg  = [];
+	errorMsg.push(Resource.msg('checkout.getsignature.service.problem', 'cybersource', null));
+	pdict.ERRORCODE = errorMsg;
+	return PIPELET_ERROR;
+}

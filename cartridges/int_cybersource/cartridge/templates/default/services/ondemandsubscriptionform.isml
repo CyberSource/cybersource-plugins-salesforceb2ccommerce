@@ -1,0 +1,23 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	This template will populate the input fields of on demand subscription
+</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<isinclude template="util/modules"/>
+<h2 class="main-title">${Resource.msg('test.ondemandsubspayment','cybersource',null)}</h2><br/><br/>
+<form class="sample-card-form" action="${URLUtils.https('CYBServicesTesting-OnDemandPayment','service','ondemand')}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+	<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
+	<isinputfield formfield="${pdict.CurrentForms.subscription.currency}" type="select"/>
+	<isinputfield formfield="${pdict.CurrentForms.subscription.amount}" type="input"/>
+	<div class="form-row form-row-button">
+		<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+			${Resource.msg('global.submit','locale',null)}
+		</button>
+	</div>
+</form>
+</body></html>

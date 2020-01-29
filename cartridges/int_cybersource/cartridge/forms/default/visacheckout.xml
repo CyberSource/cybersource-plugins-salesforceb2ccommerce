@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="callId" type="string" mandatory="true" binding="callId" />
+	<field formid="encryptedPaymentWrappedKey" type="string" mandatory="true"  binding="encryptedPaymentWrappedKey" class='test' />
+	<field formid="encryptedPaymentData" type="string" mandatory="true" binding="encryptedPaymentData" />
+	<field formid="countryCode" type="string" mandatory="true" binding="countryCode" />
+	<field formid="postalCode" type="string" mandatory="true" binding="postalCode" />
+	<field formid="basketUUID" type="string" mandatory="true" binding="basketUUID" />
+	<action formid="submit" valid-form="false"/>
+</form>

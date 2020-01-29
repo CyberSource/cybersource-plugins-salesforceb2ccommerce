@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isinclude template="/components/modules" sf-toolkit="off" />
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <!--[if gt IE 9]><!-->
+            <isinclude sf-toolkit="off" template="/common/scripts" />
+        <!--<![endif]-->
+        <isinclude template="/common/htmlHead" />
+        <isactivedatahead/>
+    </head>
+    <body>
+        <div class="page">
+            <isinclude template="/components/header/pageHeaderNomenu" />
+            <isreplace/>
+            <isinclude template="/components/footer/pageFooter" />
+        </div>
+        <isif condition="${((dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  
+        				dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true) || 
+        				(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_GooglePay).isActive() && isGooglePayEnabled))}">
+        	<script type="text/javascript" src="${URLUtils.staticURL('/js/minicartbuttons.js')}"></script>
+        </isif>
+         <!--[if lt IE 10]>
+            <isinclude sf-toolkit="off" template="/common/scripts" />
+        <![endif]-->
+        <isscript>
+			var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+		</isscript>
+		<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+			<script src="https://www.paypalobjects.com/api/checkout.js"></script>
+		</isif>
+		<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+		
+		<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive()}">
+			<script src="${URLUtils.staticURL('/custom/js/klarna.js')}"></script>
+		</isif>
+		   
+
+        <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
+        <isif condition="${isGooglePayEnabled}"> 
+            <input type="hidden" name="isGooglePayEnabled" id="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}"/>
+        </isif>
+        <isif condition="${isGooglePayEnabled}"> 
+            <input type="hidden" name="googlePayMerchantID" id="googlePayMerchantID"  value="${dw.system.Site.getCurrent().getCustomPreferenceValue('googlePayMerchantID')}"/>
+            <input type="hidden" name="googlePaygatewayMerchantId" id="googlePaygatewayMerchantId" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsMerchantId')}" />
+            
+            <script src="https://pay.google.com/gp/p/js/pay.js"></script>
+            <script src="${URLUtils.staticURL('/custom/js/googlepaybilling.js')}"></script>
+            
+                <script>
+                    var googlepayvariables = {
+                        currencyCode: "${session.getCurrency().getCurrencyCode()}",
+                        totalPriceStatus: 'FINAL',
+                        sessionCallBack : "${dw.web.URLUtils.url('CheckoutServices-SubmitPaymentGP')}",
+                        submitURL : "${dw.web.URLUtils.https('Checkout-Begin', 'stage', 'placeOrder')}"
+                    }	
+                    window.googlepayval = googlepayvariables;
+                </script>
+
+        </isif>
+
+        <isinclude url="${URLUtils.url('ConsentTracking-Check')}"/>
+    </body>
+</html>

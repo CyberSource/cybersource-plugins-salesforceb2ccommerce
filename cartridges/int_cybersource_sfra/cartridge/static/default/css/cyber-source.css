@@ -1,0 +1,80 @@
+.title-center{
+	font-family: arial;
+	text-align: center;
+}
+.main-title {
+	text-align: center;
+	text-decoration: underline;
+	font-weight: bold;
+}
+.border-gray {border:1px solid gray;}
+
+.sample-card-form p, .update-subscription p {
+	text-decoration: underline;
+}
+.sample-card-form label {
+	width: 150px;
+	float: left;
+}
+.sample-card-form td, .delete-subscription td, .view-subscription td, .update-subscription td {
+	border-width: medium;
+	border-style: outset;
+}
+.sample-card-form .header {
+	font-weight: bold;
+}
+.sample-card-form .error, .sample-card-form .required-indicator {
+	color: red;
+}
+.reversal-result label, .delete-subscription label, .view-subscription label {
+	width: 300px;
+	float: left;
+}
+.update-subscription label {
+	width: 100px;
+	float: left;
+}
+.cyb_paymentmethods {
+       display:none;
+}
+.cyb_secureacceptance_iframe {
+       display:none;
+}
+.cyb_visa_button_display {
+       display:block;
+       float:none;
+}
+.visaCheckoutDecrypt {
+       display:none; 
+}
+.secure_acceptance_iframe_request {
+       display:none; 
+}
+.hidden {
+       display:none; 
+}
+.show {
+       display:block; 
+}
+.paypal-button-container-mini, .paypal-button-container-cart1, .v-checkout-wrapper, #js-googlepay-container{
+	text-align: center;
+	margin-top: 4%;
+}
+.v-checkout-wrapper {
+	text-align: center;
+	margin-top: 4%;
+}
+.v-learn.v-learn-default{
+	float:none;
+	text-align:center;
+}
+.billing-agreement-container {
+	white-space:nowrap;
+}
+.checkout-continue{
+	position: relative;
+	box-shadow : none;
+}
+.checkout-continue div {
+	padding: 0;
+}

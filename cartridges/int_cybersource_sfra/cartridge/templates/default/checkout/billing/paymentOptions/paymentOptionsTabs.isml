@@ -1,0 +1,48 @@
+<isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopState">
+   
+   <isif condition="${paymentOption.ID === 'CREDIT_CARD'}">
+        <isinclude template="checkout/billing/paymentOptions/creditCardTab" />
+
+    <iselseif condition="${paymentOption.ID === 'DW_APPLE_PAY'}">
+        <isinclude template="checkout/billing/paymentOptions/applePayTab" />
+    
+    <iselseif condition="${paymentOption.ID === 'VISA_CHECKOUT'}">
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnableVisaCheckout')}">
+            <isinclude template="checkout/billing/paymentOptions/visaCheckoutTab" />
+        </isif>
+    
+    <iselseif condition="${paymentOption.ID === 'PAYPAL'}">
+        <isset name="isPayPalEnabled" value="${dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')}" scope="page" />
+        <isif condition="${isPayPalEnabled}">
+            <isinclude template="checkout/billing/paymentOptions/payPalTab" />
+        </isif>
+    
+    <iselseif condition="${paymentOption.ID === 'DW_GOOGLE_PAY'}">
+        <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
+        <isif condition="${isGooglePayEnabled}">
+            <isinclude template="checkout/billing/paymentOptions/googlePayTab"/>
+        </isif>
+    
+    <iselseif condition="${paymentOption.ID === 'ALIPAY'}">
+        <isinclude template="checkout/billing/paymentOptions/aliPayTab" />
+    
+    <iselseif condition="${paymentOption.ID === 'SOF'}">
+        <isinclude template="checkout/billing/paymentOptions/sofortTab" />
+
+    <iselseif condition="${paymentOption.ID === 'IDL'}">
+        <isinclude template="checkout/billing/paymentOptions/iDealTab" />
+
+    <iselseif condition="${paymentOption.ID === 'MCH'}">
+        <isinclude template="checkout/billing/paymentOptions/bancontactTab" />
+
+    <iselseif condition="${paymentOption.ID === 'GPY'}">
+        <isinclude template="checkout/billing/paymentOptions/giroPayTab" />
+
+    <iselseif condition="${paymentOption.ID === 'EPS'}">
+        <isinclude template="checkout/billing/paymentOptions/epsTab" />
+        
+    <iselseif condition="${paymentOption.ID === 'KLARNA'}">
+        <isinclude template="checkout/billing/paymentOptions/klarnaTab" />
+    </isif>
+
+</isloop>

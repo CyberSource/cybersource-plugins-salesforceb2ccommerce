@@ -1,0 +1,46 @@
+<iscomment> TEMPLATENAME: SecureAcceptanceSilentPost.isml</iscomment>
+<html>
+	<head>
+	<title>${Resource.msg('sa.redirect.form.title','cybersource',null)}</title>
+	</head>
+	<body >
+		<form method="post" name="ePayment" action="https://testsecureacceptance.cybersource.com/silent/token/create">
+			<input type="hidden" id ="access_key" name="access_key" value="556a7c11e43a3bf480f2318578626178">
+			<input type="hidden" id ="profile_id" name="profile_id" value="316020EE-B74F-42F8-8DCC-56D4F7214552">
+			<input type="hidden" id = "transaction_uuid" name="transaction_uuid" value="${pdict.Transaction_uuid}">
+			<input type="hidden" id ="unsigned_field_names" name="unsigned_field_names" value="card_type,card_number,card_expiry_date">
+			<input type="hidden" id = "signature" name="signature" value="${pdict.Signature}">
+  		    <input type="hidden" id = "locale" name="locale" value="en">
+  		    <input type="hidden" id = "transaction_type" name="transaction_type" value="create_payment_token">
+  		    <input type="hidden" id="amount" name="amount" value="100">
+			<input type="hidden" id="currency" name="currency" value="USD">
+			<input type="hidden" id="signed_field_names" name="signed_field_names" value="access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,payment_method,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code">
+			<input type="hidden" id="reference_number" name="reference_number" value="${pdict.Reference_number}">
+			
+			<input type="hidden" id="signed_date_time" name="signed_date_time" value="${pdict.Signed_date_time}">
+			
+			<input type="hidden" id="bill_to_email" name="bill_to_email" value="nsiddiqui123@sapient.com">
+			<input type="hidden" id="bill_to_address_line1" name="bill_to_address_line1" value="230 North Avenue">
+			<input type="hidden" id="bill_to_address_city" name="bill_to_address_city" value="Mountain View">
+			<input type="hidden" id="bill_to_address_postal_code" name="bill_to_address_postal_code" value="94043">
+			<input type="hidden" id="bill_to_address_state" name="bill_to_address_state" value="CA">
+			<input type="hidden" id="bill_to_address_country" name="bill_to_address_country" value="US">
+			<input type="hidden" id="bill_to_forename" name="bill_to_forename" value="joee">
+			<input type="hidden" id="bill_to_surname" name="bill_to_surname" value="smith">
+			
+			<input type="hidden" id="payment_method" name="payment_method" value="card">
+			<input type="hidden" id="bill_to_phone" name="bill_to_phone" value="02890888888">
+			<input type="hidden" id="bill_to_address_postal_code" name="bill_to_address_postal_code" value="94043">
+			<input type="hidden" id="card_type" name="card_type" value="001">
+			<input type="hidden" id="card_number" name="card_number" value="4242424242424242">
+			<input type="hidden" id="card_expiry_date" name="card_expiry_date" value="11-2020">
+			
+			
+			
+			
+			
+			<input type="submit" value="Proceed with Payment" name="Submit">
+		</form>
+
+	</body>
+</html>

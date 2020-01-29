@@ -1,0 +1,109 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('custom/js/cybersource-custom.js')}"></script>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
+<iscomment>
+	Auth Reversal service form
+</iscomment>
+<div id="SaleForm" class="sale_form container" >
+	<h1>${Resource.msg('test.authreversalserviceform','cybersource',null)}</h1>
+	<form class="sale_form" action="${URLUtils.https('CYBServicesTesting-CCAuthReversalService','service','true')}" method="post" id="generic-form-submit">
+			<fieldset>
+				<div id="saleform" class="saleform">
+					<div class="row">
+					    <div class="col-md-8">
+					        <div class="form-group">
+					            <label class="form-control-label" for="merchantReferenceCode">${Resource.msg('saleservice_merchantrefcode','cybersource',null)}</label>
+					            <div class="merchantReferenceCode-wrapper">
+					                <input type="text" class="form-control" id="merchantReferenceCode"
+					                    value=""
+					                    <isprint value=${pdict.authreversalform.merchantReferenceCode.attributes} encoding="off"/>
+					                >
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-md-8">
+					        <div class="form-group">
+					        	<label class="form-control-label" for="authRequestID">${Resource.msg('saleservice_requestId','cybersource',null)}</label>
+					            <div class="authRequestID-wrapper">
+					                <input type="text" class="form-control" id="authRequestID"
+					                    value=""
+					                    <isprint value=${pdict.authreversalform.authRequestID.attributes} encoding="off"/>
+					                >
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-md-8">
+					        <div class="form-group">
+					        	<label class="form-control-label" for="currency">${Resource.msg('saleservice_currency','cybersource',null)}</label>
+					            <div class="currency-wrapper">
+					                <input type="text" class="form-control" id="currency"
+					                    value=""
+					                    <isprint value=${pdict.authreversalform.currency.attributes} encoding="off"/>
+					                >
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-md-8">
+					        <div class="form-group">
+					        	<label class="form-control-label" for="grandtotalamount">${Resource.msg('saleservice_amount','cybersource',null)}</label>
+					            <div class="grandtotalamount-wrapper">
+					                <input type="text" class="form-control" id="grandtotalamount"
+					                    value=""
+					                    <isprint value=${pdict.authreversalform.grandtotalamount.attributes} encoding="off"/>
+					                >
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-md-8">
+					        <div class="form-group">
+					            <label class="form-control-label" for="authreversalpaymenttype">${Resource.msg('saleservice_paymentmethod','cybersource',null)}</label>
+					            <select class="form-control authreversalpaymenttype custom-select" id="authreversalpaymenttype"
+					            <isprint value=${pdict.authreversalform.authreversalpaymenttype.attributes} encoding="off"/> >
+					                <isloop items=${pdict.authreversalform.authreversalpaymenttype.options} var="paymentType">
+					                    <option id="${paymentType.id}" value="${paymentType.htmlValue}">
+						                    ${paymentType.label}
+					                    </option>
+					                </isloop>
+					            </select>
+					        </div>
+					    </div>
+					    <div class="col-md-8 orderRequestID hidden">
+					        <div class="form-group">
+					        	<label class="form-control-label" for="orderRequestID">${Resource.msg('service_orderId','cybersource',null)}</label>
+					            <div class="orderRequestID-wrapper">
+					                <input type="text" class="form-control" id="orderRequestID"
+					                    value=""
+					                    <isprint value=${pdict.authreversalform.orderRequestID.attributes} encoding="off"/>
+					                >
+					            </div>
+					        </div>
+					   </div>
+					</div>
+				</div>
+				<fieldset>	 
+			<div class="actions clearfix">
+				<button id="dialogApplyBtn" name="${pdict.authreversalform.submit}" type="submit" value="${Resource.msg('test.submit','cybersource',null)}"><span>${Resource.msg('test.submit','cybersource',null)}</span></button>
+			</div>
+	</form>
+</div>
+<script type="text/javascript">
+	window.onload = function() {
+		if($('#authreversalpaymenttype').val() == 'visacheckout') {
+			$('#orderRequestID').attr('required','required');
+			$('.orderRequestID').removeClass('hidden').addClass('show');
+		} else {
+			$('#orderRequestID').removeAttr('required');
+			$('.orderRequestID').removeClass('show').addClass('hidden');
+		}
+	};
+</script>
+</body>
+</html>

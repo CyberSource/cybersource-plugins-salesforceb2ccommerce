@@ -1,0 +1,229 @@
+@import "~base/checkout/checkout";
+@import "../components/creditCardField";
+@import "bootstrap/scss/mixins/breakpoints";
+
+#deliveryAddressVerificationModal{
+   .modal-dialog{
+       background-color: #fff;
+       z-index: 9999;
+   }
+   .modal-body{
+       font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
+       .originalAddress{
+            float:left;
+            margin-left:5%;
+            width: 42%;
+            span{
+               font-size:1.2rem;
+               display:block;
+               margin-bottom:10%;
+            }
+            p{
+               margin: 0%;
+            }
+       }
+       .standardAddress{
+            float:right;
+            clear:none;
+            width: 42%;
+            position: relative;
+            margin-right:5%;
+            margin-left: 5%;
+            @include media-breakpoint-down(xs){
+               width: 45%;
+               margin-right: 0%;
+            }
+            span{
+               font-size:1.2rem;
+               display:block;
+               margin-bottom:10%;
+            }
+            p{
+               margin: 0%;
+            }           
+       } 
+       .dav-buttons-div{
+            display: inline-block;
+            width: 100%;
+            .useOrigAddress{
+                float: left;
+			    width: 40%;
+			    white-space: normal;
+			    margin-left: 5%;
+			    margin-top: 2%;            
+            }
+            .useStdAddress{
+                float: right;
+			    width: 42%;
+			    white-space: normal;
+			    margin-right: 5%;
+			    margin-top: 2%;  
+			    @include media-breakpoint-down(xs){
+			       margin-right: 3%;
+			    }          
+            }        
+       }
+       .continueWithThisAddress{
+            margin-top: 3%;
+            width: 60%;
+            white-space: normal;
+            @include media-breakpoint-down(xs){
+                width: 85%;
+            }
+       } 
+   }
+   .modal-backdrop{
+       opacity: 0.5;
+       z-index: 1;
+   }
+}
+
+.DAVModalResourceStrings{
+   display: none;
+}
+
+#secureAcceptanceIframe{
+    iframe[name="hss_iframe"]{
+         display: block;
+         margin: auto;
+         transform: scale(1.18,1);
+         border: 1px solid rgba(0,0,0,.125);
+         margin-top: -2px;
+    }
+}
+
+.data-checkout-stage {
+    // Initial states ------------------------
+    &[data-checkout-stage] {
+        .card.secure-acceptance-iframe {
+            display: none;
+        }
+    }
+	
+	&[data-checkout-stage] {
+        button.sa_redirect {
+            display: none;
+        }
+    }
+	
+	&[data-checkout-stage] {
+        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay {
+            display: none;
+        }
+    }
+    
+	&[data-checkout-stage] {
+        button.sa_iframe {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage] {
+        button.sa_silentpost {
+            display: none;
+        }
+    }
+	
+	&[data-checkout-stage] {
+        button.sa_flex {
+            display: none;
+        }
+    }
+    // Payment -------------------------------
+    &[data-checkout-stage=payment] {
+        .card.secure-acceptance-iframe {
+            display: none;
+        }
+        button#showSubmitPayment{
+            display: block;
+		}
+         button#hideSubmitPayment{
+            display: none;
+		}   
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.sa_redirect {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.sa_iframe {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=payment] {
+        button.sa_silentpost {
+            display: none;
+        }
+    }
+	
+	&[data-checkout-stage=payment] {
+        button.sa_flex {
+            display: none;
+        }
+    }
+	
+	#cardNumber-container{
+	 height:43px;
+	}
+	
+    // Place Order -----------------------------
+    &[data-checkout-stage=placeOrder] {
+        .card.secure-acceptance-iframe,
+        .card.payment-summary,
+        .shipping-summary {
+            display: block;
+        }
+    }
+
+    &[data-checkout-stage=submitted] {
+        button.sasilentpost {
+            display: none;
+        }
+    }
+    
+    &[data-checkout-stage=submitted] {
+        .card.secure-acceptance-iframe {
+            display: none;
+        }
+    }
+    
+     &[data-checkout-stage=placeOrder] {
+        button.sa_redirect {
+            display: block;
+        }
+    }
+    
+     &[data-checkout-stage=placeOrder] {
+        button.sa_iframe {
+            display: block;
+        }
+    }
+    
+    &[data-checkout-stage=placeOrder] {
+        button.sa_silentpost {
+            display: block;
+        }
+    }
+    
+    &[data-checkout-stage=placeOrder] {
+       button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay {
+            display: block;
+        }
+    }
+    
+    &[data-checkout-stage=placeOrder] {
+        button.sa_flex {
+            display: block;
+        }
+    }
+}

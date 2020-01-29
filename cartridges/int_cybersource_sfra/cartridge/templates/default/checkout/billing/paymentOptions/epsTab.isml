@@ -1,0 +1,11 @@
+<!--- TEMPLATENAME: epsTab.isml --->
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link eps-tab" data-toggle="tab" href="#credit-card-content" role="tab">
+        <img class="eps-options"
+                src="${URLUtils.staticURL('/images/eps.png')}"
+                height="32"
+                alt="${paymentOption.name}"
+                title="${paymentOption.name}"
+        >
+    </a>
+</li>

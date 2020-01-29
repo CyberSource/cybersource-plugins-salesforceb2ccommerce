@@ -1,0 +1,21 @@
+/**
+*	CreateCybersourcePurchaseTotalsObject.ds
+*	This script creates the PurchaseTotalsObject data object and set it to CybersourcePurchaseTotals output object.
+*	
+*	 @input Basket : dw.order.LineItemCtnr
+*    @output CyberSourcePurchaseTotals : Object
+*
+*/
+var CommonHelper = require('int_cybersource/cartridge/scripts/helper/CommonHelper');
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var result = CommonHelper.CreateCybersourcePurchaseTotalsObject(pdict.Basket);
+	
+	if(null !== result && result.success)
+	{
+    pdict.CyberSourcePurchaseTotals = result.purchaseTotals;
+	}
+    
+    return PIPELET_NEXT;
+}

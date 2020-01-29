@@ -1,0 +1,30 @@
+<div class="tab-pane klarna-content" id="klarna-content" role="tabpanel">
+
+    <isif condition="${'klarnaJSAPIPath' in dw.system.Site.current.preferences.custom 
+                    && !empty(dw.system.Site.current.preferences.custom.klarnaJSAPIPath)
+                    && dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive()}">
+        <script src="${dw.system.Site.current.preferences.custom.klarnaJSAPIPath}" async></script>
+    </isif>
+    
+    <p class="error" id="klarna-error-message">There was an error generating your Klarna session.</p>
+ 
+    <div class="form-group required ${pdict.forms.billingForm.klarnaEmail.htmlName}" id="klarna-email-group">
+        <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
+        <span class="info-icon">
+        <span class="icon">i</span>
+            <div class="tooltip">
+                 ${Resource.msg('tooltip.email','creditCard',null)}
+            </div>
+        </span>
+        <input type="text" class="form-control email" id="email" <isprint value=${pdict.forms.billingForm.klarnaEmail.attributes} encoding="off"/> />
+        <div class="invalid-feedback"></div>
+    </div>
+
+    <div id="klarna-container" data-session-token="${session.privacy.klarnaSessionToken}"></div>
+    <input type="hidden" id="klarnaAuthToken" name="klarnaAuthToken"/>
+	<input type="hidden" name="klarnaUpdateUrl" id="klarnaUpdateUrl" value="${dw.web.URLUtils.https('CYBKlarna-UpdateSession').toString()}"  /> 
+	
+    <button class="btn btn-primary btn-block klarna-pay" id="klarna-pay-get-session" name="klarna-pay" value="klarna-pay" data-action-url="${URLUtils.https('CYBKlarna-GetSession')}">Pay with Klarna</button>
+    <button class="btn btn-primary btn-block klarna-pay" id="klarna-pay-authorize" name="klarna-pay" value="klarna-pay" data-action-url="${URLUtils.https('CYBKlarna-AuthOrder')}">Pay with Klarna</button>
+
+</div>

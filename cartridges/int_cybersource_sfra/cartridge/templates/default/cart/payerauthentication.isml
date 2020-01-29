@@ -1,0 +1,24 @@
+<iscomment>
+	This template the template rendering the payer authentication page
+</iscomment>
+<isdecorate template="common/layout/checkout">
+	<iscontent type="text/html" charset="UTF-8" compact="true">
+		<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+		<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>
+		<div id="cyb_payerauth" class="payerauth test">
+			<div class=processing>
+				${Resource.msg('cart.payerauthentication.001','cart','')}
+			</div>
+			<div class="message">
+				${Resource.msg('cart.payerauthentication.002','cart','')}
+			</div>
+			<iframe name="PAFrame" width="400" height="500" src="" style="border: none;">${Resource.msg('cart.payerauthentication.003','cart','')}</iframe>
+			<form action="${pdict.AcsURL}" method="POST" name="PAInfoForm" target="PAFrame">
+				<input type="hidden" name="TermUrl" value="${URLUtils.https('COPlaceOrder-Submit','provider','card','order_token',pdict.Order.orderToken,'PAXID',pdict.PAXID)}">
+				<input type="hidden" name="PaReq" value="${pdict.PAReq}">
+				<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
+			</form>
+			
+		</div>
+	</iscontent>
+</isdecorate>

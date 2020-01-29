@@ -1,0 +1,11 @@
+<div class="tab-pane googlepay-content" id="googlepay-content" role="tabpanel">
+   	<div id="js-googlepay-container">
+   	
+        <input type="hidden" id="carttotal" value="${pdict.order.totals.grandTotal}" />
+        <input type="hidden" name="googlePayMerchantID" id="googlePayMerchantID"  value="${dw.system.Site.getCurrent().getCustomPreferenceValue('googlePayMerchantID')}"/>
+        <input type="hidden" name="googlePaygatewayMerchantId" id="googlePaygatewayMerchantId" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsMerchantId')}" />
+        <input type="hidden" name="isgooglepayclicked" id="isgooglepayclicked" />
+        <input type="hidden" name="googletoken" id="googletoken" />
+		
+	</div>
+</div>

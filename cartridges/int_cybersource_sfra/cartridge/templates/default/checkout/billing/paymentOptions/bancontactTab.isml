@@ -1,0 +1,11 @@
+<!--- TEMPLATENAME: bankTransferTab.isml --->
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link bankTransfer-tab" data-toggle="tab" href="#credit-card-content" role="tab">
+        <img class="bancontact-options"
+                src="${URLUtils.staticURL('/images/bancontact.png')}"
+                height="32"
+                alt="${paymentOption.name}"
+                title="${paymentOption.name}"
+        >
+    </a>
+</li>

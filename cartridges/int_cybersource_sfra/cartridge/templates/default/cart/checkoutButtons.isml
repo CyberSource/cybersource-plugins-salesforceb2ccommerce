@@ -1,0 +1,8 @@
+<div class="checkout-and-applepay">
+    <form class="cart-action-checkout"  action="${URLUtils.continueURL()}" method="post" id="checkout-form">
+        
+        <a href="${URLUtils.https('Checkout-Login')}" class="btn btn-primary btn-block checkout-btn ${pdict.valid.error ? 'disabled' : ''} col" role="button" aria-pressed="true">
+            ${Resource.msg('button.checkout','cart',null)}
+        </a>
+    </form>
+</div>

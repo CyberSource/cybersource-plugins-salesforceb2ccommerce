@@ -1,3 +1,0 @@
-<p>
-    ${Resource.msg('msg.paid.using.apple.pay', 'cybApplePay', null)}
-</p>

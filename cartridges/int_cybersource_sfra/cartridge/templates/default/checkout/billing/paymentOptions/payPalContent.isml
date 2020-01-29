@@ -1,0 +1,36 @@
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="tab-pane ${pdict.selectedPayment == 'PAYPAL' ? 'active' : ''} paypal-content" id="paypal-content" role="tabpanel">
+	<div class="paypalDetails ${pdict.paidWithPayPal ? 'checkout-hidden' : ''}">
+		<div class="row justify-content-center">
+			<input type="hidden" value="${pdict.currentLocale}" name="currentLocale" id="currentLocale">
+	 		<div class="col-sm-4">
+				<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && !empty(pdict.CurrentCustomer.profile) && !empty(pdict.CurrentCustomer.profile.custom.billingAgreementID)}">
+					<input type="image" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" alt="PayPal Express" class="billingAgreementExpressCheckout"/>
+				<iselse>	
+					<div id="paypal-button-container"></div>
+				</isif>
+				
+				<isif condition="${pdict.CurrentCustomer.authenticated && dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements')}">
+					<div class="billing-agreement-container">
+						<isif condition="${!empty(pdict.CurrentCustomer.profile.custom.billingAgreementID)}">
+							<input type="text" readonly="readonly" id="billingAgreementID" value="${pdict.CurrentCustomer.profile.custom.billingAgreementID}"/>
+						<iselse>
+							<input type="checkbox" name="billingAgreementCheckbox" id="billingAgreementCheckbox">${Resource.msg('billing.billingagreement','cybersource',null)}</input>
+						</isif>
+					</div>
+				</isif>
+			</div>
+			<isscript>
+				var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+				var payPal_Credit = dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL_CREDIT);
+				var isPPLApplicable = (!empty(pdict.applicablePaymentMethods) && payPal_Credit && 
+					pdict.applicablePaymentMethods.contains(payPal_Credit)) ? true : false;
+			</isscript>
+			<isif condition="${isPPLApplicable}">
+				<div class="col-sm-4">
+					<div id="paypal-credit-container"></div>
+				</div>
+			</isif>
+		</div>
+	</div>
+</div>

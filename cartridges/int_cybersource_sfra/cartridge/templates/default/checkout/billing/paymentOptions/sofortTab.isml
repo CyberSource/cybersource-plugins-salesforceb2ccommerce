@@ -1,0 +1,11 @@
+<!--- TEMPLATENAME: sofortTab.isml --->
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link sofort-tab" data-toggle="tab" href="#credit-card-content" role="tab">
+        <img class="sofort-options"
+                src="${URLUtils.staticURL('/images/sofort.png')}"
+                height="32"
+                alt="${paymentOption.name}"
+                title="${paymentOption.name}"
+        >
+    </a>
+</li>
