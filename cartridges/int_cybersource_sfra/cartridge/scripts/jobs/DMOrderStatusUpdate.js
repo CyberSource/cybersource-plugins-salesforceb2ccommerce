@@ -35,25 +35,17 @@ function orderStatusUpdate(jobParams) {
         var responseObj = null;
 		
         //  Call conversion report service
-		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-		var CybersourceHelper = libCybersource.getCybersourceHelper();
 		var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
 
-	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");//'hxMkGJcdXyyQ2rkf6wGMGf8PYHUiOQbp4glcDfsYRy0='
-		var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");//'b1d4ea77-6a1b-4014-b146-c40e90db07af'
-		var merchantId = Site.getCurrent().getCustomPreferenceValue("CsMerchantId");//'accenture_cybersource';
+	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");
+		var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");
+		var merchantId = Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
 
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
-        var signature, targetOrigin;
-
-	    if(request.isHttpSecure()){
-		   	 targetOrigin = "https://" + request.httpHost;
-		   } else {
-		   	 targetOrigin = "http://" + request.httpHost;
-        }
-        targetOrigin = "https://" + host;
+        
+        var targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());
 		signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
