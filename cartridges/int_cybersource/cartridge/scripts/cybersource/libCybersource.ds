@@ -47,7 +47,7 @@ var CybersourceHelper = {
 	},	
 
 	getPartnerSolutionID : function () {
-		return "YBLB7DA8";
+		return "6T5WKACW";
 	},	
 
 	getDeveloperID : function () {
@@ -1097,8 +1097,9 @@ function __setClientData( request, refCode, fingerprint)
 		request.developerID=developerID;
 	}
 	request.clientLibrary='Salesforce Commerce Cloud';
-	request.clientLibraryVersion='19.3.0';
+	request.clientLibraryVersion='20.1.0';
 	request.clientEnvironment='Linux';
+	request.clientApplicationVersion = 'SG';
 	if (fingerprint) {
 	  request.deviceFingerprintID = fingerprint;
 	}
