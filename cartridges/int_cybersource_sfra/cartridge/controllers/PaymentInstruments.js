@@ -83,6 +83,21 @@ function getDetailsObject(paymentForm) {
     };
 }
 
+/**
+ * reset an object from form values
+ * @param {Object} paymentForm - form object
+ * @returns {Object} a plain object of payment instrument
+ */
+function setDetailsObject(paymentForm) {
+    return {
+        name: '',
+        cardNumber: '',
+        cardType: '',
+        expirationMonth: '',
+        expirationYear: '',
+        paymentForm: ''
+    };
+}
 
 /**
  * Saves a  customer credit card payment instrument.
@@ -165,10 +180,9 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
                 verifyDuplicates = true;
                 tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'account');
             }
-            Transaction.begin();
+            
             PaymentInstrumentUtils.removeDuplicates(formInfo);
             
-            Transaction.commit();
             if (!tokenizationResult.error) {
                 var wallet = customer.getProfile().getWallet();
                 Transaction.begin();
@@ -184,6 +198,8 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
                 }
               
                 Transaction.commit();
+                //Reseting the formData because response had CC#
+                res.setViewData(setDetailsObject(paymentForm));
                 res.json({
                     success: true,
                     redirectUrl: URLUtils.url('PaymentInstruments-List').toString()

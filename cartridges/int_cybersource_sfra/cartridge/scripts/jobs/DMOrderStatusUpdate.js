@@ -39,13 +39,21 @@ function orderStatusUpdate(jobParams) {
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
 
+	    /*
+	     * Commented out code which take values from site Preferences instead we are using values from job parameters
 	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");
 		var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");
 		var merchantId = Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
+		*/
+	     
+	    // Collected values for secret, key and merchant id from job parameters.
+		var sharedSecret = jobParams.SAFlexSharedSecret;
+		var keyID = jobParams.SAFlexKeyID;
+		var merchantId = jobParams.MerchantId;
 
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
         
-        var targetOrigin = "https://" + host;
+        targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());
 		signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
