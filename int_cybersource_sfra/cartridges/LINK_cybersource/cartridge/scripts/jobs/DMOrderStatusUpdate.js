@@ -35,24 +35,24 @@ function orderStatusUpdate(jobParams) {
         var responseObj = null;
 		
         //  Call conversion report service
-		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-		var CybersourceHelper = libCybersource.getCybersourceHelper();
 		var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
 
-	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");//'hxMkGJcdXyyQ2rkf6wGMGf8PYHUiOQbp4glcDfsYRy0='
-		var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");//'b1d4ea77-6a1b-4014-b146-c40e90db07af'
-		var merchantId = Site.getCurrent().getCustomPreferenceValue("CsMerchantId");//'accenture_cybersource';
+	    /*
+	     * Commented out code which take values from site Preferences instead we are using values from job parameters
+	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");
+		var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");
+		var merchantId = Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
+		*/
+	     
+	    // Collected values for secret, key and merchant id from job parameters.
+		var sharedSecret = jobParams.SAFlexSharedSecret;
+		var keyID = jobParams.SAFlexKeyID;
+		var merchantId = jobParams.MerchantId;
 
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
-        var signature, targetOrigin;
-
-	    if(request.isHttpSecure()){
-		   	 targetOrigin = "https://" + request.httpHost;
-		   } else {
-		   	 targetOrigin = "http://" + request.httpHost;
-        }
+        
         targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());
@@ -109,12 +109,13 @@ function parseJSONResponse(message, orderHashMap) {
                     if (order !== null) {
                         //new decision ACCEPT decision applied to order
                         if (conversionDetails['newDecision'] === 'ACCEPT') {
+                          	OrderMgr.placeOrder(order);
                             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
                             logger.info('Order number: ( {0} ) is successfully placed  ', orderNumber);
                             //new decision REJECT decision applied to order
                         } else if (conversionDetails['newDecision'] === 'REJECT') {
                             //  Cancel Order.
-                            order.setStatus(Order.ORDER_STATUS_CANCELLED);
+                            OrderMgr.failOrder(order);
                             var reviewerComment = conversionDetails['reviewerComments'];
                             order.cancelDescription = reviewerComment;
                             logger.info('Order number: ( {0} ) is canceled   ', orderNumber);
@@ -122,7 +123,7 @@ function parseJSONResponse(message, orderHashMap) {
                             logger.debug('No records in ACCEPT/REJECT state.');
                         }
                     } else {
-                        logger.debug('Order in Daily conversion report not found in the query results against Demandware DB');
+                        logger.debug('Order in Daily conversion report not found in the query results against DB');
                     }
                 }
             });

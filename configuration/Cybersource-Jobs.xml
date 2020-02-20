@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="APCheckStatusJob" priority="0">
+        <description>Job Scheduler to check the status of Ali Pay Initiate Payment request status.</description>
+        <parameters/>
+        <split sequential="false">
+            <contexts template-ref="template_23">
+                <context site-id="SiteGenesis"/>
+                <context site-id="SiteGenesisGlobal"/>
+            </contexts>
+            <flow-template template-id="template_23">
+                <step step-id="APCheckStatusJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Check payment status for APM's</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/APCheckStatusJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">checkPaymentStatusJob</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                        <parameter name="LagTime">0</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+                <send-mail>
+                    <from>demo@sapient.com</from>
+                    <to>demo@sapient.com</to>
+                </send-mail>
+            </on-running>
+            <on-retry enabled="false">
+                <send-mail>
+                    <from>demo@sapient.com</from>
+                    <to>demo@sapient.com</to>
+                </send-mail>
+            </on-retry>
+            <on-exit status="ERROR" enabled="false">
+                <send-mail>
+                    <from>demo@sapient.com</from>
+                    <to>demo@sapient.com</to>
+                </send-mail>
+            </on-exit>
+        </rules>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>21:43:11.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="CyberSource: Decision Manager Order Update (Controllers &amp; Pipelines)" priority="0">
+        <description>Update unconfirmed orders based on Accept / Reject decisions made in CS Business Center.</description>
+        <parameters/>
+            <flow>
+                <context site-id="SiteGenesis"/>
+                <step step-id="UpdateOrderStatus : Controllers &amp; Pipelines" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>Update unconfirmed orders based on Accept / Reject decisions made in CS Business Center.</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/DMOrderStatusUpdate.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">orderStatusUpdate</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                        <parameter name="MerchantId"/>
+                        <parameter name="SAFlexKeyID"/>
+                        <parameter name="SAFlexSharedSecret"/>
+                    </parameters>
+                </step>
+            </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2020-01-23Z</date>
+                <time>17:30:22.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="SecureAcceptanceMerchantPostJob" priority="0">
+        <description>Secure Acceptance Merhcant Post Notification Job</description>
+        <parameters/>
+        <split sequential="false">
+            <contexts template-ref="template_43">
+                <context site-id="SiteGenesis"/>
+                <context site-id="SiteGenesisGlobal"/>
+            </contexts>
+            <flow-template template-id="template_43">
+                <step step-id="SAMerchantPostJob" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>To handle failed order</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/SAMerchantPostJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">SAMerchantPostJob</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2016-12-29Z</date>
+                <time>11:40:27.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+    <job job-id="iDealBankOptionJob" priority="0">
+        <description>To the supported list of baks for iDeal bank transfer</description>
+        <parameters/>
+        <split sequential="false">
+            <contexts template-ref="template_45">
+                <context site-id="RefArch"/>
+                <context site-id="RefArchGlobal"/>
+                <context site-id="SiteGenesis"/>
+                <context site-id="SiteGenesisGlobal"/>
+            </contexts>
+            <flow-template template-id="template_45">
+                <step step-id="call-cyb-option-service" type="ExecuteScriptModule" enforce-restart="false">
+                    <description>To get the supported bank list for iDeal payment method.</description>
+                    <parameters>
+                        <parameter name="ExecuteScriptModule.Module">int_cybersource/cartridge/scripts/jobs/iDealBankOptionJob.js</parameter>
+                        <parameter name="ExecuteScriptModule.FunctionName">run</parameter>
+                        <parameter name="ExecuteScriptModule.Transactional">true</parameter>
+                        <parameter name="merchantId"/>
+                        <parameter name="merchantKey"/>
+                        <parameter name="paymentType">IDL</parameter>
+                    </parameters>
+                </step>
+            </flow-template>
+        </split>
+        <rules/>
+        <triggers>
+            <run-once enabled="true">
+                <date>2017-07-17Z</date>
+                <time>10:20:57.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+</jobs>
