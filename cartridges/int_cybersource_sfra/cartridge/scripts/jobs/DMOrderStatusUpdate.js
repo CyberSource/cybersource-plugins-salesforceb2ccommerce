@@ -38,13 +38,6 @@ function orderStatusUpdate(jobParams) {
 		var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
-
-	    /*
-	     * Commented out code which take values from site Preferences instead we are using values from job parameters
-	    var sharedSecret = Site.getCurrent().getCustomPreferenceValue("SA_Flex_SharedSecret");
-		var keyID = Site.getCurrent().getCustomPreferenceValue("SA_Flex_KeyID");
-		var merchantId = Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
-		*/
 	     
 	    // Collected values for secret, key and merchant id from job parameters.
 		var sharedSecret = jobParams.SAFlexSharedSecret;
@@ -170,14 +163,14 @@ function setDateTimeForParameter() {
     var time = {};
     var endDate = System.getCalendar();
     endDate.setTimeZone('GMT');
-    time.end = StringUtils.formatCalendar(endDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''); // 2019-07-30T00:00:00.0Z
+    time.end = StringUtils.formatCalendar(endDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''); 
     var currentDate = System.getCalendar();
     currentDate.setTimeZone('GMT');
     var Site = require('dw/system/Site');
     var lookBackPref = Site.getCurrent().getCustomPreferenceValue('CsOrderImportLookBack');
     var lookbackTime = empty(lookBackPref) ? -24 : (-1 * lookBackPref);
     currentDate.add(dw.util.Calendar.HOUR, lookbackTime);
-    time.start = StringUtils.formatCalendar(currentDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''); // 2019-07-30T00:00:00.0Z
+    time.start = StringUtils.formatCalendar(currentDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''); 
 
     return time;
 }
@@ -233,9 +226,9 @@ function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId,
 		 var signatureString = "";
 			var headerString = "";
 			 signatureString = signatureString + 'host: apitest.cybersource.com'+"\n";
-			 signatureString = signatureString + 'date: '+date+"\n";//Wed, 24 Jul 2019 21:11:56 GMT' + "\n";
+			 signatureString = signatureString + 'date: '+date+"\n";
 			 signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId='+ merchantId + "\n";
-			 signatureString = signatureString + 'v-c-merchant-id: accenture_cybersource';
+			 signatureString = signatureString + 'v-c-merchant-id: '+merchantId;
 
 		 var signatureDigest = encryptor.digest(new Bytes(signatureString.toString(), 'UTF-8'), secret);
 		 var signature = Encoding.toBase64(signatureDigest);
