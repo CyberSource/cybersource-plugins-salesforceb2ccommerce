@@ -1097,7 +1097,7 @@ function __setClientData( request, refCode, fingerprint)
 		request.developerID=developerID;
 	}
 	request.clientLibrary='Salesforce Commerce Cloud';
-	request.clientLibraryVersion='20.1.0';
+	request.clientLibraryVersion='19.4.0';
 	request.clientEnvironment='Linux';
 	request.clientApplicationVersion = 'SG';
 	if (fingerprint) {
