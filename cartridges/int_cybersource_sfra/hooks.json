@@ -1,0 +1,40 @@
+{
+    "hooks": [
+        {
+            "name": "app.payment.processor.cybersource_credit",
+            "script": "./cartridge/scripts/hooks/payment/processor/cybersource_credit"
+        },
+        {
+            "name": "app.fraud.detection",
+            "script": "./cartridge/scripts/hooks/fraudDetection"
+        },
+        {
+            "name": "dw.extensions.applepay.paymentAuthorized.authorizeOrderPayment",
+            "script": "./cartridge/scripts/hooks/applepay/applePayAuth"
+        },
+        {
+            "name": "dw.order.calculateTax",
+            "script": "./cartridge/scripts/hooks/tax/taxes"
+        },
+        {
+            "name": "app.payment.processor.paypal_express",
+            "script": "./cartridge/scripts/hooks/payment/processor/PAYPAL_EXPRESS"
+        },
+        {
+            "name": "app.payment.processor.paypal_credit",
+            "script": "./cartridge/scripts/hooks/payment/processor/PAYPAL_CREDIT"
+		},
+		{
+            "name": "app.payment.processor.cybersource_alipay",
+            "script": "./cartridge/scripts/hooks/payment/processor/cybersource_alipay"
+        },
+		{
+			"name": "app.payment.processor.bank_transfer",
+			"script": "./cartridge/scripts/hooks/payment/processor/bank_transfer"
+		},
+		{
+			"name": "app.payment.processor.klarna_credit",
+			"script": "./cartridge/scripts/hooks/payment/processor/klarna_credit"
+		}
+    ]
+}
