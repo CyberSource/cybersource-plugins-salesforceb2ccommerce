@@ -2,7 +2,7 @@
 
 This is a repository for the Cybersource SFCC Storefront Reference Architecture reference application integration cartridge.
 
-THe Cybersource cartridge has a link cartridge (`int_cybersource_sfra`) provided by Cybersource that is never directly customized or edited. Instead, customization cartridges are layered on top of the base cartridge and this link cartridge. This change is intended to allow for easier adoption of new features and bug fixes.
+THe Cybersource cartridge has a link cartridge (`LINK_cybersource`) provided by Cybersource that is never directly customized or edited. Instead, customization cartridges are layered on top of the base cartridge and this link cartridge. This change is intended to allow for easier adoption of new features and bug fixes.
 
 # Getting Started
 
@@ -24,9 +24,9 @@ THe Cybersource cartridge has a link cartridge (`int_cybersource_sfra`) provided
 }
 ```
 
-6 Run `npm run uploadCartridge` command that would upload `int_cybersource_sfra` cartridge to the sandbox you specified in dw.json file.
+6 Run `npm run uploadCartridge` command that would upload `LINK_cybersource` cartridge to the sandbox you specified in dw.json file.
 
-7 Add the `int_cybersource_sfra` cartridge to your cartridge path.
+7 Add the `LINK_cybersource` cartridge to your cartridge path.
 
 8 You should now be ready to navigate to and use your site.
 

@@ -221,6 +221,84 @@ server.append('SavePayment', csrfProtection.validateAjaxRequest, function (req, 
     return next();
 });
 
+server.prepend('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
+	var URLUtils = require('dw/web/URLUtils');
+	var Resource = require('dw/web/Resource');
+	var Transaction = require('dw/system/Transaction');
+	var Logger = require('dw/system/Logger');
+	var customerProfile = customer.getProfile();
+	var saveCard = cardSaveLimit(customerProfile);
+	if (saveCard.addCardLimitError) {
+		res.json({
+			success: false,
+            message: Resource.msg('error.message.addcard.fail', 'cybersource', null)      
+	    });
+		this.emit('route:Complete', req, res);
+		return;
+	} else {			
+		if (saveCard.addCardLimit && saveCard.savedCCTimeNew) {		
+				Transaction.wrap(function() {
+					customerProfile.custom.savedCCRateLookBack = new Date();
+					customerProfile.custom.savedCCRateCount = 1;
+				});
+		}
+		next();
+	}
+});
+
+function cardSaveLimit(profile) {
+	var addCardLimit = false;
+	var savedCCTimeNew = false;
+	var savedCCTime = false;
+	var addCardLimitError = false;
+	var Site = require('dw/system/Site');
+	var Transaction = require('dw/system/Transaction');
+	var Logger = require('dw/system/Logger');
+	var cyberSourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+	
+	var LimitSavedCardRateEnabled = !empty(cyberSourceHelper.getLimitSavedCardRate())? cyberSourceHelper.getLimitSavedCardRate() : false;
+		
+	if (!LimitSavedCardRateEnabled) {
+		addCardLimit = true;
+	} else {
+			try{
+	        	var SavedCardLimitTimeFrame = !empty(cyberSourceHelper.getSavedCardLimitTimeFrame())? cyberSourceHelper.getSavedCardLimitTimeFrame() : 0;
+	        	var SavedCardLimitCount = !empty(cyberSourceHelper.getSavedCardLimitFrame())? cyberSourceHelper.getSavedCardLimitFrame() : 0;
+	        	
+	        	if ('savedCCRateLookBack' in profile.custom && !empty(profile.custom.savedCCRateLookBack)) {
+					var customerTime =  profile.custom.savedCCRateLookBack;
+	    			var currentTime = new Date();
+	    			var difference = new Date().setTime(Math.abs(currentTime-customerTime));
+	    			var differenceInSec = Math.floor(difference/1000);
+	    			if ( differenceInSec <  SavedCardLimitTimeFrame * 60 * 60) {
+	    				if ('savedCCRateCount' in profile.custom && (profile.custom.savedCCRateCount < SavedCardLimitCount)) {				
+		    				Transaction.wrap(function() {
+        	    				profile.custom.savedCCRateCount = profile.custom.savedCCRateCount + 1;
+            				});	
+    					} else {
+    						addCardLimitError = true;
+    					}
+	    			} else {
+	    				addCardLimit = true;
+	    				savedCCTimeNew = true;				
+	    			}
+				} else {
+					addCardLimit = true; 
+					savedCCTimeNew = true;
+    			}
+			} catch(e) {
+				Logger.error("Error Processed while adding card: ",e.message);
+			}
+	}
+	var result = {
+			addCardLimit: addCardLimit,
+			savedCCTimeNew:savedCCTimeNew,
+			savedCCTime:savedCCTime,
+			addCardLimitError:addCardLimitError			
+        };
+	return result;
+}
+
 server.append('DeletePayment', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
     var array = require('*/cartridge/scripts/util/array');
     var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;

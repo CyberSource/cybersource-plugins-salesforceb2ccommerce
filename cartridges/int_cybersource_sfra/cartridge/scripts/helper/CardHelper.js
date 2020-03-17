@@ -257,7 +257,7 @@ function returnCardType(cardType) {
             case 'jcb':
                 cardTypeNew = '007';
                 break;
-            case 'dinersclub':
+            case 'diners':
                 cardTypeNew = '005';
                 break;
         }
@@ -345,7 +345,7 @@ function getCardType(cardTypeValue) {
             cardType = 'Discover';
             break;
         case '005':
-            cardType = 'DinersClub';
+            cardType = 'Diners';
             break;
         case '042':
             cardType = 'Maestro';

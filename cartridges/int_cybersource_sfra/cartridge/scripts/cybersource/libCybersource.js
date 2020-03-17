@@ -220,6 +220,15 @@ var CybersourceHelper = {
     getCruiseCredentialsName : function (){
         return Site.getCurrent().getCustomPreferenceValue("CruiseMerchantName");   	
     },
+    getLimitSavedCardRate : function () {
+        return Site.getCurrent().getCustomPreferenceValue("LimitSavedCardRate");   	
+    },
+    getSavedCardLimitTimeFrame : function () {
+        return Site.getCurrent().getCustomPreferenceValue("SavedCardLimitTimeFrame");   	
+    },
+    getSavedCardLimitFrame : function () {
+        return Site.getCurrent().getCustomPreferenceValue("SavedCardLimitFrame");   	
+    },
 	/** ***************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.
@@ -493,7 +502,7 @@ var CybersourceHelper = {
         request.paySubscriptionCreateService.disableAutoAuth = 'false';
         request.paySubscriptionCreateService.run = true;
         request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
-        request.decisionManager.enabled = false;
+        request.decisionManager.enabled = true;
     },
 
 	/** ***************************************************************************
@@ -711,7 +720,7 @@ var CybersourceHelper = {
             case 'JCB':
                 request.card.cardType = '007';
                 break;
-            case 'DinersClub':
+            case 'Diners':
                 request.card.cardType = '005';
                 break;
             default:

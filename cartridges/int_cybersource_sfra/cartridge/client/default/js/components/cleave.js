@@ -15,10 +15,9 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
                 discover: 'Discover',
                 maestro: 'Maestro',
                 jcb: 'JCB',
-                dinersclub: 'DinersClub',
+                diners: 'DinersClub',
                 unknown: 'Unknown'
             };
-
             var cardType = creditCardTypes[Object.keys(creditCardTypes).indexOf(type) > -1
                 ? type
                 : 'unknown'];

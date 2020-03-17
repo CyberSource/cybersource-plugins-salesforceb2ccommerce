@@ -691,6 +691,8 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
     	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
     	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)
+    	    			
     	 ) {
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
     	 } else {
@@ -740,6 +742,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
                 || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
                 || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.klarna','cybersource',null)
+                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)
     	 ){
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
     	 } else {
@@ -764,6 +767,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl','cybersource',null)
 	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch','cybersource',null)
 	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.gpy','cybersource',null)
+	    	    			|| paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)
     	 ) {
     		 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
     	 } else {
@@ -844,11 +848,12 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 	}
 	
     if ((handlePaymentResult.authorized || handlePaymentResult.review) && 
-			( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)
-				|| ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null)
-				|| ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)) && !session.privacy.paypalminiCart))) {
-		res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
-        return next();
+            ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay','cybersource',null)
+                || ( paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal','cybersource',null) && !session.privacy.paypalminiCart))
+                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit','cybersource',null)) {
+		              
+              res.redirect(URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
+              return next();
 	}
 
     // Reset usingMultiShip after successful Order placement

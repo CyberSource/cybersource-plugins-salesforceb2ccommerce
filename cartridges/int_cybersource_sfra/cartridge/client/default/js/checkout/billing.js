@@ -252,12 +252,12 @@ base.methods.updatePaymentInformation = function (order, options) {
 		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'CREDIT_CARD'){
 		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order credit_card';
 		}
-	else if(order.billing.payment 
-		&& order.billing.payment.selectedPaymentInstruments
-		&& order.billing.payment.selectedPaymentInstruments.length > 0 
-		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL'){
-			document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order paypal';
-		}
+//	else if(order.billing.payment 
+//		&& order.billing.payment.selectedPaymentInstruments
+//		&& order.billing.payment.selectedPaymentInstruments.length > 0 
+//		&& order.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL'){
+//			document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order paypal';
+//		}
 	else if(!$('.next-step-button .submit-order').hasClass('.place-order')){
 		document.getElementById('submit-order').className = 'btn btn-primary btn-block submit-order place-order';
 	}

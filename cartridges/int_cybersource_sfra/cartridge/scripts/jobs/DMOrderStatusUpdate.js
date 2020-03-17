@@ -35,6 +35,8 @@ function orderStatusUpdate(jobParams) {
         var responseObj = null;
 		
         //  Call conversion report service
+		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+		var CybersourceHelper = libCybersource.getCybersourceHelper();
 		var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
@@ -45,7 +47,7 @@ function orderStatusUpdate(jobParams) {
 		var merchantId = jobParams.MerchantId;
 
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
-        
+
         targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());
