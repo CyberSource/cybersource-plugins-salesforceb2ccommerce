@@ -550,7 +550,7 @@
                           <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                             <config-property key="Transactional" value="false"/>
                             <key-binding alias="PayerAuthEnrollResponseObj" key="From_0"/>
-                            <key-binding alias="CurrentSession.custom.PayerAuthEnrollResponseObj" key="To_0"/>
+                            <key-binding alias="CurrentSession.privacy.PayerAuthEnrollResponseObj" key="To_0"/>
                             <key-binding alias="null" key="From_4"/>
                             <key-binding alias="null" key="From_9"/>
                             <key-binding alias="null" key="To_9"/>
@@ -620,10 +620,10 @@
             <node>
               <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
-                <key-binding alias="CurrentSession.custom.PayerAuthEnrollResponseObj" key="From_0"/>
+                <key-binding alias="CurrentSession.privacy.PayerAuthEnrollResponseObj" key="From_0"/>
                 <key-binding alias="PayerAuthEnrollResponseObj" key="To_0"/>
                 <key-binding alias="null" key="From_1"/>
-                <key-binding alias="CurrentSession.custom.PayerAuthEnrollResponseObj" key="To_1"/>
+                <key-binding alias="CurrentSession.privacy.PayerAuthEnrollResponseObj" key="To_1"/>
                 <key-binding alias="null" key="From_2"/>
                 <key-binding alias="null" key="To_2"/>
                 <key-binding alias="null" key="From_3"/>

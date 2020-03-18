@@ -5,7 +5,7 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var klarnaAdaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
 
 /**

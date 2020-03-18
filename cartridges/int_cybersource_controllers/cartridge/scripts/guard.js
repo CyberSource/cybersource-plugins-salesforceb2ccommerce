@@ -18,7 +18,7 @@
 var CSRFProtection = require('dw/web/CSRFProtection');
 var Resource = require('dw/web/Resource');
 /* API Includes */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var app = require(CybersourceConstants.APP);
 var browsing = require(CybersourceConstants.SG_CONTROLLER+'/cartridge/scripts/util/Browsing');
 

@@ -3,7 +3,7 @@
  * BANK_TRANSFER controller contains all method related to this type of payment instrument
  * @module controllers/BANK_TRANSFER
  */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var bankTransferAdaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
 /**
  * This is where current implementation simply creates a payment method and returns 'success'.

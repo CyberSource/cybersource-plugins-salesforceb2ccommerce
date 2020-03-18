@@ -3,7 +3,7 @@
 <div class="v-checkout-wrapper">
 <isif condition="${pdict.buttonsource!=null && pdict.buttonsource.equals('minicart')}" >
 		<div class="visaCheckoutMiniCartButton">
-			<isif condition="${(session.custom.cyb_CurrentPage!=null) && ( session.custom.cyb_CurrentPage.equals('CybCart') || session.custom.cyb_CurrentPage.equals('CybBilling'))}" >		
+			<isif condition="${(session.privacy.cyb_CurrentPage!=null) && ( session.privacy.cyb_CurrentPage.equals('CybCart') || session.privacy.cyb_CurrentPage.equals('CybBilling'))}" >		
 				<img class="v-button"
 					  alt="Visa Checkout" role="button" tabindex="0"
 					  src="${pdict.VisaCheckoutButtonQueryString}" />

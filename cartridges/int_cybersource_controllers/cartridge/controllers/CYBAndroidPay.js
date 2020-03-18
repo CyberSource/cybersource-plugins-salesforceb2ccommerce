@@ -4,7 +4,7 @@
  *
  * @module controllers/CYBAndroidPay
  */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var guard = require(CybersourceConstants.SG_CONTROLLER+'/cartridge/scripts/guard');
 
 /**

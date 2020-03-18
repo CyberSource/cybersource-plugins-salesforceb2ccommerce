@@ -673,7 +673,7 @@ var CybersourceHelper = {
 		serviceRequest.payerAuthEnrollService.run=true;
 		serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceID;
 		serviceRequest.payerAuthEnrollService.mobilePhone=phoneNumber;
-		serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(session.custom.device);
+		serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(session.privacy.device);
 	},
 	
 	addTestPayerAuthEnrollInfo : function(request : Object, card : Object)
@@ -1106,7 +1106,7 @@ function __setClientData( request, refCode, fingerprint)
 		request.developerID=developerID;
 	}
 	request.clientLibrary='Salesforce Commerce Cloud';
-	request.clientLibraryVersion='19.4.0';
+	request.clientLibraryVersion='19.4.1';
 	request.clientEnvironment='Linux';
 	request.clientApplicationVersion = 'SG';
 	if (fingerprint) {

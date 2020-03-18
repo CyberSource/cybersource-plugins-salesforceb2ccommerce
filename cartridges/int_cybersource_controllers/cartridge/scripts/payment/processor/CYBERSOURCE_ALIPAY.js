@@ -5,7 +5,7 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var Cart = require(CybersourceConstants.SG_CONTROLLER +'/cartridge/scripts/models/CartModel');
 var app = require(CybersourceConstants.APP);
 /**

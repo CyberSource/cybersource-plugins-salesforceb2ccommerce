@@ -7,7 +7,7 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var app = require(CybersourceConstants.APP);
 var Cybersource = require('~/cartridge/scripts/Cybersource');
 
@@ -186,7 +186,7 @@ function cancelfail(args) {
 	if (orderResult.error) {
 		return {carterror : true};
 	} 
-	session.custom.SkipTaxCalculation=false;
+	session.privacy.SkipTaxCalculation=false;
 	var Transaction = require('dw/system/Transaction');
 	var OrderMgr = require('dw/order/OrderMgr');
 	var failResult = Transaction.wrap(function () {

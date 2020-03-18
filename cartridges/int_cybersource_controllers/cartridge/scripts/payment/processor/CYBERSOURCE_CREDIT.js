@@ -4,7 +4,7 @@
  * @module controllers/CYBERSOURCE_CREDIT
  */
 
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants'),
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants'),
 	guard = require(CybersourceConstants.GUARD),
 	secureAcceptanceAdapter =  require(CybersourceConstants.CS_CORE+'/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter'),
 	SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER),

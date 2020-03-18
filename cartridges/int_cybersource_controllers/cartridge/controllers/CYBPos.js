@@ -5,7 +5,7 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var guard = require(CybersourceConstants.GUARD);
 /**
  * Authorizes a payment using a credit card. The payment is authorized by using the POS specific processor

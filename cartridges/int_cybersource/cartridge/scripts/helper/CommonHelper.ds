@@ -648,9 +648,9 @@ function CreateCartStateString(Basket : dw.order.LineItemCtnr)
 	
 	// Check if the cartStateString in session is the same as the newly calculated cartStateString. 
 	// If the strings are the same, then the cart has not changed and tax calculation will be skipped
-	Logger.debug("CartStateStrings: ( {0}----{1} )",session.custom.cartStateString,cartStateString);
-	if( !empty(session.custom.cartStateString) && session.custom.cartStateString === cartStateString && !surcharge){
-		session.custom.SkipTaxCalculation = true;
+	Logger.debug("CartStateStrings: ( {0}----{1} )",session.privacy.cartStateString,cartStateString);
+	if( !empty(session.privacy.cartStateString) && session.privacy.cartStateString === cartStateString && !surcharge){
+		session.privacy.SkipTaxCalculation = true;
 		return {error:true,CartStateString:cartStateString};
 	}
 
@@ -1495,14 +1495,14 @@ function ToHashMap(object) {
 
 // recreating Basket from the order id stored in Session Object
 function reCreateBasket() {
-    if ('isIframe' in session.custom && session.custom.isIframe) {
+    if ('isIframe' in session.privacy && session.privacy.isIframe) {
         var OrderMgr = require('dw/order/OrderMgr');
         var order = OrderMgr.getOrder(session.privacy.order_id);
         var Transaction = require('dw/system/Transaction');
         Transaction.wrap(function () {
             OrderMgr.failOrder(order, true); 
         });
-        session.custom.isIframe = false;
+        session.privacy.isIframe = false;
     }
 }
  

@@ -5,7 +5,7 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var guard = require(CybersourceConstants.UNIT_TEST_GUARD);
 var app = require(CybersourceConstants.APP);
 var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT+'unittesting/facade/TestFacade');
@@ -109,7 +109,7 @@ function TestPA(args) {
 				app.getView({PAResponse:paResponse, PAVResponse:''}).render('services/PATestResult');
 				return;
 			} else {
-				session.custom.PayerAuthEnrollResponseObj = paResponse;
+				session.privacy.PayerAuthEnrollResponseObj = paResponse;
 				app.getView({
 					AcsURL:paResponse.AcsURL,
 					PAReq:paResponse.PAReq
@@ -118,8 +118,8 @@ function TestPA(args) {
 			}
 		}
 	} else {
-		var PayerAuthEnrollResponseObj = session.custom.PayerAuthEnrollResponseObj;
-		session.custom.PayerAuthEnrollResponseObj = "";
+		var PayerAuthEnrollResponseObj = session.privacy.PayerAuthEnrollResponseObj;
+		session.privacy.PayerAuthEnrollResponseObj = "";
 		if (empty(PayerAuthEnrollResponseObj)) {
 			PayerAuthEnrollResponseObj = "";
 		}

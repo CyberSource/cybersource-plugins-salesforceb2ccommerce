@@ -21,12 +21,12 @@ function calculateTaxes(cart){
 		result = CommonHelper.CreateCartStateString(cart);
 		if (result.success && !empty(result.CartStateString)) {
 			cartStateString = result.CartStateString;
-			if (empty(session.custom.SkipTaxCalculation)||!session.custom.SkipTaxCalculation) {
+			if (empty(session.privacy.SkipTaxCalculation)||!session.privacy.SkipTaxCalculation) {
 				var TaxFacade = require('~/cartridge/scripts/tax/facade/TaxFacade');
 				taxationResponse = TaxFacade.TaxationRequest(cart);
 				if (taxationResponse.success && taxationResponse.response !== null) {
-					session.custom.cartStateString = cartStateString;
-					session.custom.SkipTaxCalculation = true;
+					session.privacy.cartStateString = cartStateString;
+					session.privacy.SkipTaxCalculation = true;
 					return {success: true};	
 				}
 				return {error: true};
@@ -37,7 +37,7 @@ function calculateTaxes(cart){
 		}
 	}
 	CommonHelper.UpdateTaxForGiftCertificate(cart);
-	session.custom.SkipTaxCalculation = false;//update tax for gift certificate call
+	session.privacy.SkipTaxCalculation = false;//update tax for gift certificate call
 	return {success: true};
 }
 

@@ -2,7 +2,7 @@
 /* API Includes */
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Transaction = require('dw/system/Transaction');
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
 /**
  * Verifies a credit card against a valid card number and expiration date and

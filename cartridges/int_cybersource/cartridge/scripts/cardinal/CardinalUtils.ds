@@ -11,14 +11,14 @@ function getOrderObject(Basket : dw.order.LineItemCtnr,creditCardForm){
 		return {error:true};
 	}
 	
-	var OrderObject = require('int_cybersource/cartridge/scripts/cardinal/OrderObject');
-	var ConsumerObject = require('int_cybersource/cartridge/scripts/cardinal/ConsumerObject');
-	var AddressObject = require('int_cybersource/cartridge/scripts/cardinal/Billing_Shipping_AddressObject');
-	var AccountObject = require('int_cybersource/cartridge/scripts/cardinal/AccountObject');
-	var TokenObject = require('int_cybersource/cartridge/scripts/cardinal/TokenObject');
-	var OrderDetailsObject = require('int_cybersource/cartridge/scripts/cardinal/OrderDetailsObject');
-	var CartItemObject = require('int_cybersource/cartridge/scripts/cardinal/CartItemObject');
-	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var OrderObject = require('*/cartridge/scripts/cardinal/OrderObject');
+	var ConsumerObject = require('*/cartridge/scripts/cardinal/ConsumerObject');
+	var AddressObject = require('*/cartridge/scripts/cardinal/Billing_Shipping_AddressObject');
+	var AccountObject = require('*/cartridge/scripts/cardinal/AccountObject');
+	var TokenObject = require('*/cartridge/scripts/cardinal/TokenObject');
+	var OrderDetailsObject = require('*/cartridge/scripts/cardinal/OrderDetailsObject');
+	var CartItemObject = require('*/cartridge/scripts/cardinal/CartItemObject');
+	var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 	
 	var orderObject = new OrderObject;
 	var consumerObject = new ConsumerObject;

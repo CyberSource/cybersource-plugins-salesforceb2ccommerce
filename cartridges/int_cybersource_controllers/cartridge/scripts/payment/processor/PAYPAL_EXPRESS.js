@@ -3,7 +3,7 @@
 /* API Includes */
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Transaction = require('dw/system/Transaction');
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
 /**
  * This is where additional PayPal integration would go. The current implementation simply creates a PaymentInstrument and

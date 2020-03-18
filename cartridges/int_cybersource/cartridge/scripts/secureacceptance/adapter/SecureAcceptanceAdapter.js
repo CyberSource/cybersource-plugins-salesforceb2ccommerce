@@ -69,7 +69,7 @@ function OpenIframe(currentOrderNo)
 		if (null !== order && null !== paymentInstrument) {
 			var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 			var subscriptionToken = CommonHelper.GetSubscriptionToken( cardUUID, customer);
-			session.custom.isIframe = true;
+			session.privacy.isIframe = true;
 			saRequest = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument,order,null,subscriptionToken);
 			if (saRequest.success && saRequest.requestData !== null) {
 				returnObject.data = saRequest.requestData;
@@ -177,7 +177,7 @@ function SAIframeResponse(responseObject,order){
 				orderPlacementStatus = Transaction.wrap(function(){
 					var statusOrder =OrderMgr.placeOrder(order) ;
 					if (Status.ERROR === statusOrder) {
-						session.custom.SkipTaxCalculation=false;
+						session.privacy.SkipTaxCalculation=false;
 			            OrderMgr.failOrder(order);
 			            return false;
 					}else{

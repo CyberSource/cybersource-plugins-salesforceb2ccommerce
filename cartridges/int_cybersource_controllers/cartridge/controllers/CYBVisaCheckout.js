@@ -9,7 +9,7 @@
 /* API Includes */
 var logger = dw.system.Logger.getLogger('Cybersource');
 var Transaction = require('dw/system/Transaction');
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/helper/VisaCheckoutHelper');
 var VisaCheckoutAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'visacheckout/adaptor/VisaCheckoutAdaptor');
 var guard = require(CybersourceConstants.GUARD);
@@ -47,8 +47,8 @@ function visaCheckoutError() {
 	var cart = app.getModel('Cart').get();
 	//basket uuid check for security handling
 	if (empty(cart.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
-		session.custom.SkipTaxCalculation=false;
-		session.custom.cartStateString=null;
+		session.privacy.SkipTaxCalculation=false;
+		session.privacy.cartStateString=null;
 		var VInitFormattedString='';
 		var signature='';
 		var result = VisaCheckoutHelper.Initialize();

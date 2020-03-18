@@ -3,7 +3,8 @@
 /*
 	This line has to be updated to reference checkoutHelpers.js from the site cartridge's checkoutHelpers.js
 */
-var base = require('app_storefront_base/cartridge/scripts/checkout/checkoutHelpers');
+
+var base = module.superModule;
 var renderTemplateHelper = require('*/cartridge/scripts/renderTemplateHelper');
 
 /**

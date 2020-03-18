@@ -1,4 +1,4 @@
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants'),
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants'),
 	guard = require(CybersourceConstants.GUARD),
 	app = require(CybersourceConstants.APP);
 /**
