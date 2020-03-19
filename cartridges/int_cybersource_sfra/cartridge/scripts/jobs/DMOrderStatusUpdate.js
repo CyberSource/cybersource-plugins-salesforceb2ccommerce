@@ -35,8 +35,6 @@ function orderStatusUpdate(jobParams) {
         var responseObj = null;
 		
         //  Call conversion report service
-		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-		var CybersourceHelper = libCybersource.getCybersourceHelper();
 		var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
