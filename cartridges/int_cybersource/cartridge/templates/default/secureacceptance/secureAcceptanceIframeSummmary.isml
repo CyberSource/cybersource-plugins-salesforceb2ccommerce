@@ -6,6 +6,7 @@ TEMPLATENAME: secureAcceptanceIframeSummary.isml
  </isscript>
 
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+
 <isif condition="${empty(pdict.Basket)}">
 	<isreportcheckout checkoutstep="${6}" checkoutname="${'OrderPay'}"/>
 	<div class="form-row">

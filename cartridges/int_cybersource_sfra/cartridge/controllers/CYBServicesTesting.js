@@ -11,6 +11,7 @@ var URLUtils = require('dw/web/URLUtils');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
 var TestHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/helper/TestHelper');
+var UnitTestHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/helper/UnitTestHelper');
 
 
 /**
@@ -27,6 +28,76 @@ server.get('Index', server.middleware.https, function (req, res, next) {
     res.render('services/services');
     next();
 });
+
+
+/**
+ * Page displays results for all unit test cases executed in series
+ */
+server.get('RunTests', server.middleware.https, function (req, res, next) {
+
+        //  When in production, Redirect to home page.
+    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+        res.redirect(URLUtils.url('Home-Show'));
+        return next();
+    }
+    var ResultsArray = new Array();  
+	var paymentType = "CC";
+	var currency = "USD";
+	var requestID, merchantRefCode,paymentTotal;
+	
+   // Unit test CC Auth
+    var TestCCAuth1 = UnitTestHelper.TestCCAuth();
+    ResultsArray.push(TestCCAuth1);
+
+    
+	// Unit test CC capture
+    
+    if(TestCCAuth1.success) {
+	     requestID = TestCCAuth1.response.RequestID;
+		 merchantRefCode = TestCCAuth1.response.MerchantReferenceCode;
+		 paymentTotal = TestCCAuth1.response.AuthorizationAmount;
+		
+	     var TestCCCapture1 = UnitTestHelper.TestCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+	     ResultsArray.push(TestCCCapture1);
+	    
+	    
+	    // Unit test CC Credit
+	    requestID = TestCCCapture1.response.requestID;
+	    var TestCCCredit = UnitTestHelper.TestCreditService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+	    ResultsArray.push(TestCCCredit);
+				    
+	    
+	    // Unit test CC Auth for Reversal
+	    var TestCCAuth2 = UnitTestHelper.TestCCAuth();
+	    requestID = TestCCAuth2.response.RequestID;
+		merchantRefCode = TestCCAuth2.response.MerchantReferenceCode;
+		paymentTotal = TestCCAuth2.response.AuthorizationAmount;
+		
+		//Unit test CC auth Reverse
+	    var TestCCAuthReverse = UnitTestHelper.TestAuthReversal(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+	    ResultsArray.push(TestCCAuthReverse);
+    
+    }
+    
+    //Unit test for taxation service
+    var taxResponse = UnitTestHelper.TestTax();
+    ResultsArray.push(taxResponse);
+    
+    // Unit test for check status service
+    // Provide a valid order number
+    var checkStatusResponse = UnitTestHelper.TestCheckStatusService('00257201');
+    ResultsArray.push(checkStatusResponse);
+    
+    
+    //Render consolidated response of all services
+    res.render('services/UnitTestResults', {
+        TestResults: ResultsArray
+    });
+    
+    
+    next();
+});
+
 
 
 /**
@@ -62,7 +133,7 @@ server.get('TestCCAuth', server.middleware.https, function (req, res, next) {
                             CCAuthResponse: result.serviceResponse
                         });
                         next();
-                    }
+                    }	
                 }
             }
         }

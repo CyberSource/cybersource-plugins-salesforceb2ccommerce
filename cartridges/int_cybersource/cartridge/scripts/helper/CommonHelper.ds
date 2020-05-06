@@ -1279,27 +1279,22 @@ function addAddressToCart(lineItemCntr,responseObj,overrideShipping){
 	if(empty(billingAddress)){
 		billingAddress = lineItemCntr.createBillingAddress();
 	}
-	if(!empty(billTo.street1) && !empty(billTo.city) && !empty(billTo.state) 
-		&& !empty(billTo.postalCode) && !empty(billTo.country)){
-	    billingAddress.setFirstName(billTo.firstName);
-		billingAddress.setLastName(billTo.lastName) 
-	    billingAddress.setAddress1( billTo.street1 );
-		billingAddress.setAddress2( billTo.street2 );
-		billingAddress.setCity( billTo.city);
-		billingAddress.setPostalCode( billTo.postalCode);
-		billingAddress.setCountryCode( billTo.country);
-		billingAddress.setStateCode( billTo.state);
-		lineItemCntr.setCustomerEmail(billTo.email);		
-	}else{
-		billingAddress.setFirstName ( billTo.firstName);
-		billingAddress.setLastName   ( billTo.lastName );
-		billingAddress.setAddress1   ( "1295 Charleston Rd" );
-		billingAddress.setAddress2    ( "" );
-		billingAddress.setCity       ( "Mountain View" );
-		billingAddress.setStateCode      ( "CA" );
-		billingAddress.setPostalCode ( "94043" );
-		billingAddress.setCountryCode    ( "US" );
-		billingAddress.setPhone( "" );
+	if(billAddressExistsInBasket(lineItemCntr)) {
+		if(!empty(billTo.email)) {
+			lineItemCntr.setCustomerEmail(billTo.email);
+		}
+	}
+	else {
+			billingAddress.setFirstName(billTo.firstName);
+        	billingAddress.setLastName(billTo.lastName);
+        	billingAddress.setAddress1(billTo.street1);
+        	billingAddress.setAddress2(billTo.street2);
+        	billingAddress.setCity(billTo.city);
+        	billingAddress.setPostalCode(billTo.postalCode);
+        	billingAddress.setCountryCode(billTo.country);
+        	billingAddress.setStateCode(billTo.state);
+        	lineItemCntr.setCustomerEmail(billTo.email);
+        	billingAddress.setPhone(billTo.phoneNumber);
 	}
 	var defaultShipment, shippingAddress;
         defaultShipment = lineItemCntr.getDefaultShipment();
@@ -1318,6 +1313,18 @@ function addAddressToCart(lineItemCntr,responseObj,overrideShipping){
 			shippingAddress.setCountryCode( shipTo.country);
 			shippingAddress.setStateCode( shipTo.state);
   		}
+}
+
+function billAddressExistsInBasket(lineItemCntr) {
+	var billingAddress = lineItemCntr.getBillingAddress();
+    if (empty(billingAddress)) {
+        return false;
+    } else if(!empty(billingAddress.firstName) && !empty(billingAddress.lastName) && !empty(billingAddress.address1)
+    		&& !empty(billingAddress.city) && !empty(billingAddress.postalCode) && !empty(billingAddress.countryCode)
+    		&& !empty(billingAddress.stateCode) && !empty(billingAddress.phone)) {
+        return true;	
+    }
+    return false;
 }
 /**
 * Log response based on reason code

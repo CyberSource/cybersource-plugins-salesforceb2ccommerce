@@ -415,8 +415,8 @@ function TestTax(cart) {
     var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
     serviceResponse = TaxFacade.TaxationRequest(cart);
 
-    if (empty(serviceResponse) || serviceResponse.error) {
-        return { error: true, errorMsg: "empty or error in test ccauth response: " + serviceResponse };
+    if (empty(serviceResponse) || serviceResponse.error || empty(serviceResponse.response)) {
+        return { success: false, error: true, errorMsg: "empty or error in test ccauth response: " + serviceResponse };
     }
     serviceResponse = serviceResponse.response.response;
 

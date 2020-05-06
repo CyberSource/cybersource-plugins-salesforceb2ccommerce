@@ -37,6 +37,9 @@
 
         <iselseif condition="${payment.paymentMethod === 'EPS'}">
             <isinclude template="checkout/billing/paymentOptions/bankTransferSummary" />
+
+            <iselseif condition="${payment.paymentMethod === 'WECHAT'}">
+            <isinclude template="checkout/billing/paymentOptions/weChatSummary" />
         </isif>
 
     </isloop>

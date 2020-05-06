@@ -29,7 +29,7 @@ function CheckPaymentStatusRequest(Order)
 	//set alipay payment type to pass it as input in request
 	var request = new csReference.RequestMessage();
 	//call alipay check status service by passing required input parameters
-	CybersourceHelper.apCheckStatusService(request,orderNo,requestID,paymentType);
+	CybersourceHelper.apCheckStatusService(request,orderNo,requestID,paymentType,null);
 	
 	var serviceResponse = null;
 	//get the response in response object

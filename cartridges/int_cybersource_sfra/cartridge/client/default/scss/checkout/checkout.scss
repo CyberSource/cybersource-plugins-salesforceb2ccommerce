@@ -2,6 +2,23 @@
 @import "../components/creditCardField";
 @import "bootstrap/scss/mixins/breakpoints";
 
+#weChatModal{
+    
+    .modal-dialog{
+        display: block;
+        background-color: #fff;
+        z-index: 9999;
+        display: block;
+    }
+    .modal-body{
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif;
+    }
+    .modal-backdrop{
+        opacity: 0.5;
+        z-index: 1;
+    }
+}
+
 #deliveryAddressVerificationModal{
    .modal-dialog{
        background-color: #fff;
@@ -107,7 +124,7 @@
     }
 	
 	&[data-checkout-stage] {
-        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay {
+        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
             display: none;
         }
     }
@@ -155,7 +172,7 @@
     }
     
     &[data-checkout-stage=payment] {
-        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay {
+        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
             display: none;
         }
     }
@@ -216,7 +233,7 @@
     }
     
     &[data-checkout-stage=placeOrder] {
-       button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay {
+       button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
             display: block;
         }
     }

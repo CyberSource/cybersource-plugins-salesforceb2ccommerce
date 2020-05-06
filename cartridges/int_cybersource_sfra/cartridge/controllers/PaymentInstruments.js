@@ -131,6 +131,7 @@ server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, fu
         var migrateCard = require('*/cartridge/scripts/helper/migrateOldCardToken');
         migrateCard.MigrateOldCardToken(paymentInstruments);
     }
+    res.CONTENT_SECURITY_POLICY = "default-src 'self'";
     res.render('account/payment/payment', {
         paymentInstruments: AccountModel.getCustomerPaymentInstruments(
             req.currentCustomer.wallet.paymentInstruments

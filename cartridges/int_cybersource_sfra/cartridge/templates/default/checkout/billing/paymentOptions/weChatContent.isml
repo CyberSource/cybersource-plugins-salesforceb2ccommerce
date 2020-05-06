@@ -1,0 +1,5 @@
+<iscomment> <div class="tab-pane wechat-content" id="wechat-content" role="tabpanel">
+    <a class="nav-link credit-card-tab" data-toggle="tab" href="#credit-card-content" role="tab">
+        ${paymentOption.name}
+    </a>
+</div> </iscomment>

@@ -5,7 +5,7 @@ TEMPLATENAME: secureAcceptanceIframeSummary.isml
 	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
  </isscript>
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
-<script src="${URLUtils.staticURL('/custom/js/cybersource-custom.js')}"></script>	
+<script src="${URLUtils.staticURL('/custom/cybersource-custom.js')}"></script>	
 
 <isif condition="${empty(pdict.Basket)}">
 	<isreportcheckout checkoutstep="${6}" checkoutname="${'OrderPay'}"/>

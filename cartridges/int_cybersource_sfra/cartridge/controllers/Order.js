@@ -5,6 +5,7 @@ var server = require('server');
 
 server.extend(page);
 
+
 server.append('Confirm', function (req, res, next) {
     var OrderMgr = require('dw/order/OrderMgr');
     var Resource = require('dw/web/Resource');

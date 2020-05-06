@@ -297,7 +297,7 @@ function createTaxRequest() {
 
     });
 
-    return responseObject.serviceResponse;
+    return responseObject;
 
 
 }

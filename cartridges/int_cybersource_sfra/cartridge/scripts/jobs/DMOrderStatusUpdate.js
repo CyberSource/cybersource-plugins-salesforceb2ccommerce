@@ -45,7 +45,6 @@ function orderStatusUpdate(jobParams) {
 		var merchantId = jobParams.MerchantId;
 
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
-
         targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());

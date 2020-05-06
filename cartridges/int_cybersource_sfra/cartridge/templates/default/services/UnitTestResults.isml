@@ -1,0 +1,68 @@
+<iscomment>
+	This template will populate the Unit Test result of CCAuth
+</iscomment>
+<!--  UI -->
+
+ <isloop iterator="${pdict.TestResults}" var="TestResult">
+ 	<br><br> 
+ 	<div>
+	 	<b>${TestResult.type}: 
+		 	<isif condition="${TestResult.success}">
+		 		<span style='color:green'>Success</span>
+		 	<iselse>
+		 		<span style='color:red'>Failed</span><br/>
+		 		${TestResult.response}
+		 	</isif>
+	 	</b> 
+	</div>
+ 	<br/>
+ 	 
+ 	<isif condition="${TestResult.type=='CC Auth'}">		 
+		Reason Code: <isprint value="${TestResult.response.ReasonCode}"><br>
+		Decision: <isprint value="${TestResult.response.Decision}"><br>
+		Auth Code: <isprint value="${TestResult.response.AuthorizationCode}"><br>
+	<iselseif condition="${TestResult.type=='CC Capture'}">
+		${Resource.msg('test.decision','cybersource',null)}: <isprint value="${TestResult.response.decision}"><br>
+		Reason Code: <isprint value="${TestResult.response.reasonCode}"><br>
+		Decision: <isprint value="${TestResult.response.decision}"><br>
+		Request Id: <isprint value="${TestResult.response.requestID}"><br>
+		ReconciliationID: <isprint value="${TestResult.response.ccCaptureReply.reconciliationID}"><br>
+		Captured Amount: <isprint value="${TestResult.response.ccCaptureReply.amount}"><br>
+	<iselseif condition="${TestResult.type=='CC Credit'}">
+		${Resource.msg('test.decision','cybersource',null)}: <isprint value="${TestResult.response.decision}"><br>
+		Reason Code: <isprint value="${TestResult.response.reasonCode}"><br>
+		Decision: <isprint value="${TestResult.response.decision}"><br>
+		Request Id: <isprint value="${TestResult.response.requestID}"><br>
+		ReconciliationID: <isprint value="${TestResult.response.ccCreditReply.reconciliationID}"><br>
+		Credit Amount: <isprint value="${TestResult.response.ccCreditReply.amount}"><br>
+	<iselseif condition="${TestResult.type=='CC Auth Reverse'}">
+		${Resource.msg('test.decision','cybersource',null)}: <isprint value="${TestResult.response.decision}"><br>
+		Reason Code: <isprint value="${TestResult.response.reasonCode}"><br>
+		Decision: <isprint value="${TestResult.response.decision}"><br>
+		Request Id: <isprint value="${TestResult.response.requestID}"><br>
+	<iselseif condition="${TestResult.type=='Taxation'}">
+		${Resource.msg('test.decision','cybersource',null)}: <isprint value="${TestResult.response.Decision}"><br>
+		Reason Code: <isprint value="${TestResult.response.ReasonCode}"><br>
+		Request Id: <isprint value="${TestResult.response.RequestID}"><br>
+		<ul>
+			<li>${Resource.msg('test.totcitytax','cybersource',null)} ${new dw.value.Money(TestResult.response.TaxReply.totalCityTaxAmount,"USD")}</li>
+			<li>${Resource.msg('test.totcountytax','cybersource',null)} ${new dw.value.Money(TestResult.response.TaxReply.totalCountyTaxAmount,"USD")}</li>
+			<li>${Resource.msg('test.totstattax','cybersource',null)} ${new dw.value.Money(TestResult.response.TaxReply.totalStateTaxAmount,"USD")}</li>
+			<li>${Resource.msg('test.totsplttax','cybersource',null)} ${new dw.value.Money(TestResult.response.TaxReply.totalSpecialTaxAmount,"USD")}</li>
+		</ul>
+		<p>${Resource.msg('test.itemsubtotal','cybersource',null)}
+ 			${new dw.value.Money(TestResult.response.TaxReply.grandTotalAmount-TestResult.response.TaxReply.totalTaxAmount,"USD")}
+		</p>
+		
+		<h4>${Resource.msg('test.taxbreakdown','cybersource',null)}</h4>
+		<p>${Resource.msg('test.tottax','cybersource',null)} ${new dw.value.Money(TestResult.response.TaxReply.totalTaxAmount,"USD")}</p>
+
+		<p>${Resource.msg('test.grandtotal','cybersource',null)} ${new dw.value.Money(TestResult.response.TaxReply.grandTotalAmount,"USD")}</p>
+
+	<iselseif condition="${TestResult.type=='Check payment Status'}">
+		<isif condition="${TestResult.success==false}"><isprint value="${TestResult.response}"><br></isif>
+		Decision: <isprint value="${TestResult.response.decision}"><br>
+		Reason Code: <isprint value="${TestResult.response.reasonCode}"><br>
+		Request Id: <isprint value="${TestResult.response.requestID}"><br>
+	</isif>
+</isloop>

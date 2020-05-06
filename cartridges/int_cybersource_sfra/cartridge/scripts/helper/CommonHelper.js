@@ -4,6 +4,7 @@ var Logger = require('dw/system/Logger').getLogger('Cybersource');
 var Site = require('dw/system/Site');
 var StringUtils = require('dw/util/StringUtils');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+
 /**
  * Sets the purchasable item amount, does not includes the gift card amount.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
@@ -408,7 +409,7 @@ function setKlarnaTaxAmount(itemObject, taxvalue, locale) {
  * Set total amount for Bank Transfer and Klarna
  */
 function setTotalAmount(processor, itemObject, lineItemValue, locale) {
-    if (CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(processor) || CybersourceConstants.KLARNA_PROCESSOR.equals(processor)) {
+    if (CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(processor) || CybersourceConstants.KLARNA_PROCESSOR.equals(processor) || CybersourceConstants.WECHAT_PROCESSOR.equals(processor)) {
         itemObject.setTotalAmount(StringUtils.formatNumber(lineItemValue, '000000.00', locale));
     }
     return;

@@ -72,9 +72,13 @@ function getDigest(digestString)  {
 function getTime() {
 	var Calendar = require('dw/util/Calendar');
 	var StringUtils = require('dw/util/StringUtils');
+	var Site = require('dw/system/Site');
+
+	var dateLocale = Site.getCurrent().getCustomPreferenceValue("SA_Flex_DateLocale");
 
 	try {
-        var date = StringUtils.formatCalendar(new dw.util.Calendar(), 'en_US', Calendar.LONG_DATE_PATTERN);
+		var date = (request.locale.indexOf('en_') !== -1) ? StringUtils.formatCalendar(new dw.util.Calendar(), "EEE, dd MMM yyyy HH:mm:ss z") :  
+											StringUtils.formatCalendar(new dw.util.Calendar(), (dateLocale ? dateLocale : 'en_US'), Calendar.LONG_DATE_PATTERN);
 		return date;
 	} catch (exception) {
         Logger.error('Error in Secure acceptance create request data' + exception.message);

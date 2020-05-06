@@ -3,6 +3,7 @@
 var path = require('path');
 var ExtractTextPlugin = require('sgmf-scripts')['extract-text-webpack-plugin'];
 var sgmfScripts = require('sgmf-scripts');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = [{
     mode: 'production',
@@ -11,7 +12,14 @@ module.exports = [{
     output: {
         path: path.resolve('./cartridges/int_cybersource_sfra/cartridge/static'),
         filename: '[name].js'
-    }
+    },
+    plugins: [
+        new CopyPlugin([{
+                from: path.resolve('./cartridges/int_cybersource_sfra/cartridge/client/default/custom'),
+                to: path.resolve('./cartridges/int_cybersource_sfra/cartridge/static/default/custom')
+            }
+        ])
+    ]
 }, {
     mode: 'none',
     name: 'scss',
@@ -55,6 +63,10 @@ module.exports = [{
         }]
     },
     plugins: [
-        new ExtractTextPlugin({ filename: '[name].css' })
+        new ExtractTextPlugin({ filename: '[name].css' }),
+        new CopyPlugin([{
+                from: path.resolve('./cartridges/int_cybersource_sfra/cartridge/client/default/images'),
+                to: path.resolve('./cartridges/int_cybersource_sfra/cartridge/static/default/images')
+            }])
     ]
 }];

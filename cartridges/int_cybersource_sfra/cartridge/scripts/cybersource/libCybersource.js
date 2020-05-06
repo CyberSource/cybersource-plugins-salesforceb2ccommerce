@@ -44,7 +44,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return '6T5WKACW';
+        return 'Q1L6Z6NK';
     },
 
     getDeveloperID: function () {
@@ -163,6 +163,9 @@ var CybersourceHelper = {
     getTestAlipayReconciliationID: function () {
         return Site.getCurrent().getCustomPreferenceValue('apTestReconciliationID');
     },
+    getTestWeChatReconciliationID: function () {
+        return Site.getCurrent().getCustomPreferenceValue('apTestWeChatReconciliationID');
+    },
     getPaypalSandboxUrl: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsPaypalSandboxURL');
     },
@@ -228,6 +231,15 @@ var CybersourceHelper = {
     },
     getSavedCardLimitFrame : function () {
         return Site.getCurrent().getCustomPreferenceValue("SavedCardLimitFrame");   	
+    },
+    getTransactionTimeOut : function () {
+    	return Site.getCurrent().getCustomPreferenceValue("WeChatTransactionTimeout");   	
+    },
+     getNumofCheckStatusCalls : function () {
+    	return Site.getCurrent().getCustomPreferenceValue("NumofCheckStatusCalls");   	
+    },
+     getServiceCallInterval : function () {
+    	return Site.getCurrent().getCustomPreferenceValue("CheckStatusServiceInterval");   	
     },
 	/** ***************************************************************************
 	 * Name: getNexus
@@ -1007,11 +1019,11 @@ var CybersourceHelper = {
 	 * Description: Returns Alipay token, Payment Status, Set Request id and Request Token.
 	 * param : request, orderNo , requestID, alipayPaymentType
 	 ****************************************************************************/
-    apCheckStatusService: function (request, orderNo, requestID, paymentType) {
+    apCheckStatusService: function (request, orderNo, requestID, paymentType, reconciliationID) {
         request.merchantID = CybersourceHelper.getMerchantID();
         __setClientData(request, orderNo);
         request.apPaymentType = paymentType;
-
+         var endpoint = CybersourceHelper.getEndpoint();
         var apCheckStatusService = new CybersourceHelper.csReference.APCheckStatusService();
 
         switch (paymentType) {
@@ -1021,6 +1033,12 @@ var CybersourceHelper = {
                 break;
             case 'PPL':
                 apCheckStatusService.sessionsRequestID = requestID;
+                break;
+            case 'WQR':
+                apCheckStatusService.apInitiateRequestID = requestID;
+                if (endpoint.equals('Test') && reconciliationID!='SETTLED'){
+                    apCheckStatusService.reconciliationID = reconciliationID;
+                }
                 break;
             default:
                 apCheckStatusService.checkStatusRequestID = requestID;
@@ -1181,7 +1199,7 @@ function __setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '19.4.1';
+    request.clientLibraryVersion = '19.5.0';
     request.clientEnvironment = 'Linux';
     request.partnerSDKversion =  Resource.msg('global.version.number','version',null);
     request.clientApplicationVersion = 'SFRA';

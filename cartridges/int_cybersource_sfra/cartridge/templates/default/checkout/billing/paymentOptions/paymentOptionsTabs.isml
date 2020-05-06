@@ -43,6 +43,9 @@
         
     <iselseif condition="${paymentOption.ID === 'KLARNA'}">
         <isinclude template="checkout/billing/paymentOptions/klarnaTab" />
+
+     <iselseif condition="${paymentOption.ID === 'WECHAT'}">
+        <isinclude template="checkout/billing/paymentOptions/weChatTab" />
     </isif>
 
 </isloop>

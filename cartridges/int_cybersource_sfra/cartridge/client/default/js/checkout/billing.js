@@ -13,7 +13,7 @@ base.paymentTabs = function () {
     $('.payment-options .nav-item').on('click', function (e) {
         e.preventDefault();
         var methodID = $(this).data('method-id');
-        var paymentMethodIds = [ 'ALIPAY', 'SOF', 'IDL', 'MCH', 'GPY', 'EPS', 'BANK_TRANSFER'];
+        var paymentMethodIds = [ 'ALIPAY', 'SOF', 'IDL', 'MCH', 'GPY', 'EPS', 'BANK_TRANSFER', 'WECHAT'];
         var paymentMethod = $.inArray(methodID, paymentMethodIds) > -1
         $('.payment-information').data('payment-method-id', methodID);
         $('input[name*="billing_paymentMethod"]').val(methodID);

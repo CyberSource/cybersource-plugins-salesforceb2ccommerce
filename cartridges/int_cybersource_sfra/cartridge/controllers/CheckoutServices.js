@@ -132,7 +132,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 			logger.info("Flex response has no value when submitting payment");
 		}
 	}
-	if(((paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) && (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) || CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null)))) || paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null)) {	    
+	if(((paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) && (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) || CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null)))) || paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null) || paymentMethodID == Resource.msg('paymentmethodname.wechat','cybersource',null)) {	    
 	    var SAForm = new Object();
 		    SAForm.paymentMethod = paymentForm.paymentMethod;
 		    SAForm.email = paymentForm.creditCardFields.email;
@@ -161,6 +161,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 		delete paymentForm.giropayBic;
 		delete paymentForm.bankListSelection;
 	}
+
     // verify billing form data
     billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
     if('paypalBillingFields' in paymentForm)
@@ -176,7 +177,8 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	    		}  else if ((paymentMethodID == Resource.msg('paymentmethodname.creditcard','cybersource',null) 
 	    				&& (CsSAType == Resource.msg('cssatype.SA_REDIRECT','cybersource',null) 
 	    				|| CsSAType == Resource.msg('cssatype.SA_IFRAME','cybersource',null))) 
-	    				|| paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null)) {
+						|| paymentMethodID == Resource.msg('paymentmethodname.alipay','cybersource',null)
+						|| paymentMethodID == Resource.msg('paymentmethodname.wechat','cybersource',null)) {
 	    		// verify payment method, email and phone
 	    			creditCardErrors = COHelpers.validateCreditCard(SAForm);
 	    		} else if (paymentMethodID == Resource.msg('paymentmethodname.idl','cybersource',null) ||
@@ -272,8 +274,8 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	            var Locale = require('dw/util/Locale');
 	            var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 	            var currentBasket = BasketMgr.getCurrentBasket();
-	            var billingData = res.getViewData();
-	
+				var billingData = res.getViewData();
+				
 	            if (!currentBasket) {
 	                delete billingData.paymentInformation;
 	
@@ -296,6 +298,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	            billingForm.creditCardFields.securityCode.htmlValue = '';
 	
 	            Transaction.wrap(function () {
+					var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 	                if (!billingAddress) {
 	                    billingAddress = currentBasket.createBillingAddress();
 	                }
@@ -310,7 +313,6 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	                    billingAddress.setStateCode(billingData.address.stateCode.value);
 	                }
 	                billingAddress.setCountryCode(billingData.address.countryCode.value);
-	
 	                if (billingData.storedPaymentUUID) {
 	                    billingAddress.setPhone(req.currentCustomer.profile.phone);
 	                    currentBasket.setCustomerEmail(req.currentCustomer.profile.email);
@@ -318,7 +320,7 @@ server.replace('SubmitPayment', server.middleware.https, function (req, res, nex
 	                else if(currentBasket.customerEmail && paymentMethodID == Resource.msg('paymentmethodname.klarna','cybersource',null))
 	                {
 	                	billingAddress.setPhone(billingData.phone.value);
-	                }
+					} 
 	                else {
 	                    billingAddress.setPhone(billingData.phone.value);
 	                    currentBasket.setCustomerEmail(billingData.email.value);
@@ -549,6 +551,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     var URLUtils = require('dw/web/URLUtils');
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
 	var Site = require('dw/system/Site');
+	var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 	var paramMap = request.httpParameterMap;
 	var DFReferenceId;
@@ -794,7 +797,18 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
 		res.redirect(URLUtils.url('CheckoutServices-PayerAuthentication'));
 		
         return next();
-    }
+	}
+	else if (handlePaymentResult.processWeChat){
+		res.render('checkout/confirmation/weChatConfirmation', {
+			paymentResult: handlePaymentResult,
+			weChatQRCode: handlePaymentResult.WeChatMerchantURL,
+			orderNo: order.orderNo,
+			order: order,
+			noOfCalls : CybersourceHelper.getNumofCheckStatusCalls()!=null ? CybersourceHelper.getNumofCheckStatusCalls() : 6 ,
+			serviceCallInterval : CybersourceHelper.getServiceCallInterval()!=null ? CybersourceHelper.getServiceCallInterval() : 10
+		});
+		return next();
+	}
     
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
     if (fraudDetectionStatus.status === 'fail') {
@@ -859,7 +873,7 @@ server.replace('PlaceOrder', server.middleware.https, function (req, res, next) 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
 	var options = {'paidWithPayPal' : false, 'selectedPayment' : 'others'};
-	
+
     res.json({
         error: false,
         orderID: order.orderNo,

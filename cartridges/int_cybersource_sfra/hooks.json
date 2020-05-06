@@ -35,6 +35,10 @@
 		{
 			"name": "app.payment.processor.klarna_credit",
 			"script": "./cartridge/scripts/hooks/payment/processor/klarna_credit"
+        },
+        {
+			"name": "app.payment.processor.cybersource_wechat",
+			"script": "./cartridge/scripts/hooks/payment/processor/wechat"
 		}
     ]
 }

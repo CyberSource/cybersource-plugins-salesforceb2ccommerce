@@ -4,11 +4,10 @@
 </iscomment>
 <isdecorate template="common/layout/checkout">
 	<iscontent type="text/html" charset="UTF-8" compact="true">
-	<script src="${URLUtils.staticURL('/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
 	<isif condition="${'CardinalCruiseApiPath' in dw.system.Site.current.preferences.custom && !empty(dw.system.Site.current.preferences.custom.CardinalCruiseApiPath)}">
 		<script src="${dw.system.Site.current.preferences.custom.CardinalCruiseApiPath}"></script>
 	</isif>
-	
 	<div id="cyb_payerauth" class="cardinalpayerauth">
 			<input type="hidden" id="PaReq" value="${pdict.PAReq}">
 			<input type="hidden" id="AcsURL" value="${pdict.AcsURL}">

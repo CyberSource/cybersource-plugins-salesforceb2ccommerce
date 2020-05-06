@@ -95,7 +95,6 @@
         </div>
     </div>
 </div>
-
 <div class="row">
     <div class="col-sm-6">
         <div class="form-group
@@ -109,9 +108,12 @@
                 </div>
             </span>
             <input type="text" class="form-control email" id="email"
-                value="${pdict.order.orderEmail||''}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
+                value="${pdict.order.orderEmail
+                ? pdict.order.orderEmail : pdict.customer.profile.email}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
             <div class="invalid-feedback"></div>
+        
         </div>
+       
     </div>
     <div class="col-sm-6">
         <div class="form-group

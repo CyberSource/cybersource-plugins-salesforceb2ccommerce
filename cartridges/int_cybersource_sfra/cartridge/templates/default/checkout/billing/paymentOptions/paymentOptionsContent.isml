@@ -15,7 +15,7 @@
 
 	<iselseif condition="${paymentOption.ID === 'KLARNA'}">
         <isinclude template="checkout/billing/paymentOptions/klarnaContent" />
-        
+
     <iselseif condition="${paymentOption.ID === 'DW_GOOGLE_PAY'}">
         <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
         <isif condition="${isGooglePayEnabled}">

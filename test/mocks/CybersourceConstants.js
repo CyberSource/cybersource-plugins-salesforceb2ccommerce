@@ -14,6 +14,7 @@ CybersourceConstants.METHOD_ApplePay = 'DW_APPLE_PAY';
 CybersourceConstants.METHOD_AndroidPay = 'DW_ANDROID_PAY';
 CybersourceConstants.METHOD_Ideal_BankTransfer = 'IDEAL';
 CybersourceConstants.BANK_TRANSFER_PAYMENT_METHOD = 'BANK_TRANSFER';
+CybersourceConstants.WECHAT_TRANSFER_PAYMENT_METHOD = 'WECHAT';
 CybersourceConstants.MERCHANT_DESCRIPTOR = 'Online Store';
 
 //  Cartridge Name
@@ -48,6 +49,8 @@ CybersourceConstants.EPS_PAYMENT_METHOD = 'EPS';
 CybersourceConstants.GIROPAY_PAYMENT_METHOD = 'GIROPAY';
 CybersourceConstants.SOFORT_PAYMENT_METHOD = 'SOFORT';
 CybersourceConstants.IDEAL_PAYMENT_METHOD = 'IDEAL';
+CybersourceConstants.WECHAT_PAYMENT_METHOD = 'WECHAT';
+CybersourceConstants.WECHAT_PROCESSOR = 'WECHAT';
 CybersourceConstants.BANK_TRANSFER_PROCESSOR = 'BANK_TRANSFER';
 CybersourceConstants.KLARNA_PROCESSOR = 'KLARNA_CREDIT';
 CybersourceConstants.BANCONTACT_PAYMENT_TYPE = 'MCH';
@@ -55,6 +58,7 @@ CybersourceConstants.EPS_PAYMENT_TYPE = 'EPS';
 CybersourceConstants.GIROPAY_PAYMENT_TYPE = 'GPY';
 CybersourceConstants.SOFORT_PAYMENT_TYPE = 'SOF';
 CybersourceConstants.IDEAL_PAYMENT_TYPE = 'IDL';
+CybersourceConstants.WECHAT_PAYMENT_TYPE = 'WQR';
 var reasonCodeList = [101, 102, 150, 203, 204, 233];
 CybersourceConstants.REASONCODES = reasonCodeList;
 
