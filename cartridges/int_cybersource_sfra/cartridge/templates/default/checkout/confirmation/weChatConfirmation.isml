@@ -1,7 +1,7 @@
 <isdecorate template="common/layout/checkout">
 <isif condition="${pdict.weChatQRCode}">
   <iscontent type="text/html" charset="UTF-8" compact="true">
-  <script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-2.1.1.min.js')}" type="text/javascript"></script>
+  <script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-3.1.1.min.js')}" type="text/javascript"></script>
  
   	<input type="hidden" name="noOfCalls" id="noOfCalls" value="${pdict.noOfCalls}"/>
 	<input type="hidden" name="serviceCallInterval" id="serviceCallInterval" value="${pdict.serviceCallInterval}"/>
