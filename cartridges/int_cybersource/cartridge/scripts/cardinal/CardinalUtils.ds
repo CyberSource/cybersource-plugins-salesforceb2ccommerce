@@ -170,7 +170,7 @@ function getOrderObject(Basket : dw.order.LineItemCtnr,creditCardForm){
 
 function getOrderDetailsObject(order,transactionId){
 
-	var OrderDetailsObject = require('int_cybersource/cartridge/scripts/cardinal/OrderDetailsObject');
+	var OrderDetailsObject = require('~/cartridge/scripts/cardinal/OrderDetailsObject');
 	var orderdetailsObject = new OrderDetailsObject;
 
 	orderdetailsObject.setOrderNumber(order.orderNo);
@@ -202,7 +202,7 @@ function deleteEmptyProperties(object){
 }
 
 function setCCAttributes(orderPaymentInstrument, CustomerObj, accountObject, tokenObject, cardSecurityCode) {
-	var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
 	if (orderPaymentInstrument.getPaymentMethod().indexOf('SA_')>-1) {
 		if(!empty(CustomerObj) && !empty(orderPaymentInstrument) && orderPaymentInstrument.getPaymentMethod().indexOf("SA")>-1

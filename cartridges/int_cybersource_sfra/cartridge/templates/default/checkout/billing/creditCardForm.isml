@@ -108,8 +108,8 @@
                 </div>
             </span>
             <input type="text" class="form-control email" id="email"
-                value="${pdict.order.orderEmail
-                ? pdict.order.orderEmail : pdict.customer.profile.email}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
+                value="${(pdict.order.orderEmail
+                ? pdict.order.orderEmail : (pdict.customer.profile != null ? pdict.customer.profile.email:''))}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
             <div class="invalid-feedback"></div>
         
         </div>

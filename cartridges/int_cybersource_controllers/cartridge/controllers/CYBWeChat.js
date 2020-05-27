@@ -5,7 +5,7 @@
 */
 
 'use strict';
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var guard = require(CybersourceConstants.GUARD);
 var app = require(CybersourceConstants.APP);
 

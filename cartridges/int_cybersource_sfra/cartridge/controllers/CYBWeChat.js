@@ -33,7 +33,7 @@ server.post('WeChatStatus', function (req, res, next) {
         //place order
         Transaction.wrap(function () {
             order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
-            order.paymentInstrument.paymentTransaction.custom.AmountPaid = Number(order.totalGrossPrice);
+            pi.paymentTransaction.custom.AmountPaid = Number(order.totalGrossPrice);
         });
 
         var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);

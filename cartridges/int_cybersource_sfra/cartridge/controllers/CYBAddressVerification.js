@@ -9,6 +9,7 @@ var Logger = require('dw/system/Logger');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var Resource = require('dw/web/Resource');
+var Cipher = require('dw/crypto/Cipher');
 
 var resources= {
 		 missingFirstName : Resource.msg('dav.missingfirstname', 'cybersource', null),
@@ -53,7 +54,8 @@ server.get('VerifyAddress', function (req, res, next) {
 
             returnObject.davEnabled = true;
                 //  Gather shipping address information.
-            var params = req.querystring;
+            Cipher = new Cipher();
+            var params = JSON.parse(Cipher.decrypt(req.querystring.encryptedData, req.querystring.key, "AES/CBC/PKCS5Padding", req.querystring.iv, 0));
             var shipToAddress = createShipToObject(params);
                 //  Although not utilized by CS in the DAV call, they do require the presence of a billToAddress.
             var billToAddress = createBillToObject(params);

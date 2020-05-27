@@ -60,7 +60,7 @@ function CreateSaleServiceRequest(Basket) {
 	var billToObject;
 	var URLUtils = require('dw/web/URLUtils');
 	var successURL = URLUtils.https('COSummary-Start').toString();
-	var CyberSourceHelper = require('int_cybersource/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+	var CyberSourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 
 	var wechatPaymentType = CybersourceConstants.WECHAT_PAYMENT_TYPE;
 	//set basket UUID

@@ -17,7 +17,7 @@
             <isinclude template="checkout/billing/paymentOptions/payPalSummary" />
             
         <isset name="isGooglePayEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableGooglePay')}" scope="page" />
-        <iselseif condition="${isGooglePayEnabled && payment.paymentMethod === 'DW_GOOGLE_PAY'}">
+        <iselseif condition="${typeof isGooglePayEnabled !== "undefined" && isGooglePayEnabled && payment.paymentMethod === 'DW_GOOGLE_PAY'}">
                 <isinclude template="checkout/billing/paymentOptions/googlePaySummary" />
 
         <iselseif condition="${payment.paymentMethod === 'ALIPAY'}">

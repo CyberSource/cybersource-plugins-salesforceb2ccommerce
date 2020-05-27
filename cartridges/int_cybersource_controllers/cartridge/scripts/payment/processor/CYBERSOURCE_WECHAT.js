@@ -6,7 +6,7 @@
 *
 */
 
-var CybersourceConstants = require('int_cybersource/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var WeChatAdaptor = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/wechat/adaptor/WeChatAdaptor');
 
 

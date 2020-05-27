@@ -1,4 +1,5 @@
 'use strict';
+const crypto = require('crypto');
 
 function getModalHtmlElement() {
 	if ($('#deliveryAddressVerificationModal').length !== 0) {
@@ -65,12 +66,27 @@ function fillModalElement(verifyAddressUrl) {
     	useStandardAddress : $('.DAVModalResourceStrings').attr('data-usestandardaddress'),
     	addressNotVerified : $('.DAVModalResourceStrings').attr('data-addressnotverified'),
     	continueWithAddress : $('.DAVModalResourceStrings').attr('data-continuewithaddress')
-    }
+	}
+	
+	const algorithm = 'aes-256-cbc';
+	const key = crypto.randomBytes(32);
+	const iv = crypto.randomBytes(16);
+
+	function encrypt(text) {
+		let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
+		let encrypted = cipher.update(text);
+		encrypted = Buffer.concat([encrypted, cipher.final()]);
+		return {
+			iv: iv.toString('base64'),
+			encryptedData: encrypted.toString('base64'),
+			key: key.toString('base64')
+		};
+	}
     $.ajax({
         url: verifyAddressUrl,
         method: 'GET',
         dataType: 'json',
-        data: params,
+        data: encrypt(JSON.stringify(params)),
         success: function (data) {
         	if(!$('.submit-shipping').hasClass('moveToPayment')){
         		$('#deliveryAddressVerificationModal').addClass('show');       
