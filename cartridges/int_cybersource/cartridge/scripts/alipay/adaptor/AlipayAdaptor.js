@@ -100,7 +100,7 @@ function AuthorizeAlipay(args) {
 	// declare storefront class variables
 	var URLUtils = require('dw/web/URLUtils');
 	var PaymentMgr = require('dw/order/PaymentMgr');
-	var alipayReturnUrl =URLUtils.https('COPlaceOrder-Submit','provider','alipay','order_token',args.Order.orderToken);
+	var alipayReturnUrl =URLUtils.https('COPlaceOrder-Submit','provider','alipay');
 	// set Alipay request parameters
 	var alipayRequest = {};
 	//get the payment processor and assign its value in payment transaction object

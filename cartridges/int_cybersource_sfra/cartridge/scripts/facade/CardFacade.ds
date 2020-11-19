@@ -261,7 +261,11 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	var deviceType = CommonHelper.getDeviceType(request);
-	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone, deviceType);
+	var billTo;
+	var result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
+	billTo = result.billTo;
+
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone, deviceType, billTo);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');
@@ -324,11 +328,12 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
  * @param CreditCardForm : details of the card
  */
  
-function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String,processorTransactionId: String)
+function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String, processorTransactionId: String, billTo : Object)
 {
 	var orderNo = OrderNo;
     var amount = Amount;
     var creditCardForm = CreditCardForm;
+    var billTo = billTo;
     var signedPaRes = !empty(PaRes) ? dw.util.StringUtils.trim(PaRes) : '';
 	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
 	//**************************************************************************//
@@ -340,7 +345,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var csReference = webreferences.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
-	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken,processorTransactionId);
+	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken, processorTransactionId, billTo);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');

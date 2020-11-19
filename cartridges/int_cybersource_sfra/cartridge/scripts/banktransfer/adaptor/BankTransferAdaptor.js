@@ -24,9 +24,9 @@ function CreateSaleServiceRequest(Order){
 	var selectedPaymentMethod =session.forms.billing.paymentMethod.value;
 	var billTo, purchaseObject, paymentType;
 	var URLUtils = require('dw/web/URLUtils');
-	var cancelURL = URLUtils.https('COPlaceOrder-Submit','provider','cancelfail','order_id', Order.orderNo,'order_token', Order.orderToken,'cfk',false).toString();
-	var successURL = URLUtils.https('COPlaceOrder-Submit','provider','banktransfer','order_id', Order.orderNo,'order_token', Order.orderToken).toString();
-	var failureURL = URLUtils.https('COPlaceOrder-Submit','provider','cancelfail','order_id', Order.orderNo,'order_token', Order.orderToken,'cfk',false).toString();
+	var cancelURL = URLUtils.https('COPlaceOrder-Submit','provider','cancelfail','cfk',false).toString();
+	var successURL = URLUtils.https('COPlaceOrder-Submit','provider','banktransfer').toString();
+	var failureURL = URLUtils.https('COPlaceOrder-Submit','provider','cancelfail','cfk',false).toString();
 	//setting the value of payment type after getting from payment method
 	paymentType = session.forms.billing.paymentMethod.value;	
 	// create billto, shipto, item and purchase total object

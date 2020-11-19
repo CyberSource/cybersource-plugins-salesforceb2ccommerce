@@ -60,7 +60,7 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 				billingObject.setAddress1(billingaddress.address1 );
 				billingObject.setAddress2(billingaddress.address2 );
 				billingObject.setCity(billingaddress.city );
-				billingObject.setState(billingaddress.stateCode)
+				billingObject.setState(billingaddress.stateCode == null ? ' ' : billingaddress.stateCode)
 				billingObject.setPostalCode(billingaddress.postalCode);
 				billingObject.setCountryCode(billingaddress.countryCode.value);
 				billingObject.setPhone1(billingaddress.phone);
@@ -72,7 +72,7 @@ function getOrderObject(Basket : dw.order.LineItemCtnr){
 				billingObject.setAddress1(shippingAddress.address1 );
 				billingObject.setAddress2(shippingAddress.address2 );
 				billingObject.setCity(shippingAddress.city );
-				billingObject.setState(shippingAddress.stateCode)
+				billingObject.setState(shippingAddress.stateCode == null ? ' ' : shippingAddress.stateCode)
 				billingObject.setPostalCode(shippingAddress.postalCode);
 				billingObject.setCountryCode(shippingAddress.countryCode.value);
 				billingObject.setPhone1(shippingAddress.phone);

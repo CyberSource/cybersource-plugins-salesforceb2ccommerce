@@ -14,7 +14,6 @@
 	<form class="payerAuthRedirect" action="${pdict.action}" method="POST" name="payerAuthRedirect" target="_parent">
 	    <input type="hidden" name="MD" value="${pdict.CurrentHttpParameterMap.MD.stringValue}"/>
 	    <input type="hidden" name="PaRes" value="${pdict.CurrentHttpParameterMap.PaRes.stringValue}"/>
-	    <input type="hidden" name="order_token" value="${pdict.CurrentHttpParameterMap.order_token.stringValue}">
 	    <input type="hidden" name="DFReferenceId" id="DFReferenceId" value=""/>
 	</form>
 </body></html>

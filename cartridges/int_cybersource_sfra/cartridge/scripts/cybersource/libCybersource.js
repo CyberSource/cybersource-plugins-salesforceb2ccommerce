@@ -641,10 +641,14 @@ var CybersourceHelper = {
     },
 
 
-    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType) {
+    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo) {
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(serviceRequest, orderNo);
+
+        if (billTo !== null) {
+            serviceRequest.billTo = __copyBillTo(billTo);
+        }
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
@@ -742,7 +746,7 @@ var CybersourceHelper = {
         return request;
     },
 
-    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken,processorTransactionId) {
+    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo) {
         request.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(request, orderNo);
@@ -754,7 +758,10 @@ var CybersourceHelper = {
         } else if (creditCardForm !== null) {
             CybersourceHelper.addCardInfo(request, creditCardForm);
         }
-
+        
+        if (billTo !== null) {
+        	request.billTo = __copyBillTo(billTo);
+        }
         // validate specific stuff
         request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
         request.payerAuthValidateService.signedPARes = signedPARes;

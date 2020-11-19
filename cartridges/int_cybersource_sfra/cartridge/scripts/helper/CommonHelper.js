@@ -101,7 +101,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
                 billToObject.setStreet1(billingAddress.address1);
                 billToObject.setStreet2(billingAddress.address2);
                 billToObject.setCity(billingAddress.city);
-                billToObject.setState(billingAddress.stateCode);
+                billToObject.setState(billingAddress.stateCode == null ? ' ' : billingAddress.stateCode);
                 billToObject.setDistrict(billingAddress.stateCode);
                 billToObject.setPostalCode(billingAddress.postalCode);
                 billToObject.setCountry(billingAddress.countryCode);
@@ -133,7 +133,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             billToObject.setStreet1(shippingAddress.address1);
             billToObject.setStreet2(shippingAddress.address2);
             billToObject.setCity(shippingAddress.city);
-            billToObject.setState(shippingAddress.stateCode);
+            billToObject.setState(shippingAddress.stateCode == null ? ' ' : shippingAddress.stateCode);
             billToObject.setDistrict(shippingAddress.stateCode);
             billToObject.setPostalCode(shippingAddress.postalCode);
             billToObject.setCountry(shippingAddress.countryCode);
@@ -152,7 +152,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
         billToObject.setStreet1(billAddrForm.addressFields.address1.value);
         billToObject.setStreet2(billAddrForm.addressFields.address2.value);
         billToObject.setCity(billAddrForm.addressFields.city.value);
-        billToObject.setState(billAddrForm.addressFields.states.stateCode.value);
+        billToObject.setState(billAddrForm.addressFields.states.stateCode.value == null ? ' ' : billAddrForm.addressFields.states.stateCode.value);
         billToObject.setPostalCode(billAddrForm.addressFields.postalCode.value);
         billToObject.setCountry(billAddrForm.addressFields.country.value);
         billToObject.setPhoneNumber(billAddrForm.addressFields.phone.value);
