@@ -908,6 +908,9 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
             var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
             PaymentInstrumentUtils.UpdatePaymentTransactionWithProofXML(paymentInstrument, serviceResponse.ProofXML);
         }
+        if (!empty(serviceResponse.veresEnrolled)){
+            session.privacy.veresEnrolled = serviceResponse.veresEnrolled;
+        }
         if (serviceResponse.ReasonCode === 100) {
             return { OK: true, serviceResponse: serviceResponse };
         } else if (!empty(serviceResponse.AcsURL)) {

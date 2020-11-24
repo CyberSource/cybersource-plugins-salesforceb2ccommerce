@@ -781,7 +781,7 @@ var CybersourceHelper = {
     },
 
     addPayerAuthReplyInfo: function (request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
-        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId) {
+        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId, cavvAlgorithm) {
         if (request.ccAuthService === null) {
             request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
         }
@@ -797,12 +797,19 @@ var CybersourceHelper = {
         if (eciRaw !== null) {
             request.ccAuthService.eciRaw = eciRaw;
         }
-        if(specificationVersion !== null){
+        if (specificationVersion !== null){
 			request.ccAuthService.paSpecificationVersion = specificationVersion;
 		}
-		if(directoryTrnsctnId !== null){
+		if (directoryTrnsctnId !== null){
 			request.ccAuthService.directoryServerTransactionID = directoryTrnsctnId;
-		}
+        }
+        if (!empty(session.privacy.veresEnrolled)){
+        	request.ccAuthService.veresEnrolled = session.privacy.veresEnrolled;
+        	session.privacy.veresEnrolled ='';
+        }
+        if (cavvAlgorithm !== null){
+        	request.ccAuthService.cavvAlgorithm = cavvAlgorithm;
+        }
         if (!empty(ucafAuthenticationData)) {
             request.ucaf = new CybersourceHelper.csReference.UCAF();
             request.ucaf.authenticationData = ucafAuthenticationData;

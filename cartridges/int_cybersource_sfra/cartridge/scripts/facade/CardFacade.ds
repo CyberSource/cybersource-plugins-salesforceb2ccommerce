@@ -77,7 +77,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	if (payerValidationResponse) {
 		CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, payerValidationResponse.CAVV, payerValidationResponse.UCAFAuthenticationData, 
 			payerValidationResponse.UCAFCollectionIndicator, payerValidationResponse.ECIRaw, payerValidationResponse.PAVCommerceIndicator, 
-			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion,payerValidationResponse.directoryServerTransactionID);
+			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion,payerValidationResponse.directoryServerTransactionID, payerValidationResponse.cavvAlgorithm);
 	} else if (payerEnrollResponse) {
 		CybersourceHelper.addPayerAuthReplyInfo(
 			serviceRequest, payerEnrollResponse.CAVV, payerEnrollResponse.UCAFAuthenticationData, payerEnrollResponse.UCAFCollectionIndicator, null, payerEnrollResponse.PACommerceIndicator, 
@@ -315,6 +315,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 		responseObject["directoryServerTransactionID"] = serviceResponse.payerAuthEnrollReply.directoryServerTransactionID;
 		responseObject["CAVV"] = serviceResponse.payerAuthEnrollReply.cavv;
         responseObject["UCAFAuthenticationData"] = serviceResponse.payerAuthEnrollReply.ucafAuthenticationData;
+		responseObject["veresEnrolled"] = serviceResponse.payerAuthEnrollReply.veresEnrolled;
 	}
     
 	return {success:true, serviceResponse:responseObject};
@@ -395,6 +396,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 		responseObject["ParesStatus"] = serviceResponse.payerAuthValidateReply.paresStatus;
 		responseObject["specificationVersion"] = serviceResponse.payerAuthValidateReply.specificationVersion;
 		responseObject["directoryServerTransactionID"] = serviceResponse.payerAuthValidateReply.directoryServerTransactionID;
+		responseObject["cavvAlgorithm"] = serviceResponse.payerAuthValidateReply.cavvAlgorithm;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
