@@ -641,10 +641,14 @@ var CybersourceHelper = {
     },
 
 
-    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType) {
+    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo) {
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(serviceRequest, orderNo);
+
+        if (billTo !== null) {
+            serviceRequest.billTo = __copyBillTo(billTo);
+        }
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
@@ -742,7 +746,7 @@ var CybersourceHelper = {
         return request;
     },
 
-    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken,processorTransactionId) {
+    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo) {
         request.merchantID = CybersourceHelper.getMerchantID();
 
         __setClientData(request, orderNo);
@@ -754,7 +758,10 @@ var CybersourceHelper = {
         } else if (creditCardForm !== null) {
             CybersourceHelper.addCardInfo(request, creditCardForm);
         }
-
+        
+        if (billTo !== null) {
+        	request.billTo = __copyBillTo(billTo);
+        }
         // validate specific stuff
         request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
         request.payerAuthValidateService.signedPARes = signedPARes;
@@ -774,7 +781,7 @@ var CybersourceHelper = {
     },
 
     addPayerAuthReplyInfo: function (request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
-        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId) {
+        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId, cavvAlgorithm) {
         if (request.ccAuthService === null) {
             request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
         }
@@ -790,12 +797,19 @@ var CybersourceHelper = {
         if (eciRaw !== null) {
             request.ccAuthService.eciRaw = eciRaw;
         }
-        if(specificationVersion !== null){
+        if (specificationVersion !== null){
 			request.ccAuthService.paSpecificationVersion = specificationVersion;
 		}
-		if(directoryTrnsctnId !== null){
+		if (directoryTrnsctnId !== null){
 			request.ccAuthService.directoryServerTransactionID = directoryTrnsctnId;
-		}
+        }
+        if (!empty(session.privacy.veresEnrolled)){
+        	request.ccAuthService.veresEnrolled = session.privacy.veresEnrolled;
+        	session.privacy.veresEnrolled ='';
+        }
+        if (cavvAlgorithm !== null){
+        	request.ccAuthService.cavvAlgorithm = cavvAlgorithm;
+        }
         if (!empty(ucafAuthenticationData)) {
             request.ucaf = new CybersourceHelper.csReference.UCAF();
             request.ucaf.authenticationData = ucafAuthenticationData;

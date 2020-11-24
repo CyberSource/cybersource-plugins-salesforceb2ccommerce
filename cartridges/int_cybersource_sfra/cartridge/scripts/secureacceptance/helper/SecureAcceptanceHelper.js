@@ -250,8 +250,8 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     }
                     signed_field_names = signed_field_names + ",override_custom_cancel_page";
                     signed_field_names = signed_field_names + ",override_custom_receipt_page";
-                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal, 'order_token', orderToken));
-                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'order_id', lineItemCtnr.orderNo, 'order_token', lineItemCtnr.getOrderToken(), 'provider', providerVal));
+                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal));
+                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit','provider', providerVal));
 
                     break;
                 case CybersourceConstants.METHOD_SA_SILENTPOST:
@@ -907,6 +907,9 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         if (CybersourceHelper.getProofXMLEnabled()) {
             var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
             PaymentInstrumentUtils.UpdatePaymentTransactionWithProofXML(paymentInstrument, serviceResponse.ProofXML);
+        }
+        if (!empty(serviceResponse.veresEnrolled)){
+            session.privacy.veresEnrolled = serviceResponse.veresEnrolled;
         }
         if (serviceResponse.ReasonCode === 100) {
             return { OK: true, serviceResponse: serviceResponse };

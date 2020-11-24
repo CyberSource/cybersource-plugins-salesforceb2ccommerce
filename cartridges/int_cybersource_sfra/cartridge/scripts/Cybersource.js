@@ -169,7 +169,8 @@ function Process3DRequestParent(args) {
             var PAXID = request.httpParameterMap.PAXID.value;
             var transactionId = request.httpParameterMap.processorTransactionId.value != null? request.httpParameterMap.processorTransactionId.value : "";
             var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(),transactionId);
+            var payerAuthbillTo = CommonHelper.CreateCyberSourceBillToObject(order,true);
+            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(),transactionId, payerAuthbillTo.billTo);
             if (result.success && result.serviceResponse.ReasonCode === 100 && (!empty(PAXID) ? PAXID === result.serviceResponse.PAVXID : true)) {
                 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
                 result = secureAcceptanceHelper.HookIn3DRequest({ Order: order, payerValidationResponse: result.serviceResponse, paymentInstrument: paymentInstrument, SubscriptionID: paymentInstrument.getCreditCardToken() });

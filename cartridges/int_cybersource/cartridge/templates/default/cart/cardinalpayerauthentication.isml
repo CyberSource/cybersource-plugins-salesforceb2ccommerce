@@ -17,11 +17,10 @@
 			<input type="hidden" id="transactionId" value="${pdict.authenticationTransactionID}">
 		<form action="${URLUtils.https('COPlaceOrder-Submit','provider','card','PAXID',pdict.PAXID)}" method="POST" name="RedirectForm" target="_parent">            
             <input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}">
-            <input type="hidden" name="order_token" value="${pdict.Order.orderToken}">
             <input type="hidden" name="processorTransactionId"  id ="processorTransactionId" />
         </form>
         <form action="${URLUtils.https('COPlaceOrder-Fail')}" method="POST" name="FailForm" target="_parent">            
-            <input type="hidden" name="order_token" value="${pdict.Order.orderToken}">
+            
         </form>	
 	</div>
 	<script>

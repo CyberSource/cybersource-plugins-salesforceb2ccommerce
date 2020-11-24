@@ -38,7 +38,7 @@ CybersourceConstants.SG_PIPELINE = 'app_storefront_pipelines';
 CybersourceConstants.CS_CONTROLLER = 'int_cybersource_controllers';
 CybersourceConstants.CS_CORE = 'int_cybersource';
 CybersourceConstants.CS_CORE_SCRIPT = CybersourceConstants.CS_CORE+'/cartridge/scripts/';
-CybersourceConstants.PAYPAL_ADAPTOR = '~/cartridge/scripts/paypal/adapter/PaypalAdapter';
+CybersourceConstants.PAYPAL_ADAPTOR = CybersourceConstants.CS_CORE+'/cartridge/scripts/paypal/adapter/PaypalAdapter';
 CybersourceConstants.CS_PIPELINE = 'int_cybersource_pipelines';
 
 //Folder Paths

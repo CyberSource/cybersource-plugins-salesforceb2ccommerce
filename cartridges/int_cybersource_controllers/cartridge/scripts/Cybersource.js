@@ -187,7 +187,7 @@ function GetOrder(args) {
 			order = OrderMgr.getOrder(session.privacy.order_id);
 			session.privacy.order_id = "";
 		} 
-		if (order && order.orderToken === request.httpParameterMap.order_token.value) {
+		if (order && order.orderToken) {
 			return {success:true, Order:order};
 		}
 		var Status = require('dw/system/Status');
