@@ -195,6 +195,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
         var paymentMethod = paymentInstrument.paymentMethod;
         var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 		var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+		session.privacy.order_id = lineItemCtnr.orderNo;
 		
         /*Region BM Setting START: request setting for based on BM configuration*/
         if (null !== sitePreferenceData) {
@@ -272,7 +273,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     if (sitePreferenceData.csCardDecisionManagerEnable) {
                         requestMap.put('skip_decision_manager', false);
                     } else {
-                        requestMap.put('skip_decision_manager', false);
+                        requestMap.put('skip_decision_manager', true);
                     }
                     signed_field_names = signed_field_names + ",override_custom_receipt_page";
                     requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));

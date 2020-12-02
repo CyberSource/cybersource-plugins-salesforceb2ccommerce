@@ -2,8 +2,8 @@
 
 * **Description:** We are more than a global payment gateway � we�re an Integrated payment management platform for the digital economy, built on secure Visa infrastructure, with the payment reach and fraud insights of a $350B+ global processing network.
 * **Categories:** Payment Processing, Fraud Detection, Address Validation, Tax Computation
-* **Version:** 19.5.1
-* **Last Certification Date:** Nov-2020
+* **Version:** 19.5.2
+* **Last Certification Date:** Dec-2020
 * **JavaScript Controllers Friendly:** **YES**
 
 ### Contribution guidelines ###
