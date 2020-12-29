@@ -77,11 +77,14 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	if (payerValidationResponse) {
 		CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, payerValidationResponse.CAVV, payerValidationResponse.UCAFAuthenticationData, 
 			payerValidationResponse.UCAFCollectionIndicator, payerValidationResponse.ECIRaw, payerValidationResponse.PAVCommerceIndicator, 
-			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion,payerValidationResponse.directoryServerTransactionID, payerValidationResponse.cavvAlgorithm);
+			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion,payerValidationResponse.directoryServerTransactionID,payerValidationResponse.cavvAlgorithm,
+			payerValidationResponse.effectiveAuthenticationType, payerValidationResponse.challengeCancelCode, payerValidationResponse.authenticationStatusReason, payerValidationResponse.acsTransactionID, payerValidationResponse.authorizationPayload);
 	} else if (payerEnrollResponse) {
 		CybersourceHelper.addPayerAuthReplyInfo(
-			serviceRequest, payerEnrollResponse.CAVV, payerEnrollResponse.UCAFAuthenticationData, payerEnrollResponse.UCAFCollectionIndicator, null, payerEnrollResponse.PACommerceIndicator, 
-			payerEnrollResponse.PAXID, null,payerEnrollResponse.specificationVersion,payerEnrollResponse.directoryServerTransactionID
+			serviceRequest, payerEnrollResponse.CAVV, payerEnrollResponse.UCAFAuthenticationData, 
+			payerEnrollResponse.UCAFCollectionIndicator, payerEnrollResponse.ECIRaw, payerEnrollResponse.PACommerceIndicator, 
+			payerEnrollResponse.PAXID, payerEnrollResponse.ParesStatus,payerEnrollResponse.specificationVersion,payerEnrollResponse.directoryServerTransactionID, null, 
+			payerEnrollResponse.effectiveAuthenticationType, payerEnrollResponse.challengeCancelCode, payerEnrollResponse.authenticationStatusReason, payerEnrollResponse.acsTransactionID
 		);
 
 	}
@@ -316,6 +319,12 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 		responseObject["CAVV"] = serviceResponse.payerAuthEnrollReply.cavv;
         responseObject["UCAFAuthenticationData"] = serviceResponse.payerAuthEnrollReply.ucafAuthenticationData;
 		responseObject["veresEnrolled"] = serviceResponse.payerAuthEnrollReply.veresEnrolled;
+		responseObject["networkScore"] = serviceResponse.payerAuthEnrollReply.networkScore;
+		responseObject["effectiveAuthenticationType"] = serviceResponse.payerAuthEnrollReply.effectiveAuthenticationType;
+		responseObject["ParesStatus"] = serviceResponse.payerAuthEnrollReply.paresStatus;
+		responseObject["ECIRaw"] = serviceResponse.payerAuthEnrollReply.eciRaw;
+		responseObject["challengeCancelCode"] = serviceResponse.payerAuthEnrollReply.challengeCancelCode;
+		responseObject["authenticationStatusReason"] = (serviceResponse.payerAuthEnrollReply.authenticationStatusReason).toString().length == 1 ? '0'+serviceResponse.payerAuthEnrollReply.authenticationStatusReason : serviceResponse.payerAuthEnrollReply.authenticationStatusReason;
 	}
     
 	return {success:true, serviceResponse:responseObject};
@@ -397,6 +406,11 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 		responseObject["specificationVersion"] = serviceResponse.payerAuthValidateReply.specificationVersion;
 		responseObject["directoryServerTransactionID"] = serviceResponse.payerAuthValidateReply.directoryServerTransactionID;
 		responseObject["cavvAlgorithm"] = serviceResponse.payerAuthValidateReply.cavvAlgorithm;
+		responseObject["effectiveAuthenticationType"] = serviceResponse.payerAuthValidateReply.effectiveAuthenticationType;
+		responseObject["challengeCancelCode"] = serviceResponse.payerAuthValidateReply.challengeCancelCode;
+		responseObject["authenticationStatusReason"] = (serviceResponse.payerAuthValidateReply.authenticationStatusReason).toString().length == 1 ? '0'+serviceResponse.payerAuthValidateReply.authenticationStatusReason : serviceResponse.payerAuthValidateReply.authenticationStatusReason;
+		responseObject["acsTransactionID"] = serviceResponse.payerAuthValidateReply.acsTransactionID;
+		responseObject["authorizationPayload"] = serviceResponse.payerAuthValidateReply.authorizationPayload;
 	}
 	return {success:true, serviceResponse:responseObject};
 }
