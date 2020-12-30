@@ -316,6 +316,12 @@ function GetRequestDataForSilentPost(cart){
 			session.forms.billing.billingAddress.addressFields.country.value = httpParameterMap.country.stringValue;
 			session.forms.billing.billingAddress.addressFields.states.state.value = httpParameterMap.state.stringValue;
 			session.forms.billing.billingAddress.addressFields.phone.value = httpParameterMap.phone.stringValue;
+			session.forms.billing.paymentMethods.creditCard.number.value = httpParameterMap.ccnumber.stringValue;
+			session.forms.billing.paymentMethods.creditCard.type.value = httpParameterMap.cctype.stringValue;
+			session.forms.billing.paymentMethods.creditCard.expiration.month.value = Number(httpParameterMap.month.stringValue);
+			session.forms.billing.paymentMethods.creditCard.expiration.year.value = Number(httpParameterMap.expyear.value);
+			session.forms.billing.paymentMethods.creditCard.cvn.value = httpParameterMap.cvn.stringValue;
+			
 			if (!empty(httpParameterMap.cctoken.stringValue)) {
 			session.forms.billing.paymentMethods.creditCard.selectedCardID.value = httpParameterMap.cctoken.stringValue;
 			} else {

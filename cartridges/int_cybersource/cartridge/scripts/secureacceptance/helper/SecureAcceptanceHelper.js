@@ -196,6 +196,7 @@ try{
 	var requestMap = new HashMap();
 	var paymentMethod = paymentInstrument.paymentMethod;
 	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+	var card_cvn = session.forms.billing.paymentMethods.creditCard.cvn.value;
 	
 	/*Region BM Setting START: request setting for based on BM configuration*/
 	if( null !== sitePreferenceData){
@@ -215,6 +216,8 @@ try{
 						transaction_type = transaction_type;
 						signed_field_names = signed_field_names + ",payment_token";
 						requestMap.put('payment_token', subscriptionToken);
+						signed_field_names = signed_field_names + ",card_cvn";
+						requestMap.put('card_cvn', card_cvn);
 						signed_field_names = signed_field_names + ",allow_payment_token_update";
 						requestMap.put('allow_payment_token_update', true);
 					}
@@ -224,6 +227,8 @@ try{
 				} else if(!empty(subscriptionToken)){
 					signed_field_names = signed_field_names + ",payment_token";
 					requestMap.put('payment_token', subscriptionToken);
+					signed_field_names = signed_field_names + ",card_cvn";
+					requestMap.put('card_cvn', card_cvn);
 				}
 				authIndicatorRes = MasterCardAuthIndicatorRequest(signed_field_names, requestMap, subscriptionToken);
 				if (authIndicatorRes.success) {
@@ -238,7 +243,8 @@ try{
 					ignore_cvn = true;		
 				}
 				requestMap.put('ignore_avs',ignore_avs);
-	    		requestMap.put('ignore_cvn',ignore_cvn);
+				requestMap.put('ignore_cvn',ignore_cvn);
+				requestMap.put('card_type_selection_indicator', '1');
     			if(sitePreferenceData.csCardDecisionManagerEnable){
     				requestMap.put('skip_decision_manager',false);
     			} else {
@@ -267,7 +273,8 @@ try{
 					requestMap.put('consumer_id', lineItemCtnr.getCustomerNo());	 
 				}								
 				requestMap.put('ignore_avs',true);
-    			requestMap.put('ignore_cvn',true);
+				requestMap.put('ignore_cvn',true);
+				requestMap.put('card_type_selection_indicator', '1');
     			if(sitePreferenceData.csCardDecisionManagerEnable){
     				requestMap.put('skip_decision_manager',false);
     			} else {
@@ -448,7 +455,7 @@ function GetSitePrefernceDetails(paymentInstrument, subscriptionToken){
 			sitePreference["profile_id"]  = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Iframe_ProfileID");
 			sitePreference["secretKey"]  = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Iframe_SecretKey");
 			sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAIframetFormAction');
-			sitePreference["signed_field_names"]  = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,ignore_cvn,ignore_avs,skip_decision_manager,bill_to_email,bill_to_address_line1,bill_to_address_city,bill_to_address_postal_code,bill_to_address_state,bill_to_address_country,bill_to_forename,bill_to_surname,bill_to_phone,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country";
+			sitePreference["signed_field_names"]  = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,ignore_cvn,ignore_avs,skip_decision_manager,bill_to_email,bill_to_address_line1,bill_to_address_city,bill_to_address_postal_code,bill_to_address_state,bill_to_address_country,bill_to_forename,bill_to_surname,bill_to_phone,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country,card_type_selection_indicator";
 			sitePreference["unsigned_field_names"] = "";
 						
 		break;
@@ -458,12 +465,12 @@ function GetSitePrefernceDetails(paymentInstrument, subscriptionToken){
 			sitePreference["secretKey"]  = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Silent_SecretKey");
 			if(empty(subscriptionToken)) {
 				sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('Secure_Acceptance_Token_Create_Endpoint');
-				sitePreference["signed_field_names"]  = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country";
+				sitePreference["signed_field_names"]  = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country,card_type_selection_indicator";
 				sitePreference["unsigned_field_names"]  = "card_type,card_expiry_date,card_cvn,card_number";
 			}
 			else {
 				sitePreference["formAction"] = dw.system.Site.getCurrent().getCustomPreferenceValue('Secure_Acceptance_Token_Update_Endpoint');
-				sitePreference["signed_field_names"]  = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country,payment_token";
+				sitePreference["signed_field_names"]  = "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,payment_method,ignore_cvn,ignore_avs,skip_decision_manager,ship_to_address_city,ship_to_address_line1,ship_to_forename,ship_to_phone,ship_to_surname,ship_to_address_state,ship_to_address_postal_code,ship_to_address_country,payment_token,card_type_selection_indicator";
 				sitePreference["unsigned_field_names"]  = "card_type,card_expiry_date,card_cvn";
 			}
 			break;
@@ -883,6 +890,12 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
 			var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
 			PaymentInstrumentUtils.UpdatePaymentTransactionWithProofXML(paymentInstrument, serviceResponse.ProofXML);
 		}
+		if (!empty(serviceResponse.veresEnrolled)) {
+            session.privacy.veresEnrolled = serviceResponse.veresEnrolled;
+        }
+        if (!empty(serviceResponse.networkScore)) {
+            session.privacy.networkScore = serviceResponse.networkScore;
+        }
 		if (serviceResponse.ReasonCode === 100) {
 			return {OK:true, serviceResponse:serviceResponse};
 		} else if (!empty(serviceResponse.AcsURL)) {

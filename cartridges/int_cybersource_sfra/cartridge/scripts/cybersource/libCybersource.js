@@ -447,6 +447,8 @@ var CybersourceHelper = {
         } else {
             request.decisionManager.enabled = false;
         }
+        //CMCIC
+        request.cardTypeSelectionIndicator = '1';
         request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
         request.ccAuthService.run = true;
     },
@@ -508,6 +510,7 @@ var CybersourceHelper = {
         if (card !== null) {
             request.card = __copyCreditCard(card);
         }
+        request.cardTypeSelectionIndicator = '1';
         request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
         request.recurringSubscriptionInfo.frequency = 'on-demand';
         request.paySubscriptionCreateService = new CybersourceHelper.csReference.PaySubscriptionCreateService();
@@ -781,7 +784,8 @@ var CybersourceHelper = {
     },
 
     addPayerAuthReplyInfo: function (request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
-        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId, cavvAlgorithm) {
+        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId, cavvAlgorithm, effectiveAuthenticationType, 
+        challengeCancelCode, authenticationStatusReason, acsTransactionID, authorizationPayload) {
         if (request.ccAuthService === null) {
             request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
         }
@@ -797,19 +801,42 @@ var CybersourceHelper = {
         if (eciRaw !== null) {
             request.ccAuthService.eciRaw = eciRaw;
         }
-        if (specificationVersion !== null){
+        if(specificationVersion !== null){
 			request.ccAuthService.paSpecificationVersion = specificationVersion;
 		}
-		if (directoryTrnsctnId !== null){
+		if(directoryTrnsctnId !== null){
 			request.ccAuthService.directoryServerTransactionID = directoryTrnsctnId;
         }
         if (!empty(session.privacy.veresEnrolled)){
         	request.ccAuthService.veresEnrolled = session.privacy.veresEnrolled;
         	session.privacy.veresEnrolled ='';
         }
-        if (cavvAlgorithm !== null){
+        if (!empty(session.privacy.networkScore)) {
+        	request.ccAuthService.paNetworkScore = session.privacy.networkScore;
+        	session.privacy.networkScore = '';
+        }
+        if (!empty(cavvAlgorithm)) {
         	request.ccAuthService.cavvAlgorithm = cavvAlgorithm;
         }
+        if (!empty(effectiveAuthenticationType)) {
+        	request.ccAuthService.effectiveAuthenticationType = effectiveAuthenticationType;
+        }
+        if (!empty(challengeCancelCode)) {
+        	request.ccAuthService.challengeCancelCode = challengeCancelCode;
+        }
+        
+        if (authenticationStatusReason !== null && !empty(authenticationStatusReason)) {
+        	request.ccAuthService.paresStatusReason = authenticationStatusReason;
+        }
+        /*if (!empty(acsTransactionID)) {
+        	request.ccAuthService.acsTransactionID = acsTransactionID;
+        }*/
+        /*if (!empty(authorizationPayload)) {
+        	request.ccAuthService.authorizationPayload = authorizationPayload;
+        }*/
+        
+        request.ccAuthService.paAuthenticationDate = new Date().toDateString();
+       
         if (!empty(ucafAuthenticationData)) {
             request.ucaf = new CybersourceHelper.csReference.UCAF();
             request.ucaf.authenticationData = ucafAuthenticationData;

@@ -57,13 +57,7 @@
 
 			</div>
 		
-			<isscript>
-				var help = {
-					label: Resource.msg('billing.linkcvn', 'checkout', null),
-					cid: 'checkout-security-code'
-				};
-			</isscript>
-			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.cvn}" type="input" rowclass="cvn"  help="${help}"/>
+			
 		
 		</div>
 
@@ -154,6 +148,23 @@
 	<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
 	<isif condition="${pdict.CurrentCustomer.authenticated}">
 		<div class="spsavecard cyb_paymentmethods">
-			<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
+			<isscript>
+					var help = {
+						label: Resource.msg('billing.linkcvn', 'checkout', null),
+						cid: 'checkout-security-code'
+					};
+			</isscript>
+		<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.cvn}" type="input" rowclass="cvn"  help="${help}"/>
+		<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
+		</div>
+		<iselse>
+		<div class="payment-method <isif condition="${empty(pdict.selectedPaymentID) || pdict.selectedPaymentID==CybersourceConstants.METHOD_SA_SILENTPOST || pdict.selectedPaymentID=='CREDIT_CARD'}">payment-method-expanded</isif>" data-method="CREDIT_CARD" || >
+			<isscript>
+					var help = {
+						label: Resource.msg('billing.linkcvn', 'checkout', null),
+						cid: 'checkout-security-code'
+					};
+			</isscript>
+		<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.cvn}" type="input" rowclass="cvn"  help="${help}"/>
 		</div>
 	</isif>	
