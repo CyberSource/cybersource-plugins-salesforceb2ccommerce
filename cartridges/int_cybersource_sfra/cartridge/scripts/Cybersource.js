@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * Controller that performs card related services like (AVS, DAV, Payer Authentication,Tax Calculate, Capture Card, Fingerprint) services and Alipay and PayPay services.
  * The authorize and required functions of selected payment method are invoked from respective controller/script in merchant site code.
@@ -17,7 +18,7 @@ var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
  * If the verification was successful a credit card payment instrument is created.
  */
 function HandleCard(basket, paymentInformation) {
-	var currentBasket = basket;
+    var currentBasket = basket;
     var cardErrors = {};
     var cardNumber = paymentInformation.cardNumber.value;
     var cardSecurityCode = paymentInformation.securityCode.value;
@@ -45,25 +46,20 @@ function HandleCard(basket, paymentInformation) {
 
         if (creditCardStatus.error) {
         	var collections = require('*/cartridge/scripts/util/collections');
-			var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
+            var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
             collections.forEach(creditCardStatus.items, function (item) {
                 switch (item.code) {
-
                     case PaymentStatusCodes.CREDITCARD_INVALID_CARD_NUMBER:
-                        cardErrors[paymentInformation.cardNumber.htmlName] =
-                            dw.web.Resource.msg('error.invalid.card.number', 'creditCard', null);
+                        cardErrors[paymentInformation.cardNumber.htmlName] = dw.web.Resource.msg('error.invalid.card.number', 'creditCard', null);
                         break;
 
                     case PaymentStatusCodes.CREDITCARD_INVALID_EXPIRATION_DATE:
-                        cardErrors[paymentInformation.expirationMonth.htmlName] =
-                            dw.web.Resource.msg('error.expired.credit.card', 'creditCard', null);
-                        cardErrors[paymentInformation.expirationYear.htmlName] =
-                            dw.web.Resource.msg('error.expired.credit.card', 'creditCard', null);
+                        cardErrors[paymentInformation.expirationMonth.htmlName] = dw.web.Resource.msg('error.expired.credit.card', 'creditCard', null);
+                        cardErrors[paymentInformation.expirationYear.htmlName] = dw.web.Resource.msg('error.expired.credit.card', 'creditCard', null);
                         break;
 
                     case PaymentStatusCodes.CREDITCARD_INVALID_SECURITY_CODE:
-                        cardErrors[paymentInformation.securityCode.htmlName] =
-                            dw.web.Resource.msg('error.invalid.security.code', 'creditCard', null);
+                        cardErrors[paymentInformation.securityCode.htmlName] = dw.web.Resource.msg('error.invalid.security.code', 'creditCard', null);
                         break;
 
                     default:
@@ -120,7 +116,6 @@ function CaptureCard(args) {
     return { error: true, errorMsg: captureResponse.errorMsg };
 }
 
-
 /**
  * Pipleline checks DAV request, authorize if DAVReasonCode 100
  */
@@ -140,9 +135,9 @@ function DAVCheck(args) {
     if (result.error) {
         return { error: true };
     }
-    return HandleDAVResponse(result.serviceResponse);
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    return CardHelper.HandleDAVResponse(result.serviceResponse);
 }
-
 
 /**
  * Process 3DRequest by closing the parent window where 3D input taken. Performs the actual validation of card based on 3D password input.
@@ -167,13 +162,15 @@ function Process3DRequestParent(args) {
         if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_VISA_CHECKOUT) {
             var PAResponsePARes = request.httpParameterMap.PaRes.value;
             var PAXID = request.httpParameterMap.PAXID.value;
-            var transactionId = request.httpParameterMap.processorTransactionId.value != null? request.httpParameterMap.processorTransactionId.value : "";
+            var transactionId = request.httpParameterMap.processorTransactionId.value != null ? request.httpParameterMap.processorTransactionId.value : '';
             var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-            var payerAuthbillTo = CommonHelper.CreateCyberSourceBillToObject(order,true);
-            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(),transactionId, payerAuthbillTo.billTo);
+            var payerAuthbillTo = CommonHelper.CreateCyberSourceBillToObject(order, true);
+            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(), transactionId, payerAuthbillTo.billTo);
             if (result.success && result.serviceResponse.ReasonCode === 100 && (!empty(PAXID) ? PAXID === result.serviceResponse.PAVXID : true)) {
                 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-                result = secureAcceptanceHelper.HookIn3DRequest({ Order: order, payerValidationResponse: result.serviceResponse, paymentInstrument: paymentInstrument, SubscriptionID: paymentInstrument.getCreditCardToken() });
+                result = secureAcceptanceHelper.HookIn3DRequest({
+                    Order: order, payerValidationResponse: result.serviceResponse, paymentInstrument: paymentInstrument, SubscriptionID: paymentInstrument.getCreditCardToken()
+                });
                 if (result.authorized) {
                     return { submit: true };
                 }
@@ -184,7 +181,7 @@ function Process3DRequestParent(args) {
             var Status = require('dw/system/Status');
             var PlaceOrderError = result.PlaceOrderError !== null ? PlaceOrderError : new Status(Status.ERROR, 'confirm.error.declined');
             return { fail: true, PlaceOrderError: PlaceOrderError };
-        } else if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
+        } if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
             paymentInstrument = order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT)[0];
             var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
             return VisaCheckoutHelper.PayerAuthValidation(order, paymentInstrument);
@@ -240,7 +237,8 @@ function ResetPaymentForms(args) {
  * @return {Boolean} true if credit card is successfully saved.
  */
 function saveCreditCard() {
-    var i, creditCards, GetCustomerPaymentInstrumentsResult, subscriptionID;
+    var i; var creditCards; var GetCustomerPaymentInstrumentsResult; var
+        subscriptionID;
     var BasketMgr = require('dw/order/BasketMgr');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     var basket = BasketMgr.getCurrentOrNewBasket();
@@ -257,7 +255,6 @@ function saveCreditCard() {
     }
     return true;
 }
-
 
 /**
  * Create Subscription for my account.
@@ -291,7 +288,6 @@ function createSubscriptionMyAccount(args) {
     }
 }
 
-
 /**
  * Create Subscription for checkout billing.
  */
@@ -308,7 +304,9 @@ function createSubscriptionBilling(args) {
                 if (subscriptionResult.success && !empty(subscriptionResult.serviceResponse)) {
                     cardObject = null;// null  the card object CyberSourcePaymentCard
                     if (parseInt(subscriptionResult.serviceResponse.reasonCode) == 100 || parseInt(subscriptionResult.serviceResponse.reasonCode) == 480) {
-                        return { ok: true, decision: subscriptionResult.serviceResponse.decision, reasonCode: subscriptionResult.serviceResponse.reasonCode, subscriptionID: subscriptionResult.serviceResponse.SubscriptionIDToken };
+                        return {
+                            ok: true, decision: subscriptionResult.serviceResponse.decision, reasonCode: subscriptionResult.serviceResponse.reasonCode, subscriptionID: subscriptionResult.serviceResponse.SubscriptionIDToken
+                        };
                     }
 
                     return { error: true, decision: subscriptionResult.serviceResponse.decision, reasonCode: subscriptionResult.serviceResponse.reasonCode };
@@ -317,7 +315,6 @@ function createSubscriptionBilling(args) {
         }
     }
 }
-
 
 /**
  * Delete Subscription for My Account.
@@ -355,4 +352,3 @@ exports.SaveCreditCard = saveCreditCard;
 exports.CreateSubscriptionMyAccount = createSubscriptionMyAccount;
 exports.CreateSubscriptionBilling = createSubscriptionBilling;
 exports.DeleteSubscriptionAccount = deleteSubscriptionAccount;
-

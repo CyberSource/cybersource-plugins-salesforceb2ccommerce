@@ -79,7 +79,9 @@
                             <isinclude template="cart/checkoutButtons" />
                         </div>
                     </div>
-                    <isinclude template="cart/checkoutOptions" />
+                    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled')}"> 
+                   		<isinclude template="cart/checkoutOptions" />
+                    </isif>
                     <br/>
                 </div>
             </div>

@@ -9,7 +9,7 @@ var OrderMgr = require('dw/order/OrderMgr');
 var dwsvc = require("dw/svc");
 var Transaction = require('dw/system/Transaction');
 var CRServices = require('~/cartridge/scripts/init/RestServiceInit');
-
+var collections = require('app_storefront_base/cartridge/scripts/util/collections');
 var logger = Logger.getLogger("CyberSource" ,"ConversionDetailReport" );
 
 
@@ -53,9 +53,10 @@ function orderStatusUpdate(jobParams) {
 
 		var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time);
 		var headerString = "";
-		for each(var key in signedHeaders.keySet()){
-			headerString = headerString + key + " ";
-        }
+		collections.forEach(signedHeaders.keySet(), function (key) {
+		    // for each(var key in signedHeaders.keySet()){
+			headerString = headerString + ' ' + key;
+		});
 		var signatureMap = new HashMap();
 	    signatureMap.put('keyid', keyID);
 	    signatureMap.put('algorithm', 'HmacSHA256');
@@ -94,7 +95,8 @@ function parseJSONResponse(message, orderHashMap) {
 
             logger.debug('Processing daily conversion report JSON ......');
             Transaction.wrap(function () {
-                for each(var conversionDetails in obj['conversionDetails']){
+            	obj['conversionDetails'].forEach(function (conversionDetails) {
+            	//for each(var conversionDetails in obj['conversionDetails']){
                     var orderNumber = conversionDetails['merchantReferenceNumber'];
                     var order = orderHashMap.get(orderNumber);
                     logger.debug('Order Id - ' + conversionDetails['requestId']);
@@ -117,7 +119,7 @@ function parseJSONResponse(message, orderHashMap) {
                     } else {
                         logger.debug('Order in Daily conversion report not found in the query results against DB');
                     }
-                }
+                });
             });
         }
     }
@@ -218,13 +220,14 @@ function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId,
 	 var Bytes = require('dw/util/Bytes');
 	 var Mac = require('dw/crypto/Mac');
 	 var Encoding = require('dw/crypto/Encoding');
+	 var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
 
 	try {
 		 var encryptor = new Mac(Mac.HMAC_SHA_256);
 	 	 var secret  = Encoding.fromBase64(sharedSecret);
 		 var signatureString = "";
 			var headerString = "";
-			 signatureString = signatureString + 'host: apitest.cybersource.com'+"\n";
+			 signatureString = signatureString + 'host: '+host+"\n";
 			 signatureString = signatureString + 'date: '+date+"\n";
 			 signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId='+ merchantId + "\n";
 			 signatureString = signatureString + 'v-c-merchant-id: '+merchantId;

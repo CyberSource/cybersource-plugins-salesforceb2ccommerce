@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * Fraud Detection Hook
  *
@@ -18,7 +17,6 @@ function fraudDetection(basket) {
     var status = 'success';
     var dmEnabled = Site.current.getCustomPreferenceValue('csCardDecisionManagerEnable');
     var dmEnabledForPP = Site.current.getCustomPreferenceValue('isDecisionManagerEnable');
-
 
     //  If DM is disabled, default status returned is 'success'.
     //  If DM is enabled, get the status saved in the session, form the last Auth call.

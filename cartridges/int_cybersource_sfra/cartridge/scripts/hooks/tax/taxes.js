@@ -1,19 +1,19 @@
 'use strict';
 
-
 /**
 * This file will contains adapter methods for Cybersource Taxation
 * Integration.
 */
 var Status = require('dw/system/Status');
 var Logger = require('dw/system/Logger');
-var Site   = require('dw/system/Site');
-
+var Site = require('dw/system/Site');
 
 function calculateTax(cart) {
     // Default tax calculation, if Cybersource Tax not enabled
-    var EnableTaxation = Site.getCurrent().getCustomPreferenceValue("CsEnableTaxation");
-    if (EnableTaxation) {
+    var EnableTaxation = Site.getCurrent().getCustomPreferenceValue('CsEnableTaxation');
+    var IsCartridgeEnabled = Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled');
+
+    if (IsCartridgeEnabled && EnableTaxation) {
         try {
             var TaxHelper = require('~/cartridge/scripts/helper/TaxHelper');
             var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
@@ -29,13 +29,13 @@ function calculateTax(cart) {
                 session.privacy.isTaxCalculationFailed = false;
                 session.privacy.updateBillingAddress = false;
                 if (result.success && !empty(result.CartStateString)) {
-                    cartStateString = result.CartStateString;    
+                    cartStateString = result.CartStateString;
                     if (((!empty(session.privacy.SkipTaxCalculation) || !session.privacy.SkipTaxCalculation)) && typeof session.privacy.SkipTaxCalculation !== 'undefined') {
                         var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
                         var taxationResponse = TaxFacade.TaxationRequest(cart);
                         if (taxationResponse.success && taxationResponse.response !== null) {
                             session.privacy.cartStateString = cartStateString;
-                            session.privacy.SkipTaxCalculation = true;     
+                            session.privacy.SkipTaxCalculation = true;
                             return new Status(Status.OK);
                         }
                         session.privacy.isTaxCalculationFailed = true;
@@ -45,7 +45,7 @@ function calculateTax(cart) {
                 } else {
                     TaxHelper.UpdatePriceAdjustment(cart);// update price adjustment call
                 }
-            }	
+            }
             CommonHelper.UpdateTaxForGiftCertificate(cart);
             session.privacy.SkipTaxCalculation = false;// update tax for gift certificate call
             return new Status(Status.OK);

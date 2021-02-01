@@ -1171,7 +1171,7 @@ function getPurchaseTotal(lineItemCntr){
 * Function to create Item for Session request
 *
 */
-function getItemObject(basket){
+function getItemObject(typeofService, basket){
 	var Money = require('dw/value/Money');
 	var Item_Object = require('~/cartridge/scripts/cybersource/Cybersource_Item_Object');
 	var lineItems = basket.allLineItems.iterator();
@@ -1242,7 +1242,19 @@ function getItemObject(basket){
 		
 		else if(lineItem instanceof dw.order.ShippingLineItem)
 		{
-		   	continue;
+		   	if (typeofService == 'sessionService'){
+		   		continue;
+		   	} else {
+		   	itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(lineItem.adjustedPrice.value),"#.00",locale));
+			itemObject.setQuantity(1);
+			itemObject.setProductCode(lineItem.ID);
+			itemObject.setProductName(lineItem.ID);
+			itemObject.setProductSKU(lineItem.ID);
+			if(lineItem.adjustedTax.available && lineItem.adjustedTax.value >0){
+				itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.adjustedTax.value),"#.00",locale));
+			}
+			itemObject.setId(count);
+		   	}
 		}
 		else if(lineItem instanceof dw.order.ProductShippingLineItem)
 		{
@@ -1280,9 +1292,11 @@ function addAddressToCart(lineItemCntr,responseObj,overrideShipping){
 		billingAddress = lineItemCntr.createBillingAddress();
 	}
 	if(billAddressExistsInBasket(lineItemCntr)) {
-		if(!empty(billTo.email)) {
+		 if (customer.authenticated) {
+			lineItemCntr.setCustomerEmail(customer.profile.email);
+           } else{
 			lineItemCntr.setCustomerEmail(billTo.email);
-		}
+            }
 	}
 	else {
 			billingAddress.setFirstName(billTo.firstName);
@@ -1293,7 +1307,11 @@ function addAddressToCart(lineItemCntr,responseObj,overrideShipping){
         	billingAddress.setPostalCode(billTo.postalCode);
         	billingAddress.setCountryCode(billTo.country);
         	billingAddress.setStateCode(billTo.state);
-        	lineItemCntr.setCustomerEmail(billTo.email);
+        	if (customer.authenticated) {
+			lineItemCntr.setCustomerEmail(customer.profile.email);
+            } else{
+			lineItemCntr.setCustomerEmail(billTo.email);
+            }
         	billingAddress.setPhone(billTo.phoneNumber);
 	}
 	var defaultShipment, shippingAddress;
@@ -1302,6 +1320,8 @@ function addAddressToCart(lineItemCntr,responseObj,overrideShipping){
   		if (shippingAddress === null) {
   			 shippingAddress = defaultShipment.createShippingAddress();
   			 overrideShipping = true;
+  		} else {
+  			overrideShipping = true;
   		}
   		if(overrideShipping){
   			shippingAddress.setFirstName(shipTo.firstName);

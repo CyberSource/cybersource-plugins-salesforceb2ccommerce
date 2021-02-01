@@ -1,0 +1,11 @@
+.eslintrc.js
+/cartridges/int_cybersource
+/cartridges/int_cybersource_controllers
+/cartridges/int_cybersource_pipelines
+/cartridges/int_cybersource_sfra/cartridge/static
+/cartridges/int_cybersource_sfra/cartridge/client/default/custom/lib/jquery
+/cartridges/int_cybersource_sfra/cartridge/client/default/lib/jquery
+/cartridges/int_cybersource_sfra/cartridge/client/default/js/main.js
+/cartridges/int_cybersource_sfra/cartridge/client/default/js/paypal.js
+/cartridges/test
+/cartridges/int_cybersource_sfra/cartridge/scripts/jobs/DMOrderStatusUpdate.js

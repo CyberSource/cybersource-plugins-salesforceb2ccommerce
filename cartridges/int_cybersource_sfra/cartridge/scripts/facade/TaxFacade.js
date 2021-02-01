@@ -1,21 +1,22 @@
 'use strict';
 
-
 /**
  * Cybersource service is called with the tax request as true and the service gived tax information in response.
  * @param Basket : dw.order.LineItemCtnr contains object of basket or order
  *
  */
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 var taxHelper = require('~/cartridge/scripts/helper/TaxHelper');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 function TaxationRequest(cart) {
     // read pipeline dictionary input parameter
-    var itemArray,
-        itemMap,
-        result;
+    var Logger = dw.system.Logger.getLogger('Cybersource');
+    var itemArray;
+    var itemMap;
+    var result;
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     result = taxHelper.CreateCybersourceTaxationItemsObject(cart);
     itemArray = result.itemarray;
@@ -87,8 +88,8 @@ function TaxationRequest(cart) {
 }
 
 function __addTaxRequest(lineItemCtnr, items) {
-    var billTo,
-        shipTo;
+    var billTo;
+    var shipTo;
 
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var cardHelper = require('~/cartridge/scripts/helper/CardHelper');
@@ -138,7 +139,7 @@ function updateCartTotal(cart, itemMap, taxationResponse) {
     for (var i = 0; i < taxationResponse.taxReply.item.length; i++) {
         var resItem = taxationResponse.taxReply.item[i];
         /* for each(var resItem in taxationResponse.taxReply.item)
-        {*/
+        { */
         var lineItem = itemMap.get(resItem.id.toString());
         var itemTax = new dw.value.Money(parseFloat(resItem.totalTaxAmount), cart.currencyCode);
         lineItem.setTax(itemTax);
@@ -178,7 +179,6 @@ function updateCartTotal(cart, itemMap, taxationResponse) {
     cart.updateTotals();
 }
 
-
 function __copyTaxService(taxService) {
     var request_taxService = new webreferences.CyberSourceTransaction.TaxService();
     var value;
@@ -206,7 +206,6 @@ function __copyShipFrom(shipFrom) {
     }
     return request_shipFrom;
 }
-
 
 module.exports = {
     TaxationRequest: TaxationRequest

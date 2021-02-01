@@ -4,18 +4,19 @@
 var PaymentMgr = require('dw/order/PaymentMgr');
 var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
+
+var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'helper/CommonHelper');
 /**
  * This is where additional PayPal integration would go. The current implementation simply creates a PaymentInstrument and
  * returns 'success'.
  */
 function Handle(args) {
-	var basket = args;
-	Transaction.wrap(function () {
-		CommonHelper.removeExistingPaymentInstruments(basket);
-		basket.createPaymentInstrument(CybersourceConstants.METHOD_PAYPAL, CommonHelper.CalculateNonGiftCertificateAmountPaypal(basket));
+    var basket = args;
+    Transaction.wrap(function () {
+        CommonHelper.removeExistingPaymentInstruments(basket);
+        basket.createPaymentInstrument(CybersourceConstants.METHOD_PAYPAL, CommonHelper.CalculateNonGiftCertificateAmountPaypal(basket));
     });
-    return {success: true};
+    return { success: true };
 }
 
 /**
@@ -24,33 +25,28 @@ function Handle(args) {
  * authorize credit card payment.
  */
 function Authorize(orderNumber, paymentInstrument) {
-	var paymentInstrument = paymentInstrument;
+    var paymentInstrument = paymentInstrument;
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
-	var adapter = require(CybersourceConstants.PAYPAL_ADAPTOR);
-    //Logic to determine if this is standard/custom Paypal order
+    var adapter = require(CybersourceConstants.PAYPAL_ADAPTOR);
+    // Logic to determine if this is standard/custom Paypal order
 	 Transaction.wrap(function () {
 	        paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 	 });
-	var OrderMgr = require('dw/order/OrderMgr');
-	var order = OrderMgr.getOrder(orderNumber);
-	var paymentResponse = adapter.PaymentService(order,paymentInstrument);
-	
-    if(paymentResponse.authorized)
-	{	
-    	return {authorized: true}; 
-	}else if(paymentResponse.pending){
-		return {review: true}; 
-	}
-	else if(paymentResponse.rejected){
-		return {rejected: true}; 
-	}
-	else{
-		return {error: true};
-	}
-};
+    var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.getOrder(orderNumber);
+    var paymentResponse = adapter.PaymentService(order, paymentInstrument);
 
+    if (paymentResponse.authorized) {
+    	return { authorized: true };
+    } if (paymentResponse.pending) {
+        return { review: true };
+    }
+    if (paymentResponse.rejected) {
+        return { rejected: true };
+    }
 
-
+    return { error: true };
+}
 
 /*
  * Module exports

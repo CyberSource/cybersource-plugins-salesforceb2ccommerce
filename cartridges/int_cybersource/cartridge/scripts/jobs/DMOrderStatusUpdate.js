@@ -226,14 +226,15 @@ function getTime() {
 function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId, time) {
 	 var Bytes = require('dw/util/Bytes');
 	 var Mac = require('dw/crypto/Mac');
-	 var Encoding = require('dw/crypto/Encoding');
+     var Encoding = require('dw/crypto/Encoding');
+     var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
 
 	try {
 		 var encryptor = new Mac(Mac.HMAC_SHA_256);
 	 	 var secret  = Encoding.fromBase64(sharedSecret);
 		 var signatureString = "";
 			var headerString = "";
-			 signatureString = signatureString + 'host: apitest.cybersource.com'+"\n";
+             signatureString = signatureString + 'host: '+host+"\n";
 			 signatureString = signatureString + 'date: '+date+"\n";
 			 signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId='+ merchantId + "\n";
 			 signatureString = signatureString + 'v-c-merchant-id: '+merchantId;

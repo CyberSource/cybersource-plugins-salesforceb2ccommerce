@@ -8,13 +8,12 @@
  */
 function CCAuth(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
     // request.merchantDefinedData = "Data";
-    
+
     return request;
 }
-
 
 /**
  * Example of how to customize and modify the Payer Authentication Enroll request.
@@ -24,12 +23,11 @@ function CCAuth(requestIn) {
  */
 function PayerAuthEnroll(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
-    
+
     return request;
 }
-
 
 /**
  * Example of how to customize and modify the Payer Authentication Validation Request.
@@ -39,9 +37,9 @@ function PayerAuthEnroll(requestIn) {
  */
 function PayerAuthValidation(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
-    
+
     return request;
 }
 
@@ -53,9 +51,9 @@ function PayerAuthValidation(requestIn) {
  */
 function AuthReversal(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
-    
+
     return request;
 }
 
@@ -67,9 +65,9 @@ function AuthReversal(requestIn) {
  */
 function Capture(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
-    
+
     return request;
 }
 
@@ -81,9 +79,9 @@ function Capture(requestIn) {
  */
 function Credit(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
-    
+
     return request;
 }
 
@@ -95,9 +93,9 @@ function Credit(requestIn) {
  */
 function Tax(requestIn) {
     var request = requestIn;
-        
+
     //  Customize the request object here.
-    
+
     return request;
 }
 

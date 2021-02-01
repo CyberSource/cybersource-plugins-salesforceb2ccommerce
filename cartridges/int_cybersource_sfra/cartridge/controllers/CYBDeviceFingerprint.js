@@ -10,7 +10,6 @@ var server = require('server');
  * Get fingertpringing url and outputs it to template
  */
 server.get('GetFingerprint', function (req, res, next) {
-
     var Site = require('dw/system/Site');
     var orgID = Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintOrgId');
     var merchID = Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
@@ -24,8 +23,7 @@ server.get('GetFingerprint', function (req, res, next) {
         if (empty(session.privacy.deviceFingerprintTime)) {
             session.privacy.deviceFingerprintTime = now;
             getDeviceFingerprint = true;
-        }
-        else {
+        } else {
             var timeSinceLastFingerprint = now - session.privacy.deviceFingerprintTime;
             if (timeSinceLastFingerprint > devicefingerprintTTL) {
                 session.privacy.deviceFingerprintTime = now;
@@ -34,7 +32,7 @@ server.get('GetFingerprint', function (req, res, next) {
         }
     }
 
-    var url = location + "/fp/tags.js?org_id=" + orgID + "&session_id=" + merchID + sessionID;
+    var url = location + '/fp/tags.js?org_id=' + orgID + '&session_id=' + merchID + sessionID;
 
     res.cacheExpiration(0);
     res.render('common/deviceFingerprint', {

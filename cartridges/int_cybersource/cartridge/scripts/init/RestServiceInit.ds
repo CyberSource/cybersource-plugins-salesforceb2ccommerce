@@ -37,6 +37,58 @@ var CyberSourceDMService = LocalServiceRegistry.createService("cybersource.conve
     }
 });
 
+var CyberSourceFlexTokenService = LocalServiceRegistry.createService("cybersource.http.flextoken", {
+	createRequest: function(svc, requestObj, digestString){
+		svc.setRequestMethod("POST");
+		svc.addHeader("Accept","application/json; charset=utf-8");
+		svc.addHeader("Content-Type","application/json");
+		for each(var key in requestObj.keySet()){
+	         svc.addHeader(key, requestObj.get(key));
+		}
+		//logger.info( "Conversion Detail Report (Site Genesis) Request Data: {0}",JSON.stringify(requestObj));
+		return digestString;
+	},
+	parseResponse: function(svc, client) {
+		//logger.info( "Conversion Detail Report (Site Genesis) Request Data: {0}",JSON.stringify(svc.requestData));
+		return client.text;
+	},
+    filterLogMessage: function(msg) {
+            //  Filter Logging on production system.
+        if (dw.system.System.getInstanceType() == dw.system.System.PRODUCTION_SYSTEM) {
+                //  Filter Logic.
+            try {
+                if (empty(msg)){
+                    return "Message Missing";
+                }
+                messageData = JSON.parse(msg);
+                
+                filteredData = {};
+                if (messageData.hasOwnProperty("encryptionType")) {
+                    filteredData.encryptionType = messageData.encryptionType;
+                }
+                if (messageData.hasOwnProperty("targetOrigin")) {
+                    filteredData.targetOrigin = messageData.targetOrigin;
+                }
+
+                var filteredMessage = "PRODUCTION SYSTEM DETECTED.  RESPONSE HAS BEEN FILTERED : ";
+                filteredMessage += JSON.stringify(filteredData);
+            
+                return filteredMessage;
+            }
+            catch(e) {
+                    //  msg was not a JSON string.
+                    //  In this case, we hide all data.
+                return "Unable to parse Service log message."
+            }
+        }
+        else {
+                //  Return full message on other systems.
+            return msg;
+        }
+    }
+});
+
 module.exports = {
-		CyberSourceDMService : CyberSourceDMService
+		CyberSourceDMService : CyberSourceDMService,
+		CyberSourceFlexTokenService: CyberSourceFlexTokenService
 };

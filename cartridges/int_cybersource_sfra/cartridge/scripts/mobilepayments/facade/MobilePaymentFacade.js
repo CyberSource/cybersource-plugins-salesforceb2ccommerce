@@ -1,13 +1,14 @@
 'use strict';
+
 var Site = require('dw/system/Site');
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('../../utils/CybersourceConstants');
 var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
-
 
 /**
  * This function prepares request data for MobilePayment method
@@ -28,7 +29,6 @@ function mobilePaymentAuthRequest(authRequestParams) {
     authParams.items = result.items;
     return createMobilePaymentAuthRequest(authParams);
 }
-
 
 /**
  * This function prepares request data for MobilePayment method, called internally.
@@ -53,14 +53,6 @@ function createMobilePaymentAuthRequest(authRequestParams) {
 
     var serviceRequest = new csReference.RequestMessage();
 
-
-    /* Start payment subscription for AndoridPay */
-    if (isAndoridPayTokenizationEnabled() === true && authRequestParams.MobilePaymentType === CybersourceConstants.METHOD_AndroidPay) {
-        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, authRequestParams.billTo, authRequestParams.purchaseObject, null, authRequestParams.OrderNo);
-    }
-    /* End payment subscription for AndoridPay */
-
-
     //* *************************************************************************//
     // the request object holds the input parameter for the AUTH request
     //* *************************************************************************//
@@ -68,17 +60,16 @@ function createMobilePaymentAuthRequest(authRequestParams) {
         authRequestParams.purchaseObject, !empty(cardResult) ? cardResult.card : null, authRequestParams.orderNo,
         CybersourceHelper.getDigitalFingerprintEnabled(), authRequestParams.items, authRequestParams.orderNo);
 
-
     if (!empty(authRequestParams.networkToken)) addPayerAuthReplyInfo(serviceRequest, authRequestParams);
 
-    /** ******************************/
+    /** ***************************** */
     /* MobilePayment checkout-related WebService setup */
-    /** ******************************/
+    /** ***************************** */
     addMobilePaymentRequestInfo(serviceRequest, authRequestParams);
 
-    /** ******************************/
+    /** ***************************** */
     /* DAV-related WebService setup */
-    /** ******************************/
+    /** ***************************** */
     var enableDAV = CybersourceHelper.getDavEnable();
     var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
 
@@ -90,7 +81,6 @@ function createMobilePaymentAuthRequest(authRequestParams) {
         CybersourceHelper.addDAVRequestInfo(serviceRequest, authRequestParams.billTo, authRequestParams.shipTo, ignoreDAVResult);
     }
     /* End of DAV WebService setup */
-
 
     /* AVS Service setup */
     var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
@@ -143,7 +133,7 @@ function createMobilePaymentAuthRequest(authRequestParams) {
  * request  : Object,
  * refCode  : String   - Basket.UUID or orderNo
  * refCode  : Blob   - large blob object
- *****************************************************************************/
+ **************************************************************************** */
 function addMobilePaymentRequestInfo(request, authRequestParams) {
     var CybersourceConstants = require('../../utils/CybersourceConstants');
     request.merchantID = CybersourceHelper.getMerchantID();
@@ -185,11 +175,11 @@ function addPayerAuthReplyInfo(serviceRequest, authRequestParams) {
     //* *************************************************************************//
     // the request object holds the input parameter for the PayerAuth request
     //* *************************************************************************//
-    var cavv,
-        ucafAuthenticationData,
-        ucafCollectionIndicator,
-        commerceIndicator,
-        xid = null;
+    var cavv;
+    var ucafAuthenticationData;
+    var ucafCollectionIndicator;
+    var commerceIndicator;
+    var xid = null;
     if (authRequestParams.cardType.equalsIgnoreCase('Visa')) {
         cavv = authRequestParams.cryptogram;
         xid = authRequestParams.cryptogram;
@@ -205,13 +195,6 @@ function addPayerAuthReplyInfo(serviceRequest, authRequestParams) {
     }
     CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, cavv, ucafAuthenticationData, ucafCollectionIndicator, null, commerceIndicator, xid, null);
 }
-/**
- * Checks to see if android pay tokenization is enabled
- * @return {boolean} is android pay tokenization enabled
- */
-function isAndoridPayTokenizationEnabled() {
-    return Site.getCurrent().getCustomPreferenceValue('CsAndoridPayTokenizationEnabled');
-}
 
 /**
  * GP Credit call is made to cybersource and response is sent back.
@@ -219,25 +202,24 @@ function isAndoridPayTokenizationEnabled() {
  * @param merchantRefCode : Cybersource Merchant Reference Code
  * @param paymentType : Payment Type for Credit
  * @param purchaseTotal : Order total for current request
- * @param currency : 
+ * @param currency :
  * @param orderid : Order No
  */
-	function GPCreditRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String){
-	
-		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-		var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-		var CybersourceHelper = libCybersource.getCybersourceHelper();
+function GPCreditRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String) {
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-		var csReference = webreferences.CyberSourceTransaction;
-		var serviceRequest = new csReference.RequestMessage();
-		
-		var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
-		purchaseObject = purchaseObject.purchaseTotals;
-		serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
-		
-		libCybersource.setClientData(serviceRequest, merchantRefCode);
-		CybersourceHelper.ccCreditService(serviceRequest, merchantRefCode, requestID, paymentType);
-		
+    var csReference = webreferences.CyberSourceTransaction;
+    var serviceRequest = new csReference.RequestMessage();
+
+    var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
+    purchaseObject = purchaseObject.purchaseTotals;
+    serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
+
+    libCybersource.setClientData(serviceRequest, merchantRefCode);
+    CybersourceHelper.ccCreditService(serviceRequest, merchantRefCode, requestID, paymentType);
+
 	    //  Provide ability to customize request object with a hook.
 	    var HookMgr = require('dw/system/HookMgr');
 	    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
@@ -247,48 +229,47 @@ function isAndoridPayTokenizationEnabled() {
 	        }
 	    }
 
-		var serviceResponse = null;
-		// send request
-		try{
-			var service = CSServices.CyberSourceTransactionService;
-			var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
-			var requestWrapper={};
+    var serviceResponse = null;
+    // send request
+    try {
+        var service = CSServices.CyberSourceTransactionService;
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
+        var requestWrapper = {};
 		    serviceRequest.merchantID = merchantCrdentials.merchantID;
-			requestWrapper.request =serviceRequest;
-			requestWrapper.merchantCredentials = merchantCrdentials; 
-			serviceResponse = service.call(requestWrapper); 
-		}catch(e){
-			Logger.error("[CardFacade.ds] Error in CCCaptureRequest request ( {0} )",e.message);
-			return {error:true, errorMsg:e.message};
-		}
-		
-		if(empty(serviceResponse) || serviceResponse.status !== "OK"){
-			Logger.error("Response in CCCaptureRequest response ( {0} )",serviceResponse);
-			return {error:true, errorMsg:"empty or error in CCCaptureRequest response: "+serviceResponse};
-		}
-		serviceResponse = serviceResponse.object;
-		return serviceResponse;
-	}
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
+    } catch (e) {
+        Logger.error('[CardFacade.ds] Error in CCCaptureRequest request ( {0} )', e.message);
+        return { error: true, errorMsg: e.message };
+    }
 
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        Logger.error('Response in CCCaptureRequest response ( {0} )', serviceResponse);
+        return { error: true, errorMsg: 'empty or error in CCCaptureRequest response: ' + serviceResponse };
+    }
+    serviceResponse = serviceResponse.object;
+    return serviceResponse;
+}
 
-	/**
+/**
 	 * GPAuthReversalService call is made to cybersource and response if send back.
-	 * @param requestID : 
+	 * @param requestID :
 	 * @param amount : order total
 	 * @param merchantRefCode : cybersource reference number
 	 * @param paymentType : payment type
 	 * @currency : currency used
 	 */
-	function GPAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount) {
-		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-		var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+function GPAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount) {
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-		var CybersourceHelper = libCybersource.getCybersourceHelper();
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
 
 	    var csReference = webreferences.CyberSourceTransaction;
 	    var serviceRequest = new csReference.RequestMessage();
-		var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
-			purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
+    var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
+    purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
 	    	serviceRequest.purchaseTotals = purchaseTotals;
 
 	        // Create CCAuthReversal service reference for Credit Card
@@ -305,30 +286,30 @@ function isAndoridPayTokenizationEnabled() {
 
 	   // send request
 	   var serviceResponse = null;
-			try {
+    try {
 		        // create request,make service call and store returned response
 		        var service = CSServices.CyberSourceTransactionService;
-				// getting merchant id and key for specific payment method
-				var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
-				var requestWrapper={};
+        // getting merchant id and key for specific payment method
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
+        var requestWrapper = {};
 			    serviceRequest.merchantID = merchantCrdentials.merchantID;
-				requestWrapper.request = serviceRequest;
-				requestWrapper.merchantCredentials = merchantCrdentials;
-				serviceResponse = service.call(requestWrapper);
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
 		  	} catch (e) {
-		        Logger.error("Error in CCAuthReversalService: {0}", e.message);
+		        Logger.error('Error in CCAuthReversalService: {0}', e.message);
 		        return { error: true, errorMsg: e.message };
 		    }
-		
-		    if (empty(serviceResponse) || serviceResponse.status !== "OK") {
-		        return { error: true, errorMsg: "empty or error in CC auth reversal service response: " + serviceResponse };
+
+		    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+		        return { error: true, errorMsg: 'empty or error in CC auth reversal service response: ' + serviceResponse };
 		    }
 		    if (!empty(serviceResponse)) {
-				serviceResponse = serviceResponse.object;
+        serviceResponse = serviceResponse.object;
 		    }
-			
+
 		    return serviceResponse;
-	}
+}
 
 /**
  * Google Pay Capture call is made to cybersource and response is sent back.
@@ -336,25 +317,25 @@ function isAndoridPayTokenizationEnabled() {
  * @param merchantRefCode : Cybersource Merchant Reference Code
  * @param paymentType : Payment Type for Capture
  * @param purchaseTotal : Order total for current request
- * @param currency : 
+ * @param currency :
  * @param orderid : Order No
  */
 
-	function GPCaptureRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String){
-		var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-		var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-		var CybersourceHelper = libCybersource.getCybersourceHelper();
+function GPCaptureRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String) {
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-		var csReference = webreferences.CyberSourceTransaction;
-		var serviceRequest = new csReference.RequestMessage();
-		
-		var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
-		purchaseObject = purchaseObject.purchaseTotals;
-		serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
-		
-		libCybersource.setClientData(serviceRequest, merchantRefCode);
-		CybersourceHelper.ccCaptureService(serviceRequest, merchantRefCode, requestID, paymentType);
-		
+    var csReference = webreferences.CyberSourceTransaction;
+    var serviceRequest = new csReference.RequestMessage();
+
+    var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
+    purchaseObject = purchaseObject.purchaseTotals;
+    serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
+
+    libCybersource.setClientData(serviceRequest, merchantRefCode);
+    CybersourceHelper.ccCaptureService(serviceRequest, merchantRefCode, requestID, paymentType);
+
 	    //  Provide ability to customize request object with a hook.
 	    var HookMgr = require('dw/system/HookMgr');
 	    if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
@@ -364,32 +345,32 @@ function isAndoridPayTokenizationEnabled() {
 	        }
 	    }
 
-		var serviceResponse = null;
-		// send request
-		try{
-			var service = CSServices.CyberSourceTransactionService;
-			var merchantCrdentials=CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
-			var requestWrapper={};
+    var serviceResponse = null;
+    // send request
+    try {
+        var service = CSServices.CyberSourceTransactionService;
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
+        var requestWrapper = {};
 		    serviceRequest.merchantID = merchantCrdentials.merchantID;
-			requestWrapper.request =serviceRequest;
-			requestWrapper.merchantCredentials = merchantCrdentials; 
-			serviceResponse = service.call(requestWrapper); 
-		}catch(e){
-			Logger.error("Error in CCCaptureRequest request ( {0} )",e.message);
-			return {error:true, errorMsg:e.message};
-		}
-		
-		if(empty(serviceResponse) || serviceResponse.status !== "OK"){
-			Logger.error("response in CCCaptureRequest response ( {0} )",serviceResponse);
-			return {error:true, errorMsg:"empty or error in CCCaptureRequest response: "+serviceResponse};
-		}
-		serviceResponse = serviceResponse.object;
-		return serviceResponse;
-	}
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
+    } catch (e) {
+        Logger.error('Error in CCCaptureRequest request ( {0} )', e.message);
+        return { error: true, errorMsg: e.message };
+    }
+
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        Logger.error('response in CCCaptureRequest response ( {0} )', serviceResponse);
+        return { error: true, errorMsg: 'empty or error in CCCaptureRequest response: ' + serviceResponse };
+    }
+    serviceResponse = serviceResponse.object;
+    return serviceResponse;
+}
 
 module.exports = {
     mobilePaymentAuthRequest: mobilePaymentAuthRequest,
-    GPCreditRequest:GPCreditRequest,
-    GPAuthReversalService:GPAuthReversalService,
-    GPCaptureRequest:GPCaptureRequest
+    GPCreditRequest: GPCreditRequest,
+    GPAuthReversalService: GPAuthReversalService,
+    GPCaptureRequest: GPCaptureRequest
 };

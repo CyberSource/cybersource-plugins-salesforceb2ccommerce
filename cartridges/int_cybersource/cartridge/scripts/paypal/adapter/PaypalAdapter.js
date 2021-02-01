@@ -68,6 +68,21 @@ function setShippingMethod(lineItemCntr){
     }
 }
 
+function getAddress(shipment){
+	var TransientAddress = require('app_storefront_controllers/cartridge/scripts/models/TransientAddressModel');
+	
+	var address;
+
+    address = new TransientAddress();
+    address.countryCode = shipment.shippingAddress.countryCode.value;
+    address.stateCode = shipment.shippingAddress.stateCode;
+    address.postalCode = shipment.shippingAddress.postalCode;
+    address.city = shipment.shippingAddress.city;
+    address.address1 = shipment.shippingAddress.address1;
+    
+    return address;
+}
+
 /**
  * Initialize call to CyberSource Order service
  * @param order
@@ -412,5 +427,6 @@ module.exports = {
 		'SessionCallback' : initSessionCallback,
 		'BillingAgreementService':billingAgreementService,
 		'CustomOrder':customOrder,
-		'StandardOrder':standardOrder
+		'StandardOrder':standardOrder,
+		'GetAddress' :getAddress
 };

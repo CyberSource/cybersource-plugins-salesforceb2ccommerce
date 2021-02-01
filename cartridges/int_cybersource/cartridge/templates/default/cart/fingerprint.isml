@@ -68,19 +68,6 @@ Production = k8vif92e
 	<img src="<isprint value="${url_2}" encoding="off"/>" alt="">
 	
 	<iscomment>
-	******** Flash code ********
-	</iscomment>
-	
-	<object type="application/x-shockwave-flash" 
-		data="<isprint value="${url_3}" encoding="off"/>" 
-		width="1" 
-		height="1" 
-		id="thm_fp">
-		<EMBED src="<isprint value="${url_3}" encoding="off"/>" TYPE="application/x-shockwave-flash" />
-	   <param name="movie" value="<isprint value="${url_3}" encoding="off"/>" />
-	</object>
-	
-	<iscomment>
 	******** JavaScript code ********
 	</iscomment>
 	

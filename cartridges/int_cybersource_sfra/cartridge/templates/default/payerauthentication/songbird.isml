@@ -1,5 +1,5 @@
 <!--- TEMPLATENAME: sondbird.isml --->
-
+<isdecorate template="common/layout/checkout">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <isif condition="${'CardinalCruiseApiPath' in dw.system.Site.current.preferences.custom && !empty(dw.system.Site.current.preferences.custom.CardinalCruiseApiPath)}">
@@ -9,11 +9,15 @@
 </isif>
 </head>
 <body class="cyb_cardinalredirect">
+	<div class="payerAuth_payment"style="text-align: center;padding: 210px 0px;color: #00a1e0;">
+		<i class="fa fa-circle-o-notch fa-spin"></i> ${Resource.msg('pts.payment.progress','cybersource',null)}
+	</div>
 	<input type="hidden" id="JWTContainer" value="${pdict.jwtToken}" />		
 	<input type="hidden" id="order" value="${pdict.order}"/>
 	<form class="payerAuthRedirect" action="${pdict.action}" method="POST" name="payerAuthRedirect" target="_parent">
 	    <input type="hidden" name="MD" value="${pdict.CurrentHttpParameterMap.MD.stringValue}"/>
 	    <input type="hidden" name="PaRes" value="${pdict.CurrentHttpParameterMap.PaRes.stringValue}"/>
+	    <input type="hidden" name="order_token" value="${pdict.CurrentHttpParameterMap.order_token.stringValue}">
 	    <input type="hidden" name="DFReferenceId" id="DFReferenceId" value=""/>
 	</form>
 </body></html>
@@ -25,12 +29,20 @@
 		  	timeout: 4000,
 		    maxRequestRetries: 2   
 	  });	  
-	  var orderObject = JSON.parse(document.getElementById("order").value);	  
+	  var orderObject = JSON.parse(document.getElementById("order").value);	
+	  var submitOrderElements = document.getElementsByName('submit');
+      if (submitOrderElements){
+          submitOrderElements.disabled = true;
+      }
 	  Cardinal.setup("init", {
 		    jwt: document.getElementById("JWTContainer").value,
 		    order: orderObject
 	  });	  
 	  Cardinal.on('payments.setupComplete', function(setupCompleteData){
+		  var submitOrderElements = document.getElementsByName('submit');
+          if (submitOrderElements){
+              submitOrderElements.disabled = false;
+          }
 		   document.getElementById("DFReferenceId").value=setupCompleteData.sessionId;
 		   document.payerAuthRedirect.submit();
 	  });  
@@ -38,7 +50,7 @@
 	         if(data.ActionCode && data.ActionCode === "ERROR")    
 	         {
 	        	 var error = document.getElementById("errormsg");
-	        	 var errorformdiv = document.getElementByClassName("error-form")
+	        	 var errorformdiv = document.getElementsByClassName("error-form")
 	        	 if(errorformdiv)
 	        	 {
 	        		 errorformdiv.innerText = "${Resource.msg('confirm.error.technical','checkout',null)}";
@@ -54,3 +66,4 @@
 	  });
 	  
 </script>
+</isdecorate>

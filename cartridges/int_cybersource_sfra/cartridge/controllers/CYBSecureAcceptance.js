@@ -7,8 +7,8 @@ var server = require('server');
 */
 
 /* API Includes */
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var Resource = require('dw/web/Resource');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
 /**
  * Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
@@ -18,6 +18,7 @@ server.get('OpenIframe', function (req, res, next) {
     var response = secureAcceptanceAdapter.OpenIframe(session.privacy.order_id);
 
     if (response.success) {
+        res.CONTENT_SECURITY_POLICY = "default-src 'self'";
         res.render('services/secureAcceptanceIframeRequestForm', {
             requestData: response.data,
             formAction: response.formAction
@@ -42,38 +43,38 @@ server.post('SilentPostResponse', server.middleware.https, function (req, res, n
 * Merchant POST URL Configure response save in custom object
 */
 server.get('MerchantPost', server.middleware.https, function (req, res, next) {
-	var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+    var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
     if (secureAcceptanceHelper.validateSAMerchantPostRequest(request.httpParameterMap)) {
-		if (!secureAcceptanceHelper.saveSAMerchantPostRequest(request.httpParameterMap)) {
-			res.render('common/http_404');
-		}
+        if (!secureAcceptanceHelper.saveSAMerchantPostRequest(request.httpParameterMap)) {
+            res.render('common/http_404');
+        }
     } else {
     	res.render('common/http_200');
     }
-	next();
+    next();
 });
 
 /**
 * This method is used to create flex token
 */
 server.get('CreateFlexToken', server.middleware.https, function (req, res, next) {
-	var Flex = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/Flex');
-	var flexResult = Flex.CreateFlexKey();
-	res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent',{
-		flexTokenResult: flexResult
-    });	
-	next();
+    var Flex = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/Flex');
+    var flexResult = Flex.CreateFlexKey();
+    res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent', {
+        flexTokenResult: flexResult
+    });
+    next();
 });
 
 server.get('ReCreateBasket', server.middleware.https, function (req, res, next) {
-	var OrderMgr = require('dw/order/OrderMgr');
-	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	var order = OrderMgr.getOrder(session.privacy.order_id);
-	var currentBasket = COHelpers.reCreateBasket(order);	
-	res.json({
-		success: true
-	});
-	next();
+    var OrderMgr = require('dw/order/OrderMgr');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    var order = OrderMgr.getOrder(session.privacy.order_id);
+    var currentBasket = COHelpers.reCreateBasket(order);
+    res.json({
+        success: true
+    });
+    next();
 });
 /*
  * Module exports

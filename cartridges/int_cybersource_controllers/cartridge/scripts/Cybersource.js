@@ -23,7 +23,7 @@ function HandleCard(args) {
 	var PaymentMethod = session.forms.billing.paymentMethods.selectedPaymentMethodID.value;
 	var PaymentInstrument = require('dw/order/PaymentInstrument');
 	
-	if (empty(PaymentMethod) || !PaymentMethod.equals(PaymentInstrument.METHOD_CREDIT_CARD)) {
+	if (empty(PaymentMethod)) {
 		return {error: true};
 	}
 	var Cart = require(CybersourceConstants.SG_CONTROLLER +'/cartridge/scripts/models/CartModel');
@@ -35,10 +35,11 @@ function HandleCard(args) {
    	var cardType = creditCardForm.get('type').value();
    	var expirationMonth = creditCardForm.get('expiration.month').value();
    	var expirationYear = creditCardForm.get('expiration.year').value();
+   	var flexResponse = creditCardForm.get('flexresponse').value();
    	var PaymentMgr = require('dw/order/PaymentMgr');
    	var paymentCard = PaymentMgr.getPaymentCard(cardType);
-    if (empty(subscriptionToken)) {
-    	var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
+    if (empty(subscriptionToken) && !empty(flexResponse)) {
+    	var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber);
 
     	if (creditCardStatus.error) {
     		var invalidatePaymentCardFormElements = require(CybersourceConstants.SG_CORE +'/cartridge/scripts/checkout/InvalidatePaymentCardFormElements');
@@ -46,12 +47,22 @@ function HandleCard(args) {
 
         	return {error: true};
     	}
+    } else  {
+    	if(empty(subscriptionToken)){
+	    	var creditCardStatus = paymentCard.verify(expirationMonth, expirationYear, cardNumber, cardSecurityCode);
+	
+	    	if (creditCardStatus.error) {
+	    		var invalidatePaymentCardFormElements = require(CybersourceConstants.SG_CORE +'/cartridge/scripts/checkout/InvalidatePaymentCardFormElements');
+	        	invalidatePaymentCardFormElements.invalidatePaymentCardForm(creditCardStatus, creditCardForm);
+	
+	        	return {error: true};
+	    	}
+    	}
     }
 
     Transaction.wrap(function () {
         CommonHelper.removeExistingPaymentInstruments(cart);
-        
-        var paymentInstrument = cart.createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD, cart.getNonGiftCertificateAmount());
+        var paymentInstrument = cart.createPaymentInstrument(PaymentMethod, cart.getNonGiftCertificateAmount());
 
         paymentInstrument.creditCardHolder = creditCardForm.get('owner').value();
         paymentInstrument.creditCardNumber = cardNumber;

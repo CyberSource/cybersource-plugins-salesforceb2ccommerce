@@ -11,7 +11,9 @@
 				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" />
 
     <field formid="paymentMethod" type="string" mandatory="true" />
-
+    
+	<include formid="contactInfoFields" name="contactInfo"/>
+	
     <include formid="creditCardFields" name="creditCard"/>
 
     <field formid="subscribe" type="boolean" checked="false" default-value="false" mandatory="false" />

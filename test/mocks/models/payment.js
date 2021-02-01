@@ -4,12 +4,11 @@ var proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 var collections = require('../util/collections');
 
 function proxyModel() {
-    return proxyquire('../../../../storefront-reference-architecture/cartridges/app_storefront_base/cartridge/models/payment', {
+    return proxyquire('../../../../Cybersource/cartridges/int_cybs_sfra_base/cartridge/models/payment', {
         '*/cartridge/scripts/util/collections': collections,
         'dw/order/PaymentMgr': {
             getApplicablePaymentMethods: function () {
-                return [
-                    {
+                return [{
                         ID: 'GIFT_CERTIFICATE',
                         name: 'Gift Certificate'
                     },
@@ -22,8 +21,7 @@ function proxyModel() {
             getPaymentMethod: function () {
                 return {
                     getApplicablePaymentCards: function () {
-                        return [
-                            {
+                        return [{
                                 cardType: 'Visa',
                                 name: 'Visa',
                                 UUID: 'some UUID'

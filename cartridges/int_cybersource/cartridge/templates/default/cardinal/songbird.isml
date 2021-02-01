@@ -32,7 +32,7 @@
              if(data.ActionCode && data.ActionCode === "ERROR")    
              {
                  var error = document.getElementById("errormsg");
-                 var errorformdiv = document.getElementByClassName("error-form")
+                 var errorformdiv = document.getElementsByClassName("error-form")
                  if(errorformdiv)
                  {
                      errorformdiv.innerText = "${Resource.msg('confirm.error.technical','checkout',null)}";

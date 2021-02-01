@@ -39,24 +39,26 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	billTo = result.billTo;
 	result = CommonHelper.CreateCybersourceShipToObject(basket);
 	shipTo = result.shipTo;
-	if (!empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST))) {
-		result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
-		cardObject = result.card;
-	} else {
-		result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
-		cardObject = result.card;
-	}
-	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
-	purchaseObject = result.purchaseTotals;
-	result = CommonHelper.CreateCybersourceItemObject(basket);
-	var items : dw.util.List = result.items;
-
+	
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
 	var csReference = webreferences.CyberSourceTransaction;
 
 	var serviceRequest = new csReference.RequestMessage();
+	
+	if (empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST)) && empty(CreditCardForm.flexresponse.value)) {
+		result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
+		cardObject = result.card;
+	} else {
+		serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
+		serviceRequest.tokenSource.transientToken = CreditCardForm.flexresponse.value;
+	}
+	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
+	purchaseObject = result.purchaseTotals;
+	result = CommonHelper.CreateCybersourceItemObject(basket);
+	var items : dw.util.List = result.items;
+
 	//**************************************************************************//
 	// the request object holds the input parameter for the OnDemand Subscription request
 	//**************************************************************************//	

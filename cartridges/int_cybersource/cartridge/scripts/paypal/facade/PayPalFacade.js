@@ -52,7 +52,7 @@ function payPalSerivceInterface(request)
 	 ****************************************************************************/
 function sessionService(lineItemCntr,args){
 	var request = new csReference.RequestMessage();
-	createBasicRequest(request,lineItemCntr);
+	createBasicRequest('sessionService',request,lineItemCntr);
 	libCybersource.setClientData( request, lineItemCntr.UUID); 
 	var sessionService = new csReference.APSessionsService();
 	__addFundingSource(request);
@@ -176,7 +176,7 @@ function checkStatusService(lineItemCntr,requestId){
 function orderService(lineItemCntr,paymentInstrument){
 	//create request stub for order service
 	var serviceRequest = new csReference.RequestMessage(),sessionRequestID;
-	createBasicRequest(serviceRequest,lineItemCntr);
+	createBasicRequest('orderService',serviceRequest,lineItemCntr);
 	libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo); 
 	serviceRequest.apPaymentType = 'PPL';
 	var paymentInstruments = lineItemCntr.paymentInstruments;
@@ -195,13 +195,13 @@ function orderService(lineItemCntr,paymentInstrument){
 	return payPalSerivceInterface(serviceRequest);
 }
 
-function createBasicRequest(request,lineItemCntr){
+function createBasicRequest(typeofService,request,lineItemCntr){
 	var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	var purchase,itemList,billTo,shipTo;
 	purchase = commonHelper.GetPurchaseTotal(lineItemCntr);
 	request.purchaseTotals = libCybersource.copyPurchaseTotals( purchase );
 	if(lineItemCntr.getGiftCertificatePaymentInstruments().size() === 0){
-		itemList = commonHelper.GetItemObject(lineItemCntr);
+		itemList = commonHelper.GetItemObject(typeofService,lineItemCntr);
 	}
 	var items  = [];
 	if(!empty(itemList))
@@ -230,7 +230,7 @@ function createBasicRequest(request,lineItemCntr){
 	function authorizeService(lineItemCntr,paymentInstrument){
 		//create request stub for sale service
 		var serviceRequest = new csReference.RequestMessage();
-		createBasicRequest(serviceRequest,lineItemCntr);
+		createBasicRequest('authorizeService', serviceRequest,lineItemCntr);
 		__addDecisionManager(serviceRequest);
 		if(serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()){
 			libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo,session.sessionID); 	
@@ -257,7 +257,7 @@ function createBasicRequest(request,lineItemCntr){
 	 	//create request stub for sale service
 		var serviceRequest = new csReference.RequestMessage();
 		var paymentTransaction =  paymentInstrument.paymentTransaction;
-		createBasicRequest(serviceRequest,lineItemCntr);
+		createBasicRequest('saleService',serviceRequest,lineItemCntr);
 		__addDecisionManager(serviceRequest);
 		if(serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()){
 			libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo,session.sessionID); 	

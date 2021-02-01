@@ -46,7 +46,13 @@ function initSessionCallback()
 	cart.calculate();
 	 });
 	if(result.success)
-	{
+	{ 
+		
+		var applicableShippingMethods = cart.getApplicableShippingMethods(adapter.GetAddress(cart.object.getDefaultShipment()));
+		Transaction.wrap(function () {
+	        cart.updateShipmentShippingMethod(cart.getDefaultShipment().getID(), request.httpParameterMap.shippingMethodID.stringValue, null, applicableShippingMethods);
+	        cart.calculate();
+	    });
 		app.getForm('billing.billingAddress.addressFields').copyFrom(cart.getBillingAddress());
         app.getForm('billing.billingAddress.addressFields.states').copyFrom(cart.getBillingAddress());
 		session.forms.singleshipping.fulfilled.value = true;

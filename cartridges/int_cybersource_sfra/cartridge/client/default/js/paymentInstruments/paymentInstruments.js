@@ -22,9 +22,9 @@ base.removePayment = function () {
                 success: function (data) {
                     $('#uuid-' + data.UUID).remove();
                     if (data.message) {
-                        var toInsert = '<div><h3>' +
-                            data.message +
-                            '</h3><div>';
+                        var toInsert = '<div><h3>'
+                            + data.message
+                            + '</h3><div>';
                         $('.paymentInstruments').html(toInsert);
                     }
                 },
@@ -59,9 +59,9 @@ base.submitPayment = function () {
                 if (!data.success) {
                     formValidation($form, data);
                     if (data.message) {
-                        var toInsert = '<div><h3>' +
-                            data.message +
-                            '</h3><div>';
+                        var toInsert = '<div><h3>'
+                            + data.message
+                            + '</h3><div>';
                         $('.paymentInstruments').html(toInsert);
                     }
                 } else {

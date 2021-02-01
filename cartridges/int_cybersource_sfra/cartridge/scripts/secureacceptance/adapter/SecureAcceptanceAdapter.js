@@ -1,10 +1,11 @@
 'use strict';
 
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 var Site = require('dw/system/Site');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+
+var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 
 /**
  * @param {Object} additionalArgs Secure acceptance request arguments
@@ -34,7 +35,7 @@ function HandleRequest(additionalArgs) {
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor, additionalArgs) {
     var OrderMgr = require('dw/order/OrderMgr');
-	var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+    var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var order = OrderMgr.getOrder(orderNumber);
     var paymentInstrument = paymentInstrument;
     var paymentMethod = paymentInstrument.paymentMethod;
@@ -43,30 +44,29 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor, additionalA
     if (CsSAType.equals(CybersourceConstants.METHOD_SA_REDIRECT)) {
         return secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, order, null, subscriptionToken);
     }
-    else if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
+    if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
         return {
             returnToPage: true,
             order: order
         };
-    } else if (CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
+    } if (CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 	    var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', subscriptionToken);
     	var saSilentPostRequest = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, order, null, subscriptionToken);
-		return {
+        return {
         	intermediateSilentPost: true,
         	data: saSilentPostRequest.requestData,
-        	formAction : saSilentPostRequest.formAction,
+        	formAction: saSilentPostRequest.formAction,
         	cardObject: cardObject.card,
-        	renderViewPath : 'secureacceptance/secureAcceptanceSilentPost'
+        	renderViewPath: 'secureacceptance/secureAcceptanceSilentPost'
         };
-    } else {
-    	var silentPostResponse = secureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: paymentInstrument, Order: order, Basket: order });
-        if (silentPostResponse.authorized || silentPostResponse.process3DRedirection) {
-            var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
-            secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
-        }
-        return silentPostResponse;
     }
+    	var silentPostResponse = secureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: paymentInstrument, Order: order, Basket: order });
+    if (silentPostResponse.authorized || silentPostResponse.process3DRedirection) {
+        var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
+        secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
+    }
+    return silentPostResponse;
 }
 
 /**
@@ -85,16 +85,16 @@ function OpenIframe(currentOrderNo) {
         var server = require('server');
         var cardUUID = server.forms.getForm('billing').creditCardFields.selectedCardID.htmlValue;
 
-        if (null !== order && null !== paymentInstrument) {
-        var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+        if (order !== null && paymentInstrument !== null) {
+            var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
             var subscriptionToken = CommonHelper.GetSubscriptionToken(cardUUID, customer);
             saRequest = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, order, null, subscriptionToken);
-        if (saRequest.success && saRequest.requestData !== null) {
-            returnObject.data = saRequest.requestData;
-            returnObject.formAction = saRequest.formAction;
-            returnObject.success = true;
+            if (saRequest.success && saRequest.requestData !== null) {
+                returnObject.data = saRequest.requestData;
+                returnObject.formAction = saRequest.formAction;
+                returnObject.success = true;
+            }
         }
-    }
     } else {
         returnObject.success = false;
     }
@@ -114,7 +114,7 @@ function SAResponse(currentRequestParameterMap) {
     var result = SAHandleResponse(currentRequestParameterMap);
     if (result.success && !empty(result.responseObject)) {
         var orderNo = currentRequestParameterMap.req_reference_number.stringValue;
-		var order = OrderMgr.getOrder(orderNo);
+        var order = OrderMgr.getOrder(orderNo);
         var responseObject = result.responseObject;
         if ('saredirect'.equals(currentRequestParameterMap.provider.stringValue)) {
             var redirectResponse = SARedirectResponse(responseObject, order);
@@ -145,17 +145,17 @@ function SAResponse(currentRequestParameterMap) {
 }
 
 function SARedirectResponse(responseObject, order) {
-    var Order = require('dw/order/Order'),
-	Transaction = require('dw/system/Transaction'),
-	Status = require('dw/system/Status'),
-	OrderMgr = require('dw/order/OrderMgr');
-	var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-	COHelpers.clearPaymentAttributes();
+    var Order = require('dw/order/Order');
+    var Transaction = require('dw/system/Transaction');
+    var Status = require('dw/system/Status');
+    var OrderMgr = require('dw/order/OrderMgr');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    COHelpers.clearPaymentAttributes();
     switch (responseObject.Decision) {
         case 'ACCEPT':
-            if ((order.status.value === Order.ORDER_STATUS_CREATED) && responseObject.ReasonCode === "100") {
+            if ((order.status.value === Order.ORDER_STATUS_CREATED) && responseObject.ReasonCode === '100') {
                 return { nextStep: CybersourceConstants.SA_SUBMITORDER, data: order };
-            } else if (order.status.value !== Order.ORDER_STATUS_FAILED) {
+            } if (order.status.value !== Order.ORDER_STATUS_FAILED) {
                 return { nextStep: CybersourceConstants.SA_REVIEWORDER, data: order };
             }
             break;
@@ -177,57 +177,56 @@ function SARedirectResponse(responseObject, order) {
                 var PlaceOrderError = null;
                 var result = secureAcceptanceHelper.HandleDecision(responseObject.ReasonCode);
                 if (result.error) {
-                    PlaceOrderError = new Status(Status.ERROR, "confirm.error.technical");
+                    PlaceOrderError = new Status(Status.ERROR, 'confirm.error.technical');
                 } else {
-                    PlaceOrderError = new Status(Status.ERROR, "confirm.error.declined");
+                    PlaceOrderError = new Status(Status.ERROR, 'confirm.error.declined');
                 }
                 return { nextStep: CybersourceConstants.SA_SUMMARY, data: PlaceOrderError };
             }
             break;
-		case 'CANCEL':
+        case 'CANCEL':
     		var currentBasket = COHelpers.reCreateBasket(order);
-    		return { nextStep: CybersourceConstants.SA_CANCEL, location : URLUtils.https('Cart-Show')};
+    		return { nextStep: CybersourceConstants.SA_CANCEL, location: URLUtils.https('Cart-Show') };
     		break;
-        default: break;
+        default:
+
+        	break;
     }
-    return;
 }
 
 function SAIframeResponse(responseObject, order) {
-    var Order = require('dw/order/Order'),
-        Transaction = require('dw/system/Transaction'),
-        OrderMgr = require('dw/order/OrderMgr'),
-        Status = require('dw/system/Status'),
-        orderPlacementStatus = null;
+    var Order = require('dw/order/Order');
+    var Transaction = require('dw/system/Transaction');
+    var OrderMgr = require('dw/order/OrderMgr');
+    var Status = require('dw/system/Status');
+    var orderPlacementStatus = null;
     switch (responseObject.Decision) {
         case 'ACCEPT':
-            if ((order.status.value === Order.ORDER_STATUS_CREATED) && responseObject.ReasonCode === "100") {
+            if ((order.status.value === Order.ORDER_STATUS_CREATED) && responseObject.ReasonCode === '100') {
                 orderPlacementStatus = Transaction.wrap(function () {
                     var statusOrder = OrderMgr.placeOrder(order);
                     if (Status.ERROR === statusOrder) {
                         session.privacy.SkipTaxCalculation = false;
                         OrderMgr.failOrder(order, true);
                         return false;
-                    } else {
-                        order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);
-                        return true;
                     }
+                    order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);
+                    return true;
                 });
                 if (empty(orderPlacementStatus) || Status.ERROR !== orderPlacementStatus) {
                     return {
                         nextStep: CybersourceConstants.SA_GOTO,
                         location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'sasubmit'),
                         render: 'secureacceptance/saredirect'
-                    }
-                } else {
-                    Logger.error('[SECURE_ACCEPTANCE] SAIframeResponse function Error in order failure even if order got ACCEPT for order ' + orderNo);
-                    return {
-                        nextStep: CybersourceConstants.SA_GOTO,
-                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', 'true'),
-                        render: 'secureacceptance/saredirect'
                     };
                 }
-            } else if (Order.ORDER_STATUS_FAILED !== order.status.value) {
+                Logger.error('[SECURE_ACCEPTANCE] SAIframeResponse function Error in order failure even if order got ACCEPT for order ' + order.orderNo);
+                return {
+                    nextStep: CybersourceConstants.SA_GOTO,
+                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', 'true'),
+                    render: 'secureacceptance/saredirect'
+                };
+            } if (Order.ORDER_STATUS_FAILED !== order.status.value) {
                 return {
                     nextStep: CybersourceConstants.SA_GOTO,
                     location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm'),
@@ -258,7 +257,7 @@ function SAIframeResponse(responseObject, order) {
                 var PlaceOrderError = null;
                 var result = secureAcceptanceHelper.HandleDecision(responseObject.ReasonCode);
                 if (result.error) {
-                    PlaceOrderError = new Status(Status.ERROR, "confirm.error.technical");
+                    PlaceOrderError = new Status(Status.ERROR, 'confirm.error.technical');
                 }
                 if (empty(PlaceOrderError)) {
                     return {
@@ -266,20 +265,17 @@ function SAIframeResponse(responseObject, order) {
                         location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail'),
                         render: 'secureacceptance/saredirect'
                     };
-                } else {
-                    return {
-                        nextStep: CybersourceConstants.SA_GOTO,
-                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', 'true'),
-                        render: 'secureacceptance/saredirect'
-                    };
                 }
+                return {
+                    nextStep: CybersourceConstants.SA_GOTO,
+                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', 'true'),
+                    render: 'secureacceptance/saredirect'
+                };
             }
             break;
         default: break;
     }
-    return;
 }
-
 
 /**
  * Handle Secure Acceptance Redirect and IFrame response, authenticate signature,
@@ -287,7 +283,6 @@ function SAIframeResponse(responseObject, order) {
  */
 
 function SAHandleResponse(httpParameterMap) {
-
     var secretKey = null;
     var paymentInstrument = null;
     var paymentMethod = null;
@@ -296,9 +291,10 @@ function SAHandleResponse(httpParameterMap) {
         var OrderMgr = require('dw/order/OrderMgr');
         var orderNo = httpParameterMap.req_reference_number.stringValue;
         var order = OrderMgr.getOrder(orderNo);
-        var saResponse, responseObject;
+        var saResponse; var
+            responseObject;
         paymentInstrument = secureAcceptanceHelper.GetPaymemtInstument(order);
-        if (null !== order && !empty(paymentInstrument)) {
+        if (order !== null && !empty(paymentInstrument)) {
             paymentMethod = paymentInstrument.paymentMethod;
             saResponse = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, null, httpParameterMap, null);
             if (saResponse.success && saResponse.signatureAuthorize) {
@@ -315,13 +311,13 @@ function SAHandleResponse(httpParameterMap) {
 */
 function updateSAResponse(responseParameterMap, order, paymentInstrument, customerObj) {
     var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
-    var isOverrideShipping = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSAOverrideShippingAddress");
-    var isOverrideBilling = dw.system.Site.getCurrent().getCustomPreferenceValue("CsSAOverrideBillingAddress");
+    var isOverrideShipping = dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAOverrideShippingAddress');
+    var isOverrideBilling = dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAOverrideBillingAddress');
     var responseObject = secureAcceptanceHelper.mapSecureAcceptanceResponse(responseParameterMap);
     if (order.status.value === dw.order.Order.ORDER_STATUS_CREATED) {
         PaymentInstrumentUtils.UpdatePaymentTransactionSecureAcceptanceAuthorize(order, responseObject);
     }
-    if (((responseObject.Decision == "ACCEPT") || (responseObject.Decision == "REVIEW")) && (order.status.value === dw.order.Order.ORDER_STATUS_CREATED)) {
+    if (((responseObject.Decision == 'ACCEPT') || (responseObject.Decision == 'REVIEW')) && (order.status.value === dw.order.Order.ORDER_STATUS_CREATED)) {
         PaymentInstrumentUtils.UpdateOrderBillingShippingDetails(order, responseObject, isOverrideShipping, isOverrideBilling);
         var subsToken = !empty(responseParameterMap.payment_token.stringValue) ? responseParameterMap.payment_token.stringValue : responseParameterMap.req_payment_token.stringValue;
         PaymentInstrumentUtils.updatePaymentInstumenSACard(paymentInstrument, responseParameterMap.req_card_expiry_date.stringValue,
@@ -363,19 +359,18 @@ function SilentPostResponse() {
                         httpParameterMap.req_bill_to_forename.stringValue, httpParameterMap.req_bill_to_surname.stringValue);
                 });
 
-				//Payer Auth 3DS updates
-				session.privacy.orderId = order.orderNo;
-				return URLUtils.https('CheckoutServices-InitPayerAuth');
-            } else {
-                return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder' , 'SecureAcceptanceError', 'true' );
+                // Payer Auth 3DS updates
+                session.privacy.orderId = order.orderNo;
+                return URLUtils.https('CheckoutServices-InitPayerAuth');
             }
+            return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'SecureAcceptanceError', 'true');
         }
     } else {
-        return URLUtils.https('Cart-Show', 'SecureAcceptanceError' , 'true');
+        return URLUtils.https('Cart-Show', 'SecureAcceptanceError', 'true');
     }
 }
 
-/** Exported functions **/
+/** Exported functions * */
 module.exports = {
     HandleRequest: HandleRequest,
     OpenIframe: OpenIframe,
