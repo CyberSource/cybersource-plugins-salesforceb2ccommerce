@@ -800,11 +800,11 @@ var CybersourceHelper = {
         }
         if (!empty(session.privacy.veresEnrolled)) {
         	request.ccAuthService.veresEnrolled = session.privacy.veresEnrolled;
-        	session.privacy.veresEnrolled = '';
+        	session.privacy.veresEnrolled = ' ';
         }
         if (!empty(session.privacy.networkScore)) {
         	request.ccAuthService.paNetworkScore = session.privacy.networkScore;
-        	session.privacy.networkScore = '';
+        	session.privacy.networkScore = ' ';
         }
         if (!empty(cavvAlgorithm)) {
         	request.ccAuthService.cavvAlgorithm = cavvAlgorithm;

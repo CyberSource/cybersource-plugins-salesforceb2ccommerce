@@ -57,9 +57,9 @@
  | Field                       | Description                                             | Value to Set  |
  | --------------------------- | ------------------------------------------------------- | ------------- |
  | CsSAType                    | Secure Acceptance Type                                  | **SA_IFRAME** |
- | SA_Iframe_ProfileID         | Secure Acceptance Iframe Profile ID                     |
- | SA_Iframe_SecretKey         | Secure Acceptance Iframe secret key                     |
- | SA_Iframe_AccessKey         | Secure Acceptance Iframe Access Key                     |
+ | SA_Iframe_ProfileID         | Secure Acceptance Iframe Profile ID. Follow **"Creating a Hosted Checkout Profile"** step from SA Guide [url](https://developer.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_Hosted_Checkout/Secure_Acceptance_Hosted_Checkout.pdf)                    |
+ | SA_Iframe_SecretKey         | Secure Acceptance Iframe secret key. Follow this [link](https://support.cybersource.com/s/article/How-to-Create-or-Update-a-Secure-Acceptance-security-key)                     |
+ | SA_Iframe_AccessKey         | Secure Acceptance Iframe Access Key. Get access key from above step                    |
  | CsSAIframetFormAction       | CyberSource secure acceptance Iframe form action        |
  | CsSAOverrideBillingAddress  | CyberSource Secure Acceptance Override Billing Address  |
  | CsSAOverrideShippingAddress | CyberSource Secure Acceptance Override Shipping Address |
@@ -73,9 +73,9 @@
  | Field                       | Description                                              | Value to Set    |
  | --------------------------- | -------------------------------------------------------- | --------------- |
  | CsSAType                    | Secure Acceptance Type                                   | **SA_REDIRECT** |
- | SA_Redirect_ProfileID       | Secure Acceptance Redirect Profile ID.                   |
- | SA_Redirect_SecretKey       | Secure Acceptance Redirect Secret Key.                   |
- | SA_Redirect_AccessKey       | Secure Acceptance Redirect Access Key.                   |
+ | SA_Redirect_ProfileID       | Secure Acceptance Redirect Profile ID. Follow **"Creating a Hosted Checkout Profile"** step from SA Guide [url](https://developer.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_Hosted_Checkout/Secure_Acceptance_Hosted_Checkout.pdf)                  |
+ | SA_Redirect_SecretKey       | Secure Acceptance Redirect Secret Key. Follow this [link](https://support.cybersource.com/s/article/How-to-Create-or-Update-a-Secure-Acceptance-security-key)                   |
+ | SA_Redirect_AccessKey       | Secure Acceptance Redirect Access Key. Get acess key from above step                    |
  | CsSARedirectFormAction      | CyberSource secure acceptance redirect form action.      |
  | CsSAOverrideBillingAddress  | CyberSource Secure Acceptance Override Billing Address.  |
  | CsSAOverrideShippingAddress | CyberSource Secure Acceptance Override Shipping Address. |
@@ -89,9 +89,9 @@
  | Field                                   | Description                                              | Value to Set      |
  | --------------------------------------- | -------------------------------------------------------- | ----------------- |
  | CsSAType                                | Secure Acceptance Type                                   | **SA_SILENTPOST** |
- | SA_Silent_ProfileID                     | Secure Acceptance Silent Post Profile ID.                |
- | SA_Silent_SecretKey                     | Secure Acceptance Silent Post Secret Key.                |
- | SA_Silent_AccessKey                     | Secure Acceptance Silent Post Access Key.                |
+ | SA_Silent_ProfileID                     | Secure Acceptance Silent Post Profile ID. Follow **"Creating Checkout API Profile"** section from this [link](https://developer.cybersource.com/library/documentation/dev_guides/Secure_Acceptance_Checkout_API/Secure_Acceptance_Checkout_API.pdf)               |
+ | SA_Silent_SecretKey                     | Secure Acceptance Silent Post Secret Key. Follow this [link](https://support.cybersource.com/s/article/How-to-Create-or-Update-a-Secure-Acceptance-security-key)               |
+ | SA_Silent_AccessKey                     | Secure Acceptance Silent Post Access Key. Get access key from above step               |
  | Secure_Acceptance_Token_Create_Endpoint | Secure_Acceptance_Token_Create_Endpoint.                 |
  | Secure_Acceptance_Token_Update_Endpoint | Secure_Acceptance_Token_Update_Endpoint.                 |
  | CsSAOverrideBillingAddress              | CyberSource Secure Acceptance Override Billing Address.  |
@@ -160,7 +160,7 @@
  | CruiseOrgUnitId        | GUID to identify the merchant organization within Cardinal systems                                                                                                                                                   |
  | CardinalCruiseApiPath  | Songbird.js script API path. Refer the section *CDN* in this [link](https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js) to get API path.                                                     |
 
- Step 3: On the same page, select 'Credit/Debit cards' and check the payer authentication checkbox on any credit card types you want to support Payer Authentication.
+ Step 3: Go to **Merchant Tools > Ordering > Payment Methods**, select 'Credit/Debit cards' and check the payer authentication checkbox on any credit card types you want to support Payer Authentication.
 
 ###### Upgrade to 3DS2.0
 If you are currently using CYBS cartridge and would like to upgrade to 3DS2.0, please refer below doc:
@@ -453,7 +453,7 @@ Different countries and specific currencies could be configured to run Klarna wi
 
 Step 1: Merchant Id/Key could be configured at **Merchant Tools -> Ordering -> Payment Methods -> Klarna**. In this release, Klarna has been supported for US, UK and Germany with different sites and corresponding Merchant Ids/Key.
 
-Step 2: On the Payment Methods page, Select the locale (language) you want to set up, then select the Klarne payment method.
+Step 2: On the Payment Methods page, Select the locale (language) you want to set up, then select the Klarna payment method.
 
 ![](CyberSource/documentation/markdown/Images/Klarna_Payment_Methods.png)
 

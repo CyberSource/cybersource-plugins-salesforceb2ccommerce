@@ -151,9 +151,10 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Tokenization**
 Field | Description
 ------------ | -------------
 CS Tokenization Enabled | Enable or Disable the Tokenization Service
-LimitSavedCardRate | Limit number of credit card save attempts
-SavedCardLimitFrame | Limit of card count in a certain time period
-SavedCardLimitTimeFrame | Number of hours that saved credit card attempts are counted
+CS Subscription Tokens Enabled | Enable the request of a subscription token on credit card authorizations
+LimitSavedCardRate | Enable Save Card Limit feature
+SavedCardLimitFrame | Provide the number of cards that can be saved in a certain time period
+SavedCardLimitTimeFrame | Provide the number of hours that saved credit card attempts are counted
 
 ### **7. Subscription Token Creation**
 
