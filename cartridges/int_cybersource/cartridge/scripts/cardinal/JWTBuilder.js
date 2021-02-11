@@ -9,10 +9,7 @@ var Signature = require("dw/crypto/Signature");
 var Encoding = require('dw/crypto/Encoding');  
 var Mac = require('dw/crypto/Mac'); 
 var Bytes = require('dw/util/Bytes');  
-/*importPackage( dw.system );
-importPackage( dw.object );
-importPackage( dw.util );
-importPackage( dw.crypto );*/
+
 /** 
  * The Keys. If you want to verify this in jwt.io, use the content of the files! 
  */

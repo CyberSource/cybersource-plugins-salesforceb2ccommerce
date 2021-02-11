@@ -64,14 +64,14 @@ Production = k8vif92e
 
 <isif condition="${pdict.DeviceFingerprintEnabled}">
 
-	<p style="background:url(<isprint value="${url_1}" encoding="off"/>)"></p>
+	<p style="background:url(<isprint value="${url_1}" encoding="on"/>)"></p>
 	<img src="<isprint value="${url_2}" encoding="off"/>" alt="">
 	
 	<iscomment>
 	******** JavaScript code ********
 	</iscomment>
 	
-	<script src="<isprint value="${url_4}" encoding="off"/>" 
+	<script src="<isprint value="${url_4}" encoding="on"/>" 
 		type="text/javascript">
 	</script>
 	

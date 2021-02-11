@@ -6,7 +6,6 @@
 * @output device : String
 *
 */
-// importPackage(dw.system);
 
 function execute(args : PipelineDictionary) : Number {
     var deviceType : String = 'desktop';

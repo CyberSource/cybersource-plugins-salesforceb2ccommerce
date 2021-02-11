@@ -108,7 +108,7 @@ server.post(
             //  Transaction.wrap(function () {
             //      ShippingHelper.selectShippingMethod(cart.defaultShipment, request.httpParameterMap.shippingMethodID.stringValue);
             //      basketCalculationHelpers.calculateTotals(cart);
-		    //  }); 
+		    //  });
             session.forms.billing.addressFields.copyFrom(cart.getBillingAddress());
             if ('states' in session.forms.billing.addressFields)
         		{ session.forms.billing.addressFields.states.copyFrom(cart.getBillingAddress()); }
