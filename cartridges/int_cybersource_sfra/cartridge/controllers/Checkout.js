@@ -4,6 +4,7 @@ var page = module.superModule;
 var server = require('server');
 var Site = require('dw/system/Site');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 server.extend(page);
 
@@ -104,7 +105,7 @@ server.append('Begin', function (req, res, next) {
     next();
 });
 
-server.post('SetBillingAddress', server.middleware.https, function (req, res, next) {
+server.post('SetBillingAddress', csrfProtection.generateToken, server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var Transaction = require('dw/system/Transaction');
     var paymentForm = server.forms.getForm('billing');

@@ -14,8 +14,9 @@ var COHelpers = require('~/cartridge/scripts/checkout/checkoutHelpers');
 var WeChatAdaptor = require('~/cartridge/scripts/wechat/adapter/WeChatAdaptor');
 var OrderModel = require('*/cartridge/models/order');
 var collections = require('*/cartridge/scripts/util/collections');
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
-server.post('WeChatStatus', function (req, res, next) {
+server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, next) {
     var orderNo = request.httpParameterMap.orderNo;
     var order = OrderMgr.getOrder(orderNo);
     var paymentInstruments = order.paymentInstruments;

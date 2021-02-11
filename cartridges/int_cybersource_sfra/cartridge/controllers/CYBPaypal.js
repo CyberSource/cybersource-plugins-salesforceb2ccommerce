@@ -104,11 +104,11 @@ server.post(
         var Transaction = require('dw/system/Transaction');
 
         if (result.success) {
-            var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
-            Transaction.wrap(function () {
-                ShippingHelper.selectShippingMethod(cart.defaultShipment, request.httpParameterMap.shippingMethodID.stringValue);
-                basketCalculationHelpers.calculateTotals(cart);
-		    });
+            //  var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
+            //  Transaction.wrap(function () {
+            //      ShippingHelper.selectShippingMethod(cart.defaultShipment, request.httpParameterMap.shippingMethodID.stringValue);
+            //      basketCalculationHelpers.calculateTotals(cart);
+		    //  }); 
             session.forms.billing.addressFields.copyFrom(cart.getBillingAddress());
             if ('states' in session.forms.billing.addressFields)
         		{ session.forms.billing.addressFields.states.copyFrom(cart.getBillingAddress()); }

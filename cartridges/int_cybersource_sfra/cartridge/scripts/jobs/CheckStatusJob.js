@@ -1,5 +1,5 @@
 /**
-* 	CheckStatusJob.ds
+* 	CheckStatusJob.js
 *	This script get the order list for already placed orders having payment methods as ALIPAY/BankTransfer/Paypal
 *	and by passing different order status such as NEW, CREATED, OPEN and NOT EXPORTED
 *
@@ -92,7 +92,7 @@ function HandleCheckStatusServiceResponse(order) {
             }
         }
         catch (e) {
-            Logger.error('[APCheckStatusJob.ds] Error failing Order: ' + e.message);
+            Logger.error('[APCheckStatusJob.js] Error failing Order: ' + e.message);
         }
     }
 }

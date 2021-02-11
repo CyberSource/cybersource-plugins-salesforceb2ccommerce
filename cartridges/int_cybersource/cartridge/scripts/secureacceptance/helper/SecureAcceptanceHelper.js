@@ -674,7 +674,7 @@ function isSAMatchProfileForPost(httpParameterMap) : String
 		}
 	}
 	var errorMsg='Missing or invalid profile parameters';
-	Logger.error('[SecureAcceptanceHelper.ds] isSAMatchProfileForPost - Error in Secure acceptance merchant post URL parameters '+errorMsg);	
+	Logger.error('[SecureAcceptanceHelper.js] isSAMatchProfileForPost - Error in Secure acceptance merchant post URL parameters '+errorMsg);	
 	return {error:true, errorMsg:errorMsg};
 }
 
@@ -726,7 +726,7 @@ function saveSAMerchantPostRequest(httpParameterMap) : Boolean
 	   	});
 	   	return true;
 	} catch (ex) {
-		Logger.error("[SecureAcceptanceHelper.ds] saveSAMerchantPostRequest - error occured in JSON save in custom object"+ex.message);
+		Logger.error("[SecureAcceptanceHelper.js] saveSAMerchantPostRequest - error occured in JSON save in custom object"+ex.message);
 		return false;
 	}
 }

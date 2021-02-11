@@ -70,16 +70,16 @@ function TaxationRequest(cart) {
                     invalidFields += taxationResponse.invalidField[i];
                 }
             }
-            Logger.error('[TaxFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}', taxationResponse.reasonCode, taxationResponse.requestToken, missingFields, invalidFields);
+            Logger.error('[TaxFacade.js] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}', taxationResponse.reasonCode, taxationResponse.requestToken, missingFields, invalidFields);
             taxResult.error = true;
             taxResult.errorMsg = 'Reason code as ' + taxationResponse.reasonCode;
         } else {
-            Logger.error('[TaxFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}', taxationResponse.reasonCode, taxationResponse.requestToken);
+            Logger.error('[TaxFacade.js] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}', taxationResponse.reasonCode, taxationResponse.requestToken);
             taxResult.error = true;
             taxResult.errorMsg = 'Error';
         }
     } catch (e) {
-        Logger.error('[TaxFacade.ds] Error in taxation request ( {0} )', e.message);
+        Logger.error('[TaxFacade.js] Error in taxation request ( {0} )', e.message);
         taxResult.error = true;
         taxResult.errorMsg = e.message;
     } finally {
@@ -120,7 +120,7 @@ function __addTaxRequest(lineItemCtnr, items) {
         taxationRequest.taxService.noNexus = noNexus;
     } else if (!empty(nexus) && !empty(noNexus)) {
         var Logger = dw.system.Logger.getLogger('Cybersource');
-        Logger.info('[libCybersource.ds] Nexus and NoNexus lists both contain data. Defaulting to use Nexus list.  Ignoring NoNexus list.');
+        Logger.info('[libCybersource.js] Nexus and NoNexus lists both contain data. Defaulting to use Nexus list.  Ignoring NoNexus list.');
         taxationRequest.taxService.nexus = nexus;
     }
     var _items = [];

@@ -58,18 +58,18 @@ function TaxationRequest(cart)
 					invalidFields += taxationResponse.invalidField[i];
 				}
 			}
-			Logger.error("[TaxFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",taxationResponse.reasonCode,taxationResponse.requestToken,missingFields,invalidFields);
+			Logger.error("[TaxFacade.js] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",taxationResponse.reasonCode,taxationResponse.requestToken,missingFields,invalidFields);
 			taxResult.error =true;
 			taxResult.errorMsg='Reason code as '+taxationResponse.reasonCode;
 		}else{
-			Logger.error("[TaxFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",taxationResponse.reasonCode,taxationResponse.requestToken);
+			Logger.error("[TaxFacade.js] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",taxationResponse.reasonCode,taxationResponse.requestToken);
 			taxResult.error =true;
 			taxResult.errorMsg='Error';
 		}
 	
 	
 	}catch(e){
-		Logger.error("[TaxFacade.ds] Error in taxation request ( {0} )",e.message);
+		Logger.error("[TaxFacade.js] Error in taxation request ( {0} )",e.message);
 		taxResult.error = true;
 		taxResult.errorMsg = e.message;
 	}
@@ -112,7 +112,7 @@ function __addTaxRequest(lineItemCtnr,items){
 	}
 	else {
 		var Logger = dw.system.Logger.getLogger('Cybersource');			
-		Logger.info("[libCybersource.ds] Nexus and NoNexus contains data. Please specify Nexus OR NoNexus!");
+		Logger.info("[libCybersource.js] Nexus and NoNexus contains data. Please specify Nexus OR NoNexus!");
 	}
 	var _items  = [];
 	var length = items.length;

@@ -33,13 +33,13 @@ function payPalSerivceInterface(request)
         // call the service based on input
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[PayPalFacade.ds] Error in ServiceInterface ( {0} )', e.message);
+        Logger.error('[PayPalFacade.js] Error in ServiceInterface ( {0} )', e.message);
         return null;
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK')
     {
-        Logger.error('[libCybersource.ds] Error in ServiceInterface: null response');
+        Logger.error('[libCybersource.js] Error in ServiceInterface: null response');
         return null;
     }
     serviceResponse = serviceResponse.object;
@@ -331,12 +331,12 @@ function PayPalRefundService(requestID, merchantRefCode, paymentType, amount, cu
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         var err = e;
-        Logger.error('[PayPalFacade.ds] Error in PayPalRefundService request ( {0} )', e.message);
+        Logger.error('[PayPalFacade.js] Error in PayPalRefundService request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[PayPalFacade.ds] response in PayPalRefundService response ( {0} )', serviceResponse);
+        Logger.error('[PayPalFacade.js] response in PayPalRefundService response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayPalRefundService response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -385,12 +385,12 @@ function PayPalReversalService(requestID, merchantRefCode, paymentType, purchase
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[PayPalFacade.ds] Error in PayPalReversalService request ( {0} )', e.message);
+        Logger.error('[PayPalFacade.js] Error in PayPalReversalService request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[PayPalFacade.ds] response in PayPalReversalService response ( {0} )', serviceResponse);
+        Logger.error('[PayPalFacade.js] response in PayPalReversalService response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayPalReversalService response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -441,12 +441,12 @@ function PayPalCaptureService(requestID, merchantRefCode, paymentType, purchaseT
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[PayPalFacade.ds] Error in PayPalCaptureService request ( {0} )', e.message);
+        Logger.error('[PayPalFacade.js] Error in PayPalCaptureService request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[PayPalFacade.ds] response in PayPalCaptureService response ( {0} )', serviceResponse);
+        Logger.error('[PayPalFacade.js] response in PayPalCaptureService response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayPalCaptureService response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;

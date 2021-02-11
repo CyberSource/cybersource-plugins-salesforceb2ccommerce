@@ -13,7 +13,7 @@
 	text-decoration: underline;
 }
 .sample-card-form label {
-	width: 150px;
+	width: 9.375rem;
 	float: left;
 }
 .sample-card-form td, .delete-subscription td, .view-subscription td, .update-subscription td {
@@ -27,11 +27,11 @@
 	color: red;
 }
 .reversal-result label, .delete-subscription label, .view-subscription label {
-	width: 300px;
+	width: 18.75rem;
 	float: left;
 }
 .update-subscription label {
-	width: 100px;
+	width: 6.25rem;
 	float: left;
 }
 .cyb_paymentmethods {
@@ -77,4 +77,32 @@
 }
 .checkout-continue div {
 	padding: 0;
+}
+
+.payerAuth_payment {
+	text-align: center;
+	padding: 17.125rem 0rem;
+	color: #00a1e0;
+}
+
+#bankTransfer {
+	display:none;
+}
+
+#weChatModal {
+	display: block;
+}
+
+#loading {
+	 visibility: block; 
+	 text-align: center;
+}
+#eps {
+	display:none;
+}
+#gpy {
+	display:none;
+}
+#idl {
+	display:none;
 }

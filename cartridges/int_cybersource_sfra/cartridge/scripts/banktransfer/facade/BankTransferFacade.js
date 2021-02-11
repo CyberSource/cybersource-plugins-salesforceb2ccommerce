@@ -129,12 +129,12 @@ function BanktransferRefundService(requestID, merchantRefCode, paymentType, amou
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         var err = e;
-        Logger.error('[BankTransferFacade.ds] Error in BankTransferRefundService request ( {0} )', e.message);
+        Logger.error('[BankTransferFacade.js] Error in BankTransferRefundService request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[BankTransferFacade.ds] response in BankTransferFacadeService response ( {0} )', serviceResponse);
+        Logger.error('[BankTransferFacade.js] response in BankTransferFacadeService response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in BankTransferFacadeRefundService response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;

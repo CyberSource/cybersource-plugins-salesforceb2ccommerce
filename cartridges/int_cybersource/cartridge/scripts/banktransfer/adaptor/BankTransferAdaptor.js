@@ -121,7 +121,7 @@ function GetCustomPreferencesForBT(){
 function CheckStatusServiceRequest(Order){
 	
 	//create helper variable
-	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.ds');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
 	//call check status service
 	var response = CommonHelper.CheckStatusServiceRequest({Order:Order});
 	//return response
@@ -134,7 +134,7 @@ function CheckStatusServiceRequest(Order){
 function HandleRequest(Basket){
 	
 	//create helper variable
-	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.ds');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
 	//call handle request method
 	var response = CommonHelper.HandleRequest(Basket);
 	//return response

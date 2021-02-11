@@ -11,6 +11,7 @@ var logger = dw.system.Logger.getLogger('Cybersource');
 var Transaction = require('dw/system/Transaction');
 var Resource = require('dw/web/Resource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
 var VisaCheckoutAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/adaptor/VisaCheckoutAdaptor');
@@ -60,7 +61,7 @@ function shippingUpdate(cart, decryptedPaymentData) {
 /**
  * Visa payload decrypt via cybersource and update the basket with billing and shipping details take user to review page or return back to cart page with error
  */
-server.post('Decrypt', function (req, res, next) {
+server.post('Decrypt', csrfProtection.generateToken, function (req, res, next) {
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var BasketMgr = require('dw/order/BasketMgr');
     var URLUtils = require('dw/web/URLUtils');

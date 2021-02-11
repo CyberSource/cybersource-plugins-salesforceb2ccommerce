@@ -22,7 +22,7 @@ server.extend(page);
 /**
  * PayPal custom address validation handling. Function validates all the billing address fields with email and phone number.
  */
-server.post('ValidatePayPalBillingAddress', server.middleware.https, function (req, res, next) {
+server.post('ValidatePayPalBillingAddress', csrfProtection.validateRequest, server.middleware.https, function (req, res, next) {
     var billingFormErrors = {};
     var pplFormErrors = {};
     var paymentForm = server.forms.getForm('billing');
@@ -1064,7 +1064,7 @@ function shippingUpdate(cart, shippingdetails) {
     }
 }
 
-server.post('GetGooglePayToken', function (req, res, next) {
+server.post('GetGooglePayToken', csrfProtection.validateRequest, function (req, res, next) {
 	    var Encoding = require('dw/crypto/Encoding');
 	    var repsonse = JSON.parse(request.httpParameterMap.paymentData);
 
@@ -1145,7 +1145,7 @@ function googlePayCheckoutError(req, res, next) {
     return next();
 }
 
-server.post('SubmitPaymentGP', function (req, res, next) {
+server.post('SubmitPaymentGP', csrfProtection.validateAjaxRequest, function (req, res, next) {
     var Site = require('dw/system/Site');
     var Encoding = require('dw/crypto/Encoding');
     var Resource = require('dw/web/Resource');

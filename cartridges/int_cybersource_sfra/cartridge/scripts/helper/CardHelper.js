@@ -9,7 +9,7 @@ var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstan
  * @returns {Object} response as authorized, error, declined
  */
 function HandleDAVResponse(ResponseObject) {
-    Logger.debug('[CardHelper.ds] HandleDAVResponse DAVReasonCode : ' + ResponseObject.DAVReasonCode + ' ReasonCode : ' + ResponseObject.ReasonCode);
+    Logger.debug('[CardHelper.js] HandleDAVResponse DAVReasonCode : ' + ResponseObject.DAVReasonCode + ' ReasonCode : ' + ResponseObject.ReasonCode);
     var DAVReasonCode = ResponseObject.ReasonCode;
     if (ResponseObject.DAVReasonCode) {
         DAVReasonCode = ResponseObject.DAVReasonCode;
@@ -98,7 +98,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
  * @returns response as authorized, error, declined
  */
 function HandleCardResponse(ResponseObject) {
-    Logger.debug('[CardHelper.ds] HandleDAVResponse ReasonCode : ' + ResponseObject.ReasonCode);
+    Logger.debug('[CardHelper.js] HandleDAVResponse ReasonCode : ' + ResponseObject.ReasonCode);
     switch (Number(ResponseObject.ReasonCode)) {
         case 100:
             return { authorized: true };

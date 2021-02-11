@@ -61,8 +61,8 @@
 						<span>Number</span>
 					</label>
 					<div class="field-wrapper">
-					 	<div id="cardNumber-container" class="form-control" style="border: 1px solid #aaa;box-sizing: border-box;height: 2rem; padding: 0.7em 0.5em; text-indent: 0;width: 100%;"></div>
-					 	<div class="number-invalid-feedback" style="color:#990000;background-color: #faeded;"></div>
+					 	<div id="cardNumber-container" class="form-control"></div>
+					 	<div class="number-invalid-feedback"></div>
 					</div>
 					<div class="form-caption">Example: 4111111111111111</div>
 				</div>
@@ -91,8 +91,8 @@
 					<span>Security Code</span>
 				</label>
 				<div class="field-wrapper">
-	     			<div id="securityCode-container" class="form-control" style="border: 1px solid #aaa;box-sizing: border-box;height: 2rem; padding: 0.7em 0.5em; text-indent: 0;width: 100%;"></div>
-	     			<div class="securityCode-invalid-feedback" style="color:#990000;background-color: #faeded;"></div>
+	     			<div id="securityCode-container" class="form-control"></div>
+	     			<div class="securityCode-invalid-feedback"></div>
 	     		</div>
 	     	</div>
 		</div>
@@ -149,8 +149,8 @@
 		<isset name="isBicRendered" value="${false}" scope="page" />
 		<isloop items="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.options}" var="paymentMethodType">
 			<isif condition="${paymentMethodType.object.paymentProcessor.ID.equals('BANK_TRANSFER') && (bankTransferHelper.isBicRequired(paymentMethodType) || bankTransferHelper.isBankListRequired(paymentMethodType))}">
-				<div class="payment-method payment-method-expanded payment-method-options-addons" data-method="${paymentMethodType.htmlValue}" data-bicrequired="${bankTransferHelper.isBicRequired(paymentMethodType)}" style="margin-left: 30%;width: 100%">		
-					<div class="field-wrapper" style="">
+				<div class="payment-method payment-method-expanded payment-method-options-addons" data-method="${paymentMethodType.htmlValue}" data-bicrequired="${bankTransferHelper.isBicRequired(paymentMethodType)}">		
+					<div class="field-wrapper">
 						<isif condition="${bankTransferHelper.isBankListRequired(paymentMethodType)}">	
 							<div class="form-row">						
 								<isscript>								
@@ -173,7 +173,7 @@
 						</isif>							
 					</div>
 				</div>
-				<div class="bic-section" style="display: none">
+				<div class="bic-section">
 					<isif condition="${bankTransferHelper.isBicRequired(paymentMethodType) && !isBicRendered}">
 								<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.bicNumber}"  class="selected-bank-input" type="input" attribute1="autocomplete" value1="off"/>
 					 			<isset name="isBicRendered" value="${true}" scope="page"  />	

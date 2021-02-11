@@ -68,12 +68,12 @@ function AliPayRefundService(requestID, merchantRefCode, paymentType, amount, cu
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[AliPayFacade.ds] Error in AliPayRefundService request ( {0} )', e.message);
+        Logger.error('[AliPayFacade.js] Error in AliPayRefundService request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[AliPayFacade.ds] response in AliPayRefundService response ( {0} )', serviceResponse);
+        Logger.error('[AliPayFacade.js] response in AliPayRefundService response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in AliPayRefundService response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;

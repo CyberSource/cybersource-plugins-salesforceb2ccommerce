@@ -884,7 +884,7 @@ function UpdateTaxForGiftCertificate(Basket) {
         }
         basket.updateTotals();
     } catch (e) {
-        Logger.error('[CommonHelper.ds] Error in giftcertificate tax updation ( {0} )', e.message);
+        Logger.error('[CommonHelper.js] Error in giftcertificate tax updation ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 

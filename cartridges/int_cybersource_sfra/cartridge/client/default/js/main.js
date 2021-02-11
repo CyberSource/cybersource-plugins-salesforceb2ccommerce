@@ -5,4 +5,3 @@ $(document).ready(function () {
     processInclude(require('base/main'));
     processInclude(require('./components/miniCart'));
 });
-

@@ -17,7 +17,7 @@ Cybersource cartridge installed from Market place comes with metadata to import.
 1. Go to **Cybersource/metadata/sfra_meta/sites/** folder.
 2. Rename **yourSiteID** folder name with your site ID in Business Manager (this can be found by looking up **Administration->Sites->Manage Sites**)
 3. Zip **sfra_meta** folder.
-4. Go to **Administration->Site Development->Site Import & Export** and upload **payments_metadata.zip** file.
+4. Go to **Administration->Site Development->Site Import & Export** and upload **sfra_meta.zip** file.
 5. Import the uploaded zip file.
 
 On successful import, it creates following metadata.

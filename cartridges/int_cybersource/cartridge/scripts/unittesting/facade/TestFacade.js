@@ -302,7 +302,7 @@ function TestOnDemandSubscription()
 	try{
 		serviceResponse = getServiceResponse(serviceRequest,paymentMethod);
 	}catch(e){
-		Logger.error('[libCybersource.ds] Error in subscription request ( {0} )',e.message);
+		Logger.error('[libCybersource.js] Error in subscription request ( {0} )',e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
@@ -384,7 +384,7 @@ function TestPayerAuthValidation(PaRes,CreditCard)
 	CybersourceHelper.addTestPayerAuthValidateInfo(serviceRequest,signedPaRes,CreditCard);
 	var serviceResponse = {};
 	try{
-		Logger.debug("[PayerAuthValidation.ds] Sending PayerAuthValidation...");
+		Logger.debug("[PayerAuthValidation.js] Sending PayerAuthValidation...");
 		serviceResponse = getServiceResponse(serviceRequest,paymentMethod);
 	}catch(e){
 		Logger.error("[TestFacade.js] Error in PayerAuthValidation request ( {0} )",e.message);
@@ -531,10 +531,10 @@ function TestTax(cart)
 				invalidFields += serviceResponse.invalidField[i];
 			}
 		}
-		Logger.error("[TestFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",serviceResponse.reasonCode,serviceResponse.requestToken,missingFields,invalidFields);
+		Logger.error("[TestFacade.js] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",serviceResponse.reasonCode,serviceResponse.requestToken,missingFields,invalidFields);
 		reasonCode = serviceResponse.reasonCode;
 	} else if( serviceResponse.decision === "ERROR" ) {
-		Logger.error("[TestFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",serviceResponse.reasonCode,serviceResponse.requestToken);
+		Logger.error("[TestFacade.js] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",serviceResponse.reasonCode,serviceResponse.requestToken);
 		reasonCode = serviceResponse.reasonCode;
 	}
 

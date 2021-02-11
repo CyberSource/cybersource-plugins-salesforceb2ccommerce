@@ -104,14 +104,14 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[VisaCheckoutFacade.ds] Error in CCAuthRequest ( {0} )', e.message);
+        Logger.error('[VisaCheckoutFacade.js] Error in CCAuthRequest ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     Logger.debug(response);
 
     if (empty(serviceResponse) || !'OK'.equals(serviceResponse.status)) {
-        Logger.error('[VisaCheckoutFacade.ds] CCAuthRequest Error : null response');
+        Logger.error('[VisaCheckoutFacade.js] CCAuthRequest Error : null response');
         return { error: true, errorMsg: 'empty or error in test CCAuthRequest response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -149,11 +149,11 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[VisaCheckoutFacade.ds] Error in VCDecryptRequest request ( {0} )', e.message);
+        Logger.error('[VisaCheckoutFacade.js] Error in VCDecryptRequest request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
     if (empty(serviceResponse) || !'OK'.equals(serviceResponse.status)) {
-        Logger.error('[VisaCheckoutFacade.ds] response in VCDecryptRequest response ( {0} )', serviceResponse);
+        Logger.error('[VisaCheckoutFacade.js] response in VCDecryptRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in VCDecryptRequest response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -266,7 +266,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     var orderNo : String = OrderNo;
 
     if (lineItemCtnrObj == null) {
-        Logger.error('[VisaCheckoutFacade.ds] Please provide a Basket!');
+        Logger.error('[VisaCheckoutFacade.js] Please provide a Basket!');
         return { error: true };
     }
 
@@ -339,11 +339,11 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[VisaCheckoutFacade.ds] Error in PayerAuthEnrollCheck request ( {0} )', e.message);
+        Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthEnrollCheck request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
     if (empty(serviceResponse) || !'OK'.equals(serviceResponse.status)) {
-        Logger.error('[VisaCheckoutFacade.ds] response in PayerAuthEnrollCheck response ( {0} )', serviceResponse);
+        Logger.error('[VisaCheckoutFacade.js] response in PayerAuthEnrollCheck response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayerAuthEnrollCheck response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -432,12 +432,12 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[VisaCheckoutFacade.ds] Error in PayerAuthValidation request ( {0} )', e.message);
+        Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthValidation request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[VisaCheckoutFacade.ds] response in PayerAuthValidation response ( {0} )', serviceResponse);
+        Logger.error('[VisaCheckoutFacade.js] response in PayerAuthValidation response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayerAuthValidation response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -534,12 +534,12 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[VisaCheckoutFacade.ds] Error in VCCaptureRequest request ( {0} )', e.message);
+        Logger.error('[VisaCheckoutFacade.js] Error in VCCaptureRequest request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[VisaCheckoutFacade.ds] response in VCCaptureRequest response ( {0} )', serviceResponse);
+        Logger.error('[VisaCheckoutFacade.js] response in VCCaptureRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in VCCaptureRequest response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
@@ -667,12 +667,12 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[VisaCheckoutFacade.ds] Error in VCCreditRequest request ( {0} )', e.message);
+        Logger.error('[VisaCheckoutFacade.js] Error in VCCreditRequest request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[VisaCheckoutFacade.ds] response in VCCreditRequest response ( {0} )', serviceResponse);
+        Logger.error('[VisaCheckoutFacade.js] response in VCCreditRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in VCCreditRequest response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;

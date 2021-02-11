@@ -15,7 +15,7 @@
 			</isif>
 			<input type="hidden" value="Proceed with Payment" name="Submit">
 		</form>
-		<span id="loading" style="visibility: block; text-align: center;">
+		<span id="loading">
     		<img src="${URLUtils.staticURL('/images/loading.gif')}" id="Img5" data-transition="slide" />
 	    </span>
 </body>

@@ -41,13 +41,13 @@ function POSAuthRequest(location, orderNo, cardObject, purchaseObject, posObject
 	}
 	catch(e)
 	{
-		Logger.error("[POSFacade.ds] Error in POSAuthRequest ( {0} )", e.message);
+		Logger.error("[POSFacade.js] Error in POSAuthRequest ( {0} )", e.message);
 		return {error:true, errorMsg:e.message};
 	}
 
 	if(empty(serviceResponse) || serviceResponse.status !== "OK")
 	{
-		Logger.error("[POSFacade.ds] POSAuthRequest Error : null response");
+		Logger.error("[POSFacade.js] POSAuthRequest Error : null response");
 		return {error:true, errorMsg:"empty or error in test POSAuthRequest response: "+serviceResponse};
 	}
 	serviceResponse = serviceResponse.object;	

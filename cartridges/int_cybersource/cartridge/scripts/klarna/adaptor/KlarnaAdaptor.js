@@ -260,7 +260,7 @@ function AuthorizationServiceRequest(Order, preApprovalToken){
 function CheckStatusServiceRequest(Order){
 	
 	//create helper variable
-	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.ds');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
 	//call check status service
 	var response = CommonHelper.CheckStatusServiceRequest({Order:Order});
 	//return response

@@ -34,7 +34,7 @@ function SAMerchantPostJob() {
                         var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
                         var responseObject : Object = JSON.parse(CO.custom.postParams);
 						 if (paymentInstrument == null || responseObject == null) {
-						 	Logger.error('[SAmerchantPost.ds] Error occured for order:', orderID);
+						 	Logger.error('[SAmerchantPost.js] Error occured for order:', orderID);
 						 	throw new Error('Error occured for order');
 						 } else {
                             var Decision = responseObject.Decision;
@@ -43,7 +43,7 @@ function SAMerchantPostJob() {
                         }
                     }
    					} catch (e) {
-   						Logger.error('[SAmerchantPost.ds] Error in Merchant post job request ( {0} )', e.message);
+   						Logger.error('[SAmerchantPost.js] Error in Merchant post job request ( {0} )', e.message);
    						throw new Error('Error in Merchant post job request');
    					}
    					CO.custom.processed = true;
@@ -95,7 +95,7 @@ function updateOrderStatus(order) {
             });
         }
 	   } else {
-	   		Logger.error('[SAmerchantPost.ds] DECISION ACCEPT/REVIEW -  Placeorder Error for order:', order.orderNo);
+	   		Logger.error('[SAmerchantPost.js] DECISION ACCEPT/REVIEW -  Placeorder Error for order:', order.orderNo);
 	   		throw new Error('DECISION ACCEPT/REVIEW -  Placeorder Error for order');
 	   	}
 }
@@ -109,12 +109,12 @@ function FailSAOrder(order, responseObject) {
     // if Decision is not ACCEPT
     var orderStatus = OrderMgr.failOrder(order, true);
     if (orderStatus.code === 'ERROR') {
-        Logger.error('[SAmerchantPost.ds] DECISION REJECT -  FailOrder Called for order:', order.orderNo);
+        Logger.error('[SAmerchantPost.js] DECISION REJECT -  FailOrder Called for order:', order.orderNo);
         throw new Error('DECISION ERROR -  FailOrder Called for order');
     }
     if (responseObject.Decision === 'ERROR' || responseObject.Decision === 'CANCEL') {
         PaymentInstrumentUtils.UpdatePaymentTransactionSecureAcceptanceAuthorize(order, responseObject);
-        Logger.error('[SAmerchantPost.ds] DECISION ERROR -  FailOrder Called for order:', order.orderNo);
+        Logger.error('[SAmerchantPost.js] DECISION ERROR -  FailOrder Called for order:', order.orderNo);
         throw new Error('DECISION ERROR -  FailOrder Called for order');
     }
 }

@@ -106,12 +106,12 @@ function createMobilePaymentAuthRequest(authRequestParams) {
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[MobilePaymentFacade.ds] Error in MobilePaymentAPIObjectAuthRequest ( {0} )', e.message);
+        Logger.error('[MobilePaymentFacade.js] Error in MobilePaymentAPIObjectAuthRequest ( {0} )', e.message);
         return { error: true, EERRORMSG: e.message, ERRORCODE: Resource.msg('cyb.mobilePayment.errorcode.servicestatus', 'cybMobilePayments', null) };
     }
 
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-        Logger.error('[MobilePaymentFacade.ds] MobilePaymentAPIObjectAuthRequest Error : null response');
+        Logger.error('[MobilePaymentFacade.js] MobilePaymentAPIObjectAuthRequest Error : null response');
         return {
             error: true,
             EERRORMSG: Resource.msg('cyb.mobilePayment.errormsg.invalidmobilePaymentAPIAuthRequest', 'cybMobilePayments', null)
@@ -120,7 +120,7 @@ function createMobilePaymentAuthRequest(authRequestParams) {
         };
     }
     serviceResponse = serviceResponse.object;
-    Logger.error('[MobilePaymentFacade.ds] MobilePaymentAPIObjectAuthRequest response : ' + serviceResponse);
+    Logger.error('[MobilePaymentFacade.js] MobilePaymentAPIObjectAuthRequest response : ' + serviceResponse);
     CardHelper.protocolResponse(serviceResponse);
     //* *************************************************************************//
     // Process Response
@@ -240,7 +240,7 @@ function GPCreditRequest(requestID: String, merchantRefCode: String, paymentType
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
-        Logger.error('[CardFacade.ds] Error in CCCaptureRequest request ( {0} )', e.message);
+        Logger.error('[CardFacade.js] Error in CCCaptureRequest request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 

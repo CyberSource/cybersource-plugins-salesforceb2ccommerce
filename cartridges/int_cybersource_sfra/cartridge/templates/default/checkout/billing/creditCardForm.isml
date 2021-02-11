@@ -1,8 +1,9 @@
 <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
-<isset name="saStyleFlex" value="${CsSaType && CsSaType == 'SA_FLEX' ? "style='display: none'" : '' }" scope="page" />
-<isset name="saStyle" value="${CsSaType && CsSaType == 'SA_REDIRECT' || CsSaType == 'SA_IFRAME' ? "style='display: none'" : '' }" scope="page" />
 <isset name="isCartridgeEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled')}" scope="page" />
-<isif condition="${CsSaType && CsSaType == 'SA_FLEX'}">
+<isset name="saStyleFlex" value="${CsSaType && isCartridgeEnabled && CsSaType == 'SA_FLEX' ? "hidden" : '' }" scope="page" />
+<isset name="saStyle" value="${CsSaType && isCartridgeEnabled && (CsSaType == 'SA_REDIRECT' || CsSaType == 'SA_IFRAME') ? "hidden" : '' }" scope="page" />
+
+<isif condition="${CsSaType && isCartridgeEnabled && CsSaType == 'SA_FLEX'}">
 		<isinclude url="${URLUtils.url('CYBSecureAcceptance-CreateFlexToken')}"/>
 </isif>
 <!--- Hidden input for credit card type --->
@@ -198,14 +199,14 @@
 </isif>
 <iscomment>Bank Transfer </iscomment>
 <isif condition="${isCartridgeEnabled}">
-	<div class="bankTransfer" id="bankTransfer" style="display:none">
-		<div id="eps"  style="display:none">
+	<div class="bankTransfer" id="bankTransfer">
+		<div id="eps">
 			<isinclude template="checkout/billing/paymentOptions/epsContent" />
 		</div>
-		<div id="gpy"  style="display:none">
+		<div id="gpy">
 			<isinclude template="checkout/billing/paymentOptions/giroPayContent" />
 		</div>
-		<div id="idl"  style="display:none">
+		<div id="idl">
 			<isinclude template="checkout/billing/paymentOptions/iDealContent" />
 		</div>
 	</div>

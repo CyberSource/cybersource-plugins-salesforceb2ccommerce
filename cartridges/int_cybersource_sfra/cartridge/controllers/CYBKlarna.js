@@ -9,8 +9,9 @@ var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource'
 var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
-server.post('GetSession', function (req, res, next) {
+server.post('GetSession', csrfProtection.generateToken, function (req, res, next) {
     var basket = BasketMgr.getCurrentBasket();
 
     var returnObject = {};
@@ -101,7 +102,7 @@ server.post('GetSession', function (req, res, next) {
     next();
 });
 
-server.post('UpdateSession', function (req, res, next) {
+server.post('UpdateSession', csrfProtection.generateToken, function (req, res, next) {
     var basket = BasketMgr.getCurrentBasket();
 
     //  Make sure payment information has been set.

@@ -27,13 +27,13 @@ function payPalSerivceInterface(request)
 		// call the service based on input
 		serviceResponse = service.call(requestWrapper);
 	} catch(e) {
-		Logger.error("[PayPalFacade.ds] Error in ServiceInterface ( {0} )",e.message);
+		Logger.error("[PayPalFacade.js] Error in ServiceInterface ( {0} )",e.message);
 		return null;
 	}
 
 	if(empty(serviceResponse) || serviceResponse.status !== 'OK')
 	{
-		Logger.error("[libCybersource.ds] Error in ServiceInterface: null response");
+		Logger.error("[libCybersource.js] Error in ServiceInterface: null response");
 		return null;
 	}
 	serviceResponse = serviceResponse.object;
