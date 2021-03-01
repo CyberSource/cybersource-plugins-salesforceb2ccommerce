@@ -357,6 +357,7 @@ function setTotalAmount(processor, itemObject, lineItemValue, locale) {
  */
 
 function CreateCybersourceItemObject(Basket) {
+    var discountLineItemHelpers = require('*/cartridge/scripts/helpers/discountLineItemHelpers');
     var basket = Basket;
     var locale = GetRequestLocale();
     // var PaymentMgr = require('dw/order/PaymentMgr');
@@ -378,7 +379,12 @@ function CreateCybersourceItemObject(Basket) {
         if (lineItem instanceof dw.order.ProductLineItem) {
             itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.proratedPrice.value, '000000.00', locale));
             itemObject.setQuantity(lineItem.quantityValue);
-            itemObject.setProductCode('default');
+            if (discountLineItemHelpers.isDiscountProductId(lineItem.productID)) {
+                itemObject.setProductCode('coupon');
+                itemObject.setUnitPrice(itemObject.getUnitPrice() * -1);
+            } else {
+                itemObject.setProductCode('default');
+            }
             itemObject.setProductName(lineItem.productName);
             itemObject.setProductSKU(lineItem.productID);
             itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value, '000000.00', locale));
