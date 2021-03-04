@@ -36,7 +36,7 @@
 					            <div class="authRequestID-wrapper">
 					                <input type="text" class="form-control" id="authRequestID"
 					                    value=""
-					                    <isprint value=${pdict.creditServiceForm.authRequestID.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.authRequestID.attributes} encoding="on"/>
 					                >
 					            </div>
 					        </div>
@@ -58,7 +58,7 @@
 					            <div class="grandtotalamount-wrapper">
 					                <input type="text" class="form-control" id="grandtotalamount"
 					                    value=""
-					                    <isprint value=${pdict.creditServiceForm.grandtotalamount.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.grandtotalamount.attributes} encoding="on"/>
 					                >
 					            </div>
 					        </div>
@@ -67,7 +67,7 @@
 					        <div class="form-group">
 					            <label class="form-control-label" for="refundpaymenttype">${Resource.msg('saleservice_paymentmethod','cybersource',null)}</label>
 					            <select class="form-control refundpaymenttype custom-select" id="refundpaymenttype"
-					            <isprint value=${pdict.creditServiceForm.refundpaymenttype.attributes} encoding="off"/> >
+					            <isprint value=${pdict.creditServiceForm.refundpaymenttype.attributes} encoding="on"/> >
 					                <isloop items=${pdict.creditServiceForm.refundpaymenttype.options} var="paymentType">
 					                    <option id="${paymentType.id}" value="${paymentType.htmlValue}">
 						                    ${paymentType.label}
@@ -82,7 +82,7 @@
 					            <div class="orderRequestID-wrapper">
 					                <input type="text" class="form-control" id="orderRequestID"
 					                    value=""
-					                    <isprint value=${pdict.creditServiceForm.orderRequestID.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.orderRequestID.attributes} encoding="on"/>
 					                >
 					            </div>
 					        </div>

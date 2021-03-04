@@ -6,7 +6,7 @@
 /*********************************************************************************/
 var dwsvc = require ("dw/svc");
 var HashMap = require ("dw/util/HashMap");
-var SOAPUtil = require ("dw/rpc/SOAPUtil");
+var WSUtil = require('dw/ws/WSUtil');
 var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 /**
  *
@@ -37,7 +37,7 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
 *
 /**/	
 	createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
-		var csReference  = webreferences.CyberSourceTransaction;
+		var csReference  = webreferences2.CyberSourceTransaction;
 		var service = csReference.getDefaultService();
 		svc.webReference = csReference;
 	    svc.serviceClient = service;
@@ -62,15 +62,15 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
 		       var secretsMap = new HashMap();
 		       secretsMap.put(userName, password); 
 		       var requestCfg = new HashMap();
-		       requestCfg.put(SOAPUtil.WS_ACTION,SOAPUtil.WS_USERNAME_TOKEN );
-		       requestCfg.put(SOAPUtil.WS_USER, userName);
-		       requestCfg.put(SOAPUtil.WS_PASSWORD_TYPE, SOAPUtil.WS_PW_TEXT);
-		       requestCfg.put(SOAPUtil.WS_SECRETS_MAP, secretsMap);
+		       requestCfg.put(WSUtil.WS_ACTION,WSUtil.WS_USERNAME_TOKEN );
+		       requestCfg.put(WSUtil.WS_USER, userName);
+		       requestCfg.put(WSUtil.WS_PASSWORD_TYPE, WSUtil.WS_PW_TEXT);
+		       requestCfg.put(WSUtil.WS_SECRETS_MAP, secretsMap);
 		       
 		       var responseCfg : Map = new HashMap();
-		       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
+		       responseCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP);
 		     
-		       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
+		       WSUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
 		
 		return svc.serviceClient.runTransaction(parameter.request);
 	},
@@ -117,7 +117,7 @@ var CyberSourceTransactionPOSService = LocalServiceRegistry.createService("cyber
 *
 /**/	
 	createRequest : function(svc : dwsvc.SOAPService, requestObj : Object) : Object {
-		var csReference  = webreferences.CyberSourceTransaction;
+		var csReference  = webreferences2.CyberSourceTransaction;
 		var service = csReference.getDefaultService();
 		svc.webReference = csReference;
 	    svc.serviceClient = service;
@@ -160,15 +160,15 @@ var CyberSourceTransactionPOSService = LocalServiceRegistry.createService("cyber
 		       var secretsMap = new HashMap();
 		       secretsMap.put(userName, password); 
 		       var requestCfg = new HashMap();
-		       requestCfg.put(SOAPUtil.WS_ACTION,SOAPUtil.WS_USERNAME_TOKEN );
-		       requestCfg.put(SOAPUtil.WS_USER, userName);
-		       requestCfg.put(SOAPUtil.WS_PASSWORD_TYPE, SOAPUtil.WS_PW_TEXT);
-		       requestCfg.put(SOAPUtil.WS_SECRETS_MAP, secretsMap);
+		       requestCfg.put(WSUtil.WS_ACTION,WSUtil.WS_USERNAME_TOKEN );
+		       requestCfg.put(WSUtil.WS_USER, userName);
+		       requestCfg.put(WSUtil.WS_PASSWORD_TYPE, WSUtil.WS_PW_TEXT);
+		       requestCfg.put(WSUtil.WS_SECRETS_MAP, secretsMap);
 		       
 		       var responseCfg : Map = new HashMap();
 		       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
 		     
-		       SOAPUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
+		       WSUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
   
 		
 		return svc.serviceClient.runTransaction(parameter.requestObj);

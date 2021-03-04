@@ -43,7 +43,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 
 	var serviceRequest = new csReference.RequestMessage();
 	
@@ -172,7 +172,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr,billTo : Object,shipTo : Obje
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
 	CybersourceHelper.addDAVRequestInfo(serviceRequest,billToObject,shipToObject);
@@ -233,7 +233,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var csReference  = webreferences.CyberSourceTransaction;
+	var csReference  = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
 	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone);
@@ -310,7 +310,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
 	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken,processorTransactionId);

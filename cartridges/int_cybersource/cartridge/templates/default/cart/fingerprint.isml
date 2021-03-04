@@ -65,7 +65,7 @@ Production = k8vif92e
 <isif condition="${pdict.DeviceFingerprintEnabled}">
 
 	<p style="background:url(<isprint value="${url_1}" encoding="on"/>)"></p>
-	<img src="<isprint value="${url_2}" encoding="off"/>" alt="">
+	<img src="<isprint value="${url_2}" encoding="on"/>" alt="">
 	
 	<iscomment>
 	******** JavaScript code ********

@@ -28,7 +28,7 @@ function klarnaInitSessionService(sessionObject)
     //declare variables for libcybersource and helper
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object 
     var request = new csReference.RequestMessage();
     //declare helper variable
@@ -77,7 +77,7 @@ function klarnaUpdateSessionService(sessionObject)
 	//declare variables for libcybersource and helper
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	// declare soap reference variable
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	// create reference of request object 
 	var request = new csReference.RequestMessage();
 	//declare helper variable
@@ -135,7 +135,7 @@ function klarnaAuthorizationService(authorizationObject)
 	//declare variables for libcybersource and helper
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	// declare soap reference variable
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	// create reference of request object 
 	var request = new csReference.RequestMessage();
 	//declare helper variable

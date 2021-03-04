@@ -20,7 +20,7 @@ function CreateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
 	
 	
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
 	CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billToObject, purchaseObject, cardObject, UUIDUtils.createUUID());
@@ -68,7 +68,7 @@ function DeleteSubscription(subscriptionID)
 {
 
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
 	CybersourceHelper.addPaySubscriptionDeleteService(serviceRequest, UUIDUtils.createUUID(), subscriptionID);
@@ -119,7 +119,7 @@ function UpdateSubscription(billTo : Object,card : Object,purchaseTotals : Objec
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var subscriptionObject = {};
 	
-	var csReference  = webreferences.CyberSourceTransaction;
+	var csReference  = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
 	CybersourceHelper.addSubscriptionUpdateInfo(serviceRequest,billToObject,purchaseObject,cardObject,storedSubscriptionID);
@@ -176,7 +176,7 @@ function ViewSubscription(subscriptionID)
     var subscriptionObject = {};
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 
 	CybersourceHelper.addPaySubscriptionRetrieveService(serviceRequest, UUIDUtils.createUUID(), subscriptionID);

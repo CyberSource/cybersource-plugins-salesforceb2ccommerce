@@ -60,7 +60,7 @@ server.get('VerifyAddress', function (req, res, next) {
             //  Although not utilized by CS in the DAV call, they do require the presence of a billToAddress.
             var billToAddress = createBillToObject(params);
             //  Build DAV request.
-            var csReference = webreferences.CyberSourceTransaction;
+            var csReference = webreferences2.CyberSourceTransaction;
             var serviceRequest = new csReference.RequestMessage();
             var CybersourceHelper = libCybersource.getCybersourceHelper();
             CybersourceHelper.addDAVRequestInfo(serviceRequest, billToAddress, shipToAddress, false, 'AddressVerification');

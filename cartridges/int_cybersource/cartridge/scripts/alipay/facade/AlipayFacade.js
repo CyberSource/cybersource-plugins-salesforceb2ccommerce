@@ -13,7 +13,7 @@ function AlipayInitiatePaymentRequest(request)
   	//create service stubs
    	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
    	var CybersourceHelper = libCybersource.getCybersourceHelper();	
-   	var csReference  = webreferences.CyberSourceTransaction;
+   	var csReference  = webreferences2.CyberSourceTransaction;
    	
 	//set alipay payment type to pass it as input in request
 	var alipayPaymentType  = CybersourceHelper.getAlipayPaymentType();

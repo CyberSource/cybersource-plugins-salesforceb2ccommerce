@@ -24,7 +24,7 @@ function CCAuthRequest(Basket,OrderNo,IPAddress)
 	// Set WebReference & Stub
 	//**************************************************************************//	
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var csReference  = webreferences.CyberSourceTransaction;
+	var csReference  = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
 	//**************************************************************************//
@@ -139,7 +139,7 @@ function VCDecryptRequest(orderNo,wrappedKey,data,callID)
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	CybersourceHelper.addVCDecryptRequestInfo(serviceRequest,orderNo, wrappedKey, data);
 	CybersourceHelper.addVCOrderID(serviceRequest,callID);
@@ -282,7 +282,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 	var callID = session.forms.visacheckout.callId.value;
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var csReference  = webreferences.CyberSourceTransaction;
+	var csReference  = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
 	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,null,null,amount, null);
@@ -395,7 +395,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 	var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
 	var data = session.forms.visacheckout.encryptedPaymentData.value;
 	var callID = session.forms.visacheckout.callId.value;
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
     CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,null,amount, null,processorTransactionId);

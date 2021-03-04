@@ -101,7 +101,11 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
                 billToObject.setStreet1(billingAddress.address1);
                 billToObject.setStreet2(billingAddress.address2);
                 billToObject.setCity(billingAddress.city);
-                billToObject.setState(empty(billingAddress.stateCode) ? ' ' : billingAddress.stateCode);
+                if (empty(billingAddress.stateCode) || (billingAddress.stateCode == undefined)) {
+                	billToObject.setState(' ');
+                } else {
+                	billToObject.setState(billingAddress.stateCode);
+                }
                 billToObject.setDistrict(billingAddress.stateCode);
                 billToObject.setPostalCode(billingAddress.postalCode);
                 billToObject.setCountry(billingAddress.countryCode);

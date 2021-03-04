@@ -54,6 +54,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
     var StringUtils = require('dw/util/StringUtils');
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    var adjustedLineItemFinalPrice;
     while (lineItems.hasNext()) {
         var actualQuantity = 0;
         var lineItem = lineItems.next();

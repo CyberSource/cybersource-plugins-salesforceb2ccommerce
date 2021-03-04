@@ -93,7 +93,7 @@ function __addTaxRequest(lineItemCtnr, items) {
 
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var cardHelper = require('~/cartridge/scripts/helper/CardHelper');
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create request body
     var taxationRequest = new csReference.RequestMessage();
     libCybersource.setClientData(taxationRequest, lineItemCtnr.UUID);
@@ -180,7 +180,7 @@ function updateCartTotal(cart, itemMap, taxationResponse) {
 }
 
 function __copyTaxService(taxService) {
-    var request_taxService = new webreferences.CyberSourceTransaction.TaxService();
+    var request_taxService = new webreferences2.CyberSourceTransaction.TaxService();
     var value;
     for (var name in taxService) {
         if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
@@ -194,7 +194,7 @@ function __copyTaxService(taxService) {
 }
 
 function __copyShipFrom(shipFrom) {
-    var request_shipFrom = new webreferences.CyberSourceTransaction.ShipFrom();
+    var request_shipFrom = new webreferences2.CyberSourceTransaction.ShipFrom();
     var value;
     for (var name in shipFrom) {
         if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {

@@ -13,7 +13,7 @@ var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 
-var csReference = webreferences.CyberSourceTransaction;
+var csReference = webreferences2.CyberSourceTransaction;
 
 /**
  * Initialize call to CyberSource Init Session service

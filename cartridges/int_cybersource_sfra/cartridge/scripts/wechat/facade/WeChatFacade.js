@@ -10,7 +10,7 @@
 var Logger = dw.system.Logger.getLogger('Cybersource');
 
 function WeChatServiceInterface(request) {
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create service stubs
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // calling the service by passing klarna request
@@ -24,7 +24,7 @@ function WeChatServiceInterface(request) {
 function WeChatSaleService(sessionObject) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
     // declare helper variable
@@ -68,7 +68,7 @@ function WeChatSaleService(sessionObject) {
 function WeChatCheckStatusService(requestId, paymentType, orderNo) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
     // declare helper variable

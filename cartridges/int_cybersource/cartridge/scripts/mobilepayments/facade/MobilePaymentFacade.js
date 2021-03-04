@@ -54,7 +54,7 @@ function createMobilePaymentAuthRequest(authRequestParams)
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 
 	var serviceRequest = new csReference.RequestMessage();
 	

@@ -4,10 +4,8 @@ var Signature = require("dw/crypto/Signature");
 var Encoding = require('dw/crypto/Encoding');  
 var Mac = require('dw/crypto/Mac'); 
 var Bytes = require('dw/util/Bytes');  
-importPackage( dw.system );
-importPackage( dw.object );
-importPackage( dw.util );
-importPackage( dw.crypto );
+var CertificateRef = require('dw/crypto/CertificateRef');
+var KeyRef = require('dw/crypto/KeyRef');
 
 /** 
  * The Keys. If you want to verify this in jwt.io, use the content of the files! 
@@ -121,7 +119,7 @@ function generateTokenWithKeyandPayload(orderObject) {
 function generateTokenWithCertificate() {  
 	var encoder = new Signature();  
 	var PUBLICKEY = new CertificateRef('cs-public');
-	var PRIVATEKEY = new dw.crypto.KeyRef('cs-songbird');
+    var PRIVATEKEY = new KeyRef('cs-songbird');
 	let header = {  
 			"alg": "RS256",
 			"typ": "JWT"

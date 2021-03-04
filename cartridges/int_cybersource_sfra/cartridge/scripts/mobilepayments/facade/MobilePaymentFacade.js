@@ -49,7 +49,7 @@ function createMobilePaymentAuthRequest(authRequestParams) {
     //* *************************************************************************//
     // Set WebReference & Stub
     //* *************************************************************************//
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
 
     var serviceRequest = new csReference.RequestMessage();
 
@@ -210,7 +210,7 @@ function GPCreditRequest(requestID: String, merchantRefCode: String, paymentType
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -266,7 +266,7 @@ function GPAuthReversalService(requestID, merchantRefCode, paymentType, currency
 	    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-	    var csReference = webreferences.CyberSourceTransaction;
+	    var csReference = webreferences2.CyberSourceTransaction;
 	    var serviceRequest = new csReference.RequestMessage();
     var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
     purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
@@ -326,7 +326,7 @@ function GPCaptureRequest(requestID: String, merchantRefCode: String, paymentTyp
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);

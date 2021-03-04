@@ -1,7 +1,7 @@
 'use strict';
 var Logger = dw.system.Logger.getLogger('Cybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var csReference = webreferences.CyberSourceTransaction;
+var csReference = webreferences2.CyberSourceTransaction;
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');

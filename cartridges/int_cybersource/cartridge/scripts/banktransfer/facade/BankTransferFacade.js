@@ -21,7 +21,7 @@ function BankTransferServiceInterface(request)
 **/
 function BankTransferSaleService(saleObject){
 	// declare soap reference variable
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	// create reference of request object 
 	var request = new csReference.RequestMessage();
 	//declare variables for libcybersource and helper

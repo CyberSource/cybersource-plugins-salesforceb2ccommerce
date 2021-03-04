@@ -11,7 +11,7 @@
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var Logger =require('dw/system/Logger').getLogger('Cybersource');
 var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-var csReference = webreferences.CyberSourceTransaction;
+var csReference = webreferences2.CyberSourceTransaction;
 var Transaction = require('dw/system/Transaction');
 
 

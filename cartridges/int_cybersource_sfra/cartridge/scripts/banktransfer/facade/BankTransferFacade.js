@@ -20,7 +20,7 @@ function BankTransferServiceInterface(request) {
 * */
 function BankTransferSaleService(saleObject) {
     // declare soap reference variable
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
     // declare variables for libcybersource and helper
@@ -98,7 +98,7 @@ function BanktransferRefundService(requestID, merchantRefCode, paymentType, amou
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);

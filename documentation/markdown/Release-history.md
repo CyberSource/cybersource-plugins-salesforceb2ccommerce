@@ -13,6 +13,7 @@
 •	We fixed the javascript method in songbird.isml. (GitHub issue#47)
 •	We removed server.replace from the cartridge. (GitHub issue#45)
 •	We improved the documentation of the cartridge. 
+•	Replaced the deprecated webreference package with webreference2 package.
 
 **Version 19.5.3 (Dec 30, 2020)**
 •	Support 3ds for French Processor

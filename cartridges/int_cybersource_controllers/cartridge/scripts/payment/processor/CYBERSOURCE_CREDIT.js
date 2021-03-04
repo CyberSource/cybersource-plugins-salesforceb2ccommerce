@@ -22,7 +22,7 @@ function Handle(args) {
 		return {error: true};
 	}
 	if (!PaymentMethod.equals(CybersourceConstants.METHOD_SA_IFRAME) && !PaymentMethod.equals(CybersourceConstants.METHOD_SA_REDIRECT) && !PaymentMethod.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
-		var Cybersource = require('int_cybersource_controllers/cartridge/scripts/Cybersource');
+		var Cybersource = require(CybersourceConstants.CS_CONTROLLER+'/cartridge/scripts/Cybersource');
 		return Cybersource.HandleCard(args);
 	} else {
 		return SecureAcceptanceHandle(args);

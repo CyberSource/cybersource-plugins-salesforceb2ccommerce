@@ -20,7 +20,7 @@ function POSAuthRequest(location, orderNo, cardObject, purchaseObject, posObject
 	//**************************************************************************//	
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 
 	//**************************************************************************//
 	// the request object holds the input parameter for the AUTH request

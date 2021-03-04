@@ -119,7 +119,8 @@ if (IsCartridgeEnabled) {
 
 	    if (paymentForm.paymentMethod.value == Resource.msg('paymentmethodname.paypal', 'cybersource', null)) {
 	    	handlePayPal(req, res, next);
-	    	return next();
+	    	this.emit('route:Complete', req, res);
+            return;
 	    }
 
 	    // Secure Acceptance Flex Microform
@@ -591,10 +592,11 @@ if (IsCartridgeEnabled) {
 	            return next();
 	        }
 	    } else {
-	        var validationOrderStatus = HookMgr.callHook(
+	        var validationOrderStatus = hooksHelper(
 	            'app.validate.order',
 	            'validateOrder',
-	            currentBasket
+	            currentBasket,
+                require('*/cartridge/scripts/hooks/validateOrder').validateOrder
 	        );
 	        if (validationOrderStatus.error) {
 	          	res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', validationOrderStatus.message));
@@ -908,8 +910,14 @@ server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var creditCardType;
     var currentBasket = BasketMgr.getCurrentBasket();
-    if (!empty(currentBasket) && !empty(currentBasket.paymentInstrument)) {
-    	creditCardType = currentBasket.paymentInstrument.creditCardType;
+
+    if (!empty(currentBasket)) {
+        var paymentIntruments = currentBasket.paymentInstruments;
+        if (paymentIntruments.length > 0) {
+            for (let index in paymentIntruments) {	//eslint-disable-line
+                creditCardType = paymentIntruments[index].creditCardType;
+            }
+        }
     } else {
     	creditCardType = session.forms.billing.creditCardFields.cardType.value;
     }
@@ -1064,7 +1072,7 @@ function shippingUpdate(cart, shippingdetails) {
     }
 }
 
-server.post('GetGooglePayToken', csrfProtection.validateRequest, function (req, res, next) {
+server.post('GetGooglePayToken', function (req, res, next) {
 	    var Encoding = require('dw/crypto/Encoding');
 	    var repsonse = JSON.parse(request.httpParameterMap.paymentData);
 
@@ -1145,7 +1153,7 @@ function googlePayCheckoutError(req, res, next) {
     return next();
 }
 
-server.post('SubmitPaymentGP', csrfProtection.validateAjaxRequest, function (req, res, next) {
+server.post('SubmitPaymentGP', function (req, res, next) {
     var Site = require('dw/system/Site');
     var Encoding = require('dw/crypto/Encoding');
     var Resource = require('dw/web/Resource');

@@ -56,7 +56,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
     //* *************************************************************************//
     // Set WebReference & Stub
     //* *************************************************************************//
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
 
     var serviceRequest = new csReference.RequestMessage();
     //* *************************************************************************//
@@ -139,7 +139,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	    serviceRequest.merchantID = merchantCrdentials.merchantID;
 	   if (paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay) {
 		    serviceRequest.paymentSolution = '012';
-		    var csReference = webreferences.CyberSourceTransaction;
+		    var csReference = webreferences2.CyberSourceTransaction;
             var request_encryptedPayment = new csReference.EncryptedPayment();
 		     request_encryptedPayment.data = session.privacy.encryptedDataGP;
 		     serviceRequest.encryptedPayment = request_encryptedPayment;
@@ -196,7 +196,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr, billTo : Object, shipTo : Ob
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addDAVRequestInfo(serviceRequest, billToObject, shipToObject);
@@ -257,7 +257,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr, Amount : 
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
@@ -350,7 +350,7 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addPayerAuthValidateInfo(serviceRequest, orderNo, signedPaRes, creditCardForm, amount, CreditCardToken, processorTransactionId, billTo);
@@ -427,7 +427,7 @@ function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
     purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
@@ -486,7 +486,7 @@ function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentTyp
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -541,7 +541,7 @@ function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);

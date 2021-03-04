@@ -11,7 +11,7 @@ var Site = require('dw/system/Site');
 
 var numbersOnlyRegExp : RegExp = /\D/g;
 var CybersourceHelper = {
-	csReference : webreferences.CyberSourceTransaction,
+	csReference : webreferences2.CyberSourceTransaction,
 
 	getMerchantID : function () {
 		return Site.getCurrent().getCustomPreferenceValue("CsMerchantId");
@@ -288,19 +288,20 @@ var CybersourceHelper = {
 	},
 
 
-	 setEndpoint : function (service : dw.rpc.Stub)
+	 setEndpoint : function (service : dw.ws.Port)
 	 {
 		var endpoint = CybersourceHelper.getEndpoint();
 		var Logger = dw.system.Logger.getLogger('Cybersource');
 		Logger.debug('Connection to system "{0}"',endpoint);
-		var Stub = require('dw/rpc/Stub');
+		var Port = require('dw/ws/Port');
+        var WSUtil = require('dw/ws/WSUtil');
 
 		switch ( endpoint ) {
 			case "Production":
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor');
+				WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor', service);
 				break;
 			case "Test" :
-				service._setProperty(Stub.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor');
+				WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY,'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor', service);
 				break;
 			default:
 				throw "Undefined Cybersource Endpoint \"" + endpoint + "\"";

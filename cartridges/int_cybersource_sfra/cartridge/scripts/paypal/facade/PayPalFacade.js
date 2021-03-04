@@ -4,7 +4,7 @@ var Logger = dw.system.Logger.getLogger('Cybersource');
 var Site = require('dw/system/Site');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
-var csReference = webreferences.CyberSourceTransaction;
+var csReference = webreferences2.CyberSourceTransaction;
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 
@@ -300,7 +300,7 @@ function PayPalRefundService(requestID, merchantRefCode, paymentType, amount, cu
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
@@ -356,7 +356,7 @@ function PayPalReversalService(requestID, merchantRefCode, paymentType, purchase
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -411,7 +411,7 @@ function PayPalCaptureService(requestID, merchantRefCode, paymentType, purchaseT
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);

@@ -25,7 +25,7 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
     // Set WebReference & Stub
     //* *************************************************************************//
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     //* *************************************************************************//
@@ -134,7 +134,7 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     CybersourceHelper.addVCDecryptRequestInfo(serviceRequest, orderNo, wrappedKey, data);
     CybersourceHelper.addVCOrderID(serviceRequest, callID);
@@ -275,7 +275,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     var callID = session.forms.visacheckout.callId.value;
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var deviceType = CommonHelper.getDeviceType(request);
@@ -390,7 +390,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
     var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
     var data = session.forms.visacheckout.encryptedPaymentData.value;
     var callID = session.forms.visacheckout.callId.value;
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addPayerAuthValidateInfo(serviceRequest, orderNo, signedPaRes, null, amount, null, processorTransactionId);
@@ -496,7 +496,7 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -561,7 +561,7 @@ function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
     purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
@@ -629,7 +629,7 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);

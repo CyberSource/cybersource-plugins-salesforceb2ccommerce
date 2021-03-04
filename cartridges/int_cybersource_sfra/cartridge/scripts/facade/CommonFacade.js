@@ -26,7 +26,7 @@ function CheckPaymentStatusRequest(Order)
    	// create service stubs
    	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
    	var CybersourceHelper = libCybersource.getCybersourceHelper();
-   	var csReference = webreferences.CyberSourceTransaction;
+   	var csReference = webreferences2.CyberSourceTransaction;
 
     // set alipay payment type to pass it as input in request
     var request = new csReference.RequestMessage();
