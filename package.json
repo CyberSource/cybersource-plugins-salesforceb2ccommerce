@@ -8,9 +8,10 @@
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge int_cybersource_sfra",
     "compile:js": "sgmf-scripts --compile js",
+    "compile:scss": "sgmf-scripts --compile css",
+    "build": "npm run compile:js && npm run compile:scss",
     "test": "sgmf-scripts --test test/unit/**/*.js",
-    "test:integration": "sgmf-scripts --integration '/test/integration/int_cybersource_sfra/**/*.js'",
-    "compile:scss": "sgmf-scripts --compile css"
+    "test:integration": "sgmf-scripts --integration '/test/integration/int_cybersource_sfra/**/*.js'"
   },
   "dependencies": {
     "babel-eslint": "^10.1.0",
