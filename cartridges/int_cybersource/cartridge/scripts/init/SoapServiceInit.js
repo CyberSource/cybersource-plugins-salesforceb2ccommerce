@@ -166,7 +166,7 @@ var CyberSourceTransactionPOSService = LocalServiceRegistry.createService("cyber
 		       requestCfg.put(WSUtil.WS_SECRETS_MAP, secretsMap);
 		       
 		       var responseCfg : Map = new HashMap();
-		       responseCfg.put(SOAPUtil.WS_ACTION, SOAPUtil.WS_TIMESTAMP);
+		       responseCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP);
 		     
 		       WSUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg);  // Setting WS security
   

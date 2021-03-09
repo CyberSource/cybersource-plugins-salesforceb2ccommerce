@@ -8,12 +8,12 @@ var Order = require('dw/order/Order');
 var OrderMgr = require('dw/order/OrderMgr');
 var dwsvc = require('dw/svc');
 var Transaction = require('dw/system/Transaction');
-var collections = require('*/cartridge/scripts/util/collections');
 var CRServices = require('~/cartridge/scripts/init/RestServiceInit');
 
 var logger = Logger.getLogger('CyberSource', 'ConversionDetailReport');
 
 function orderStatusUpdate(jobParams) {
+    var collections = require('*/cartridge/scripts/util/collections');
     logger.debug('ConversionDetailReport---------------- -');
     var message;
 

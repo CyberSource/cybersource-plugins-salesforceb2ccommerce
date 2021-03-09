@@ -6,7 +6,6 @@
 /*********************************************************************************/
 
 var HashMap = require('dw/util/HashMap');
-var SOAPUtil = require('dw/rpc/SOAPUtil');
 var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 
 var Logger = require('dw/system/Logger');

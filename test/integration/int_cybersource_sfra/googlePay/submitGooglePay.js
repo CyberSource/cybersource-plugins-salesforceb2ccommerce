@@ -54,73 +54,7 @@ function addToCart(addToCartResponse, cookieJar, myRequest) {
 }
 
 function submitPayment(csrfResponse, myRequest, token) {
-	var csrfJsonResponse = JSON.parse(csrfResponse.body);
-
-
-	// step3 : submit billing request with token aquired in step 2
-	myRequest.url = config.baseUrl + '/CheckoutServices-SubmitPayment?' +
-		csrfJsonResponse.csrf.tokenName + '=' + csrfJsonResponse.csrf.token 
 	
-	myRequest.form = {
-		dwfrm_billing_shippingAddressUseAsBillingAddress: 'true',
-		dwfrm_billing_addressFields_firstName: 'John',
-		dwfrm_billing_addressFields_lastName: 'Smith',
-		dwfrm_billing_addressFields_address1: '10 main St',
-		dwfrm_billing_addressFields_address2: '',
-		dwfrm_billing_addressFields_country: 'us',
-		dwfrm_billing_addressFields_states_stateCode: 'MA',
-		dwfrm_billing_addressFields_city: 'burlington',
-		dwfrm_billing_addressFields_postalCode: '09876',
-		dwfrm_billing_paymentMethod: 'DW_GOOGLE_PAY',
-		dwfrm_billing_creditCardFields_cardNumber: token,
-		dwfrm_billing_contactInfoFields_email: 'blahblah@gmail.com',
-		dwfrm_billing_contactInfoFields_phone: '9786543213'
-	};
-	var ExpectedResBody = {
-		locale: 'en_US',
-		address: {
-			firstName: {
-				value: 'John'
-			},
-			lastName: {
-				value: 'Smith'
-			},
-			address1: {
-				value: '10 main St'
-			},
-			address2: {
-				value: null
-			},
-			city: {
-				value: 'burlington'
-			},
-			stateCode: {
-				value: 'MA'
-			},
-			postalCode: {
-				value: '09876'
-			},
-			countryCode: {
-				value: 'us'
-			}
-		},
-		paymentMethod: {
-			value: 'DW_GOOGLE_PAY',
-			htmlName: 'DW_GOOGLE_PAY'
-		},
-		email: {
-			value: 'blahblah@gmail.com'
-		},
-		phone: {
-			value: '9786543213'
-		},
-		error: true,
-		cartError: true,
-		fieldErrors: [],
-		serverErrors: [],
-		saveCard: false
-	};
-
 	return request(myRequest)
 		.then(function (response) {
 			var bodyAsJson = JSON.parse(response.body);
@@ -134,7 +68,7 @@ describe('google pay from checkout', function () {
 
 	describe('positive visa', function () {
 		this.timeout(5000);
-		//todo: How to get this payload.
+		//How to get this payload.
 		var creditCard = "GOOGLEPAY ENCRYPTED PAYLOAD"
 		return addProductAndSubmitPayment(creditCard);
 	});

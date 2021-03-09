@@ -104,11 +104,16 @@ server.post(
         var Transaction = require('dw/system/Transaction');
 
         if (result.success) {
-            //  var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
-            //  Transaction.wrap(function () {
-            //      ShippingHelper.selectShippingMethod(cart.defaultShipment, request.httpParameterMap.shippingMethodID.stringValue);
-            //      basketCalculationHelpers.calculateTotals(cart);
-		    //  });
+            var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
+            var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+            Transaction.wrap(function () {
+                // Update the shipping method based on the selected shipping method or selected address form PAYPAL instance.
+                ShippingHelper.selectShippingMethod(cart.defaultShipment, cart.defaultShipment.shippingMethodID);
+                // Calculate the basket
+                basketCalculationHelpers.calculateTotals(cart);
+                // Re-calculate the payments.
+                COHelpers.calculatePaymentTransaction(cart);
+		      });
             session.forms.billing.addressFields.copyFrom(cart.getBillingAddress());
             if ('states' in session.forms.billing.addressFields)
         		{ session.forms.billing.addressFields.states.copyFrom(cart.getBillingAddress()); }

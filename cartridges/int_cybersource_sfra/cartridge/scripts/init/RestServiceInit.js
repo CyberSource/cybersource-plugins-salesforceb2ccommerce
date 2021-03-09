@@ -4,11 +4,8 @@
 *
 /******************************************************************************** */
 var HashMap = require('dw/util/HashMap');
-var SOAPUtil = require('dw/rpc/SOAPUtil');
 var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 var Logger = require('dw/system/Logger');
-var collections = require('*/cartridge/scripts/util/collections');
-
 var logger = Logger.getLogger('CyberSource', 'RestAPIServices');
 /**
  *
@@ -30,6 +27,7 @@ var logger = Logger.getLogger('CyberSource', 'RestAPIServices');
 /** */
 var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersource.http.flextoken', {
     createRequest: function (svc, requestObj, digestString) {
+        var collections = require('*/cartridge/scripts/util/collections');
         svc.setRequestMethod('POST');
         svc.addHeader('Accept', 'application/json; charset=utf-8');
         svc.addHeader('Content-Type', 'application/json; charset=utf-8');
@@ -80,6 +78,7 @@ var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersourc
 
 var CyberSourceDMService = LocalServiceRegistry.createService('cybersource.conversiondetailreport', {
     createRequest: function (svc, requestObj, starttime, endtime, merchantId) {
+        var collections = require('*/cartridge/scripts/util/collections');
         svc.setRequestMethod('GET');
         svc.addHeader('Content-Type', 'application/json');
         collections.forEach(requestObj.keySet(), function (key) {
