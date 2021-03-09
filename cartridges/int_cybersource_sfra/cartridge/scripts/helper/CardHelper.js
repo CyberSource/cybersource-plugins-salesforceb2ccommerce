@@ -1,4 +1,5 @@
 'use strict';
+
 var Site = require('dw/system/Site');
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
@@ -8,7 +9,7 @@ var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstan
  * @returns {Object} response as authorized, error, declined
  */
 function HandleDAVResponse(ResponseObject) {
-    Logger.debug('[CardHelper.ds] HandleDAVResponse DAVReasonCode : ' + ResponseObject.DAVReasonCode + ' ReasonCode : ' + ResponseObject.ReasonCode);
+    Logger.debug('[CardHelper.js] HandleDAVResponse DAVReasonCode : ' + ResponseObject.DAVReasonCode + ' ReasonCode : ' + ResponseObject.ReasonCode);
     var DAVReasonCode = ResponseObject.ReasonCode;
     if (ResponseObject.DAVReasonCode) {
         DAVReasonCode = ResponseObject.DAVReasonCode;
@@ -57,9 +58,9 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
         responseObject.AuthorizationReasonCode = serviceResponse.ccAuthReply.reasonCode.get();
     }
 
-    /** ********************************************/
+    /** ******************************************* */
     /* DAV-related WebService response processing */
-    /** ********************************************/
+    /** ******************************************* */
     if (!empty(serviceResponse.missingField)) {
         responseObject.MissingFieldsArray = serviceResponse.missingField;
     }
@@ -91,14 +92,13 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     return { success: true, responseObject: responseObject };
 }
 
-
 /**
  * Handle the Card ReasonCode.
  * @param ResponseObject
  * @returns response as authorized, error, declined
  */
 function HandleCardResponse(ResponseObject) {
-    Logger.debug('[CardHelper.ds] HandleDAVResponse ReasonCode : ' + ResponseObject.ReasonCode);
+    Logger.debug('[CardHelper.js] HandleDAVResponse ReasonCode : ' + ResponseObject.ReasonCode);
     switch (Number(ResponseObject.ReasonCode)) {
         case 100:
             return { authorized: true };
@@ -165,15 +165,15 @@ function writeOutDebugLog(serviceRequest) {
  */
 
 function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
-    var fullName,
-        accounNumber,
-        cardType,
-        expiryMonth,
-        expiryYear,
-        cvnNumber,
-        subscriptionToken,
-        firstName,
-        lastName;
+    var fullName;
+    var accounNumber;
+    var cardType;
+    var expiryMonth;
+    var expiryYear;
+    var cvnNumber;
+    var subscriptionToken;
+    var firstName;
+    var lastName;
     var cardObject;
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 
@@ -200,21 +200,21 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
             }
             break;
         case 'paymentinstruments':
-           firstName = session.forms.creditCard.addressFields.firstName.value;
+            firstName = session.forms.creditCard.addressFields.firstName.value;
             lastName = session.forms.creditCard.addressFields.lastName.value;
             accounNumber = session.forms.creditCard.cardNumber.value;
-            cardType = ""+session.forms.creditCard.cardType.value;
-            expiryMonth =""+session.forms.creditCard.expirationMonth.value;
-            expiryYear = ""+session.forms.creditCard.expirationYear.value;
+            cardType = '' + session.forms.creditCard.cardType.value;
+            expiryMonth = '' + session.forms.creditCard.expirationMonth.value;
+            expiryYear = '' + session.forms.creditCard.expirationYear.value;
             cvnNumber = session.forms.creditCard.securityCode.value;
-            subscriptionToken = CommonHelper.GetSubscriptionToken( session.forms.creditCard.selectedCardID.value, customer);
+            subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.creditCard.selectedCardID.value, customer);
             break;
     }
     if (!empty(cardType)) {
         var Card_Object = require('~/cartridge/scripts/cybersource/Cybersource_Card_Object');
         cardObject = new Card_Object();
         if (empty(subscriptionToken)) {
-            cardObject.setAccountNumber(accounNumber.replace(/\s/g,''));
+            cardObject.setAccountNumber(accounNumber.replace(/\s/g, ''));
         }
         cardObject.setFullName(fullName);
         cardObject.setExpirationMonth(expiryMonth);
@@ -345,7 +345,7 @@ function getCardType(cardTypeValue) {
             cardType = 'Discover';
             break;
         case '005':
-            cardType = 'Diners';
+            cardType = 'DinersClub';
             break;
         case '042':
             cardType = 'Maestro';
@@ -366,7 +366,8 @@ function getCardType(cardTypeValue) {
 
 function protocolResponse(serviceResponse) {
     var debug = dw.system.Site.getCurrent().getCustomPreferenceValue('CsDebugCybersource');
-    if (true || debug) {
+    var checkValue = true;
+    if (checkValue || debug) {
         var HashMap = require('dw/util/HashMap');
         var arr = new HashMap();
         var xx;
@@ -374,7 +375,7 @@ function protocolResponse(serviceResponse) {
             arr.put(xx, serviceResponse[xx]);
         }
         for (xx in serviceResponse.payPalPaymentReply) {
-            trace('checking ' + xx);
+            // trace('checking ' + xx);
             try {
                 arr.put('PayPalPaymentReply.' + xx, serviceResponse.payPalPaymentReply[xx]);
             } catch (exception) {
@@ -433,7 +434,7 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
             CommonHelper.UpdateOrderShippingAddress(serviceResponse.StandardizedAddress, order, session.forms.shipping.shippingAddress.shippingAddressUseAsBillingAddress.value);
         }
         if (serviceResponse.ReasonCode == '100' || serviceResponse.ReasonCode == '480') {
-			addOrUpdateToken(paymentInstrument, customer.authenticated ? customer : null);
+            addOrUpdateToken(paymentInstrument, customer.authenticated ? customer : null);
         }
         // returns response as authorized, error, declined based on ReasonCode
         return HandleCardResponse(serviceResponse);
@@ -443,8 +444,8 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
 }
 
 function addOrUpdateToken(paymentInstrument, customer) {
-	var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-	return secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customer);
+    var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+    return secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customer);
 }
 
 module.exports = {
@@ -460,5 +461,5 @@ module.exports = {
     getNonGCPaymemtInstument: getNonGCPaymemtInstument,
     getCardType: getCardType,
     ReturnCardType: returnCardType,
-    addOrUpdateToken : addOrUpdateToken
+    addOrUpdateToken: addOrUpdateToken
 };

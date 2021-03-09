@@ -1,15 +1,16 @@
 'use strict';
+
 var cart = require('base/cart/cart');
 
 module.exports = function () {
-    cart();
+    // cart();
     $('.minicart').on('count:update', function (event, count) {
         if (count && $.isNumeric(count.quantityTotal)) {
             $('.minicart .minicart-quantity').text(count.quantityTotal);
         }
     });
 
-   $('.minicart').off('mouseenter focusin touchstart').on('mouseenter focusin touchstart', function (event) {
+    $('.minicart').off('mouseenter focusin touchstart').on('mouseenter focusin touchstart', function (event) {
         if ($('.search:visible').length === 0) {
             return;
         }
@@ -22,16 +23,16 @@ module.exports = function () {
                 $('.minicart .popover').empty();
                 $('.minicart .popover').append(data);
 
-                var isPaypalEnabled = $('#paypal_enabled').length>0 && document.getElementById("paypal_enabled").value == 'true' ? true : false;
-                var isGooglePayEnabled = $('#isGooglePayEnabled').length>0 && $('#isGooglePayEnabled').val() == 'true' ? true : false;
-                
-                if(isPaypalEnabled) {
+                var isPaypalEnabled = !!($('#paypal_enabled').length > 0 && document.getElementById('paypal_enabled').value == 'true');
+                var isGooglePayEnabled = !!($('#isGooglePayEnabled').length > 0 && $('#isGooglePayEnabled').val() == 'true');
+
+                if (isPaypalEnabled) {
                     paypalhelper.paypalMini();
                 }
-                if(isGooglePayEnabled){
-					onGooglePayLoaded();
+                if (isGooglePayEnabled) {
+                    onGooglePayLoaded();
                 }
-                
+
                 $.spinner().stop();
             });
         }
@@ -43,20 +44,20 @@ module.exports = function () {
             $('.minicart .popover').removeClass('show');
         }
     });
-    
+
     $('.minicart').on('mouseleave focusout', function (event) {
         if ((event.type === 'focusout' && $('.minicart').has(event.target).length > 0)
             || (event.type === 'mouseleave' && $(event.target).is('.minicart .quantity'))
             || $('body').hasClass('modal-open')) {
             event.stopPropagation();
             return;
-        }else {
-        	if(!($(document).find('.paypal-checkout-sandbox').length > 0)) {
+        }
+        	if (!($(document).find('.paypal-checkout-sandbox').length > 0)) {
         		$('.minicart .popover').empty();
         		$('.minicart .popover').removeClass('show');
         	}
-		}
-		event.stopImmediatePropagation();
+
+        event.stopImmediatePropagation();
     });
     $('body').on('change', '.minicart .quantity', function () {
         if ($(this).parents('.bonus-product-line-item').length && $('.cart-page').length) {

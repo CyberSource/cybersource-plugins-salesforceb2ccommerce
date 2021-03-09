@@ -2,9 +2,10 @@
 
 var Status = require('dw/system/Status');
 var server = require('server');
-var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-var paymentMethodID = 'DW_APPLE_PAY';
 var Transaction = require('dw/system/Transaction');
+var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+
+var paymentMethodID = 'DW_APPLE_PAY';
 
 /**
  *
@@ -54,19 +55,17 @@ exports.authorizeOrderPayment = function (order, responseData) {
     setBillingAddress(responseData.payment.billingContact);
     setShippingAddress(responseData.payment.shippingContact);
     Transaction.wrap(function () {
-         //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+        //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
         var paymentInstrument = null;
-        if ( !empty(order.getPaymentInstruments()) ) {
+        if (!empty(order.getPaymentInstruments())) {
             paymentInstrument = order.getPaymentInstruments()[0];
             paymentInstrument.paymentTransaction.paymentProcessor = paymentMethod.getPaymentProcessor();
-        }
-        else {
+        } else {
             return new Status(status);
         }
         paymentInstrument.paymentTransaction.paymentProcessor = paymentMethod.getPaymentProcessor();
     });
     authResponseStatus = require('~/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter').processPayment(order);
-
 
     if (CardHelper.HandleCardResponse(authResponseStatus.ServiceResponse.serviceResponse).authorized || CardHelper.HandleCardResponse(authResponseStatus.ServiceResponse.serviceResponse).review) {
         status = Status.OK;

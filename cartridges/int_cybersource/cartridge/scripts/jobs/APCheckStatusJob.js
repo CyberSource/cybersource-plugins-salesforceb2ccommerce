@@ -1,5 +1,5 @@
 /**
-* 	APCheckStatusJob.ds
+* 	APCheckStatusJob.js
 *	This script get the order list for already placed orders having payment methods as ALIPAY/BankTransfer/Paypal 
 *	and by passing different order status such as NEW, CREATED, OPEN and NOT EXPORTED
 *
@@ -64,7 +64,7 @@ function HandleCheckStatusServiceResponse(order){
 			order.setExportStatus(Order.EXPORT_STATUS_READY);									
 			order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
 			}else{
-				Logger.error('[APCheckStatusJob.ds] DECISION ACCEPT -  Placeorder Error for order:', order.OrderNo);
+				Logger.error('[APCheckStatusJob.js] DECISION ACCEPT -  Placeorder Error for order:', order.OrderNo);
 				throw new Error('Failed to update Order Status');
 			}
 		}
@@ -75,7 +75,7 @@ function HandleCheckStatusServiceResponse(order){
 		else if(paymentResponse.error){
 			orderStatus = OrderMgr.failOrder(order);									
 			if(orderStatus.code === 'ERROR'){										
-				Logger.error('[APCheckStatusJob.ds] DECISION REJECT -  FailOrder Called for order:', order.OrderNo);
+				Logger.error('[APCheckStatusJob.js] DECISION REJECT -  FailOrder Called for order:', order.OrderNo);
 				throw new Error('Order failed');
 			}										 
 		}

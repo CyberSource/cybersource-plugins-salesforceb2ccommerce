@@ -26,22 +26,22 @@ function saredirect(args) {
         case CybersourceConstants.SA_SUMMARY: var PlaceOrderError = secureAcceptanceResponse.data;
             returnVariable = {
                 cancelfail: true,
-                PlaceOrderError: !empty(PlaceOrderError) ? PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined")
+                PlaceOrderError: !empty(PlaceOrderError) ? PlaceOrderError : new Status(Status.ERROR, 'confirm.error.declined')
             };
             break;
-        case CybersourceConstants.SA_GOTO: 
+        case CybersourceConstants.SA_GOTO:
         	returnVariable = {
             	redirect: true,
             	location: secureAcceptanceResponse.location,
             	render: secureAcceptanceResponse.render
         	};
             break;
-		case CybersourceConstants.SA_CANCEL: 
-			returnVariable = {
-				orderreview : true, 
-				location: secureAcceptanceResponse.location 
-			};
-			break;
+        case CybersourceConstants.SA_CANCEL:
+            returnVariable = {
+                orderreview: true,
+                location: secureAcceptanceResponse.location
+            };
+            break;
         default: break;
     }
     return returnVariable;
@@ -63,7 +63,7 @@ function saiframe(args) {
         case CybersourceConstants.SA_SUMMARY: var PlaceOrderError = secureAcceptanceResponse.data;
             returnVariable = {
                 cancelfail: true,
-                PlaceOrderError: !empty(PlaceOrderError) ? PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined")
+                PlaceOrderError: !empty(PlaceOrderError) ? PlaceOrderError : new Status(Status.ERROR, 'confirm.error.declined')
             };
             break;
         case CybersourceConstants.SA_GOTO: returnVariable = {
@@ -77,28 +77,26 @@ function saiframe(args) {
     return returnVariable;
 }
 
-
 /**
  * Process redirect url response of alipay
  */
 function alipay(order) {
-
     var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var orderResult = Cybersource.GetOrder(order);
     if (orderResult.error) {
         return { carterror: true };
     }
     var order = orderResult.Order;
-    //call check status service
+    // call check status service
     var alipayResult = commonHelper.CheckStatusServiceRequest(order);
-	/*show confirmation if check status service response is still pending,
+    /* show confirmation if check status service response is still pending,
 	 * for success, place the order and fail the order in case of failed response
 	 */
     if (alipayResult.pending) {
         return { pending: true, Order: order };
-    } else if (alipayResult.submit) {
+    } if (alipayResult.submit) {
         return { submit: true, Order: order };
-    } else if (alipayResult.error) {
+    } if (alipayResult.error) {
         return { error: true, Order: order };
     }
 }
@@ -107,26 +105,25 @@ function alipay(order) {
  * Process redirect url response of bank transfer
  */
 function banktransfer(order) {
-
     var bankAdaptor = require('~/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
     // get the order
     var orderResult = Cybersource.GetOrder(order);
-    //check if payment method is not specific to bank transfer
+    // check if payment method is not specific to bank transfer
     if (orderResult.error) {
         return { carterror: true };
     }
     var order = orderResult.Order;
-    //call check status service
+    // call check status service
     var bankTransferResult = bankAdaptor.CheckStatusServiceRequest(order);
 
-	/*show confirmation if check status service response is still pending,
+    /* show confirmation if check status service response is still pending,
 	 * for success, place the order and fail the order in case of failed response
 	 */
     if (bankTransferResult.pending) {
         return { pending: true, Order: order };
-    } else if (bankTransferResult.submit) {
+    } if (bankTransferResult.submit) {
         return { submit: true, Order: order };
-    } else if (bankTransferResult.error || bankTransferResult.declined) {
+    } if (bankTransferResult.error || bankTransferResult.declined) {
         return { error: true, Order: order };
     }
 }
@@ -135,51 +132,54 @@ function banktransfer(order) {
  * Process redirect url response of bank transfer
  */
 function klarna(order) {
-
     var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
+    var collections = require('*/cartridge/scripts/util/collections');
     // get the order
     var orderResult = klarnaAdaptor.GetKlarnaOrder(order);
-    //check if payment method is not specific to bank transfer
+    // check if payment method is not specific to bank transfer
     if (orderResult.error) {
         return { carterror: true };
     }
     var order = orderResult.Order;
 
-	/*show confirmation if check status service response is still pending,
+    /* show confirmation if check status service response is still pending,
 	 * for success, place the order and fail the order in case of failed response
 	 */
-    for each(var paymentInstrument in order.paymentInstruments) {
+    var result;
+    collections.forEach(order.paymentInstruments, function (paymentInstrument) {
+    // for each(var paymentInstrument in order.paymentInstruments) {
+
         if (!paymentInstrument.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {
             if (paymentInstrument.paymentTransaction.custom.apPaymentStatus !== null
                 && CybersourceConstants.AUTHORIZED === paymentInstrument.paymentTransaction.custom.apPaymentStatus) {
-                return { submit: true, Order: order };
-            } else if (paymentInstrument.paymentTransaction.custom.apPaymentStatus !== null
+            	result = { submit: true, Order: order };
+            } if (paymentInstrument.paymentTransaction.custom.apPaymentStatus !== null
                 && CybersourceConstants.PENDING === paymentInstrument.paymentTransaction.custom.apPaymentStatus) {
-                //call check status service
+                // call check status service
                 var klarnaResult = klarnaAdaptor.CheckStatusServiceRequest(order);
-				/*show confirmation if check status service response is still pending,
+                /* show confirmation if check status service response is still pending,
 				 * for success, place the order and fail the order in case of failed response
 				 */
                 if (klarnaResult.pending) {
-                    return { pending: true, Order: order };
-                } else if (klarnaResult.submit) {
-                    return { submit: true, Order: order };
-                } else if (klarnaResult.error || klarnaResult.declined) {
-                    return { error: true, Order: order };
-                } else if (klarnaResult.review) {
-                    return { review: true, Order: order };
+                	result = { pending: true, Order: order };
+                } if (klarnaResult.submit) {
+                	result = { submit: true, Order: order };
+                } if (klarnaResult.error || klarnaResult.declined) {
+                	result = { error: true, Order: order };
+                } if (klarnaResult.review) {
+                	result = { review: true, Order: order };
                 }
             }
         }
-    }
+    });
+    return result;
 }
 
 /**
  * Process cancel or fail response from bank transfer
  */
 function cancelfail(order) {
-
     var orderResult = {};
     if (!request.httpParameterMap.cfk.booleanValue) {
         orderResult = Cybersource.GetOrder(order);
@@ -204,7 +204,6 @@ function cancelfail(order) {
     if (failResult.error) {
         return { cancelfail: true, PlaceOrderError: failResult.PlaceOrderError };
     }
-    return;
 }
 
 /**
@@ -221,13 +220,13 @@ function card(args) {
         session.privacy.process3DRequestParent = true;
         session.privacy.order_id = order.orderNo;
         return { load3DRequest: true, Order: order };
-    } else if (session.privacy.process3DRequestParent) {
+    } if (session.privacy.process3DRequestParent) {
         var process3DResult = Cybersource.Process3DRequestParent({ Order: order });
         if (process3DResult.fail) {
             return { error: true, Order: order };
-        } else if (process3DResult.review) {
+        } if (process3DResult.review) {
             return { pending: true, Order: order };
-        } else if (process3DResult.home) {
+        } if (process3DResult.home) {
             return { carterror: true, Order: order };
         }
     }
@@ -235,7 +234,7 @@ function card(args) {
 }
 
 /**
- * User is redirected to review order page, if order is not there then to cart page. 
+ * User is redirected to review order page, if order is not there then to cart page.
  */
 
 function saconfirm(order) {
@@ -247,7 +246,7 @@ function saconfirm(order) {
 }
 
 /**
- * User is redirected to submit order page. 
+ * User is redirected to submit order page.
  */
 
 function sasubmit(order) {
@@ -258,9 +257,8 @@ function sasubmit(order) {
     return { submit: true, Order: orderResult.Order };
 }
 
-
 /**
- * User is redirected to summary page with the error message, if order is not there then to cart page. 
+ * User is redirected to summary page with the error message, if order is not there then to cart page.
  */
 function safail(order) {
     var orderResult = Cybersource.GetOrder(order);

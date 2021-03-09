@@ -24,7 +24,7 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     var Resource = require('dw/web/Resource');
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-    if(CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX','cybersource',null)) {
+    if (CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
     	billingData.paymentInformation.cardType.value = CardHelper.getCardType(billingData.paymentInformation.cardType.value);
     }
     var verifyDuplicates = false;
@@ -116,10 +116,9 @@ function handlePayments(order, orderNumber) {
                     Transaction.begin();
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
                     Transaction.commit();
-                }
-                else {
-                    if (HookMgr.hasHook('app.payment.processor.' +
-                            paymentProcessor.ID.toLowerCase())) {
+                } else {
+                    if (HookMgr.hasHook('app.payment.processor.'
+                            + paymentProcessor.ID.toLowerCase())) {
                         authorizationResult = HookMgr.callHook(
                             'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
                             'Authorize',
@@ -127,8 +126,7 @@ function handlePayments(order, orderNumber) {
                             paymentInstrument,
                             paymentProcessor
                         );
-                    } 
-                    else {
+                    } else {
                         authorizationResult = HookMgr.callHook(
                             'app.payment.processor.default',
                             'Authorize'
@@ -228,7 +226,7 @@ function getOrderPaymentInstruments(req, paymentInstruments, paymentID) {
     var context;
     var template = 'checkout/billing/orderPaymentInstrument';
 
-    context = { paymentInstruments: paymentInstruments, paymentOption : paymentID};
+    context = { paymentInstruments: paymentInstruments, paymentOption: paymentID };
     result = renderTemplateHelper.getRenderedHtml(
         context,
         template
@@ -236,7 +234,6 @@ function getOrderPaymentInstruments(req, paymentInstruments, paymentID) {
 
     return result || null;
 }
-
 
 function getPayPalInstrument(basket) {
     for (var i = 0; i < basket.paymentInstruments.length; i++) {
@@ -277,61 +274,61 @@ function handlePayPal(basket) {
     }
 }
 
-function clearPaymentAttributes(){
-	session.privacy.isPaymentRedirectInvoked = '';
-	session.privacy.paymentType = '';
-	session.privacy.orderID = '';
+function clearPaymentAttributes() {
+    session.privacy.isPaymentRedirectInvoked = '';
+    session.privacy.paymentType = '';
+    session.privacy.orderID = '';
 }
 
-function reCreateBasket(order){
-	var Transaction = require('dw/system/Transaction');
+function reCreateBasket(order) {
+    var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
     var OrderMgr = require('dw/order/OrderMgr');
-	Transaction.wrap(function () {
-		OrderMgr.failOrder(order, true); 
-	});
-	var BasketMgr = require('dw/order/BasketMgr');
+    Transaction.wrap(function () {
+        OrderMgr.failOrder(order, true);
+    });
+    var BasketMgr = require('dw/order/BasketMgr');
     return BasketMgr.getCurrentBasket();
 }
 
 function handleSilentPostAuthorize(order) {
-	var PaymentMgr = require('dw/order/PaymentMgr');
+    var PaymentMgr = require('dw/order/PaymentMgr');
     var HookMgr = require('dw/system/HookMgr');
-	var paymentInstrument;
-	if (null !== order) {
-		var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var paymentInstrument;
+    if (order !== null) {
+        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
         paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
     }
     var authorizationResult;
     var result = {};
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod).paymentProcessor;
     if (HookMgr.hasHook('app.payment.processor.' + paymentProcessor.ID.toLowerCase())) {
-		authorizationResult = HookMgr.callHook(
-			'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
-			'SilentPostAuthorize',
-			order.orderNo,
-			paymentInstrument,
-			paymentProcessor
-		);
-	} 
-	return authorizationResult;	
+        authorizationResult = HookMgr.callHook(
+            'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
+            'SilentPostAuthorize',
+            order.orderNo,
+            paymentInstrument,
+            paymentProcessor
+        );
+    }
+    return authorizationResult;
 }
 
-function addOrUpdateToken(order, customerObj, res){
-	var URLUtils = require('dw/web/URLUtils');
-	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-	var paymentInstrument;
-	if (null !== order) {
+function addOrUpdateToken(order, customerObj, res) {
+    var URLUtils = require('dw/web/URLUtils');
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var paymentInstrument;
+    if (order !== null) {
         paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
     }
-	CardHelper.addOrUpdateToken(paymentInstrument, customerObj);
-		session.privacy.orderId = order.orderNo;
-		res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
+    CardHelper.addOrUpdateToken(paymentInstrument, customerObj);
+    session.privacy.orderId = order.orderNo;
+    res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
 }
 
-function getNonGCPaymemtInstument(basket){
-	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-	return CardHelper.getNonGCPaymemtInstument(basket);
+function getNonGCPaymemtInstument(basket) {
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    return CardHelper.getNonGCPaymemtInstument(basket);
 }
 
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;

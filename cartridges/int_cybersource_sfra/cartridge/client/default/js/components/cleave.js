@@ -10,7 +10,7 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
             window.ccType = type;
             var creditCardTypes = {
                 visa: 'Visa',
-                mastercard: 'MasterCard',
+                mastercard: 'Master Card',
                 amex: 'Amex',
                 discover: 'Discover',
                 maestro: 'Maestro',
@@ -35,7 +35,7 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
     }
 };
 
-base.serializeData =  function (form) {
+base.serializeData = function (form) {
     var serializedArray = form.serializeArray();
 
     serializedArray.forEach(function (item) {

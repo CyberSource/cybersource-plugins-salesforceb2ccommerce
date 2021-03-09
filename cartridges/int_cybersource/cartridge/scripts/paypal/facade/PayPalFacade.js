@@ -1,7 +1,7 @@
 'use strict';
 var Logger = dw.system.Logger.getLogger('Cybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var csReference = webreferences.CyberSourceTransaction;
+var csReference = webreferences2.CyberSourceTransaction;
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
@@ -27,13 +27,13 @@ function payPalSerivceInterface(request)
 		// call the service based on input
 		serviceResponse = service.call(requestWrapper);
 	} catch(e) {
-		Logger.error("[PayPalFacade.ds] Error in ServiceInterface ( {0} )",e.message);
+		Logger.error("[PayPalFacade.js] Error in ServiceInterface ( {0} )",e.message);
 		return null;
 	}
 
 	if(empty(serviceResponse) || serviceResponse.status !== 'OK')
 	{
-		Logger.error("[libCybersource.ds] Error in ServiceInterface: null response");
+		Logger.error("[libCybersource.js] Error in ServiceInterface: null response");
 		return null;
 	}
 	serviceResponse = serviceResponse.object;
@@ -52,7 +52,7 @@ function payPalSerivceInterface(request)
 	 ****************************************************************************/
 function sessionService(lineItemCntr,args){
 	var request = new csReference.RequestMessage();
-	createBasicRequest(request,lineItemCntr);
+	createBasicRequest('sessionService',request,lineItemCntr);
 	libCybersource.setClientData( request, lineItemCntr.UUID); 
 	var sessionService = new csReference.APSessionsService();
 	__addFundingSource(request);
@@ -176,7 +176,7 @@ function checkStatusService(lineItemCntr,requestId){
 function orderService(lineItemCntr,paymentInstrument){
 	//create request stub for order service
 	var serviceRequest = new csReference.RequestMessage(),sessionRequestID;
-	createBasicRequest(serviceRequest,lineItemCntr);
+	createBasicRequest('orderService',serviceRequest,lineItemCntr);
 	libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo); 
 	serviceRequest.apPaymentType = 'PPL';
 	var paymentInstruments = lineItemCntr.paymentInstruments;
@@ -195,13 +195,13 @@ function orderService(lineItemCntr,paymentInstrument){
 	return payPalSerivceInterface(serviceRequest);
 }
 
-function createBasicRequest(request,lineItemCntr){
+function createBasicRequest(typeofService,request,lineItemCntr){
 	var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	var purchase,itemList,billTo,shipTo;
 	purchase = commonHelper.GetPurchaseTotal(lineItemCntr);
 	request.purchaseTotals = libCybersource.copyPurchaseTotals( purchase );
 	if(lineItemCntr.getGiftCertificatePaymentInstruments().size() === 0){
-		itemList = commonHelper.GetItemObject(lineItemCntr);
+		itemList = commonHelper.GetItemObject(typeofService,lineItemCntr);
 	}
 	var items  = [];
 	if(!empty(itemList))
@@ -230,7 +230,7 @@ function createBasicRequest(request,lineItemCntr){
 	function authorizeService(lineItemCntr,paymentInstrument){
 		//create request stub for sale service
 		var serviceRequest = new csReference.RequestMessage();
-		createBasicRequest(serviceRequest,lineItemCntr);
+		createBasicRequest('authorizeService', serviceRequest,lineItemCntr);
 		__addDecisionManager(serviceRequest);
 		if(serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()){
 			libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo,session.sessionID); 	
@@ -257,7 +257,7 @@ function createBasicRequest(request,lineItemCntr){
 	 	//create request stub for sale service
 		var serviceRequest = new csReference.RequestMessage();
 		var paymentTransaction =  paymentInstrument.paymentTransaction;
-		createBasicRequest(serviceRequest,lineItemCntr);
+		createBasicRequest('saleService',serviceRequest,lineItemCntr);
 		__addDecisionManager(serviceRequest);
 		if(serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()){
 			libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo,session.sessionID); 	

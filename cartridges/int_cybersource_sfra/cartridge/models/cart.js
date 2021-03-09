@@ -21,32 +21,31 @@ function CartModel(basket) {
  * @returns {dw.value.Money} The amount to be paid by a non-gift certificate payment instrument.
  */
 function getNonGiftCertificateAmount(basket) {
-	
-	var Money = require('dw/value/Money');
-	
-	if (empty(basket)) {
-		var Site = require('dw/system/Site');
-		return new Money(0.0, Site.getCurrent().getDefaultCurrency());
-	}
-	
-	var giftCertTotal = new Money(0.0, basket.getCurrencyCode());
+    var Money = require('dw/value/Money');
 
-		//  Gets the list of all gift certificate payment instruments
-	var gcPaymentInstrs = basket.getGiftCertificatePaymentInstruments();
-	var iter = gcPaymentInstrs.iterator();
-	var orderPI = null;
-	
-		//  Sums the total redemption amount.
-	while (iter.hasNext()) {
-		orderPI = iter.next();
-		giftCertTotal = giftCertTotal.add(orderPI.getPaymentTransaction().getAmount());
-	}
+    if (empty(basket)) {
+        var Site = require('dw/system/Site');
+        return new Money(0.0, Site.getCurrent().getDefaultCurrency());
+    }
+
+    var giftCertTotal = new Money(0.0, basket.getCurrencyCode());
+
+    //  Gets the list of all gift certificate payment instruments
+    var gcPaymentInstrs = basket.getGiftCertificatePaymentInstruments();
+    var iter = gcPaymentInstrs.iterator();
+    var orderPI = null;
+
+    //  Sums the total redemption amount.
+    while (iter.hasNext()) {
+        orderPI = iter.next();
+        giftCertTotal = giftCertTotal.add(orderPI.getPaymentTransaction().getAmount());
+    }
 
     		//  Gets the order total.
-	var orderTotal = basket.getTotalGrossPrice();
+    var orderTotal = basket.getTotalGrossPrice();
 
-		//  Calculates the amount to charge for the payment instrument.
-		//  This is the remaining open order total that must be paid.
+    //  Calculates the amount to charge for the payment instrument.
+    //  This is the remaining open order total that must be paid.
     var amountOpen = orderTotal.subtract(giftCertTotal);
 
     		//  Returns the open amount to be paid.

@@ -45,22 +45,22 @@ function orderStatusUpdate(jobParams) {
 		var sharedSecret = jobParams.SAFlexSharedSecret;
 		var keyID = jobParams.SAFlexKeyID;
 		var merchantId = jobParams.MerchantId;
-		
-		var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
+		var host;
+		if ( dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint') == 'Test'){
+		    host = 'apitest.cybersource.com';
+		} else {
+		    host = 'api.cybersource.com';
+		}
+	
         var signature, targetOrigin;
 
-	    if(request.isHttpSecure()){
-		   	 targetOrigin = "https://" + request.httpHost;
-		   } else {
-		   	 targetOrigin = "http://" + request.httpHost;
-        }
         targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());
 		signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
         signedHeaders.put('v-c-merchant-id', merchantId);
 
-		var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time);
+		var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time, host);
 		var headerString = "";
 		for each(var key in signedHeaders.keySet()){
 			headerString = headerString + key + " ";
@@ -124,7 +124,7 @@ function parseJSONResponse(message, orderHashMap) {
                             logger.debug('No records in ACCEPT/REJECT state.');
                         }
                     } else {
-                        logger.debug('Order in Daily conversion report not found in the query results against Demandware DB');
+                        logger.debug('Order in Daily conversion report not found in the query results against SFCC DB');
                     }
                 }
             });
@@ -223,7 +223,7 @@ function getTime() {
 /**
 * Creates the signature
 **/
-function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId, time) {
+function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId, time, host) {
 	 var Bytes = require('dw/util/Bytes');
 	 var Mac = require('dw/crypto/Mac');
 	 var Encoding = require('dw/crypto/Encoding');
@@ -233,7 +233,7 @@ function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId,
 	 	 var secret  = Encoding.fromBase64(sharedSecret);
 		 var signatureString = "";
 			var headerString = "";
-			 signatureString = signatureString + 'host: apitest.cybersource.com'+"\n";
+			 signatureString = signatureString + 'host: '+host+"\n";
 			 signatureString = signatureString + 'date: '+date+"\n";
 			 signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId='+ merchantId + "\n";
 			 signatureString = signatureString + 'v-c-merchant-id: '+merchantId;

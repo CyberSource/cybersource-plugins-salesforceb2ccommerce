@@ -1,6 +1,8 @@
 'use strict';
+
 var page = module.superModule;
 var server = require('server');
+
 server.extend(page);
 
 /**
@@ -9,69 +11,69 @@ server.extend(page);
  * again on the billing page.
  */
 server.append('SubmitShipping', function (req, res, next) {
-	var BasketMgr = require('dw/order/BasketMgr');
-	var Locale = require('dw/util/Locale');
-	var Resource = require('dw/web/Resource');
-	var OrderModel = require('*/cartridge/models/order');
-	var currentBasket = BasketMgr.getCurrentBasket();
-	var viewData = res.getViewData();
-	var paidWithPayPal = false;
-	var usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
-	if (usingMultiShipping === true && currentBasket.shipments.length < 2) {
-		req.session.privacyCache.set('usingMultiShipping', false);
-		usingMultiShipping = false;
-	}
-		var currentLocale = Locale.getLocale(req.locale.id);
-		var basketModel = new OrderModel(
-			currentBasket,
-				{
-					usingMultiShipping: usingMultiShipping,
-					shippable: true,
-					countryCode: currentLocale.country,
-					containerView: 'basket'
-				}
-		);
-		
-	var taxError = false;
-    if (session.privacy.isTaxCalculationFailed)
-    {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Locale = require('dw/util/Locale');
+    var Resource = require('dw/web/Resource');
+    var OrderModel = require('*/cartridge/models/order');
+    var currentBasket = BasketMgr.getCurrentBasket();
+    var viewData = res.getViewData();
+    var paidWithPayPal = false;
+    var usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
+    if (usingMultiShipping === true && currentBasket.shipments.length < 2) {
+        req.session.privacyCache.set('usingMultiShipping', false);
+        usingMultiShipping = false;
+    }
+    var currentLocale = Locale.getLocale(req.locale.id);
+    var basketModel = new OrderModel(
+        currentBasket,
+        {
+            usingMultiShipping: usingMultiShipping,
+            shippable: true,
+            countryCode: currentLocale.country,
+            containerView: 'basket'
+        }
+    );
+
+    var taxError = false;
+    if (session.privacy.isTaxCalculationFailed) {
     	session.privacy.isTaxCalculationFailed = false;
     	taxError = true;
     }
-	var selectedPayment;
+    var selectedPayment;
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-       //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
-    if ( !empty(currentBasket.getPaymentInstruments()) ) {
-       paymentInstrument = currentBasket.getPaymentInstruments()[0];
+    if (!empty(currentBasket.getPaymentInstruments())) {
+        paymentInstrument = currentBasket.getPaymentInstruments()[0];
     }
-	if(paymentInstrument != null)
-		selectedPayment = basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL' || 
-							basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL_CREDIT'? 'PAYPAL' : 'others';
-	paidWithPayPal = CommonHelper.ValidatePayPalInstrument(currentBasket, basketModel);
-	session.privacy.paypalShippingIncomplete = false;
-	var options = {'paidWithPayPal' : paidWithPayPal, 'selectedPayment': selectedPayment};
+    if (paymentInstrument != null) {
+        selectedPayment = basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL'
+							|| basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL_CREDIT' ? 'PAYPAL' : 'others';
+    }
+    paidWithPayPal = CommonHelper.ValidatePayPalInstrument(currentBasket, basketModel);
+    session.privacy.paypalShippingIncomplete = false;
+    var options = { paidWithPayPal: paidWithPayPal, selectedPayment: selectedPayment };
     viewData.options = options;
     viewData.taxError = taxError;
     if (taxError) {
-    	viewData.taxErrorMsg = Resource.msg('error.message.taxcalculation.fail','cybersource',null);
+    	viewData.taxErrorMsg = Resource.msg('error.message.taxcalculation.fail', 'cybersource', null);
     }
     res.setViewData(viewData);
-	next();
+    next();
 });
 
 server.append('UpdateShippingMethodsList', function (req, res, next) {
-	var BasketMgr = require('dw/order/BasketMgr');
-	var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
-	var Transaction = require('dw/system/Transaction');
-	var currentBasket = BasketMgr.getCurrentBasket();
-	
-	var billingAddress = currentBasket.billingAddress;
-	var address = ShippingHelper.getAddressFromRequest(req);
-	
-	Transaction.wrap(function () {		
-		if (!empty(billingAddress) && session.privacy.updateBillingAddress) {			
-				session.privacy.updateBillingAddress = false;
+    var BasketMgr = require('dw/order/BasketMgr');
+    var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
+    var Transaction = require('dw/system/Transaction');
+    var currentBasket = BasketMgr.getCurrentBasket();
+
+    var billingAddress = currentBasket.billingAddress;
+    var address = ShippingHelper.getAddressFromRequest(req);
+
+    Transaction.wrap(function () {
+        if (!empty(billingAddress) && session.privacy.updateBillingAddress) {
+            session.privacy.updateBillingAddress = false;
 			 	billingAddress.setFirstName(address.firstName);
 		        billingAddress.setLastName(address.lastName);
 		        billingAddress.setAddress1(address.address1);
@@ -83,10 +85,9 @@ server.append('UpdateShippingMethodsList', function (req, res, next) {
 		        if (!billingAddress.phone) {
 		            billingAddress.setPhone(address.phone);
 		        }
-		}
-    });	
-	next();
+        }
+    });
+    next();
 });
-
 
 module.exports = server.exports();

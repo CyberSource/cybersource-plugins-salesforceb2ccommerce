@@ -9,7 +9,7 @@
 *@created On  : 21 Jun 2018
 **********************************************************************************
 *@copyright  (C) 2018-2020 Cybersource.  All Rights Reserved.
-**********************************************************************************/
+********************************************************************************* */
 
 var CybersourceConstants = {};
 
@@ -23,7 +23,6 @@ CybersourceConstants.METHOD_SA_SILENTPOST = 'SA_SILENTPOST';
 CybersourceConstants.METHOD_SA_FLEX = 'SA_FLEX';
 CybersourceConstants.METHOD_VISA_CHECKOUT = 'VISA_CHECKOUT';
 CybersourceConstants.METHOD_ApplePay = 'DW_APPLE_PAY';
-CybersourceConstants.METHOD_AndroidPay = 'DW_ANDROID_PAY';
 CybersourceConstants.METHOD_GooglePay = 'DW_GOOGLE_PAY';
 CybersourceConstants.METHOD_Ideal_BankTransfer = 'IDEAL';
 CybersourceConstants.BANK_TRANSFER_PAYMENT_METHOD = 'BANK_TRANSFER';
@@ -36,7 +35,6 @@ CybersourceConstants.SFRA_CORE = 'app_storefront_base';
 CybersourceConstants.CS_CORE_SCRIPT = '~/cartridge/scripts/';
 CybersourceConstants.PAYPAL_ADAPTOR = '~/cartridge/scripts/paypal/adapter/PaypalAdapter';
 CybersourceConstants.PATH_FACADE = '~/cartridge/scripts/paypal/facade/';
-
 
 //  Other Constants
 // CybersourceConstants.GUARD = CybersourceConstants.SG_CONTROLLER+'/cartridge/scripts/guard';

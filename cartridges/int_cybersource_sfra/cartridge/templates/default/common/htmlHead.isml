@@ -28,10 +28,10 @@
 <link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-32x32.png')}" sizes="32x32" />
 <link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-16x16.png')}" sizes="16x16" />
 <link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-128.png')}" sizes="128x128" />
-
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 <link rel="stylesheet" href="${URLUtils.staticURL('/css/global.css')}" />
 <isloop items="${ require('*/cartridge/scripts/assets.js').styles }" var="style">
-    <link rel="stylesheet" href="${style}" />
+    <link rel="stylesheet" href="${style.src}" <isif condition="${style.integrity != null}">integrity="${style.integrity}" crossorigin="anonymous"</isif> />
 </isloop>
 
 <isif condition="${'GoogleVerificationTag' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.GoogleVerificationTag!=''}">

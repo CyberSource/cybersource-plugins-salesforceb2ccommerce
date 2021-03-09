@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * Creates testing billing address  for the application.
  */
@@ -6,20 +7,20 @@ function CreateCyberSourceBillToObject() {
     var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
     var billToObject = new BillTo_Object();
 
-    billToObject.setTitle("This is the Title");
-    billToObject.setFirstName("Donald");
-    billToObject.setLastName("Rivard");
-    billToObject.setStreet1("131 Dartmouth Street");
-    billToObject.setCity("Boston");
-    billToObject.setState("MA");
-    billToObject.setPostalCode("02116");
-    billToObject.setCountry("US");
-    billToObject.setPhoneNumber("777-777-7777");
-    billToObject.setEmail("drivard@cybersource.com");
+    billToObject.setTitle('This is the Title');
+    billToObject.setFirstName('Donald');
+    billToObject.setLastName('Rivard');
+    billToObject.setStreet1('131 Dartmouth Street');
+    billToObject.setCity('Boston');
+    billToObject.setState('MA');
+    billToObject.setPostalCode('02116');
+    billToObject.setCountry('US');
+    billToObject.setPhoneNumber('777-777-7777');
+    billToObject.setEmail('drivard@cybersource.com');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     billToObject.setIpAddress(CommonHelper.getIPAddress());
-    billToObject.setDateOfBirth("19541217");
-    billToObject.setSsn("000001234");
+    billToObject.setDateOfBirth('19541217');
+    billToObject.setSsn('000001234');
     return { success: true, billTo: billToObject };
 }
 
@@ -29,17 +30,17 @@ function CreateCyberSourceBillToObject() {
 function CreateCyberSourceShipToObject() {
     var ShipTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
     var shipToObject = new ShipTo_Object();
-    shipToObject.setTitle("This is the Title");
-    shipToObject.setFirstName("Donald");
-    shipToObject.setLastName("Rivard");
-    shipToObject.setStreet1("131 Dartmouth Streetd");
-    shipToObject.setCity("Boston");
-    shipToObject.setState("MA");
-    shipToObject.setPostalCode("02116");
-    shipToObject.setCountry("US");
-    shipToObject.setPhoneNumber("777-777-7777");
-    shipToObject.setEmail("drivard@cybersource.com");
-    shipToObject.setShippingMethod("Bills Shipping");
+    shipToObject.setTitle('This is the Title');
+    shipToObject.setFirstName('Donald');
+    shipToObject.setLastName('Rivard');
+    shipToObject.setStreet1('131 Dartmouth Streetd');
+    shipToObject.setCity('Boston');
+    shipToObject.setState('MA');
+    shipToObject.setPostalCode('02116');
+    shipToObject.setCountry('US');
+    shipToObject.setPhoneNumber('777-777-7777');
+    shipToObject.setEmail('drivard@cybersource.com');
+    shipToObject.setShippingMethod('Bills Shipping');
 
     return { success: true, shipTo: shipToObject };
 }
@@ -52,29 +53,29 @@ function CreateCyberSourcePurchaseTotalsObject(args) {
     var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
     var purchaseObject = new PurchaseTotals_Object();
 
-	/**
+    /**
 	* It is mandatory for all Vme services.
-	* 
-	**/
+	*
+	* */
     if (undefined !== args && args.currency) {
         purchaseObject.setCurrency(args.currency);
     } else {
-        purchaseObject.setCurrency("USD");
+        purchaseObject.setCurrency('USD');
     }
-	/***
+    /** *
 	 * It is mandatory for Vme confirm purchase (The actual total amount of an order required here), Vme Transaction Details, optional for all services
-	 * 
-	 **/
+	 *
+	 * */
     var amount;
     if (undefined !== args && args.amount) {
         amount = parseFloat(args.amount);
     } else {
-        amount = parseFloat("200.00");
+        amount = parseFloat('200.00');
     }
 
     var StringUtils = require('dw/util/StringUtils');
 
-    purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(), "000000.00", "en_US"));
+    purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(), '000000.00', 'en_US'));
     return { success: true, purchaseTotals: purchaseObject };
 }
 
@@ -86,14 +87,14 @@ function CreateCyberSourcePurchaseTotalsObjectTax(args) {
     var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
     var purchaseObject = new PurchaseTotals_Object();
 
-	/**
+    /**
 	* It is mandatory for all Vme services.
-	* 
-	**/
+	*
+	* */
     if (undefined !== args && args.currency) {
         purchaseObject.setCurrency(args.currency);
     } else {
-        purchaseObject.setCurrency("USD");
+        purchaseObject.setCurrency('USD');
     }
     return { success: true, purchaseTotals: purchaseObject };
 }
@@ -107,8 +108,8 @@ function CreateCyberSourcePaymentCardObject() {
     cardObject.setAccountNumber('4000000000000002');
     cardObject.setCardType('001');
     cardObject.setFullName('Donald Rivard');
-    cardObject.setExpirationMonth("12");
-    cardObject.setExpirationYear("2021");
+    cardObject.setExpirationMonth('12');
+    cardObject.setExpirationYear('2021');
     cardObject.setCvNumber('321');
 
     return { success: true, card: cardObject };
@@ -124,24 +125,24 @@ function CreateMockCybersourceBillToObject(InvalidFields: Boolean, MissingFields
     var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
     var billToObject = new BillTo_Object();
 
-    billToObject.setFirstName("Peter");
-    billToObject.setLastName("Pritchard");
+    billToObject.setFirstName('Peter');
+    billToObject.setLastName('Pritchard');
     if (!empty(InvalidFields) && InvalidFields.valueOf()) {
-        billToObject.setStreet1("xxxxxxxxxxxxxx");
+        billToObject.setStreet1('xxxxxxxxxxxxxx');
     } else {
-        billToObject.setStreet1("25 Call Street");
+        billToObject.setStreet1('25 Call Street');
     }
-    billToObject.setStreet2("");
-    billToObject.setCity("Billerica");
-    billToObject.setState("MA");
+    billToObject.setStreet2('');
+    billToObject.setCity('Billerica');
+    billToObject.setState('MA');
     if (!empty(MissingFields) && MissingFields.valueOf()) {
-        billToObject.setPostalCode("");
+        billToObject.setPostalCode('');
     } else {
-        billToObject.setPostalCode("01862");
+        billToObject.setPostalCode('01862');
     }
-    billToObject.setCountry("US");
-    billToObject.setPhoneNumber("978-362-1553");
-    billToObject.setEmail("ppritchard@cybersource.com");
+    billToObject.setCountry('US');
+    billToObject.setPhoneNumber('978-362-1553');
+    billToObject.setEmail('ppritchard@cybersource.com');
 
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     billToObject.setIpAddress(CommonHelper.getIPAddress());
@@ -159,26 +160,26 @@ function CreateMockCybersourceShipToObject(InvalidFields: Boolean, MissingFields
     var ShipTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
     var shipToObject = new ShipTo_Object();
 
-    shipToObject.setFirstName("Peter");
-    shipToObject.setLastName("Pritchard");
+    shipToObject.setFirstName('Peter');
+    shipToObject.setLastName('Pritchard');
     if (!empty(InvalidFields) && InvalidFields.valueOf()) {
-        shipToObject.setStreet1("xxxxxxxxxxxxxx");
+        shipToObject.setStreet1('xxxxxxxxxxxxxx');
     } else {
-        shipToObject.setStreet1("25 Call Street");
+        shipToObject.setStreet1('25 Call Street');
     }
-    shipToObject.setStreet2("");
-    shipToObject.setCity("Billerica");
-    shipToObject.setState("MA");
+    shipToObject.setStreet2('');
+    shipToObject.setCity('Billerica');
+    shipToObject.setState('MA');
     if (!empty(MissingFields) && MissingFields.valueOf()) {
-        shipToObject.setPostalCode("");
+        shipToObject.setPostalCode('');
     } else {
-        shipToObject.setPostalCode("01862");
+        shipToObject.setPostalCode('01862');
     }
-    shipToObject.setCountry("US");
-    shipToObject.setPhoneNumber("978-362-1553");
-    shipToObject.setEmail("ppritchard@cybersource.com");
+    shipToObject.setCountry('US');
+    shipToObject.setPhoneNumber('978-362-1553');
+    shipToObject.setEmail('ppritchard@cybersource.com');
 
-    shipToObject.setShippingMethod("Bills Shipping");
+    shipToObject.setShippingMethod('Bills Shipping');
 
     return { success: true, shipTo: shipToObject };
 }
@@ -202,7 +203,7 @@ function CreateCybersourceTaxationItems() {
         var item = new CybersourceHelper.csReference.Item();
         var StringUtils = require('dw/util/StringUtils');
 
-        item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice), "#####0.00", "en_US");
+        item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice), '#####0.00', 'en_US');
 
         if (lineItem.lineItemClass === 'dw.order.ProductLineItem') {
             item.quantity = lineItem.quantity;
@@ -212,16 +213,15 @@ function CreateCybersourceTaxationItems() {
         if (lineItem.lineItemClass === 'dw.order.ProductLineItem') {
             item.productName = lineItem.productName;
             item.productSKU = lineItem.productID;
-            item.productCode = "01"; 
-
+            item.productCode = '01';
         } else if (lineItem.lineItemClass === 'dw.order.ShippingLineItem') {
             item.productName = lineItem.lineItemText;
             item.productSKU = lineItem.ID;
-            item.productCode = "78.100";
+            item.productCode = '78.100';
         } else {
             item.productName = lineItem.lineItemText;
-            item.productSKU = "PriceAdjustment";
-            item.productCode = "coupon"; 
+            item.productSKU = 'PriceAdjustment';
+            item.productCode = 'coupon';
         }
         item.id = idcount++;
         items.push(item);
@@ -237,17 +237,15 @@ function getLineItems(): Iterator {
     var items = new ArrayList();
     var MockLineItem_Object = require('~/cartridge/scripts/cybersource/LineItemObject');
     var item = new MockLineItem_Object();
-    item.basePrice = "109.00";
-    item.quantity = "5";
-    item.lineItemClass = "dw.order.ProductLineItem";
-    item.productName = "foobar is my name";
-    item.productID = "11111111";
-    item.productCode = "";
+    item.basePrice = '109.00';
+    item.quantity = '5';
+    item.lineItemClass = 'dw.order.ProductLineItem';
+    item.productName = 'foobar is my name';
+    item.productID = '11111111';
+    item.productCode = '';
     items.add(item);
     return items.iterator();
-
 }
-
 
 function createTaxRequest() {
     var responseObject;
@@ -274,7 +272,8 @@ function createTaxRequest() {
         }
     });
     Transaction.wrap(function () {
-        var defaultShipment, shippingAddress;
+        var defaultShipment; var
+            shippingAddress;
         defaultShipment = basket.getDefaultShipment();
         shippingAddress = defaultShipment.createShippingAddress();
         shippingAddress.setFirstName('Donald');
@@ -294,12 +293,9 @@ function createTaxRequest() {
         var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
         var TaxFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
         responseObject = TaxFacade.TestTax(basket);
-
     });
 
     return responseObject;
-
-
 }
 module.exports = {
     CreateCyberSourceBillToObject: CreateCyberSourceBillToObject,

@@ -103,24 +103,21 @@
             </div>
         </div>
     </div>
+    <div class="form-group
+        <isif condition=${pdict.paymentForm.securityCode.mandatory === true}>required</isif>
+        ${pdict.paymentForm.securityCode.htmlName}">
+        <label class="form-control-label" for="securityCode">${Resource.msg('field.credit.card.security.code','creditCard',null)}</label>
+        <span class="info-icon">
+            <span class="icon">i</span>
+            <div class="tooltip">
+                ${Resource.msg('tooltip.security.code','creditCard',null)}
+            </div>
+        </span>
 
-    
-        <div class="form-group
-            <isif condition=${pdict.paymentForm.securityCode.mandatory === true}>required</isif>
-            ${pdict.paymentForm.securityCode.htmlName}">
-            <label class="form-control-label" for="securityCode">${Resource.msg('field.credit.card.security.code','creditCard',null)}</label>
-            <span class="info-icon">
-                <span class="icon">i</span>
-                <div class="tooltip">
-                    ${Resource.msg('tooltip.security.code','creditCard',null)}
-                </div>
-            </span>
-
-            <input type="text" class="form-control securityCode" id="securityCode"
-                <isprint value=${pdict.paymentForm.securityCode.attributes} encoding="off"/>
-            <div class="invalid-feedback"></div>
-        </div>
-    
+        <input type="text" class="form-control securityCode" id="securityCode"
+            <isprint value=${pdict.paymentForm.securityCode.attributes} encoding="off"/>
+        <div class="invalid-feedback"></div>
+    </div>
 
     <div class="make-default-payment">
         <div class="form-group custom-control custom-checkbox">
@@ -130,7 +127,8 @@
             </label>
         </div>
     </div>
-	<isif condition="${'CsTokenizationEnable' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.CsTokenizationEnable == 'YES'}">
+    <isset name="isCartridgeEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled')}" scope="page" />
+	<isif condition="${'CsTokenizationEnable' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.CsTokenizationEnable == 'YES' && isCartridgeEnabled}">
     <!--  Card Owner First Name -->
     <div class="form-group
     	<isif condition="${pdict.paymentForm.addressFields.firstName.mandatory === true}">required</isif>">

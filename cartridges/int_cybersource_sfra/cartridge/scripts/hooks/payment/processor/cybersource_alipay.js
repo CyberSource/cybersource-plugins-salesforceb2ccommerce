@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * CYBERSOURCE_ALIPAY controller contains all method related to this type of payment instrument (ALIPAY)
  * @module controllers/CYBERSOURCE_ALIPAY
@@ -11,10 +12,10 @@ var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstan
 */
 
 function Handle(basket, paymentInformation) {
-	 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT+'helper/CommonHelper');
-	//call method to handle the request
-	var response = CommonHelper.HandleRequest(basket);
-	return response;
+	 var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'helper/CommonHelper');
+    // call method to handle the request
+    var response = CommonHelper.HandleRequest(basket);
+    return response;
 }
 
 /**
@@ -23,23 +24,19 @@ function Handle(basket, paymentInformation) {
  * credit card payment.
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor) {
-	var OrderMgr = require('dw/order/OrderMgr');
-	var Order = OrderMgr.getOrder(orderNumber);
-	var Site = require('dw/system/Site');
-	
-    var adaptor = require(CybersourceConstants.CS_CORE_SCRIPT+'alipay/adaptor/AlipayAdaptor');
-    var alipayResult = adaptor.AuthorizeAlipay({Order:Order, orderNo:orderNumber, PaymentInstrument: paymentInstrument});
-	if (alipayResult.pending){
-		if (Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value.equals('Test')) {
-			return {intermediate:true , alipayReturnUrl:alipayResult.alipayReturnUrl , renderViewPath:'alipay/alipayintermediate'};
-			
-		}else{
-			return {redirection : true, redirectionURL : alipayResult.RedirectURL};
-			
-		}
-	} else {
-		return alipayResult;
-	}
+    var OrderMgr = require('dw/order/OrderMgr');
+    var Order = OrderMgr.getOrder(orderNumber);
+    var Site = require('dw/system/Site');
+
+    var adaptor = require(CybersourceConstants.CS_CORE_SCRIPT + 'alipay/adaptor/AlipayAdaptor');
+    var alipayResult = adaptor.AuthorizeAlipay({ Order: Order, orderNo: orderNumber, PaymentInstrument: paymentInstrument });
+    if (alipayResult.pending) {
+        if (Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value.equals('Test')) {
+            return { intermediate: true, alipayReturnUrl: alipayResult.alipayReturnUrl, renderViewPath: 'alipay/alipayintermediate' };
+        }
+        return { redirection: true, redirectionURL: alipayResult.RedirectURL };
+    }
+    return alipayResult;
 }
 
 /*

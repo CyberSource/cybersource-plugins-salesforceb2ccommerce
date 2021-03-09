@@ -1,8 +1,8 @@
 'use strict';
 
+var base = require('base/checkout/checkout');
 var billingHelpers = require('./billing');
 var shippingHelpers = require('./shipping');
-var base = require('base/checkout/checkout');
 
 [billingHelpers, shippingHelpers].forEach(function (library) {
     Object.keys(library).forEach(function (item) {

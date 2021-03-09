@@ -1,8 +1,9 @@
 <isset name="creditFields" value="${pdict.forms.billingForm.creditCardFields}" scope="page"/>
-<isset name="saStyleFlex" value="${CsSaType && CsSaType == 'SA_FLEX' ? "style='display: none'" : '' }" scope="page" />
-<isset name="saStyle" value="${CsSaType && CsSaType == 'SA_REDIRECT' || CsSaType == 'SA_IFRAME' ? "style='display: none'" : '' }" scope="page" />
+<isset name="isCartridgeEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled')}" scope="page" />
+<isset name="saStyleFlex" value="${CsSaType && isCartridgeEnabled && CsSaType == 'SA_FLEX' ? "hidden" : '' }" scope="page" />
+<isset name="saStyle" value="${CsSaType && isCartridgeEnabled && (CsSaType == 'SA_REDIRECT' || CsSaType == 'SA_IFRAME') ? "hidden" : '' }" scope="page" />
 
-<isif condition="${CsSaType && CsSaType == 'SA_FLEX'}">
+<isif condition="${CsSaType && isCartridgeEnabled && CsSaType == 'SA_FLEX'}">
 		<isinclude url="${URLUtils.url('CYBSecureAcceptance-CreateFlexToken')}"/>
 </isif>
 <!--- Hidden input for credit card type --->
@@ -95,68 +96,118 @@
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-sm-6">
-        <div class="form-group
-            <isif condition=${creditFields.email.mandatory === true}>required</isif>
-            ${creditFields.email.htmlName}">
-            <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
-            <span class="info-icon">
-                <span class="icon">i</span>
-                <div class="tooltip">
-                    ${Resource.msg('tooltip.email','creditCard',null)}
-                </div>
-            </span>
-            <input type="text" class="form-control email" id="email"
-                value="${(pdict.order.orderEmail
-                ? pdict.order.orderEmail : (pdict.customer.profile != null ? pdict.customer.profile.email:''))}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
-            <div class="invalid-feedback"></div>
-        
-        </div>
-       
-    </div>
-    <div class="col-sm-6">
-        <div class="form-group
-            <isif condition=${creditFields.phone.mandatory === true}>required</isif>
-            ${creditFields.phone.htmlName}">
-            <label class="form-control-label" for="phoneNumber">${Resource.msg('field.customer.phone.number','checkout',null)}</label>
-            <span class="info-icon">
-                <span class="icon">i</span>
-                <div class="tooltip">
-                    ${Resource.msg('tooltip.phone.number','creditCard',null)}
-                </div>
-            </span>
-            <input type="tel" class="form-control phone" id="phoneNumber"
-                value="${pdict.order.billing.billingAddress.address
-                ? pdict.order.billing.billingAddress.address.phone||''
-                : ''}" <isprint value=${creditFields.phone.attributes} encoding="off"/> >
-            <div class="invalid-feedback"></div>
-        </div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col">
-        <isif condition="${pdict.customer.registeredUser}">
-            <div class="save-credit-card custom-control custom-checkbox ">
-                <input type="checkbox" class="custom-control-input" id="saveCreditCard" name="${creditFields.saveCard.htmlName}" value="true" checked>
-                <label class="custom-control-label" for="saveCreditCard">
-                    ${creditFields.saveCard.label}
-                </label>
-            </div>
-        </isif>
-    </div>
-</div>
-
+<isif condition="${isCartridgeEnabled}">
+	<div class="row">
+	    <div class="col-sm-6">
+	        <div class="form-group
+	            <isif condition=${creditFields.email.mandatory === true}>required</isif>
+	            ${creditFields.email.htmlName}">
+	            <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
+	            <span class="info-icon">
+	                <span class="icon">i</span>
+	                <div class="tooltip">
+	                    ${Resource.msg('tooltip.email','creditCard',null)}
+	                </div>
+	            </span>
+	            <input type="text" class="form-control email" id="email"
+	                value="${(pdict.order.orderEmail
+	                ? pdict.order.orderEmail : (pdict.customer.profile != null ? pdict.customer.profile.email:''))}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
+	            <div class="invalid-feedback"></div>
+	        
+	        </div>
+	       
+	    </div>
+	    <div class="col-sm-6">
+	        <div class="form-group
+	            <isif condition=${creditFields.phone.mandatory === true}>required</isif>
+	            ${creditFields.phone.htmlName}">
+	            <label class="form-control-label" for="phoneNumber">${Resource.msg('field.customer.phone.number','checkout',null)}</label>
+	            <span class="info-icon">
+	                <span class="icon">i</span>
+	                <div class="tooltip">
+	                    ${Resource.msg('tooltip.phone.number','creditCard',null)}
+	                </div>
+	            </span>
+	            <input type="tel" class="form-control phone" id="phoneNumber"
+	                value="${pdict.order.billing.billingAddress.address
+	                ? pdict.order.billing.billingAddress.address.phone||''
+	                : ''}" <isprint value=${creditFields.phone.attributes} encoding="off"/> >
+	            <div class="invalid-feedback"></div>
+	        </div>
+	    </div>
+	</div>
+	
+	<div class="row">
+	    <div class="col">
+	        <isif condition="${pdict.customer.registeredUser}">
+	            <div class="save-credit-card custom-control custom-checkbox ">
+	                <input type="checkbox" class="custom-control-input" id="saveCreditCard" name="${creditFields.saveCard.htmlName}" value="true" checked>
+	                <label class="custom-control-label" for="saveCreditCard">
+	                    ${creditFields.saveCard.label}
+	                </label>
+	            </div>
+	        </isif>
+	    </div>
+	</div>
+<iselse>
+	<fieldset class="contact-info-block">
+		<div class="row">
+		    <div class="col-sm-6">
+		        <div class="form-group
+		            <isif condition=${pdict.forms.billingForm.contactInfoFields.email.mandatory === true}>required</isif>
+		            ${pdict.forms.billingForm.contactInfoFields.email.htmlName}">
+		            <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
+		
+		            <button type="button" class="info-icon">
+		                <span class="icon" aria-hidden="true">i</span>
+		                <span class="sr-only">${Resource.msg('button.help.assistive.text','common',null)}</span>
+		                <span class="tooltip d-none">
+		                    ${Resource.msg('tooltip.email','creditCard',null)}
+		                </span>
+		            </button>
+		
+		            <input type="text" class="form-control email" id="email"
+		                value="${pdict.order.orderEmail||''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.email.attributes} encoding="off"/>
+		                aria-describedby="emailInvalidMessage" >
+		            <div class="invalid-feedback" id="emailInvalidMessage"></div>
+		        </div>
+		    </div>
+		    <div class="col-sm-6">
+		        <div class="form-group
+		            <isif condition=${pdict.forms.billingForm.contactInfoFields.phone.mandatory === true}>required</isif>
+		            ${pdict.forms.billingForm.contactInfoFields.phone.htmlName}">
+		            <label class="form-control-label" for="phoneNumber">${Resource.msg('field.customer.phone.number','checkout',null)}</label>
+		
+		            <button type="button" class="info-icon">
+		                <span class="icon" aria-hidden="true">i</span>
+		                <span class="sr-only">${Resource.msg('button.help.assistive.text','common',null)}</span>
+		                <span class="tooltip d-none">
+		                    ${Resource.msg('tooltip.phone.number','creditCard',null)}
+		                </span>
+		            </button>
+		
+		            <input type="tel" class="form-control phone" id="phoneNumber"
+		                value="${pdict.order.billing.billingAddress.address
+		                ? pdict.order.billing.billingAddress.address.phone||''
+		                : ''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.phone.attributes} encoding="off"/>
+		                aria-describedby="phoneInvalidMessage" >
+		            <div class="invalid-feedback" id="phoneInvalidMessage"></div>
+		        </div>
+		    </div>
+		</div>
+	</fieldset>
+</isif>
 <iscomment>Bank Transfer </iscomment>
-<div class="bankTransfer" id="bankTransfer" style="display:none">
-	<div id="eps"  style="display:none">
-		<isinclude template="checkout/billing/paymentOptions/epsContent" />
+<isif condition="${isCartridgeEnabled}">
+	<div class="bankTransfer" id="bankTransfer">
+		<div id="eps">
+			<isinclude template="checkout/billing/paymentOptions/epsContent" />
+		</div>
+		<div id="gpy">
+			<isinclude template="checkout/billing/paymentOptions/giroPayContent" />
+		</div>
+		<div id="idl">
+			<isinclude template="checkout/billing/paymentOptions/iDealContent" />
+		</div>
 	</div>
-	<div id="gpy"  style="display:none">
-		<isinclude template="checkout/billing/paymentOptions/giroPayContent" />
-	</div>
-	<div id="idl"  style="display:none">
-		<isinclude template="checkout/billing/paymentOptions/iDealContent" />
-	</div>
-</div>
+</isif>

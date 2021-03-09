@@ -54,7 +54,7 @@ function createMobilePaymentAuthRequest(authRequestParams)
 	//**************************************************************************//
 	// Set WebReference & Stub
 	//**************************************************************************//	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 
 	var serviceRequest = new csReference.RequestMessage();
 	
@@ -124,19 +124,19 @@ function createMobilePaymentAuthRequest(authRequestParams)
 	}
 	catch(e)
 	{
-		Logger.error("[MobilePaymentFacade.ds] Error in MobilePaymentAPIObjectAuthRequest ( {0} )", e.message);
+		Logger.error("[MobilePaymentFacade.js] Error in MobilePaymentAPIObjectAuthRequest ( {0} )", e.message);
 		return {error:true, EERRORMSG:e.message, ERRORCODE:Resource.msg('cyb.mobilePayment.errorcode.servicestatus', 'cybMobilePayments', null)};
 	}
 	
 	if(empty(serviceResponse) || serviceResponse.status !== "OK")
 	{
 		
-		Logger.error("[MobilePaymentFacade.ds] MobilePaymentAPIObjectAuthRequest Error : null response");
+		Logger.error("[MobilePaymentFacade.js] MobilePaymentAPIObjectAuthRequest Error : null response");
 		return {error:true, EERRORMSG: Resource.msg('cyb.mobilePayment.errormsg.invalidmobilePaymentAPIAuthRequest', 'cybMobilePayments', null) 
 			+ serviceResponse, ERRORCODE: Resource.msg('cyb.mobilePayment.errorcode.servicestatus', 'cybMobilePayments', null)};
 	}
 	serviceResponse = serviceResponse.object;	
-	Logger.error("[MobilePaymentFacade.ds] MobilePaymentAPIObjectAuthRequest response : "+serviceResponse);
+	Logger.error("[MobilePaymentFacade.js] MobilePaymentAPIObjectAuthRequest response : "+serviceResponse);
 	CardHelper.protocolResponse( serviceResponse );
 	//**************************************************************************//
 	// Process Response

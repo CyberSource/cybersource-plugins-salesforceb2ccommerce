@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <!-- fields for email and phone number -->
+    <field formid="email" label="profile.email" type="string" mandatory="true" binding="email"
+           max-length="50" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$" missing-error="error.card.info.missing.email"
+           parse-error="error.message.parse.email.profile.form" range-error="error.message.50orless"
+           value-error="ValueErrorText" required="" />
+
+    <field formid="phone" label="profile.phone" description="address.phone.example" type="string" mandatory="true"
+           binding="phone" min-length="10" max-length="20" missing-error="error.card.info.missing.phone" range-error="error.message.between10and20" />
+
+</form>

@@ -1,21 +1,22 @@
 'use strict';
 
-
 /**
  * Cybersource service is called with the tax request as true and the service gived tax information in response.
  * @param Basket : dw.order.LineItemCtnr contains object of basket or order
  *
  */
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 var taxHelper = require('~/cartridge/scripts/helper/TaxHelper');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 function TaxationRequest(cart) {
     // read pipeline dictionary input parameter
-    var itemArray,
-        itemMap,
-        result;
+    var Logger = dw.system.Logger.getLogger('Cybersource');
+    var itemArray;
+    var itemMap;
+    var result;
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     result = taxHelper.CreateCybersourceTaxationItemsObject(cart);
     itemArray = result.itemarray;
@@ -69,16 +70,16 @@ function TaxationRequest(cart) {
                     invalidFields += taxationResponse.invalidField[i];
                 }
             }
-            Logger.error('[TaxFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}', taxationResponse.reasonCode, taxationResponse.requestToken, missingFields, invalidFields);
+            Logger.error('[TaxFacade.js] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}', taxationResponse.reasonCode, taxationResponse.requestToken, missingFields, invalidFields);
             taxResult.error = true;
             taxResult.errorMsg = 'Reason code as ' + taxationResponse.reasonCode;
         } else {
-            Logger.error('[TaxFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}', taxationResponse.reasonCode, taxationResponse.requestToken);
+            Logger.error('[TaxFacade.js] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}', taxationResponse.reasonCode, taxationResponse.requestToken);
             taxResult.error = true;
             taxResult.errorMsg = 'Error';
         }
     } catch (e) {
-        Logger.error('[TaxFacade.ds] Error in taxation request ( {0} )', e.message);
+        Logger.error('[TaxFacade.js] Error in taxation request ( {0} )', e.message);
         taxResult.error = true;
         taxResult.errorMsg = e.message;
     } finally {
@@ -87,12 +88,12 @@ function TaxationRequest(cart) {
 }
 
 function __addTaxRequest(lineItemCtnr, items) {
-    var billTo,
-        shipTo;
+    var billTo;
+    var shipTo;
 
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var cardHelper = require('~/cartridge/scripts/helper/CardHelper');
-    var csReference = webreferences.CyberSourceTransaction;
+    var csReference = webreferences2.CyberSourceTransaction;
     // create request body
     var taxationRequest = new csReference.RequestMessage();
     libCybersource.setClientData(taxationRequest, lineItemCtnr.UUID);
@@ -119,7 +120,7 @@ function __addTaxRequest(lineItemCtnr, items) {
         taxationRequest.taxService.noNexus = noNexus;
     } else if (!empty(nexus) && !empty(noNexus)) {
         var Logger = dw.system.Logger.getLogger('Cybersource');
-        Logger.info('[libCybersource.ds] Nexus and NoNexus lists both contain data. Defaulting to use Nexus list.  Ignoring NoNexus list.');
+        Logger.info('[libCybersource.js] Nexus and NoNexus lists both contain data. Defaulting to use Nexus list.  Ignoring NoNexus list.');
         taxationRequest.taxService.nexus = nexus;
     }
     var _items = [];
@@ -138,7 +139,7 @@ function updateCartTotal(cart, itemMap, taxationResponse) {
     for (var i = 0; i < taxationResponse.taxReply.item.length; i++) {
         var resItem = taxationResponse.taxReply.item[i];
         /* for each(var resItem in taxationResponse.taxReply.item)
-        {*/
+        { */
         var lineItem = itemMap.get(resItem.id.toString());
         var itemTax = new dw.value.Money(parseFloat(resItem.totalTaxAmount), cart.currencyCode);
         lineItem.setTax(itemTax);
@@ -178,9 +179,8 @@ function updateCartTotal(cart, itemMap, taxationResponse) {
     cart.updateTotals();
 }
 
-
 function __copyTaxService(taxService) {
-    var request_taxService = new webreferences.CyberSourceTransaction.TaxService();
+    var request_taxService = new webreferences2.CyberSourceTransaction.TaxService();
     var value;
     for (var name in taxService) {
         if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
@@ -194,7 +194,7 @@ function __copyTaxService(taxService) {
 }
 
 function __copyShipFrom(shipFrom) {
-    var request_shipFrom = new webreferences.CyberSourceTransaction.ShipFrom();
+    var request_shipFrom = new webreferences2.CyberSourceTransaction.ShipFrom();
     var value;
     for (var name in shipFrom) {
         if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
@@ -206,7 +206,6 @@ function __copyShipFrom(shipFrom) {
     }
     return request_shipFrom;
 }
-
 
 module.exports = {
     TaxationRequest: TaxationRequest

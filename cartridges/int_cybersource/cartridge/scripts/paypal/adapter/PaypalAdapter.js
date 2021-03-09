@@ -11,7 +11,7 @@
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var Logger =require('dw/system/Logger').getLogger('Cybersource');
 var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-var csReference = webreferences.CyberSourceTransaction;
+var csReference = webreferences2.CyberSourceTransaction;
 var Transaction = require('dw/system/Transaction');
 
 
@@ -66,6 +66,21 @@ function setShippingMethod(lineItemCntr){
     	var defaultShippingMethod = ShippingMgr.getDefaultShippingMethod();
         shipment.setShippingMethod(defaultShippingMethod);
     }
+}
+
+function getAddress(shipment){
+	var TransientAddress = require('app_storefront_controllers/cartridge/scripts/models/TransientAddressModel');
+	
+	var address;
+
+    address = new TransientAddress();
+    address.countryCode = shipment.shippingAddress.countryCode.value;
+    address.stateCode = shipment.shippingAddress.stateCode;
+    address.postalCode = shipment.shippingAddress.postalCode;
+    address.city = shipment.shippingAddress.city;
+    address.address1 = shipment.shippingAddress.address1;
+    
+    return address;
 }
 
 /**
@@ -412,5 +427,6 @@ module.exports = {
 		'SessionCallback' : initSessionCallback,
 		'BillingAgreementService':billingAgreementService,
 		'CustomOrder':customOrder,
-		'StandardOrder':standardOrder
+		'StandardOrder':standardOrder,
+		'GetAddress' :getAddress
 };

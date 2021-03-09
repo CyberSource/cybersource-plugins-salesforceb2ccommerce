@@ -58,18 +58,18 @@ function TaxationRequest(cart)
 					invalidFields += taxationResponse.invalidField[i];
 				}
 			}
-			Logger.error("[TaxFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",taxationResponse.reasonCode,taxationResponse.requestToken,missingFields,invalidFields);
+			Logger.error("[TaxFacade.js] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",taxationResponse.reasonCode,taxationResponse.requestToken,missingFields,invalidFields);
 			taxResult.error =true;
 			taxResult.errorMsg='Reason code as '+taxationResponse.reasonCode;
 		}else{
-			Logger.error("[TaxFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",taxationResponse.reasonCode,taxationResponse.requestToken);
+			Logger.error("[TaxFacade.js] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",taxationResponse.reasonCode,taxationResponse.requestToken);
 			taxResult.error =true;
 			taxResult.errorMsg='Error';
 		}
 	
 	
 	}catch(e){
-		Logger.error("[TaxFacade.ds] Error in taxation request ( {0} )",e.message);
+		Logger.error("[TaxFacade.js] Error in taxation request ( {0} )",e.message);
 		taxResult.error = true;
 		taxResult.errorMsg = e.message;
 	}
@@ -83,7 +83,7 @@ function __addTaxRequest(lineItemCtnr,items){
 	
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	var cardHelper = require('~/cartridge/scripts/helper/CardHelper');
-	var csReference  = webreferences.CyberSourceTransaction;
+	var csReference  = webreferences2.CyberSourceTransaction;
 	// create request body
 	var taxationRequest = new csReference.RequestMessage();
 	libCybersource.setClientData( taxationRequest, lineItemCtnr.UUID); 
@@ -112,7 +112,7 @@ function __addTaxRequest(lineItemCtnr,items){
 	}
 	else {
 		var Logger = dw.system.Logger.getLogger('Cybersource');			
-		Logger.info("[libCybersource.ds] Nexus and NoNexus contains data. Please specify Nexus OR NoNexus!");
+		Logger.info("[libCybersource.js] Nexus and NoNexus contains data. Please specify Nexus OR NoNexus!");
 	}
 	var _items  = [];
 	var length = items.length;
@@ -183,7 +183,7 @@ function updateCartTotal(cart,itemMap,taxationResponse){
 
 function __copyTaxService( taxService : Object ) : Object
 {
-	var request_taxService  = new webreferences.CyberSourceTransaction.TaxService();		
+	var request_taxService  = new webreferences2.CyberSourceTransaction.TaxService();		
 	var value;
 	for ( var name  in taxService)
 	{
@@ -201,7 +201,7 @@ function __copyTaxService( taxService : Object ) : Object
 
 function __copyShipFrom( shipFrom : Object ) : Object
 {
-	var request_shipFrom = new webreferences.CyberSourceTransaction.ShipFrom();
+	var request_shipFrom = new webreferences2.CyberSourceTransaction.ShipFrom();
 	var value ;
 	for ( var name  in shipFrom)
 	{

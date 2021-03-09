@@ -26,7 +26,7 @@ function TestAlipayInitiateRequest()
    	var productName = "Test Product";
    	var productDescription = "Test Description";
    	//create service stubs
-   	var csReference = webreferences.CyberSourceTransaction;
+   	var csReference = webreferences2.CyberSourceTransaction;
    	var paymentMethod = CybersourceConstants.METHOD_ALIPAY;
 	
 	var serviceRequest = new csReference.RequestMessage();
@@ -75,7 +75,7 @@ function TestCCAuth(billTo,shipTo,card,purchaseTotals)
 	var cardObject = card;
 	var purchaseObject = purchaseTotals;
 	var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 
 	var serviceRequest = new csReference.RequestMessage();
 	var Item_Object = require('~/cartridge/scripts/cybersource/Cybersource_Item_Object'); 
@@ -152,7 +152,7 @@ function TestCreateSubscription(billTo,card,purchaseTotals)
 	var returnObject = {};
 	var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var request = new csReference.RequestMessage();
 
 	CybersourceHelper.addPaySubscriptionCreateService(request,billToObject,purchaseObject,cardObject,"test");
@@ -195,7 +195,7 @@ function TestCreateSubscription(billTo,card,purchaseTotals)
 function TestDAVRequest(billTo,shipTo)
 {
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 	
@@ -289,7 +289,7 @@ function TestOnDemandSubscription()
 	var amount = session.forms.subscription.amount.htmlValue;
 	var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency,amount).purchaseTotals;
 	//var purchaseObject = purchaseTotals;
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 	
@@ -302,7 +302,7 @@ function TestOnDemandSubscription()
 	try{
 		serviceResponse = getServiceResponse(serviceRequest,paymentMethod);
 	}catch(e){
-		Logger.error('[libCybersource.ds] Error in subscription request ( {0} )',e.message);
+		Logger.error('[libCybersource.js] Error in subscription request ( {0} )',e.message);
 		return {error:true, errorMsg:e.message};
 	}
 	
@@ -332,7 +332,7 @@ function TestOnDemandSubscription()
 function TestPayerAuthEnrollCheck(CreditCard)
 {
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 	
@@ -379,12 +379,12 @@ function TestPayerAuthValidation(PaRes,CreditCard)
     var signedPaRes = dw.util.StringUtils.trim(PaRes);
     var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 	signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g',"");
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	CybersourceHelper.addTestPayerAuthValidateInfo(serviceRequest,signedPaRes,CreditCard);
 	var serviceResponse = {};
 	try{
-		Logger.debug("[PayerAuthValidation.ds] Sending PayerAuthValidation...");
+		Logger.debug("[PayerAuthValidation.js] Sending PayerAuthValidation...");
 		serviceResponse = getServiceResponse(serviceRequest,paymentMethod);
 	}catch(e){
 		Logger.error("[TestFacade.js] Error in PayerAuthValidation request ( {0} )",e.message);
@@ -430,7 +430,7 @@ function TestPOSAuth(card,purchaseTotals,pos)
 	var posObject = pos;
 	var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	
 	CybersourceHelper.addPOSAuthRequestInfo(serviceRequest, location, purchaseObject,cardObject,"POS",false, posObject);
@@ -492,7 +492,7 @@ function TestTax(cart)
     var Money = require('dw/value/Money');
     
 	
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var serviceResponse;
 	var TaxFacade = require('~/cartridge/scripts/tax/facade/TaxFacade');
@@ -531,10 +531,10 @@ function TestTax(cart)
 				invalidFields += serviceResponse.invalidField[i];
 			}
 		}
-		Logger.error("[TestFacade.ds] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",serviceResponse.reasonCode,serviceResponse.requestToken,missingFields,invalidFields);
+		Logger.error("[TestFacade.js] Taxation request REJECTED (ReasonCode {0} ). \nRequestToken: {1} \nMissing Fields: {2} \nInvalid Fields: {3}",serviceResponse.reasonCode,serviceResponse.requestToken,missingFields,invalidFields);
 		reasonCode = serviceResponse.reasonCode;
 	} else if( serviceResponse.decision === "ERROR" ) {
-		Logger.error("[TestFacade.ds] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",serviceResponse.reasonCode,serviceResponse.requestToken);
+		Logger.error("[TestFacade.js] Taxation request ERROR (ReasonCode {0} ). \nRequestToken: {1}",serviceResponse.reasonCode,serviceResponse.requestToken);
 		reasonCode = serviceResponse.reasonCode;
 	}
 
@@ -630,7 +630,7 @@ function TestSACreateToken(billToObject, shipToObject, purchaseObject)
 function TestSaleService()
 {
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	
 	var requestID = session.forms.generictestinterfaceform.orderRequestID.htmlValue;
 	var merchantRefCode = session.forms.generictestinterfaceform.merchantReferenceCode.htmlValue;
@@ -687,7 +687,7 @@ function TestSaleService()
  */
 function TestAuthorizeService()
 {
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var request = new csReference.RequestMessage();
 	var response = {};
 	var serviceReply = '';
@@ -746,7 +746,7 @@ function TestAuthorizeService()
 
 function TestRefundService()
 {
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 
 	var request = new csReference.RequestMessage();
 	var response = {};
@@ -798,7 +798,7 @@ function TestRefundService()
 
 function TestCancelService()
 {
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var request = new csReference.RequestMessage();
 	
 	var response = {};
@@ -846,7 +846,7 @@ function TestCancelService()
 
 function TestCaptureService()
 {
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var request = new csReference.RequestMessage();
 	
 	var requestID = session.forms.generictestinterfaceform.authRequestID.htmlValue;
@@ -924,7 +924,7 @@ function TestCaptureService()
 
 function TestAuthReversalService()
 {
-	var csReference = webreferences.CyberSourceTransaction;
+	var csReference = webreferences2.CyberSourceTransaction;
 	var request = new csReference.RequestMessage();
 	
 	var response = {};

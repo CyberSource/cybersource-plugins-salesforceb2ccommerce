@@ -64,27 +64,14 @@ Production = k8vif92e
 
 <isif condition="${pdict.DeviceFingerprintEnabled}">
 
-	<p style="background:url(<isprint value="${url_1}" encoding="off"/>)"></p>
-	<img src="<isprint value="${url_2}" encoding="off"/>" alt="">
-	
-	<iscomment>
-	******** Flash code ********
-	</iscomment>
-	
-	<object type="application/x-shockwave-flash" 
-		data="<isprint value="${url_3}" encoding="off"/>" 
-		width="1" 
-		height="1" 
-		id="thm_fp">
-		<EMBED src="<isprint value="${url_3}" encoding="off"/>" TYPE="application/x-shockwave-flash" />
-	   <param name="movie" value="<isprint value="${url_3}" encoding="off"/>" />
-	</object>
+	<p style="background:url(<isprint value="${url_1}" encoding="on"/>)"></p>
+	<img src="<isprint value="${url_2}" encoding="on"/>" alt="">
 	
 	<iscomment>
 	******** JavaScript code ********
 	</iscomment>
 	
-	<script src="<isprint value="${url_4}" encoding="off"/>" 
+	<script src="<isprint value="${url_4}" encoding="on"/>" 
 		type="text/javascript">
 	</script>
 	

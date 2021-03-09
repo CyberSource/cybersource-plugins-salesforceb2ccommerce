@@ -16,7 +16,7 @@ function CreateCyberSourceBillToObject()
 	billToObject.setPostalCode("02116");
 	billToObject.setCountry("US");
 	billToObject.setPhoneNumber("777-777-7777");
-	billToObject.setEmail("drivard@demandware.com");
+	billToObject.setEmail("drivard@sfcc.com");
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	billToObject.setIpAddress(CommonHelper.GetIPAddress());
 	billToObject.setDateOfBirth("19541217");
@@ -40,7 +40,7 @@ function CreateCyberSourceShipToObject()
 	shipToObject.setPostalCode("02116");
 	shipToObject.setCountry("US");
 	shipToObject.setPhoneNumber("777-777-7777");
-	shipToObject.setEmail("drivard@demandware.com");
+	shipToObject.setEmail("drivard@sfcc.com");
 	shipToObject.setShippingMethod("Bills Shipping");
 
 	return {success:true, shipTo: shipToObject};
@@ -147,7 +147,7 @@ function CreateMockCybersourceBillToObject(InvalidFields : Boolean, MissingField
 	}
 	billToObject.setCountry    ( "US" );
 	billToObject.setPhoneNumber( "978-362-1553" );
-	billToObject.setEmail      ( "ppritchard@demandware.com" );
+	billToObject.setEmail      ( "ppritchard@sfcc.com" );
 	
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	billToObject.setIpAddress(CommonHelper.GetIPAddress());
@@ -183,7 +183,7 @@ function CreateMockCybersourceShipToObject(InvalidFields : Boolean, MissingField
 	}
 	shipToObject.setCountry    ( "US" );
 	shipToObject.setPhoneNumber( "978-362-1553" );
-	shipToObject.setEmail      ( "ppritchard@demandware.com" );
+	shipToObject.setEmail      ( "ppritchard@sfcc.com" );
 	
 	shipToObject.setShippingMethod("Bills Shipping");
 	

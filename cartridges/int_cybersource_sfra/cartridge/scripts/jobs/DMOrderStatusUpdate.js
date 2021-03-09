@@ -6,14 +6,14 @@ var HashMap = require('dw/util/HashMap');
 var Logger = require('dw/system/Logger');
 var Order = require('dw/order/Order');
 var OrderMgr = require('dw/order/OrderMgr');
-var dwsvc = require("dw/svc");
+var dwsvc = require('dw/svc');
 var Transaction = require('dw/system/Transaction');
 var CRServices = require('~/cartridge/scripts/init/RestServiceInit');
 
-var logger = Logger.getLogger("CyberSource" ,"ConversionDetailReport" );
-
+var logger = Logger.getLogger('CyberSource', 'ConversionDetailReport');
 
 function orderStatusUpdate(jobParams) {
+    var collections = require('*/cartridge/scripts/util/collections');
     logger.debug('ConversionDetailReport---------------- -');
     var message;
 
@@ -33,59 +33,56 @@ function orderStatusUpdate(jobParams) {
         //  Mapping request object with correct parameter
         var time = setDateTimeForParameter();
         var responseObj = null;
-		
+
         //  Call conversion report service
-		var signedHeaders = new HashMap();
+        var signedHeaders = new HashMap();
 	    var ArrayList = require('dw/util/ArrayList');
 	    var Site = require('dw/system/Site');
-	     
-	    // Collected values for secret, key and merchant id from job parameters.
-		var sharedSecret = jobParams.SAFlexSharedSecret;
-		var keyID = jobParams.SAFlexKeyID;
-		var merchantId = jobParams.MerchantId;
 
-        var host = dw.system.Site.getCurrent().getCustomPreferenceValue("SA_Flex_HostName");
-        targetOrigin = "https://" + host;
+	    // Collected values for secret, key and merchant id from job parameters.
+        var sharedSecret = jobParams.SAFlexSharedSecret;
+        var keyID = jobParams.SAFlexKeyID;
+        var merchantId = jobParams.MerchantId;
+
+        var host = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_HostName');
+        targetOrigin = 'https://' + host;
 	    signedHeaders.put('host', host);
-		signedHeaders.put('date', getTime());
-		signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
+        signedHeaders.put('date', getTime());
+        signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
         signedHeaders.put('v-c-merchant-id', merchantId);
 
-		var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time);
-		var headerString = "";
-		for each(var key in signedHeaders.keySet()){
-			headerString = headerString + key + " ";
-        }
-		var signatureMap = new HashMap();
+        var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time);
+        var headerString = '';
+        collections.forEach(signedHeaders.keySet(), function (key) {
+		    // for each(var key in signedHeaders.keySet()){
+            headerString = headerString + ' ' + key;
+        });
+        var signatureMap = new HashMap();
 	    signatureMap.put('keyid', keyID);
 	    signatureMap.put('algorithm', 'HmacSHA256');
 	    signatureMap.put('headers', headerString);
-	    signatureMap.put('signature',signature);
-	    var signaturefields = "";
+	    signatureMap.put('signature', signature);
+	    var signaturefields = '';
 
-		signaturefields = "keyid=\""+signatureMap.get('keyid')+"\", algorithm=\"HmacSHA256\", headers=\"host date (request-target) v-c-merchant-id\", signature=\""+signatureMap.get('signature')+"\"";
+        signaturefields = 'keyid="' + signatureMap.get('keyid') + '", algorithm="HmacSHA256", headers="host date (request-target) v-c-merchant-id", signature="' + signatureMap.get('signature') + '"';
 
 	    signedHeaders.put('Signature', signaturefields);
-        signedHeaders.remove("(request-target)");
+        signedHeaders.remove('(request-target)');
 
         var service = CRServices.CyberSourceDMService;
-        responseObj = service.call(signedHeaders,time.start,time.end,merchantId);
+        responseObj = service.call(signedHeaders, time.start, time.end, merchantId);
         //  Handle error scenarios in case of error return from service
         handleErrorCases(responseObj);
         //  Set success response object in message object
         message = responseObj.object;
         //  Parse service JSON response and set Order status based on response
         parseJSONResponse(message, orderHashMap);
-        return;
     }
-
-    return;
-
 }
 /**
 * Function to parse XML response return from Conversion response
 * service and change Order status in BM as per the decision received for Order.
-**/
+* */
 function parseJSONResponse(message, orderHashMap) {
     try {
         if (!empty(message)) {
@@ -94,21 +91,22 @@ function parseJSONResponse(message, orderHashMap) {
 
             logger.debug('Processing daily conversion report JSON ......');
             Transaction.wrap(function () {
-                for each(var conversionDetails in obj['conversionDetails']){
-                    var orderNumber = conversionDetails['merchantReferenceNumber'];
+            	obj.conversionDetails.forEach(function (conversionDetails) {
+            	// for each(var conversionDetails in obj['conversionDetails']){
+                    var orderNumber = conversionDetails.merchantReferenceNumber;
                     var order = orderHashMap.get(orderNumber);
-                    logger.debug('Order Id - ' + conversionDetails['requestId']);
+                    logger.debug('Order Id - ' + conversionDetails.requestId);
                     if (order !== null) {
-                        //new decision ACCEPT decision applied to order
-                        if (conversionDetails['newDecision'] === 'ACCEPT') {
+                        // new decision ACCEPT decision applied to order
+                        if (conversionDetails.newDecision === 'ACCEPT') {
                           	OrderMgr.placeOrder(order);
                             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
                             logger.info('Order number: ( {0} ) is successfully placed  ', orderNumber);
-                            //new decision REJECT decision applied to order
-                        } else if (conversionDetails['newDecision'] === 'REJECT') {
+                            // new decision REJECT decision applied to order
+                        } else if (conversionDetails.newDecision === 'REJECT') {
                             //  Cancel Order.
                             OrderMgr.failOrder(order);
-                            var reviewerComment = conversionDetails['reviewerComments'];
+                            var reviewerComment = conversionDetails.reviewerComments;
                             order.cancelDescription = reviewerComment;
                             logger.info('Order number: ( {0} ) is canceled   ', orderNumber);
                         } else {
@@ -117,7 +115,7 @@ function parseJSONResponse(message, orderHashMap) {
                     } else {
                         logger.debug('Order in Daily conversion report not found in the query results against DB');
                     }
-                }
+                });
             });
         }
     }
@@ -127,9 +125,9 @@ function parseJSONResponse(message, orderHashMap) {
     }
 }
 /**
-* Function to handle multiple error scenarios in case of error 
+* Function to handle multiple error scenarios in case of error
 * returned form Service
-**/
+* */
 function handleErrorCases(responseObj) {
     if (empty(responseObj)) {
         logger.error('Error in conversion detail report request :', 'RESPONSE_EMPTY');
@@ -142,53 +140,52 @@ function handleErrorCases(responseObj) {
     else if (responseObj.status === 'OK' && (responseObj.object === 'Invalid login credentials.' || responseObj.object === 'No merchant found for username.')) {
         logger.error('Error in conversion detail report request ( {0} )', responseObj.object);
         throw new Error('Error in conversion detail report : Invalid login credentials.');
-    } 
+    }
     else if ('errorMessage' in responseObj && !empty(responseObj.errorMessage)) {
-            //  Log all error messages.
+        //  Log all error messages.
         logger.error('Service Error: ' + responseObj.errorMessage);
     }
-    else {
-        return;
+    else { // eslint-disable-line no-empty
+
     }
 }
 /**
 * Function to set date time parameter to provide
-* as an input. The date range will pick 
+* as an input. The date range will pick
 * records of 24 hours before the current time
-**/
+* */
 function setDateTimeForParameter() {
     var System = require('dw/system/System');
     var StringUtils = require('dw/util/StringUtils');
     var time = {};
     var endDate = System.getCalendar();
     endDate.setTimeZone('GMT');
-    time.end = StringUtils.formatCalendar(endDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''); 
+    time.end = StringUtils.formatCalendar(endDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
     var currentDate = System.getCalendar();
     currentDate.setTimeZone('GMT');
     var Site = require('dw/system/Site');
     var lookBackPref = Site.getCurrent().getCustomPreferenceValue('CsOrderImportLookBack');
     var lookbackTime = empty(lookBackPref) ? -24 : (-1 * lookBackPref);
     currentDate.add(dw.util.Calendar.HOUR, lookbackTime);
-    time.start = StringUtils.formatCalendar(currentDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\''); 
+    time.start = StringUtils.formatCalendar(currentDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
 
     return time;
 }
 
 /**
 * Creates Digest String for signature
-**/
-function getDigest(digestString)  {
-	var MessageDigest =  require('dw/crypto/MessageDigest');
-	var Bytes = require('dw/util/Bytes');
-	var StringUtils = require('dw/util/StringUtils');
-	var Encoding = require('dw/crypto/Encoding');
+* */
+function getDigest(digestString) {
+    var MessageDigest = require('dw/crypto/MessageDigest');
+    var Bytes = require('dw/util/Bytes');
+    var StringUtils = require('dw/util/StringUtils');
+    var Encoding = require('dw/crypto/Encoding');
 
     try {
     	var digester = new MessageDigest(MessageDigest.DIGEST_SHA_256);
-        var digest  = digester.digestBytes(new Bytes(digestString,"UTF-8"));
+        var digest = digester.digestBytes(new Bytes(digestString, 'UTF-8'));
         var base64String = Encoding.toBase64(digest);
-       return StringUtils.format("SHA-256={0}",base64String);
-
+        return StringUtils.format('SHA-256={0}', base64String);
     } catch (exception) {
     	logger.error('Error in Secure acceptance create request data' + exception.message);
         return { error: true, errorMsg: exception.message };
@@ -197,15 +194,15 @@ function getDigest(digestString)  {
 
 /**
 * calculates time for script
-**/
+* */
 function getTime() {
-	var Calendar = require('dw/util/Calendar');
-	var StringUtils = require('dw/util/StringUtils');
+    var Calendar = require('dw/util/Calendar');
+    var StringUtils = require('dw/util/StringUtils');
 
-	try {
+    try {
         var date = StringUtils.formatCalendar(new dw.util.Calendar(), 'en_US', Calendar.LONG_DATE_PATTERN);
-		return date;
-	} catch (exception) {
+        return date;
+    } catch (exception) {
         logger.error('Error in Secure acceptance create request data' + exception.message);
         return { error: true, errorMsg: exception.message };
     }
@@ -213,32 +210,33 @@ function getTime() {
 
 /**
 * Creates the signature
-**/
+* */
 function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId, time) {
 	 var Bytes = require('dw/util/Bytes');
 	 var Mac = require('dw/crypto/Mac');
 	 var Encoding = require('dw/crypto/Encoding');
+	 var host = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_HostName');
 
-	try {
+    try {
 		 var encryptor = new Mac(Mac.HMAC_SHA_256);
-	 	 var secret  = Encoding.fromBase64(sharedSecret);
-		 var signatureString = "";
-			var headerString = "";
-			 signatureString = signatureString + 'host: apitest.cybersource.com'+"\n";
-			 signatureString = signatureString + 'date: '+date+"\n";
-			 signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId='+ merchantId + "\n";
-			 signatureString = signatureString + 'v-c-merchant-id: '+merchantId;
+	 	 var secret = Encoding.fromBase64(sharedSecret);
+		 var signatureString = '';
+        var headerString = '';
+			 signatureString = signatureString + 'host: ' + host + '\n';
+			 signatureString = signatureString + 'date: ' + date + '\n';
+			 signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId + '\n';
+			 signatureString = signatureString + 'v-c-merchant-id: ' + merchantId;
 
 		 var signatureDigest = encryptor.digest(new Bytes(signatureString.toString(), 'UTF-8'), secret);
 		 var signature = Encoding.toBase64(signatureDigest);
 		 return signature;
-	} catch (exception) {
+    } catch (exception) {
         logger.error('Error in Secure acceptance create request data' + exception.message);
         return { error: true, errorMsg: exception.message };
     }
 }
 
-/** Exported functions **/
+/** Exported functions * */
 module.exports = {
     orderStatusUpdate: orderStatusUpdate
 };

@@ -1,6 +1,6 @@
 var RELATIVE_PATH = './test/acceptance';
 var OUTPUT_PATH = RELATIVE_PATH + '/report';
-var HOST = 'https://www.phase-eight.com';
+var HOST = 'https://cybersource08-tech-prtnr-na07-dw.demandware.net/';
 
 var webDriver = {
     url: HOST,

@@ -33,7 +33,6 @@
       
       newUrl += "/" + urlParts[i];
     } 
-    //var demandwareHost = pdict.CurrentRequest.httpHost;
     
   </isscript>
   <isredirect location="${newUrl}" permanent="true"/>

@@ -1,5 +1,5 @@
 {
    "init": [
-      "./cartridge/scripts/init/SoapServiceInit.ds"
+      "./cartridge/scripts/init/SoapServiceInit.js"
    ]
 }
