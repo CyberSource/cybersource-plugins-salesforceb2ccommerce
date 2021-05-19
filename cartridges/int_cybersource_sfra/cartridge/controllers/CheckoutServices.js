@@ -9,6 +9,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var getAbsoluteUrl = require('*/cartridge/scripts/helpers/getAbsoluteUrl');
 
 var IsCartridgeEnabled = Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled');
 
@@ -437,7 +438,7 @@ if (IsCartridgeEnabled) {
                     res.json({
                         form: paymentForm,
                         fieldErrors: [],
-                        serverErrors: [Resource.msg('error.technical', 'checkout', null)],
+                        serverErrors: [Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))],
                         error: true
                     });
                     return;
@@ -569,7 +570,7 @@ if (IsCartridgeEnabled) {
                 error: true,
                 cartError: true,
                 redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
-                errorMessage: Resource.msg('error.technical', 'checkout', null)
+                errorMessage: Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))
             });
 
             return next();
@@ -637,14 +638,14 @@ if (IsCartridgeEnabled) {
         // Re-calculate the payments.
         var calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
         if (calculatedPaymentTransactionTotal.error) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
+            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))));
             return next();
         }
 
         // Creates a new order.
         var order = COHelpers.createOrder(currentBasket);
         if (!order) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))));
             return next();
         }
 
@@ -655,26 +656,29 @@ if (IsCartridgeEnabled) {
         if (!empty(order.getPaymentInstruments())) {
             paymentInstrument = order.getPaymentInstruments()[0];
         }
-        if (handlePaymentResult.error) {
-            if (paymentInstrument.paymentMethod != null
-                    && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
-                            || (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
-                            || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)
-                            || CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null)))
-                            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay', 'cybersource', null)
-                            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof', 'cybersource', null)
-                            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl', 'cybersource', null)
-                            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
-                            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
+        if (handlePaymentResult.missingPaymentInfo) {
+            session.privacy.SkipTaxCalculation = false;
+            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
 
-            ) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
-            } else {
-                res.json({
-                    error: true,
-                    errorMessage: Resource.msg('error.technical', 'checkout', null)
-                });
-            }
+            res.json({
+                error: true,
+                errorMessage: Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))
+            });
+            return next();
+        } if (handlePaymentResult.declined) {
+            session.privacy.SkipTaxCalculation = false;
+            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+
+            res.json({
+                error: true,
+                errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
+            });
+            return next();
+        } if (handlePaymentResult.error) {
+            res.json({
+                error: true,
+                errorMessage: Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))
+            });
             return next();
         } if (handlePaymentResult.returnToPage) {
             res.render('secureacceptance/secureAcceptanceIframeSummmary', {
@@ -722,64 +726,17 @@ if (IsCartridgeEnabled) {
             }
         }
 
-        if (handlePaymentResult.declined) {
-            session.privacy.SkipTaxCalculation = false;
-            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
-            if (paymentInstrument.paymentMethod != null
-                    && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
-                    && (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
-                    || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)))
-                    || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay', 'cybersource', null)
-                    || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof', 'cybersource', null)
-                    || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl', 'cybersource', null)
-                    || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
-                    || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.klarna', 'cybersource', null)
-                    || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
-            ) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
-            } else {
-                res.json({
-                    error: true,
-                    errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
-                });
-            }
-            return next();
-        }
-        if (handlePaymentResult.missingPaymentInfo) {
-            session.privacy.SkipTaxCalculation = false;
-            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
-            if (paymentInstrument.paymentMethod != null
-                        && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
-                                && (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
-                                || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)))
-                                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay', 'cybersource', null)
-                                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof', 'cybersource', null)
-                                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl', 'cybersource', null)
-                                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
-                                || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
-            ) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
-            } else {
-                res.json({
-                    error: true,
-                    errorMessage: Resource.msg('error.technical', 'checkout', null)
-                });
-            }
-            return next();
-        } if (handlePaymentResult.rejected) {
+        if (handlePaymentResult.rejected) {
             Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
             currentBasket = BasketMgr.getCurrentBasket();
             Transaction.wrap(function () {
                 COHelpers.handlePayPal(currentBasket);
             });
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString());
-            /* res.json({
+            res.json({
                 error: true,
                 cartError: true,
                 redirectUrl: URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString()
-            });*/
+            });
             return next();
         } if (handlePaymentResult.process3DRedirection) {
             res.redirect(URLUtils.url('CheckoutServices-PayerAuthentication'));
@@ -810,7 +767,7 @@ if (IsCartridgeEnabled) {
                 error: true,
                 cartError: true,
                 redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-                errorMessage: Resource.msg('error.technical', 'checkout', null)
+                errorMessage: Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))
             });
 
             return next();
@@ -822,7 +779,7 @@ if (IsCartridgeEnabled) {
             if (placeOrderResult.error) {
                 res.json({
                     error: true,
-                    errorMessage: Resource.msg('error.technical', 'checkout', null)
+                    errorMessage: Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))
                 });
                 return next();
             }
@@ -913,7 +870,7 @@ server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
     }
     var result = CardHelper.PayerAuthEnable(creditCardType);
     if (result.error) {
-        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
+        res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))));
         return next();
     }
 
@@ -981,7 +938,7 @@ server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
 			var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
 			COHelpers.addOrUpdateToken(order, customerObj, res);
 			session.privacy.orderId = order.orderNo;
-	
+
 			if (silentPostResponse.review) {
 				res.redirect(URLUtils.https('COPlaceOrder-SilentPostReviewOrder'));
 				return next();
@@ -1330,7 +1287,7 @@ server.post('SubmitPaymentGP', function (req, res, next) {
                 res.json({
                     form: paymentForm,
                     fieldErrors: [],
-                    serverErrors: [Resource.msg('error.technical', 'checkout', null)],
+                    serverErrors: [Resource.msgf('error.technical', 'checkout', null, getAbsoluteUrl('[globalUrl=support]'))],
                     error: true
                 });
                 return;
