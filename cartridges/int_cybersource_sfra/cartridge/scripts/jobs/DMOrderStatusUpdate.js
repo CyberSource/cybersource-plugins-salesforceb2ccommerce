@@ -21,6 +21,7 @@ var logger = Logger.getLogger('CyberSource', 'ConversionDetailReport');
  * @param {*} orderHashMap orderHashMap
  */
 function parseJSONResponse(message, orderHashMap) {
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var emailHelpers = require('*/cartridge/scripts/helpers/emailHelpers');
     var HookMgr = require('dw/system/HookMgr');
 
@@ -40,9 +41,13 @@ function parseJSONResponse(message, orderHashMap) {
                     if (order !== null) {
                         // new decision ACCEPT decision applied to order
                         if (conversionDetails.newDecision === 'ACCEPT') {
-                            OrderMgr.placeOrder(order);
-                            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-                            logger.info('Order number: ( {0} ) is successfully placed  ', orderNumber);
+                            var placeOrderResult = COHelpers.placeOrder(order, { status: 'success' });
+
+                            if (placeOrderResult.error) {
+                                logger.info('Order number: ( {0} ) placement FAILED  ', orderNumber);
+                            } else {
+                                logger.info('Order number: ( {0} ) is successfully placed  ', orderNumber);
+                            }
                             // new decision REJECT decision applied to order
                         } else if (conversionDetails.newDecision === 'REJECT') {
                             //  Cancel Order.
