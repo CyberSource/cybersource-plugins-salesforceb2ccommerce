@@ -21,6 +21,9 @@ var logger = Logger.getLogger('CyberSource', 'ConversionDetailReport');
  * @param {*} orderHashMap orderHashMap
  */
 function parseJSONResponse(message, orderHashMap) {
+    var emailHelpers = require('*/cartridge/scripts/helpers/emailHelpers');
+    var HookMgr = require('dw/system/HookMgr');
+
     try {
         // eslint-disable-next-line
         if (!empty(message)) {
@@ -47,6 +50,10 @@ function parseJSONResponse(message, orderHashMap) {
                             var reviewerComment = conversionDetails.reviewerComments;
                             order.cancelDescription = reviewerComment;
                             logger.info('Order number: ( {0} ) is canceled   ', orderNumber);
+                            emailHelpers.triggerCancellationEmail(order, 'fraud-payment');
+                            if (HookMgr.hasHook('app.raas')) {
+                                HookMgr.callHook('app.raas', 'cancelOrder', order);
+                            }
                         } else {
                             logger.debug('No records in ACCEPT/REJECT state.');
                         }
