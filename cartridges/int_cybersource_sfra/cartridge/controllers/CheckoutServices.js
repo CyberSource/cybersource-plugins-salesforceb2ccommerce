@@ -597,6 +597,19 @@ if (IsCartridgeEnabled) {
             }
         }
 
+        var validationDiscountStatus = hooksHelper('app.validate.discounts', 'validateDiscounts', currentBasket, require('*/cartridge/scripts/hooks/validateDiscounts').validateDiscounts);
+        if (validationDiscountStatus.error) {
+            res.json({
+                error: true,
+                errorStage: {
+                    stage: 'discounts',
+                    step: 'discounts'
+                },
+                errorMessage: 'invalid coupon: ' + validationDiscountStatus.code
+            });
+            return next();
+        }
+
         // Check to make sure there is a shipping address
         if (currentBasket.defaultShipment.shippingAddress === null) {
             res.json({
