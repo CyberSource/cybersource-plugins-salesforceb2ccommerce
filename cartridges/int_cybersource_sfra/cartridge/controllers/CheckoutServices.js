@@ -528,7 +528,7 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
 });
 
 if (IsCartridgeEnabled) {
-    server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
+    server.replace('PlaceOrder', server.middleware.https, function (req, res, next) {
         var BasketMgr = require('dw/order/BasketMgr');
         var HookMgr = require('dw/system/HookMgr');
         var OrderMgr = require('dw/order/OrderMgr');
@@ -825,8 +825,10 @@ if (IsCartridgeEnabled) {
         req.session.privacyCache.set('usingMultiShipping', false);
         // var options = { paidWithPayPal: false, selectedPayment: 'others' };
 
-        // eslint-disable-next-line
-        res.redirect(URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken).toString());
+        res.json({
+            error: false,
+            continueUrl: URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken).toString()
+        });
         return next();
     });
 }
