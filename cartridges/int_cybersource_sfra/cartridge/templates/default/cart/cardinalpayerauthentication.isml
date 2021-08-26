@@ -1,4 +1,4 @@
-<!--- TEMPLATENAME: cardinalpayerauthentication.isml --->
+<!--- TEMPLATENAME: cardinalPayerAuthentication.isml --->
 <iscomment>
 	This template the template rendering the payer authentication page
 </iscomment>

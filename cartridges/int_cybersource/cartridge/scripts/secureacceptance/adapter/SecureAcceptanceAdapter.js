@@ -160,6 +160,12 @@ function SARedirectResponse(responseObject,order){
 				return {nextStep : CybersourceConstants.SA_SUMMARY, data : PlaceOrderError};
 			}
 			break;
+		case 'CANCEL':
+			Transaction.wrap(function () {
+				OrderMgr.failOrder(order);
+			});
+    		return {nextStep : CybersourceConstants.SA_CANCEL, location: URLUtils.https('Cart-Show')};
+    		break;
 		default : break;
 	}
 	return;

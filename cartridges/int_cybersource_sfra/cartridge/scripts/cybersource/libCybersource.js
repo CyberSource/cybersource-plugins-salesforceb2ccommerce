@@ -1,3 +1,6 @@
+/* eslint-disable */
+'use strict';
+
 /**
  * A library file for Cybersource communication.
  * This file is included by several script nodes using:
@@ -8,13 +11,183 @@
  */
 var Site = require('dw/system/Site');
 
+// Helper method to export the helper
+function getCybersourceHelper() {
+    // eslint-disable-next-line
+    return CybersourceHelper;
+}
+
+function copyBillTo(billTo) {
+    // eslint-disable-next-line
+    var requestBillTo = new CybersourceHelper.csReference.BillTo();
+    var value;
+    // eslint-disable-next-line
+    if (!empty(billTo)) {
+        Object.keys(billTo).forEach(function (name) {
+            if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+                value = billTo[name];
+                if (value !== '') {
+                    requestBillTo[name] = value;
+                }
+            }
+        });
+    }
+    return requestBillTo;
+}
+
+function copyShipTo(shipTo) {
+    // eslint-disable-next-line
+    var requestShipTo = new CybersourceHelper.csReference.ShipTo();
+    var value;
+    Object.keys(shipTo).forEach(function (name) {
+        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+            value = shipTo[name];
+            if (value !== '') {
+                requestShipTo[name] = value;
+            }
+        }
+    });
+    return requestShipTo;
+}
+
+function copyPurchaseTotals(purchase) {
+    // eslint-disable-next-line
+    var requestPurchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
+    var value;
+    Object.keys(purchase).forEach(function (name) {
+        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+            value = purchase[name];
+            if (value !== '') {
+                requestPurchaseTotals[name] = value;
+            }
+        }
+    });
+    return requestPurchaseTotals;
+}
+
+function copyCreditCard(card) {
+    // eslint-disable-next-line
+    var requestCard = new CybersourceHelper.csReference.Card();
+    var value;
+    if (card) {
+        Object.keys(card).forEach(function (name) {
+            if (name.indexOf('set') === -1 && name.indexOf('get') === -1 && name.indexOf('CardToken') === -1) {
+                value = card[name];
+                if (value !== '') {
+                    requestCard[name] = value;
+                }
+            }
+        });
+    }
+    return requestCard;
+}
+
+function copyItemFrom(item) {
+    // eslint-disable-next-line
+    var requestItem = new CybersourceHelper.csReference.Item();
+    var value;
+    Object.keys(item).forEach(function (name) {
+        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+            value = item[name];
+            if (value !== '') {
+                requestItem[name] = value;
+            }
+        }
+    });
+    return requestItem;
+}
+
+function copyTaxAmounts(taxReply) {
+    var taxReplyObj = {};
+    var value;
+    Object.keys(taxReply).forEach(function (name) {
+        if (name.indexOf('Amount') > -1) {
+            value = taxReply[name];
+            taxReplyObj[name] = value;
+        }
+    });
+    return taxReplyObj;
+}
+
+function copyAp(ap) {
+    // eslint-disable-next-line
+    var requestAp = new CybersourceHelper.csReference.apPayer();
+    var value;
+    Object.keys(ap).forEach(function (name) {
+        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+            value = ap[name];
+            if (value !== '') {
+                requestAp[name] = value;
+            }
+        }
+    });
+    return requestAp;
+}
+
+function getPaymentType() {
+    return 'vme';
+}
+
+function copyPos(pos) {
+    // eslint-disable-next-line
+    var requestPos = new CybersourceHelper.csReference.Pos();
+    var value;
+    Object.keys(pos).forEach(function (name) {
+        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+            value = pos[name];
+            if (value !== '') {
+                requestPos[name] = value;
+            }
+        }
+    });
+    return requestPos;
+}
+
+function getTransactionMode(deviceType) {
+    var transactionMode;
+    switch (deviceType) {
+        case 'desktop':
+            transactionMode = 'S';
+            break;
+        case 'mobile':
+            transactionMode = 'P';
+            break;
+        case 'tablet':
+            transactionMode = 'T';
+            break;
+        default:
+            transactionMode = 'S';
+            break;
+    }
+    return transactionMode;
+}
+
+function setClientData(request, refCode, fingerprint) {
+    request.merchantReferenceCode = refCode;
+    request.partnerSolutionID = getCybersourceHelper().getPartnerSolutionID();
+    var developerID = getCybersourceHelper().getDeveloperID();
+    var Resource = require('dw/web/Resource');
+    if (!empty(developerID)) {
+        request.developerID = developerID;
+    }
+    request.clientLibrary = 'Salesforce Commerce Cloud';
+    request.clientLibraryVersion = '21.1.0';
+    request.clientEnvironment = 'Linux';
+    request.partnerSDKversion = Resource.msg('global.version.number', 'version', null);
+    request.clientApplicationVersion = 'SFRA';
+    if (fingerprint) {
+        request.deviceFingerprintID = fingerprint;
+    }
+}
+
 var CybersourceHelper = {
     csReference: webreferences2.CyberSourceTransaction,
 
     getMerchantID: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
     },
-    getMerhcantCredentials: function (paymentMethod) {
+    getMerhcantCredentials: function (paymentMethodObj) {
+        var paymentMethod = paymentMethodObj;
         var PaymentMgr = require('dw/order/PaymentMgr');
         var merchantCredentials = {};
         if (!empty(paymentMethod)) {
@@ -45,7 +218,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'LSPKQMOW';
+        return 'MHL5XH4D';
     },
 
     getDeveloperID: function () {
@@ -216,7 +389,7 @@ var CybersourceHelper = {
         return Site.getCurrent().getCustomPreferenceValue('CruiseApiKey');
     },
     getCruiseCredentialsApiIdentifier: function () {
-	   	return Site.getCurrent().getCustomPreferenceValue('CruiseApiIdentifier');
+        return Site.getCurrent().getCustomPreferenceValue('CruiseApiIdentifier');
     },
     getCruiseCredentialsOrgUnitId: function () {
         return Site.getCurrent().getCustomPreferenceValue('CruiseOrgUnitId');
@@ -234,49 +407,49 @@ var CybersourceHelper = {
         return Site.getCurrent().getCustomPreferenceValue('SavedCardLimitFrame');
     },
     getTransactionTimeOut: function () {
-    	return Site.getCurrent().getCustomPreferenceValue('WeChatTransactionTimeout');
+        return Site.getCurrent().getCustomPreferenceValue('WeChatTransactionTimeout');
     },
     getNumofCheckStatusCalls: function () {
-    	return Site.getCurrent().getCustomPreferenceValue('NumofCheckStatusCalls');
+        return Site.getCurrent().getCustomPreferenceValue('NumofCheckStatusCalls');
     },
     getServiceCallInterval: function () {
-    	return Site.getCurrent().getCustomPreferenceValue('CheckStatusServiceInterval');
+        return Site.getCurrent().getCustomPreferenceValue('CheckStatusServiceInterval');
     },
     /** ***************************************************************************
-	 * Name: getNexus
-	 * Description: Returns the Nexus site preference.
-	 *************************************************************************** */
+     * Name: getNexus
+     * Description: Returns the Nexus site preference.
+     *************************************************************************** */
     getNexus: function () {
         var nexusList = Site.getCurrent().getCustomPreferenceValue('CsNexus');
         var nexus = '';
         var nexusCount = 0;
 
-        for (var i = 0; i < nexusList.length; i++) {
+        for (var i = 0; i < nexusList.length; i += 1) {
             var nexusEntry = nexusList[i];
             if (!empty(nexusEntry)) {
                 nexus += nexusCount > 0 ? ', ' : '';
                 nexus += nexusEntry;
-                nexusCount++;
+                nexusCount += 1;
             }
         }
         return nexus;
     },
 
     /** ***************************************************************************
-	 * Name: getNoNexus
-	 * Description: Returns the NoNexus site preference.
-	 **************************************************************************** */
+     * Name: getNoNexus
+     * Description: Returns the NoNexus site preference.
+     **************************************************************************** */
     getNoNexus: function () {
         var noNexusList = Site.getCurrent().getCustomPreferenceValue('CsNoNexus');
         var noNexus = '';
         var noNexusCount = 0;
 
-        for (var i = 0; i < noNexusList.length; i++) {
+        for (var i = 0; i < noNexusList.length; i += 1) {
             var noNexusEntry = noNexusList[i];
             if (!empty(noNexusEntry)) {
                 noNexus += noNexusCount > 0 ? ', ' : '';
                 noNexus += noNexusEntry;
-                noNexusCount++;
+                noNexusCount += 1;
             }
         }
 
@@ -291,93 +464,94 @@ var CybersourceHelper = {
         var WSUtil = require('dw/ws/WSUtil');
         switch (endpoint) {
             case 'Production':
-            	WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY, 'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor', service);
+                WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY, 'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor', service);
                 break;
             case 'Test':
-            	WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY, 'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor', service);
+                WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY, 'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor', service);
                 break;
             default:
+                // eslint-disable-next-line
                 throw 'Undefined Cybersource Endpoint "' + endpoint + '"';
         }
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * vc_orderID     - visa checkout  callID
-	 **************************************************************************** */
-    addVCOrderID: function (request, vc_orderID) {
-        var request_vc = new CybersourceHelper.csReference.VC();
-        request_vc.orderID = vc_orderID;
-        request.vc = request_vc;
+     * request  ,
+     * vc_orderID     - visa checkout  callID
+     **************************************************************************** */
+    addVCOrderID: function (request, vcOrderID) {
+        var requestVc = new CybersourceHelper.csReference.VC();
+        requestVc.orderID = vcOrderID;
+        request.vc = requestVc;
     },
     /** ***************************************************************************
-	 * request  ,
-	 * refCode     - Basket.UUID
-	 * wrappedKey     - wrappedKey
-	 * refCode  : Blob   - large blob object
-	 **************************************************************************** */
+     * request  ,
+     * refCode     - Basket.UUID
+     * wrappedKey     - wrappedKey
+     * refCode  : Blob   - large blob object
+     **************************************************************************** */
     addVCDecryptRequestInfo: function (request, refCode, wrappedKey, data) {
         request.merchantID = CybersourceHelper.getMerchantID();
         request.paymentSolution = 'visacheckout';
-        __setClientData(request, refCode, null);
-        var request_encryptedPayment = new CybersourceHelper.csReference.EncryptedPayment();
-        request_encryptedPayment.wrappedKey = wrappedKey;
-        request_encryptedPayment.data = data;
-        request.encryptedPayment = request_encryptedPayment;
+        setClientData(request, refCode, null);
+        var requestEncryptedPayment = new CybersourceHelper.csReference.EncryptedPayment();
+        requestEncryptedPayment.wrappedKey = wrappedKey;
+        requestEncryptedPayment.data = data;
+        request.encryptedPayment = requestEncryptedPayment;
         request.decryptVisaCheckoutDataService = new CybersourceHelper.csReference.DecryptVisaCheckoutDataService();
         request.decryptVisaCheckoutDataService.run = true;
     },
     /** ***************************************************************************
-	 * request  ,
-	 * refCode     - Basket.UUID or orderNo
-	 * wrappedKey     - wrappedKey
-	 * refCode  : Blob   - large blob object
-	 **************************************************************************** */
+     * request  ,
+     * refCode     - Basket.UUID or orderNo
+     * wrappedKey     - wrappedKey
+     * refCode  : Blob   - large blob object
+     **************************************************************************** */
     addVCAuthRequestInfo: function (request, refCode, wrappedKey, data) {
         request.merchantID = CybersourceHelper.getMerchantID();
         request.paymentSolution = 'visacheckout';
-        __setClientData(request, refCode, null);
-        var request_encryptedPayment = new CybersourceHelper.csReference.EncryptedPayment();
-        request_encryptedPayment.wrappedKey = wrappedKey;
-        request_encryptedPayment.data = data;
-        request.encryptedPayment = request_encryptedPayment;
+        setClientData(request, refCode, null);
+        var requestEncryptedPayment = new CybersourceHelper.csReference.EncryptedPayment();
+        requestEncryptedPayment.wrappedKey = wrappedKey;
+        requestEncryptedPayment.data = data;
+        request.encryptedPayment = requestEncryptedPayment;
     },
     /** ***************************************************************************
-	 * request  ,
-	 * refCode     - Basket.UUID or orderNo
-	 * refCode  : Blob   - large blob object
-	 **************************************************************************** */
+     * request  ,
+     * refCode     - Basket.UUID or orderNo
+     * refCode  : Blob   - large blob object
+     **************************************************************************** */
     addMobilePaymentAPIAuthRequestInfo: function (request, refCode, data) {
         request.merchantID = CybersourceHelper.getMerchantID();
         request.paymentSolution = '001';
-        __setClientData(request, refCode, null);
-        var request_encryptedPayment = new CybersourceHelper.csReference.EncryptedPayment();
-        request_encryptedPayment.descriptor = 'RklEPUNPTU1PTi5BUFBMRS5JTkFQUC5QQVlNRU5U';
-        request_encryptedPayment.data = data;
-        request.encryptedPayment = request_encryptedPayment;
+        setClientData(request, refCode, null);
+        var requestEncryptedPayment = new CybersourceHelper.csReference.EncryptedPayment();
+        requestEncryptedPayment.descriptor = 'RklEPUNPTU1PTi5BUFBMRS5JTkFQUC5QQVlNRU5U';
+        requestEncryptedPayment.data = data;
+        request.encryptedPayment = requestEncryptedPayment;
     },
     /** ***************************************************************************
-	 * request  ,
-	 * refCode     - Basket.UUID or orderNo
-	 * refCode  : Blob   - large blob object
-	 **************************************************************************** */
+     * request  ,
+     * refCode     - Basket.UUID or orderNo
+     * refCode  : Blob   - large blob object
+     **************************************************************************** */
     addMobilePaymentInAppAuthRequestInfo: function (request, authRequestParams) {
         request.merchantID = CybersourceHelper.getMerchantID();
         var CybersourceConstants = require('../utils/CybersourceConstants');
         request.paymentSolution = (authRequestParams.MobilePaymentType === CybersourceConstants.METHOD_ApplePay ? '001' : '006');
-        __setClientData(request, authRequestParams.orderNo, null);
-        var request_paymentNetworkToken = new CybersourceHelper.csReference.PaymentNetworkToken();
-        request_paymentNetworkToken.transactionType = '1';
-        request.paymentNetworkToken = request_paymentNetworkToken;
+        setClientData(request, authRequestParams.orderNo, null);
+        var requestPaymentNetworkToken = new CybersourceHelper.csReference.PaymentNetworkToken();
+        requestPaymentNetworkToken.transactionType = '1';
+        request.paymentNetworkToken = requestPaymentNetworkToken;
     },
     /** ***************************************************************************
-	 * request  ,
-	 * billTo   : BillTo_Object,
-	 * shipTo   : ShipTo_Object,
-	 * purchase : PurchaseTotals_Object,
-	 * card     : Card_Object,
-	 * refCode     - Basket.UUID
-	 **************************************************************************** */
+     * request  ,
+     * billTo   : BillTo_Object,
+     * shipTo   : ShipTo_Object,
+     * purchase : PurchaseTotals_Object,
+     * card     : Card_Object,
+     * refCode     - Basket.UUID
+     **************************************************************************** */
     addCCAuthRequestInfo: function (request, billTo, shipTo, purchase, card, refCode, enableDeviceFingerprint, itemsCybersource) {
         request.merchantID = CybersourceHelper.getMerchantID();
         var fingerprint = null;
@@ -385,36 +559,36 @@ var CybersourceHelper = {
             fingerprint = session.sessionID;
         }
 
-        __setClientData(request, refCode, fingerprint);
+        setClientData(request, refCode, fingerprint);
         if (billTo !== null) {
-            request.billTo = __copyBillTo(billTo);
+            request.billTo = copyBillTo(billTo);
         }
-        request.shipTo = __copyShipTo(shipTo);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        request.shipTo = copyShipTo(shipTo);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
 
         if (!empty(card)) {
             if (empty(card.getCreditCardToken())) {
-                request.card = __copyCreditCard(card);
+                request.card = copyCreditCard(card);
             } else {
-                var request_card = new CybersourceHelper.csReference.Card();
+                var requestCard = new CybersourceHelper.csReference.Card();
                 var value;
-                for (var name in card) {
+                Object.keys(card).forEach(function (name) {
                     if (name.indexOf('set') === -1 && name.indexOf('get') === -1 && name.indexOf('CardToken') === -1 && name.indexOf('accountNumber') === -1) {
                         value = card[name];
                         if (value !== '') {
-                            request_card[name] = value;
+                            requestCard[name] = value;
                         }
                     }
-                }
-                request.card = request_card;
+                });
+                request.card = requestCard;
             }
 
             var cardType = request.card.getCardType();
-            if (cardType == '002') {
+            if (cardType === '002') {
                 var mastercardAuthIndicator = CybersourceHelper.getMasterCardAuthIndicator();
-                if (!empty(mastercardAuthIndicator) && mastercardAuthIndicator == '0') {
+                if (!empty(mastercardAuthIndicator) && mastercardAuthIndicator === '0') {
                     request.authIndicator = 0;
-                } else if (!empty(mastercardAuthIndicator) && mastercardAuthIndicator == '1') {
+                } else if (!empty(mastercardAuthIndicator) && mastercardAuthIndicator === '1') {
                     request.authIndicator = 1;
                 }
             }
@@ -424,7 +598,7 @@ var CybersourceHelper = {
         if (itemsCybersource !== null) {
             var iter = itemsCybersource.iterator();
             while (iter.hasNext()) {
-                items.push(__copyItemFrom(iter.next()));
+                items.push(copyItemFrom(iter.next()));
             }
         }
 
@@ -443,12 +617,12 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * card     : Card_Object,
-	 * pos		: Pos_Object
-	 * refCode
-	 **************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * card     : Card_Object,
+     * pos        : Pos_Object
+     * refCode
+     **************************************************************************** */
     addPOSAuthRequestInfo: function (request, location, purchase, card, refCode, enableDeviceFingerprint, pos) {
         request.merchantID = CybersourceHelper.getPosMerchantID(location);
 
@@ -457,18 +631,18 @@ var CybersourceHelper = {
             fingerprint = session.sessionID;
         }
 
-        __setClientData(request, refCode, fingerprint);
+        setClientData(request, refCode, fingerprint);
 
         if (!empty(pos) && !empty(pos.getEntryMode()) && pos.getEntryMode().equals('keyed')) {
-            request.card = __copyCreditCard(card);
+            request.card = copyCreditCard(card);
         }
 
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
 
         request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
 
         if (!empty(pos) && !empty(pos.getEntryMode()) && !empty(pos.getCardPresent()) && !empty(pos.getTerminalCapability())) {
-            request.pos = __copyPos(pos);
+            request.pos = copyPos(pos);
             request.ccAuthService.commerceIndicator = 'retail';
         }
         request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
@@ -477,9 +651,9 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: addPaySubscriptionCreateService
-	 * Description: Add Subscription Creation service to request.
-	 *************************************************************************** */
+     * Name: addPaySubscriptionCreateService
+     * Description: Add Subscription Creation service to request.
+     *************************************************************************** */
     addPaySubscriptionCreateService: function (
         request,
         billTo,
@@ -488,13 +662,13 @@ var CybersourceHelper = {
         refCode
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
         if (billTo !== null) {
-            request.billTo = __copyBillTo(billTo);
+            request.billTo = copyBillTo(billTo);
         }
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
         if (card !== null) {
-            request.card = __copyCreditCard(card);
+            request.card = copyCreditCard(card);
         }
         request.cardTypeSelectionIndicator = '1';
         request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
@@ -507,16 +681,16 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: addPaySubscriptionRetrieveService
-	 * Description: Add Subscription Retreival service to request.
-	 *************************************************************************** */
+     * Name: addPaySubscriptionRetrieveService
+     * Description: Add Subscription Retreival service to request.
+     *************************************************************************** */
     addPaySubscriptionRetrieveService: function (
         request,
         refCode,
         subscriptionID
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
         request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
         request.recurringSubscriptionInfo.subscriptionID = subscriptionID;
         request.paySubscriptionRetrieveService = new CybersourceHelper.csReference.PaySubscriptionRetrieveService();
@@ -524,16 +698,16 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: addPaySubscriptionDeleteService
-	 * Description: Add Subscription Deletion service to request.
-	 *************************************************************************** */
+     * Name: addPaySubscriptionDeleteService
+     * Description: Add Subscription Deletion service to request.
+     *************************************************************************** */
     addPaySubscriptionDeleteService: function (
         request,
         refCode,
         subscriptionID
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
         request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
         request.recurringSubscriptionInfo.subscriptionID = subscriptionID;
         request.paySubscriptionDeleteService = new CybersourceHelper.csReference.PaySubscriptionDeleteService();
@@ -541,9 +715,9 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: addSubscriptionUpdateInfo
-	 * Description: Add Subscription Updation service to request.
-	 *************************************************************************** */
+     * Name: addSubscriptionUpdateInfo
+     * Description: Add Subscription Updation service to request.
+     *************************************************************************** */
     addSubscriptionUpdateInfo: function (
         request,
         billTo,
@@ -553,24 +727,24 @@ var CybersourceHelper = {
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
         var merchantRefCode = '0000000'; // dummy value as it is not required for this call
-        __setClientData(request, merchantRefCode);
-        request.billTo = __copyBillTo(billTo);
+        setClientData(request, merchantRefCode);
+        request.billTo = copyBillTo(billTo);
 
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
-        request.card = __copyCreditCard(card);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
+        request.card = copyCreditCard(card);
 
-        var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
-        request_recurringSubscriptionInfo.subscriptionID = subscriptionID;
-        request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+        var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+        requestRecurringSubscriptionInfo.subscriptionID = subscriptionID;
+        request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
 
         request.paySubscriptionUpdateService = new CybersourceHelper.csReference.PaySubscriptionUpdateService();
         request.paySubscriptionUpdateService.run = true;
     },
 
     /** ***************************************************************************
-	 * Name: addOnDemandSubscriptionInfo
-	 * Description: Add On Demand payment service to request.
-	 *************************************************************************** */
+     * Name: addOnDemandSubscriptionInfo
+     * Description: Add On Demand payment service to request.
+     *************************************************************************** */
     addOnDemandSubscriptionInfo: function (
         subscriptionID,
         request,
@@ -583,23 +757,23 @@ var CybersourceHelper = {
             fingerprint = session.sessionID;
         }
 
-        __setClientData(request, refCode, fingerprint);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        setClientData(request, refCode, fingerprint);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
 
-        var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
-        request_recurringSubscriptionInfo.subscriptionID = subscriptionID;
-        request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+        var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+        requestRecurringSubscriptionInfo.subscriptionID = subscriptionID;
+        request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
     },
 
     addDAVRequestInfo: function (request, billTo, shipTo, ignoreDAVResult, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
         if (!empty(refCode)) {
-            __setClientData(request, refCode);
+            setClientData(request, refCode);
         }
         if (billTo !== null) {
-            request.billTo = __copyBillTo(billTo);
+            request.billTo = copyBillTo(billTo);
         }
-        request.shipTo = __copyShipTo(shipTo);
+        request.shipTo = copyShipTo(shipTo);
 
         request.davService = new CybersourceHelper.csReference.DAVService();
         request.davService.run = true;
@@ -631,19 +805,20 @@ var CybersourceHelper = {
         }
     },
 
-    addPayerAuthEnrollInfo: function (serviceRequest, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo) {
+    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo) {
+        var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
-        __setClientData(serviceRequest, orderNo);
+        setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
-            serviceRequest.billTo = __copyBillTo(billTo);
+            serviceRequest.billTo = copyBillTo(billTo);
         }
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
-            var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
-            request_recurringSubscriptionInfo.subscriptionID = subscriptionToken;
-            serviceRequest.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+            var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+            requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
+            serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
         } else if (creditCardForm !== null) {
             CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
         }
@@ -654,21 +829,25 @@ var CybersourceHelper = {
         var item = new CybersourceHelper.csReference.Item();
         var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber(amount.value, '000000.00', 'en_US');
+        item.unitPrice = StringUtils.formatNumber(amount.value, '000000.00');
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
         serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
-        var currentDevice = session.privacy.device;
+        // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
+        serviceRequest.afsService = new CybersourceHelper.csReference.AFSService();
+        serviceRequest.afsService.run = true;
+        serviceRequest.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
+        serviceRequest.ccAuthService.run = true;
         // serviceRequest.payerAuthEnrollService.transactionMode= 'S';
     },
 
     addTestPayerAuthEnrollInfo: function (request, card) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, 'TestOrder');
-        request.card = __copyCreditCard(card);
+        setClientData(request, 'TestOrder');
+        request.card = copyCreditCard(card);
         request.payerAuthEnrollService = new CybersourceHelper.csReference.PayerAuthEnrollService();
         request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
         request.purchaseTotals.currency = 'USD';
@@ -676,7 +855,7 @@ var CybersourceHelper = {
         var item = new CybersourceHelper.csReference.Item();
         var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber('100', '000000.00', 'en_US');
+        item.unitPrice = StringUtils.formatNumber('100', '000000.00');
         items.push(item);
         request.item = items;
         request.payerAuthEnrollService.run = true;
@@ -684,8 +863,8 @@ var CybersourceHelper = {
 
     addTestPayerAuthValidateInfo: function (request, signedPARes, card) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, 'TestOrder');
-        request.card = __copyCreditCard(card);
+        setClientData(request, 'TestOrder');
+        request.card = copyCreditCard(card);
         request.payerAuthValidateService = new CybersourceHelper.csReference.PayerAuthValidateService();
         request.payerAuthValidateService.signedPARes = signedPARes;
         request.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
@@ -694,7 +873,7 @@ var CybersourceHelper = {
         var item = new CybersourceHelper.csReference.Item();
         var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber('100', '000000.00', 'en_US');
+        item.unitPrice = StringUtils.formatNumber('100', '000000.00');
         items.push(item);
         request.item = items;
         request.payerAuthValidateService.run = true;
@@ -742,18 +921,18 @@ var CybersourceHelper = {
     addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo) {
         request.merchantID = CybersourceHelper.getMerchantID();
 
-        __setClientData(request, orderNo);
+        setClientData(request, orderNo);
 
         if (!empty(subscriptionToken)) {
-            var request_recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
-            request_recurringSubscriptionInfo.subscriptionID = subscriptionToken;
-            request.recurringSubscriptionInfo = request_recurringSubscriptionInfo;
+            var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+            requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
+            request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
         } else if (creditCardForm !== null) {
             CybersourceHelper.addCardInfo(request, creditCardForm);
         }
 
         if (billTo !== null) {
-        	request.billTo = __copyBillTo(billTo);
+            request.billTo = copyBillTo(billTo);
         }
 
         // validate specific stuff
@@ -767,16 +946,17 @@ var CybersourceHelper = {
         var item = new CybersourceHelper.csReference.Item();
         var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber(amount.value, '000000.00', 'en_US');
+        item.unitPrice = StringUtils.formatNumber(amount.value, '000000.00');
         items.push(item);
         request.item = items;
 
         request.payerAuthValidateService.run = true;
+        request.afsService = new CybersourceHelper.csReference.AFSService();
+        request.afsService.run = true;
     },
 
-    addPayerAuthReplyInfo: function (request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
-        commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId, cavvAlgorithm, effectiveAuthenticationType,
-        challengeCancelCode, authenticationStatusReason, acsTransactionID, authorizationPayload) {
+    // eslint-disable-next-line
+    addPayerAuthReplyInfo: function (request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw, commerceIndicator, xid, paresStatus, specificationVersion, directoryTrnsctnId, cavvAlgorithm, effectiveAuthenticationType, challengeCancelCode, authenticationStatusReason, acsTransactionID, authorizationPayload) {
         if (request.ccAuthService === null) {
             request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
         }
@@ -799,31 +979,31 @@ var CybersourceHelper = {
             request.ccAuthService.directoryServerTransactionID = directoryTrnsctnId;
         }
         if (!empty(session.privacy.veresEnrolled)) {
-        	request.ccAuthService.veresEnrolled = session.privacy.veresEnrolled;
-        	session.privacy.veresEnrolled = ' ';
+            request.ccAuthService.veresEnrolled = session.privacy.veresEnrolled;
+            session.privacy.veresEnrolled = ' ';
         }
         if (!empty(session.privacy.networkScore)) {
-        	request.ccAuthService.paNetworkScore = session.privacy.networkScore;
-        	session.privacy.networkScore = ' ';
+            request.ccAuthService.paNetworkScore = session.privacy.networkScore;
+            session.privacy.networkScore = ' ';
         }
         if (!empty(cavvAlgorithm)) {
-        	request.ccAuthService.cavvAlgorithm = cavvAlgorithm;
+            request.ccAuthService.cavvAlgorithm = cavvAlgorithm;
         }
         if (!empty(effectiveAuthenticationType)) {
-        	request.ccAuthService.effectiveAuthenticationType = effectiveAuthenticationType;
+            request.ccAuthService.effectiveAuthenticationType = effectiveAuthenticationType;
         }
         if (!empty(challengeCancelCode)) {
-        	request.ccAuthService.challengeCancelCode = challengeCancelCode;
+            request.ccAuthService.challengeCancelCode = challengeCancelCode;
         }
 
         if (authenticationStatusReason !== null && !empty(authenticationStatusReason)) {
-        	request.ccAuthService.paresStatusReason = authenticationStatusReason;
+            request.ccAuthService.paresStatusReason = authenticationStatusReason;
         }
         /* if (!empty(acsTransactionID)) {
-        	request.ccAuthService.acsTransactionID = acsTransactionID;
+            request.ccAuthService.acsTransactionID = acsTransactionID;
         } */
         /* if (!empty(authorizationPayload)) {
-        	request.ccAuthService.authorizationPayload = authorizationPayload;
+            request.ccAuthService.authorizationPayload = authorizationPayload;
         } */
 
         request.ccAuthService.paAuthenticationDate = new Date().toDateString();
@@ -842,61 +1022,61 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * AP Services Starts here
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * ap   : AP_Object,
-	 * refCode     - Basket.UUID
-	 **************************************************************************** */
+     * AP Services Starts here
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * ap   : AP_Object,
+     * refCode     - Basket.UUID
+     **************************************************************************** */
     addAPAuthRequestInfo: function (request, purchase, ap, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
         request.apPaymentType = getPaymentType();
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
-        request.ap = __copyAp(ap);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
+        request.ap = copyAp(ap);
         request.apAuthService = new CybersourceHelper.csReference.APAuthService();
         request.apAuthService.run = true;
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * ap   : AP_Object,
-	 * refCode     - Basket.UUID
-	 **************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * ap   : AP_Object,
+     * refCode     - Basket.UUID
+     **************************************************************************** */
     addAPCheckoutDetailsRequestInfo: function (request, purchase, ap, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
         request.apPaymentType = getPaymentType();
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
-        request.ap = __copyAp(ap);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
+        request.ap = copyAp(ap);
         request.apCheckoutDetailsService = new CybersourceHelper.csReference.APCheckOutDetailsService();
         request.apCheckoutDetailsService.run = true;
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * ap     : AP_Object,
-	 * refCode     - Basket.UUID
-	 * Name : addAPConfirmPurchaseRequestInfo
-	 **************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * ap     : AP_Object,
+     * refCode     - Basket.UUID
+     * Name : addAPConfirmPurchaseRequestInfo
+     **************************************************************************** */
     addAPConfirmPurchaseRequestInfo: function (request, purchase, ap, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
-        request.ap = __copyAp(ap);
+        setClientData(request, refCode);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
+        request.ap = copyAp(ap);
         request.apPaymentType = getPaymentType();
         request.apConfirmPurchaseService = new CybersourceHelper.csReference.APConfirmPurchaseService();
         request.apConfirmPurchaseService.run = true;
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * refCode     - Basket.UUID
-	 * Name: addAPAuthReversalServiceInfo
-	 **************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * refCode     - Basket.UUID
+     * Name: addAPAuthReversalServiceInfo
+     **************************************************************************** */
 
     addAPAuthReversalServiceInfo: function (
         request,
@@ -905,8 +1085,8 @@ var CybersourceHelper = {
         authRequestID
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        setClientData(request, refCode);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
         request.apPaymentType = getPaymentType();
         request.apAuthReversalService = new CybersourceHelper.csReference.APAuthReversalService();
         request.apAuthReversalService.authRequestID = authRequestID;
@@ -914,11 +1094,11 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * refCode     - Basket.UUID
-	 * Name: addAPCaptureServiceInfo
-	 *************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * refCode     - Basket.UUID
+     * Name: addAPCaptureServiceInfo
+     *************************************************************************** */
     addAPCaptureServiceInfo: function (
         request,
         purchase,
@@ -926,8 +1106,8 @@ var CybersourceHelper = {
         authRequestID
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        setClientData(request, refCode);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
         request.apPaymentType = getPaymentType();
         request.apCaptureService = new CybersourceHelper.csReference.APCaptureService();
         request.apCaptureService.authRequestID = authRequestID;
@@ -935,13 +1115,13 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * refCode     - Basket.UUID
-	 * reason
-	 * note
-	 * Name: addAPRefundServiceInfo
-	 *************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * refCode     - Basket.UUID
+     * reason
+     * note
+     * Name: addAPRefundServiceInfo
+     *************************************************************************** */
     addAPRefundServiceInfo: function (
         request,
         purchase,
@@ -951,8 +1131,8 @@ var CybersourceHelper = {
         note
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        setClientData(request, refCode);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
         request.apPaymentType = getPaymentType();
         request.apRefundService = new CybersourceHelper.csReference.APRefundService();
         request.apRefundService.captureRequestID = authCaptureID;
@@ -962,12 +1142,12 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * ap : AP_Object,
-	 * refCode     - Basket.UUID
-	 * Name: addAPInitiateServiceInfo
-	 *************************************************************************** */
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * ap : AP_Object,
+     * refCode     - Basket.UUID
+     * Name: addAPInitiateServiceInfo
+     *************************************************************************** */
     addAPInitiateServiceInfo: function (
         request,
         purchase,
@@ -975,18 +1155,18 @@ var CybersourceHelper = {
         refCode
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
-        request.ap = __copyAp(ap);
+        setClientData(request, refCode);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
+        request.ap = copyAp(ap);
         request.apPaymentType = getPaymentType();
         request.apInitiateService = new CybersourceHelper.csReference.APInitiateService();
         request.apInitiateService.run = true;
     },
 
     /** ***************************************************************************
-	 * Name: getPosMerchantID
-	 * Description: Returns Merchant ID.
-	 *************************************************************************** */
+     * Name: getPosMerchantID
+     * Description: Returns Merchant ID.
+     *************************************************************************** */
     getPosMerchantID: function (location) {
         var customObject = null;
         var merchantID = null;
@@ -999,14 +1179,14 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: apInitiateService
-	 * Description: Returns Alipay token, Set Request id and Request Token.
-	 * param : request, returnUrl , PurchaseTotals_Object, productName, productDescription, orderNo, alipayPaymentType
-	 *************************************************************************** */
+     * Name: apInitiateService
+     * Description: Returns Alipay token, Set Request id and Request Token.
+     * param : request, returnUrl , PurchaseTotals_Object, productName, productDescription, orderNo, alipayPaymentType
+     *************************************************************************** */
     apInitiateService: function (request, returnUrl, purchase, productName, productDescription, orderNo, alipayPaymentType) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, orderNo);
-        request.purchaseTotals = __copyPurchaseTotals(purchase);
+        setClientData(request, orderNo);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
         request.apPaymentType = alipayPaymentType;
         var endpoint = CybersourceHelper.getEndpoint();
         var testReconciliationID = CybersourceHelper.getTestAlipayReconciliationID();
@@ -1023,14 +1203,14 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: apBillingAgreementService
-	 * Description: Returns request ID, billing agreement ID
-	 * param : request, orderNo , requestID, paymentType
-	 *************************************************************************** */
+     * Name: apBillingAgreementService
+     * Description: Returns request ID, billing agreement ID
+     * param : request, orderNo , requestID, paymentType
+     *************************************************************************** */
     apBillingAgreementService: function (request, orderNo, requestID) {
-        var Logger = require('dw/system/Logger').getLogger('Cybersource');
+        // var Logger = require('dw/system/Logger').getLogger('Cybersource');
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, orderNo);
+        setClientData(request, orderNo);
         request.apPaymentType = 'PPL';
 
         var apBillingAgreementService = new CybersourceHelper.csReference.APBillingAgreementService();
@@ -1041,18 +1221,18 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: apCheckStatusService
-	 * Description: Returns Alipay token, Payment Status, Set Request id and Request Token.
-	 * param : request, orderNo , requestID, alipayPaymentType
-	 *************************************************************************** */
+     * Name: apCheckStatusService
+     * Description: Returns Alipay token, Payment Status, Set Request id and Request Token.
+     * param : request, orderNo , requestID, alipayPaymentType
+     *************************************************************************** */
     /** ***************************************************************************
-	 * Name: apCheckStatusService
-	 * Description: Returns Alipay token, Payment Status, Set Request id and Request Token.
-	 * param : request, orderNo , requestID, alipayPaymentType
-	 *************************************************************************** */
+     * Name: apCheckStatusService
+     * Description: Returns Alipay token, Payment Status, Set Request id and Request Token.
+     * param : request, orderNo , requestID, alipayPaymentType
+     *************************************************************************** */
     apCheckStatusService: function (request, orderNo, requestID, paymentType, reconciliationID) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, orderNo);
+        setClientData(request, orderNo);
         request.apPaymentType = paymentType;
         var endpoint = CybersourceHelper.getEndpoint();
         var apCheckStatusService = new CybersourceHelper.csReference.APCheckStatusService();
@@ -1067,7 +1247,7 @@ var CybersourceHelper = {
                 break;
             case 'WQR':
                 apCheckStatusService.apInitiateRequestID = requestID;
-                if (endpoint.equals('Test') && reconciliationID != 'SETTLED') {
+                if (endpoint.equals('Test') && reconciliationID !== 'SETTLED') {
                     apCheckStatusService.reconciliationID = reconciliationID;
                 }
                 break;
@@ -1079,13 +1259,13 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: payPalCaptureService
-	 * Description: Initiate the Capture for transactionId .
-	 *
-	 *************************************************************************** */
-    payPalCaptureService: function (request, paypalAuthorizationRequestToken, paypalAuthorizationRequestId, transactionType, transactionId, refCode) {
+     * Name: payPalCaptureService
+     * Description: Initiate the Capture for transactionId .
+     *
+     *************************************************************************** */
+    /* payPalCaptureService: function (request, paypalAuthorizationRequestToken, paypalAuthorizationRequestId, transactionType, transactionId, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
 
         var paypalCaptureService = new CybersourceHelper.csReference.PayPalDoCaptureService();
         paypalCaptureService.paypalAuthorizationId = transactionId;
@@ -1094,15 +1274,15 @@ var CybersourceHelper = {
         paypalCaptureService.paypalAuthorizationRequestToken = paypalAuthorizationRequestToken;
         request.payPalDoCaptureService = paypalCaptureService;
         request.payPalDoCaptureService.run = true;
-    },
+    }, */
     /** ***************************************************************************
-	 * Name: payPalReversalService
-	 * Description: Initiate the Reversal for transactionId .
-	 *
-	 *************************************************************************** */
+     * Name: payPalReversalService
+     * Description: Initiate the Reversal for transactionId .
+     *
+     *************************************************************************** */
     payPalReversalService: function (request, transactionId, requestId, requestToken, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(request, refCode);
+        setClientData(request, refCode);
         var payPalAuthReversalService = new CybersourceHelper.csReference.PayPalAuthReversalService();
         payPalAuthReversalService.paypalAuthorizationId = transactionId;
         payPalAuthReversalService.paypalAuthorizationRequestID = requestId;
@@ -1112,10 +1292,10 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: payPalRefund/CreditService
-	 * Description: Initiate the Refund/Credit for transactionId .
-	 *
-	 *************************************************************************** */
+     * Name: payPalRefund/CreditService
+     * Description: Initiate the Refund/Credit for transactionId .
+     *
+     *************************************************************************** */
     payPalRefundService: function (request, merchantRefCode, requestId, paymentType) {
         var payPalRefundService = new CybersourceHelper.csReference.APRefundService();
         payPalRefundService.refundRequestID = requestId;
@@ -1125,40 +1305,41 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: payPalReversalService
-	 * Description: Initiate the Reversal for transactionId .
-	 *
-	 *************************************************************************** */
+     * Name: payPalReversalService
+     * Description: Initiate the Reversal for transactionId .
+     *
+     *************************************************************************** */
     payPalAuthReversalService: function (request, merchantRefCode, requestId, paymentType) {
-    	var apAuthReversalService = new CybersourceHelper.csReference.APAuthReversalService();
+        var apAuthReversalService = new CybersourceHelper.csReference.APAuthReversalService();
         apAuthReversalService.authRequestID = requestId;
         request.apAuthReversalService = apAuthReversalService;
-    	request.apPaymentType = paymentType;
+        request.apPaymentType = paymentType;
         request.apAuthReversalService.run = true;
     },
 
     /** ***************************************************************************
-	 * Name: payPalCaptureService
-	 * Description: Initiate the Capture for transactionId .
-	 *
-	 *************************************************************************** */
+     * Name: payPalCaptureService
+     * Description: Initiate the Capture for transactionId .
+     *
+     *************************************************************************** */
     payPalCaptureService: function (request, merchantRefCode, requestId, paymentType) {
-    	var apCaptureService = new CybersourceHelper.csReference.APCaptureService();
-    	apCaptureService.authRequestID = requestId;
+        var apCaptureService = new CybersourceHelper.csReference.APCaptureService();
+        apCaptureService.authRequestID = requestId;
         request.apCaptureService = apCaptureService;
-    	request.apPaymentType = paymentType;
+        request.apPaymentType = paymentType;
         request.apCaptureService.run = true;
     },
 
     /** ***************************************************************************
-	 * request  ,
-	 * purchase : PurchaseTotals_Object,
-	 * refCode     - Basket.UUID
-	 * Name: addCCAuthReversalServiceInfo
-	 **************************************************************************** */
-    addCCAuthReversalServiceInfo: function (serviceRequest, refCode, requestID) {
-    	serviceRequest.merchantID = CybersourceHelper.getMerchantID();
-        __setClientData(serviceRequest, refCode);
+     * request  ,
+     * purchase : PurchaseTotals_Object,
+     * refCode     - Basket.UUID
+     * Name: addCCAuthReversalServiceInfo
+     **************************************************************************** */
+    addCCAuthReversalServiceInfo: function (serviceRequestObj, refCode, requestID) {
+        var serviceRequest = serviceRequestObj;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+        setClientData(serviceRequest, refCode);
         var ccAuthReversalService = new CybersourceHelper.csReference.CCAuthReversalService();
         ccAuthReversalService.authRequestID = requestID;
         serviceRequest.ccAuthReversalService = ccAuthReversalService;
@@ -1166,12 +1347,12 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: ccCaptureService
-	 * Description: Initiate the Capture for Credit Cards.
-	 *
-	 *************************************************************************** */
+     * Name: ccCaptureService
+     * Description: Initiate the Capture for Credit Cards.
+     *
+     *************************************************************************** */
     ccCaptureService: function (request, merchantRefCode, requestId, paymentType) {
-    	var ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+        var ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
         ccCaptureService.authRequestID = requestId;
         request.ccCaptureService = ccCaptureService;
         request.paymentSolution = paymentType;
@@ -1179,7 +1360,7 @@ var CybersourceHelper = {
     },
 
     ccCreditService: function (request, merchantRefCode, requestId, paymentType) {
-    	var ccCreditService = new CybersourceHelper.csReference.CCCreditService();
+        var ccCreditService = new CybersourceHelper.csReference.CCCreditService();
         ccCreditService.captureRequestID = requestId;
         request.ccCreditService = ccCreditService;
         request.paymentSolution = paymentType;
@@ -1187,10 +1368,10 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: aliPayRefund/CreditService
-	 * Description: Initiate the Refund/Credit for transactionId .
-	 *	5446045635766630804009
-	 *************************************************************************** */
+     * Name: aliPayRefund/CreditService
+     * Description: Initiate the Refund/Credit for transactionId .
+     *    5446045635766630804009
+     *************************************************************************** */
     aliPayRefundService: function (request, requestId, paymentType) {
         var aliPayRefundService = new CybersourceHelper.csReference.APRefundService();
         aliPayRefundService.apInitiateRequestID = requestId;
@@ -1200,182 +1381,65 @@ var CybersourceHelper = {
     },
 
     /** ***************************************************************************
-	 * Name: banktransferRefundService/CreditService
-	 * Description: Initiate the Refund/Credit for transactionId .
-	 *
-	 *************************************************************************** */
+     * Name: banktransferRefundService/CreditService
+     * Description: Initiate the Refund/Credit for transactionId .
+     *
+     *************************************************************************** */
     banktransferRefundService: function (request, merchantRefCode, requestId, paymentType) {
         var banktransferRefundService = new CybersourceHelper.csReference.APRefundService();
         banktransferRefundService.refundRequestID = requestId;
         request.apRefundService = banktransferRefundService;
         request.apPaymentType = paymentType;
         request.apRefundService.run = true;
+    },
+    
+     /** ***************************************************************************
+     * Name: DecisionManager
+     * Description: DecisionManagerService.
+     *
+     *************************************************************************** */
+    apDecisionManagerService: function (request, billTo, shipTo, purchase, refCode, enableDeviceFingerprint, itemsCybersource) {
+        request.merchantID = CybersourceHelper.getMerchantID();
+        var fingerprint = null;
+        if (enableDeviceFingerprint) {
+            fingerprint = session.sessionID;
+        }
+
+        setClientData(request, refCode, fingerprint);
+        if (billTo !== null) {
+            request.billTo = copyBillTo(billTo);
+        }
+        request.shipTo = copyShipTo(shipTo);
+        request.purchaseTotals = copyPurchaseTotals(purchase);
+        var items = [];
+        if (itemsCybersource !== null) {
+            var iter = itemsCybersource.iterator();
+            while (iter.hasNext()) {
+                items.push(copyItemFrom(iter.next()));
+            }
+        }
+
+        request.item = items;
+
+        request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+        if (CybersourceHelper.getCardDecisionManagerEnable()) {
+            request.decisionManager.enabled = true;
+        } else {
+            request.decisionManager.enabled = false;
+        }
+        // CMCIC
+        request.afsService = new CybersourceHelper.csReference.AFSService();
+        request.afsService.run = true;
     }
 };
 
-// Helper method to export the helper
-function getCybersourceHelper() {
-    return CybersourceHelper;
-}
-
-function __setClientData(request, refCode, fingerprint) {
-    request.merchantReferenceCode = refCode;
-    request.partnerSolutionID = getCybersourceHelper().getPartnerSolutionID();
-    var developerID = getCybersourceHelper().getDeveloperID();
-    var Resource = require('dw/web/Resource');
-    if (!empty(developerID)) {
-        request.developerID = developerID;
-    }
-    request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '21.1.0';
-    request.clientEnvironment = 'Linux';
-    request.partnerSDKversion = Resource.msg('global.version.number', 'version', null);
-    request.clientApplicationVersion = 'SFRA';
-    if (fingerprint) {
-        request.deviceFingerprintID = fingerprint;
-    }
-}
-
-function __copyBillTo(billTo) {
-    var request_billTo = new CybersourceHelper.csReference.BillTo();
-    var value;
-    for (var name in billTo) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = billTo[name];
-            if (value !== '') {
-                request_billTo[name] = value;
-            }
-        }
-    }
-    return request_billTo;
-}
-
-function __copyShipTo(shipTo) {
-    var request_shipTo = new CybersourceHelper.csReference.ShipTo();
-    var value;
-    for (var name in shipTo) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = shipTo[name];
-            if (value !== '') {
-                request_shipTo[name] = value;
-            }
-        }
-    }
-    return request_shipTo;
-}
-
-function __copyPurchaseTotals(purchase) {
-    var request_purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
-    var value;
-    for (var name in purchase) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = purchase[name];
-            if (value !== '') {
-                request_purchaseTotals[name] = value;
-            }
-        }
-    }
-    return request_purchaseTotals;
-}
-
-function __copyCreditCard(card) {
-    var request_card = new CybersourceHelper.csReference.Card();
-    var value;
-    for (var name in card) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1 && name.indexOf('CardToken') === -1) {
-            value = card[name];
-            if (value !== '') {
-                request_card[name] = value;
-            }
-        }
-    }
-    return request_card;
-}
-
-function __copyItemFrom(item) {
-    var request_item = new CybersourceHelper.csReference.Item();
-    var value;
-    for (var name in item) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = item[name];
-            if (value !== '') {
-                request_item[name] = value;
-            }
-        }
-    }
-    return request_item;
-}
-
-function __copyTaxAmounts(_taxReply) {
-    var taxReply = {};
-    var value;
-    for (var name in _taxReply) {
-        if (name.indexOf('Amount') > -1) {
-            value = _taxReply[name];
-            taxReply[name] = value;
-        }
-    }
-    return taxReply;
-}
-
-function __copyAp(ap) {
-    var request_ap = new CybersourceHelper.csReference.apPayer();
-    var value;
-    for (var name in ap) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = ap[name];
-            if (value !== '') {
-                request_ap[name] = value;
-            }
-        }
-    }
-    return request_ap;
-}
-
-function getPaymentType() {
-    return 'vme';
-}
-
-function __copyPos(pos) {
-    var request_pos = new CybersourceHelper.csReference.Pos();
-    var value;
-    for (var name in pos) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = pos[name];
-            if (value !== '') {
-                request_pos[name] = value;
-            }
-        }
-    }
-    return request_pos;
-}
-
-function getTransactionMode(deviceType) {
-    var transactionMode;
-    switch (deviceType) {
-        case 'desktop':
-            transactionMode = 'S';
-            break;
-        case 'mobile':
-            transactionMode = 'P';
-            break;
-        case 'tablet':
-            transactionMode = 'T';
-            break;
-        default:
-            transactionMode = 'S';
-            break;
-    }
-    return transactionMode;
-}
-
 module.exports = {
     getCybersourceHelper: getCybersourceHelper,
-    copyTaxAmounts: __copyTaxAmounts,
-    setClientData: __setClientData,
-    copyPurchaseTotals: __copyPurchaseTotals,
-    copyBillTo: __copyBillTo,
-    copyShipTo: __copyShipTo,
-    copyItemFrom: __copyItemFrom,
-    copyCard: __copyCreditCard
+    copyTaxAmounts: copyTaxAmounts,
+    setClientData: setClientData,
+    copyPurchaseTotals: copyPurchaseTotals,
+    copyBillTo: copyBillTo,
+    copyShipTo: copyShipTo,
+    copyItemFrom: copyItemFrom,
+    copyCard: copyCreditCard
 };

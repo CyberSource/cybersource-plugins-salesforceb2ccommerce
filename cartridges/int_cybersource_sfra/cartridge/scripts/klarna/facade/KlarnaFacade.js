@@ -1,15 +1,20 @@
 'use strict';
 
 /* API includes */
-var Logger = dw.system.Logger.getLogger('Cybersource');
+// var Logger = dw.system.Logger.getLogger('Cybersource');
 
 /**
-* This script call service to initiate payment for Klarna and
-* set the response in response object. also handles the logging
-* of different error scenarios while making service call.
-* */
+
+*/
+/**
+ * This script call service to initiate payment for Klarna and
+ * set the response in response object. also handles the logging
+ * of different error scenarios while making service call.
+ * @param {*} request comment
+ * @returns {*} obj
+ */
 function KlarnaServiceInterface(request) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    // var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // calling the service by passing klarna request
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
@@ -19,13 +24,19 @@ function KlarnaServiceInterface(request) {
 }
 
 /*
-* This method sets the request object with values required
-* in session service of klarna
+
 */
+/**
+ * This method sets the request object with values required
+ * in session service of klarna
+ * @param {*} sessionObject comment
+ * @returns {*} obj
+ */
 function klarnaInitSessionService(sessionObject) {
     // declare variables for libcybersource and helper
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
@@ -46,8 +57,9 @@ function klarnaInitSessionService(sessionObject) {
     }
     // set item object
     var items = [];
+    // eslint-disable-next-line
     if (!empty(sessionObject.items)) {
-        var iter : dw.util.Iterator = sessionObject.items.iterator();
+        var iter = sessionObject.items.iterator();
         while (iter.hasNext()) {
             items.push(libCybersource.copyItemFrom(iter.next()));
         }
@@ -67,10 +79,16 @@ function klarnaInitSessionService(sessionObject) {
     return response;
 }
 
+/**
+ * klarnaUpdateSessionService
+ * @param {*} sessionObject comment
+ * @returns {*} obj
+ */
 function klarnaUpdateSessionService(sessionObject) {
     // declare variables for libcybersource and helper
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
@@ -92,8 +110,9 @@ function klarnaUpdateSessionService(sessionObject) {
     }
     // set item object
     var items = [];
+    // eslint-disable-next-line
     if (!empty(sessionObject.items)) {
-        var iter : dw.util.Iterator = sessionObject.items.iterator();
+        var iter = sessionObject.items.iterator();
         while (iter.hasNext()) {
             items.push(libCybersource.copyItemFrom(iter.next()));
         }
@@ -106,6 +125,7 @@ function klarnaUpdateSessionService(sessionObject) {
     if (sessionObject.billTo != null && sessionObject.shipTo != null) {
         apSessionsService.sessionsType = 'U';
     }
+    // eslint-disable-next-line
     apSessionsService.sessionsRequestID = session.privacy.requestID;
     request.apSessionsService = apSessionsService;
     request.apSessionsService.run = true;
@@ -117,13 +137,19 @@ function klarnaUpdateSessionService(sessionObject) {
 }
 
 /*
-* This method set the request object with values required
-* in authorization service of klarna
+
 */
+/**
+ * This method set the request object with values required
+ * in authorization service of klarna
+ * @param {*} authorizationObject comment
+ * @returns {*} obj
+ */
 function klarnaAuthorizationService(authorizationObject) {
     // declare variables for libcybersource and helper
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
@@ -146,8 +172,9 @@ function klarnaAuthorizationService(authorizationObject) {
     }
     // set item object
     var items = [];
+    // eslint-disable-next-line
     if (!empty(authorizationObject.items)) {
-        var iter : dw.util.Iterator = authorizationObject.items.iterator();
+        var iter = authorizationObject.items.iterator();
         while (iter.hasNext()) {
             items.push(libCybersource.copyItemFrom(iter.next()));
         }
@@ -158,6 +185,7 @@ function klarnaAuthorizationService(authorizationObject) {
     decisionManager.enabled = authorizationObject.decisionManagerRequired;
     // set client data
     if (decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()) {
+        // eslint-disable-next-line
         libCybersource.setClientData(request, authorizationObject.orderNo, session.sessionID);
     } else {
         libCybersource.setClientData(request, authorizationObject.orderNo);

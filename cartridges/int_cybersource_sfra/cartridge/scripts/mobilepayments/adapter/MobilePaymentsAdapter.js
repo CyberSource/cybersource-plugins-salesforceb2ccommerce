@@ -31,6 +31,7 @@ function processPayment(order) {
             MobilePaymentType: result.MobilePaymentType
         };
         var Bytes = require('dw/util/Bytes');
+        // eslint-disable-next-line
         if (!empty(result.PaymentData)) {
             paymentAPIRequestParams.data = require('dw/crypto/Encoding').toBase64(new Bytes(JSON.stringify(result.PaymentData)));
             result.ServiceResponse = MobilePaymentFacade.mobilePaymentAuthRequest(paymentAPIRequestParams);
@@ -55,9 +56,11 @@ function processPayment(order) {
         }
 
         //  Save fraud response to session.
+        // eslint-disable-next-line
         if (!empty(result.ServiceResponse.serviceResponse) && !empty(result.ServiceResponse.serviceResponse.Decision)) {
             var Transaction = require('dw/system/Transaction');
             Transaction.wrap(function () {
+                // eslint-disable-next-line
                 session.privacy.CybersourceFraudDecision = result.ServiceResponse.serviceResponse.Decision;
             });
         }
@@ -75,12 +78,12 @@ function processPaymentGP(order) {
     var Resource = require('dw/web/Resource');
     var Logger = require('dw/system/Logger').getLogger('Cybersource');
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    var MobilePaymentHelper = require('../helper/MobilePaymentsHelper');
     var result = MobilePaymentHelper.validateMobilePaymentRequest(order);
     /* Script Modules */
 
     var ERRORCODE;
     var ERRORMSG;
-    var MobilePaymentHelper = require('../helper/MobilePaymentsHelper');
     var MobilePaymentFacade = require('../facade/MobilePaymentFacade');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var paymentAPIRequestParams = {
@@ -89,9 +92,11 @@ function processPaymentGP(order) {
         IPAddress: CommonHelper.getIPAddress(),
         MobilePaymentType: CybersourceConstants.METHOD_GooglePay
     };
-    var Bytes = require('dw/util/Bytes');
+    // var Bytes = require('dw/util/Bytes');
+    // eslint-disable-next-line
     if (!empty(result.PaymentData)) {
-        	paymentAPIRequestParams.data = session.privacy.encryptedDataGP;
+        // eslint-disable-next-line
+        paymentAPIRequestParams.data = session.privacy.encryptedDataGP;
         // paymentAPIRequestParams.data = require('dw/crypto/Encoding').toBase64(new Bytes(JSON.stringify(result.PaymentData)));
         result.ServiceResponse = MobilePaymentFacade.mobilePaymentAuthRequest(paymentAPIRequestParams);
     }
@@ -107,9 +112,11 @@ function processPaymentGP(order) {
     }
 
     //  Save fraud response to session.
+    // eslint-disable-next-line
     if (!empty(result.ServiceResponse.serviceResponse) && !empty(result.ServiceResponse.serviceResponse.Decision)) {
         var Transaction = require('dw/system/Transaction');
         Transaction.wrap(function () {
+            // eslint-disable-next-line
             session.privacy.CybersourceFraudDecision = result.ServiceResponse.serviceResponse.Decision;
         });
     }
@@ -118,8 +125,9 @@ function processPaymentGP(order) {
 
 /**
  * Update shipping details in cart object
+ * @param {Object} shippingDetails shippingDetails
+ * @returns {Object} obj
  */
-
 function UpdateShipping(shippingDetails) {
     var BasketMgr = require('dw/order/BasketMgr');
     var ShippingMgr = require('dw/order/ShippingMgr');
@@ -130,10 +138,12 @@ function UpdateShipping(shippingDetails) {
     var logger = require('dw/system/Logger');
     var Resource = require('dw/web/Resource');
 
+    // eslint-disable-next-line
     if (!empty(shipment.getShippingAddress())) {
         return { success: true };
     }
     try {
+        // eslint-disable-next-line
         Transaction.wrap(function () {
             // Create or replace the shipping address
             shippingAddress = shipment.createShippingAddress();
@@ -143,12 +153,12 @@ function UpdateShipping(shippingDetails) {
             if (!shippingAddress.success) {
                 return shippingAddress;
             }
-		    // Set shipping method to default if not already set
+            // Set shipping method to default if not already set
             if (shipment.shippingMethod === null) {
                 shipment.setShippingMethod(ShippingMgr.getDefaultShippingMethod());
             }
         });
-		    return { success: true };
+        return { success: true };
     } catch (err) {
         logger.error('Error creating shipment from Google Pay address: {0}', err.message);
         return { error: true, errorMsg: Resource.msg('visaCheckout.shippingUpdate.prepareShipments', 'cybersource', null) };
@@ -157,12 +167,15 @@ function UpdateShipping(shippingDetails) {
 
 /**
  * Update billing details in cart object
+ * @param {Object} Basket Basket
+ * @param {Object} GPCheckoutPaymentData GPCheckoutPaymentData
+ * @param {Object} email email
+ * @returns {Object} obj
  */
-
 function UpdateBilling(Basket, GPCheckoutPaymentData, email) {
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    // var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var Site = require('dw/system/Site');
+    // var Site = require('dw/system/Site');
     var Transaction = require('dw/system/Transaction');
     var Resource = require('dw/web/Resource');
     var PaymentMgr = require('dw/order/PaymentMgr');
@@ -172,35 +185,35 @@ function UpdateBilling(Basket, GPCheckoutPaymentData, email) {
     var logger = require('dw/system/Logger');
 
     try {
-        var i = PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.googlepay', 'cybersource', null));
+        // var i = PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.googlepay', 'cybersource', null));
         if (PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.googlepay', 'cybersource', null)).isActive()) {
             var basket = BasketMgr.getCurrentOrNewBasket();
             // Retrieve the inputs
+            // eslint-disable-next-line
             if (!empty(Basket)) {
                 Transaction.wrap(function () {
-		    		CommonHelper.removeExistingPaymentInstruments(basket);
-		    		// removeExistingPaymentInstruments(basket,CybersourceConstants.METHOD_AndroidPay);
-		        });
+                    CommonHelper.removeExistingPaymentInstruments(basket);
+                    // removeExistingPaymentInstruments(basket,CybersourceConstants.METHOD_AndroidPay);
+                });
                 PaymentInstrumentUtils.updatePaymentInstrumentGP(Basket, GPCheckoutPaymentData, email);
                 result.success = true;
             } else {
-		    	// if basket/basketUUID/encryptedPaymentData/encryptedPaymentWrappedKey/callId is empty
-		    	// or basketUUID not equal to signature
-		    	logger.error('basket is empty');
-		    	result.error = true;
-	    	}
+                // if basket/basketUUID/encryptedPaymentData/encryptedPaymentWrappedKey/callId is empty
+                // or basketUUID not equal to signature
+                logger.error('basket is empty');
+                result.error = true;
+            }
         } else {
             // if payment method not Visa
             logger.error('payment method not Visa');
             result.error = true;
         }
     } catch (err) {
-        var i = err.message;
+        // var i = err.message;
         logger.error('Error creating Google Checkout payment instrument: {0}', err.message);
         result.error = true;
-    } finally {
-        return result;
     }
+    return result;
 }
 
 // Module.exports

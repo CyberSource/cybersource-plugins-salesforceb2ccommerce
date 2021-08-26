@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 /**
@@ -19,9 +20,10 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 /**
  * Index page with links to test individual services.
  */
+// eslint-disable-next-line
 server.get('Index', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
@@ -33,13 +35,14 @@ server.get('Index', server.middleware.https, function (req, res, next) {
 /**
  * Page displays results for all unit test cases executed in series
  */
+// eslint-disable-next-line
 server.get('RunTests', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
-    var ResultsArray = new Array();
+    var ResultsArray = [];
     var paymentType = 'CC';
     var currency = 'USD';
     var requestID; var merchantRefCode; var paymentTotal;
@@ -51,27 +54,27 @@ server.get('RunTests', server.middleware.https, function (req, res, next) {
     // Unit test CC capture
 
     if (TestCCAuth1.success) {
-	     requestID = TestCCAuth1.response.RequestID;
-		 merchantRefCode = TestCCAuth1.response.MerchantReferenceCode;
-		 paymentTotal = TestCCAuth1.response.AuthorizationAmount;
+        requestID = TestCCAuth1.response.RequestID;
+        merchantRefCode = TestCCAuth1.response.MerchantReferenceCode;
+        paymentTotal = TestCCAuth1.response.AuthorizationAmount;
 
-	     var TestCCCapture1 = UnitTestHelper.TestCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
-	     ResultsArray.push(TestCCCapture1);
+        var TestCCCapture1 = UnitTestHelper.TestCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+        ResultsArray.push(TestCCCapture1);
 
-	    // Unit test CC Credit
-	    requestID = TestCCCapture1.response.requestID;
-	    var TestCCCredit = UnitTestHelper.TestCreditService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
-	    ResultsArray.push(TestCCCredit);
+        // Unit test CC Credit
+        requestID = TestCCCapture1.response.requestID;
+        var TestCCCredit = UnitTestHelper.TestCreditService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+        ResultsArray.push(TestCCCredit);
 
-	    // Unit test CC Auth for Reversal
-	    var TestCCAuth2 = UnitTestHelper.TestCCAuth();
-	    requestID = TestCCAuth2.response.RequestID;
+        // Unit test CC Auth for Reversal
+        var TestCCAuth2 = UnitTestHelper.TestCCAuth();
+        requestID = TestCCAuth2.response.RequestID;
         merchantRefCode = TestCCAuth2.response.MerchantReferenceCode;
         paymentTotal = TestCCAuth2.response.AuthorizationAmount;
 
         // Unit test CC auth Reverse
-	    var TestCCAuthReverse = UnitTestHelper.TestAuthReversal(requestID, merchantRefCode, paymentType, paymentTotal, currency);
-	    ResultsArray.push(TestCCAuthReverse);
+        var TestCCAuthReverse = UnitTestHelper.TestAuthReversal(requestID, merchantRefCode, paymentType, paymentTotal, currency);
+        ResultsArray.push(TestCCAuthReverse);
     }
 
     // Unit test for taxation service
@@ -95,9 +98,10 @@ server.get('RunTests', server.middleware.https, function (req, res, next) {
  * Controller function to unit test the credit card authorization service.
  * With the hard coded data.
  */
+// eslint-disable-next-line
 server.get('TestCCAuth', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
@@ -129,7 +133,7 @@ server.get('TestCCAuth', server.middleware.https, function (req, res, next) {
             }
         }
     } else {
-        res.render('common/scripterror', {
+        res.render('common/scriptError', {
             log: !empty(result.errorMsg) ? result.errorMsg : 'System Exception occured contact administrator'
         });
         next();
@@ -139,9 +143,10 @@ server.get('TestCCAuth', server.middleware.https, function (req, res, next) {
 /**
  * Controller function to unit test the tax service with hard coded data.
  */
+// eslint-disable-next-line
 server.get('TestTax', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
@@ -154,7 +159,7 @@ server.get('TestTax', server.middleware.https, function (req, res, next) {
             taxResponse: taxResponse
         });
     } else {
-        res.render('common/scripterror', {
+        res.render('common/scriptError', {
             log: !empty(result.errorMsg) ? result.errorMsg : 'System Exception occured contact administrator'
         });
     }
@@ -164,19 +169,20 @@ server.get('TestTax', server.middleware.https, function (req, res, next) {
 /**
  * Renders Test Capture Service Form.
  */
+// eslint-disable-next-line
 server.get('TestCaptureService', function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
     // check if service parameter not available,display form
     if (empty(request.httpParameterMap.service.stringValue)) {
-        session.forms.generictestinterfaceform.clearFormElement();
-        var captureServiceForm = server.forms.getForm('generictestinterfaceform');
+        session.forms.genericTestInterfaceForm.clearFormElement();
+        var captureServiceForm = server.forms.getForm('genericTestInterfaceForm');
         // render the refund service form
-        res.render('services/captureserviceform', {
+        res.render('services/captureServiceForm', {
             captureServiceForm: captureServiceForm,
             continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CaptureService').toString()
         });
@@ -189,52 +195,58 @@ server.get('TestCaptureService', function (req, res, next) {
  */
 server.post('CaptureService', function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
     // get all the forms in session
-    var requestID = session.forms.generictestinterfaceform.authRequestID.htmlValue;
-    var merchantRefCode = session.forms.generictestinterfaceform.merchantReferenceCode.htmlValue;
-    var paymentType = session.forms.generictestinterfaceform.capturepaymenttype.htmlValue;
-    var paymentTotal = session.forms.generictestinterfaceform.grandtotalamount.value;
-    var currency = session.forms.generictestinterfaceform.currency.value;
+    var requestID = session.forms.genericTestInterfaceForm.authRequestID.htmlValue;
+    var merchantRefCode = session.forms.genericTestInterfaceForm.merchantReferenceCode.htmlValue;
+    var paymentType = session.forms.genericTestInterfaceForm.capturepaymenttype.htmlValue;
+    var paymentTotal = session.forms.genericTestInterfaceForm.grandtotalamount.value;
+    var currency = session.forms.genericTestInterfaceForm.currency.value;
     var serviceResponse; var captureReply; var
         captureReplyTitle;
     // capture the refund service response from test facade
-    if (paymentType == 'CC') {
+    if (paymentType === 'CC') {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         captureReplyTitle = 'Credit card Capture Reply';
         captureReply = 'ccCaptureReply';
-    } else if (paymentType == 'visacheckout') {
-        var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+    } else if (paymentType === 'visacheckout') {
+        var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
         var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
         captureReplyTitle = 'VisaCheckout Capture Reply';
         captureReply = 'ccCaptureReply';
-    } else if (paymentType == 'PPL') {
+    } else if (paymentType === 'KLI' || paymentType === 'PPL') {
         var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
-        captureReplyTitle = 'PayPal Capture Reply';
+        if (paymentType === 'PPL') {
+            captureReplyTitle = 'PayPal Capture Reply';
+        }
+        if (paymentType === 'KLI') {
+            captureReplyTitle = 'Klarna Capture Reply';
+        }
         captureReply = 'apCaptureReply';
-    } else if (paymentType == 'googlepay') {
-        // var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+        
+    } else if (paymentType === 'googlepay') {
+        // var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
         var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         captureReplyTitle = 'GooglePay Capture Reply';
     }
-    session.forms.generictestinterfaceform.clearFormElement();
+    session.forms.genericTestInterfaceForm.clearFormElement();
     if (!empty(serviceResponse)) {
-        res.render('services/transactionresult', {
+        res.render('services/transactionResult', {
             serviceReply: captureReply,
             response: serviceResponse,
             msgHeader: captureReplyTitle
         });
         return next();
     }
-    res.render('custom/scripterror', {
+    res.render('custom/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
@@ -245,15 +257,15 @@ server.post('CaptureService', function (req, res, next) {
  */
 server.get('TestCreditService', function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
-    session.forms.generictestinterfaceform.clearFormElement();
-    var creditServiceForm = server.forms.getForm('generictestinterfaceform');
+    session.forms.genericTestInterfaceForm.clearFormElement();
+    var creditServiceForm = server.forms.getForm('genericTestInterfaceForm');
     // render the refund service form
-    res.render('services/cccreditserviceform', {
+    res.render('services/CCCreditServiceForm', {
         creditServiceForm: creditServiceForm,
         continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CreditService').toString()
     });
@@ -265,69 +277,68 @@ server.get('TestCreditService', function (req, res, next) {
  */
 server.post('CreditService', function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
     // capture the refund service response from test facade
-    var requestID = session.forms.generictestinterfaceform.authRequestID.htmlValue;
-    var merchantRefCode = session.forms.generictestinterfaceform.merchantReferenceCode.htmlValue;
-    var paymentType = session.forms.generictestinterfaceform.refundpaymenttype.htmlValue;
-    var paymentTotal = session.forms.generictestinterfaceform.grandtotalamount.value;
-    var currency = session.forms.generictestinterfaceform.currency.value;
+    var requestID = session.forms.genericTestInterfaceForm.authRequestID.htmlValue;
+    var merchantRefCode = session.forms.genericTestInterfaceForm.merchantReferenceCode.htmlValue;
+    var paymentType = session.forms.genericTestInterfaceForm.refundpaymenttype.htmlValue;
+    var paymentTotal = session.forms.genericTestInterfaceForm.grandtotalamount.value;
+    var currency = session.forms.genericTestInterfaceForm.currency.value;
     var serviceResponse; var refundReply; var
         creditReplyTitle;
+    var AliPayFacade = require('~/cartridge/scripts/alipay/facade/AlipayFacade');
+    var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
 
-    if (paymentType == 'CC') {
+    if (paymentType === 'CC') {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         creditReplyTitle = 'Credit card Credit/Refund Reply';
         refundReply = 'ccCreditReply';
-    } else if (paymentType == 'visacheckout') {
-        var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+    } else if (paymentType === 'visacheckout') {
         var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
         creditReplyTitle = 'VisaCheckout Credit/Refund Reply';
         refundReply = 'ccCreditReply';
-    } else if (paymentType == 'PPL') {
+    } else if (paymentType === 'KLI' || paymentType === 'PPL') {
         var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         creditReplyTitle = 'PayPal Credit/Refund Reply';
         refundReply = 'apRefundReply';
         creditReplyTitle = 'VisaCheckout Credit Reply';
-    } else if (paymentType == 'googlepay') {
+    } else if (paymentType === 'googlepay') {
         var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
         creditReplyTitle = 'GooglePay Credit Reply';
-    } else if (paymentType == 'APY') {
-        var AliPayFacade = require('~/cartridge/scripts/alipay/facade/AlipayFacade');
+    } else if (paymentType === 'APY') {
         serviceResponse = AliPayFacade.AliPayRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         reversalReplyTitle = 'AliPay Credit/Refund Reply';
         refundReply = 'apRefundReply';
-    } else if (paymentType == 'MCH' || paymentType == 'IDL' || paymentType == 'SOF') {
+    } else if (paymentType === 'MCH' || paymentType === 'IDL' || paymentType === 'SOF') {
         var BanktransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
         serviceResponse = BanktransferFacade.BanktransferRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         creditReplyTitle = 'Banktransfer Credit/Refund Reply';
         refundReply = 'apRefundReply';
-    } else if (paymentType == 'APY') {
-        var AliPayFacade = require('~/cartridge/scripts/alipay/facade/AlipayFacade');
+    } else if (paymentType === 'APY') {
         serviceResponse = AliPayFacade.AliPayRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         reversalReplyTitle = 'AliPay Credit/Refund Reply';
         refundReply = 'apRefundReply';
     }
 
-    session.forms.generictestinterfaceform.clearFormElement();
+    session.forms.genericTestInterfaceForm.clearFormElement();
 
     if (!empty(serviceResponse)) {
-        res.render('services/transactionresult', {
+        res.render('services/transactionResult', {
             serviceReply: refundReply,
             response: serviceResponse,
             msgHeader: creditReplyTitle
         });
         return next();
     }
-    res.render('custom/scripterror', {
+    res.render('custom/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
@@ -338,14 +349,14 @@ server.post('CreditService', function (req, res, next) {
  */
 server.get('TestAuthReversal', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
-    var authReversalServiceForm = server.forms.getForm('generictestinterfaceform');
+    var authReversalServiceForm = server.forms.getForm('genericTestInterfaceForm');
     authReversalServiceForm.clear();
-    res.render('services/authreversalform', {
+    res.render('services/authReversalForm', {
         authreversalform: authReversalServiceForm
     });
     return next();
@@ -356,38 +367,42 @@ server.get('TestAuthReversal', server.middleware.https, function (req, res, next
  */
 server.post('CCAuthReversalService', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
     // get all the forms in session
-    var requestID = session.forms.generictestinterfaceform.authRequestID.htmlValue;
-    var merchantRefCode = session.forms.generictestinterfaceform.merchantReferenceCode.htmlValue;
-    var paymentType = session.forms.generictestinterfaceform.authreversalpaymenttype.htmlValue;
-    var currency = session.forms.generictestinterfaceform.currency.htmlValue;
-    var amount = session.forms.generictestinterfaceform.grandtotalamount.value;
+    var requestID = session.forms.genericTestInterfaceForm.authRequestID.htmlValue;
+    var merchantRefCode = session.forms.genericTestInterfaceForm.merchantReferenceCode.htmlValue;
+    var paymentType = session.forms.genericTestInterfaceForm.authreversalpaymenttype.htmlValue;
+    var currency = session.forms.genericTestInterfaceForm.currency.htmlValue;
+    var amount = session.forms.genericTestInterfaceForm.grandtotalamount.value;
     var serviceResponse; var reversalReply; var
         reversalReplyTitle;
+    var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
     // capture the refund service response from test facade
-    if (paymentType == 'CC') {
+    if (paymentType === 'CC') {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
         reversalReplyTitle = 'Credit card Reversal Reply';
         reversalReply = 'ccAuthReversalReply';
-    } else if (paymentType == 'visacheckout') {
-        var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+    } else if (paymentType === 'visacheckout') {
         var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid);
         reversalReplyTitle = 'VisaCheckout Reversal Reply';
         reversalReply = 'ccAuthReversalReply';
-    } else if (paymentType == 'PPL') {
+    } else if (paymentType === 'KLI' || paymentType === 'PPL') {
         var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
-		    serviceResponse = PayPalFacade.PayPalReversalService(requestID, merchantRefCode, paymentType, amount, currency);
-		    reversalReplyTitle = 'PayPal Reversal Reply';
-		    reversalReply = 'apAuthReversalReply';
-    } else if (paymentType == 'googlepay') {
-        var orderid = session.forms.generictestinterfaceform.orderRequestID.value;
+        serviceResponse = PayPalFacade.PayPalReversalService(requestID, merchantRefCode, paymentType, amount, currency);
+        if (paymentType === 'PPL') {
+            reversalReplyTitle = 'PayPal Reversal Reply';
+        }
+        if (paymentType === 'KLI') {
+            reversalReplyTitle = 'Klarna Reversal Reply';
+        }
+        reversalReply = 'apAuthReversalReply';
+    } else if (paymentType === 'googlepay') {
         var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
         reversalReplyTitle = 'Googlepay Reversal Reply';
@@ -395,14 +410,14 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
 
     if (!empty(serviceResponse)) {
         // display the result page
-    	res.render('services/transactionresult', {
-    		serviceReply: reversalReply,
-    		response: serviceResponse,
-    		msgHeader: reversalReplyTitle
+        res.render('services/transactionResult', {
+            serviceReply: reversalReply,
+            response: serviceResponse,
+            msgHeader: reversalReplyTitle
         });
-    	return next();
+        return next();
     }
-    res.render('common/scripterror', {
+    res.render('common/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
@@ -411,19 +426,20 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
 /**
  * Renders Check Status Form.
  */
+// eslint-disable-next-line
 server.get('TestCheckStatusService', function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
 
     // check if service parameter not available,display form
     if (empty(request.httpParameterMap.service.stringValue)) {
-        session.forms.generictestinterfaceform.clearFormElement();
-        var checkStatusServiceForm = server.forms.getForm('generictestinterfaceform');
+        session.forms.genericTestInterfaceForm.clearFormElement();
+        var checkStatusServiceForm = server.forms.getForm('genericTestInterfaceForm');
         // render the refund service form
-        res.render('services/checkstatusserviceform', {
+        res.render('services/checkStatusServiceForm', {
             checkStatusServiceForm: checkStatusServiceForm,
             continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CheckStatusService').toString()
         });
@@ -436,7 +452,7 @@ server.get('TestCheckStatusService', function (req, res, next) {
  */
 server.post('CheckStatusService', server.middleware.https, function (req, res, next) {
     //  When in production, Redirect to home page.
-    if (System.getInstanceType() == System.PRODUCTION_SYSTEM) {
+    if (System.getInstanceType() === System.PRODUCTION_SYSTEM) {
         res.redirect(URLUtils.url('Home-Show'));
         return next();
     }
@@ -444,8 +460,8 @@ server.post('CheckStatusService', server.middleware.https, function (req, res, n
     // get orderid from form field
     var Order = {}; var serviceResponse; var apCheckStatusTitle; var
         apCheckStatusReply;
-    if (!empty(session.forms.generictestinterfaceform.merchantReferenceCode.value)) {
-        Order = dw.order.OrderMgr.getOrder(session.forms.generictestinterfaceform.merchantReferenceCode.value);
+    if (!empty(session.forms.genericTestInterfaceForm.merchantReferenceCode.value)) {
+        Order = dw.order.OrderMgr.getOrder(session.forms.genericTestInterfaceForm.merchantReferenceCode.value);
     }
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     collections.forEach(Order.paymentInstruments, function (paymentInstrument) {
@@ -454,28 +470,28 @@ server.post('CheckStatusService', server.middleware.https, function (req, res, n
             paymentType = paymentInstrument.paymentTransaction.custom.apPaymentType;
         }
     });
-    if (session.forms.generictestinterfaceform.checkstatuspaymenttype.htmlValue != paymentType) {
-	   serviceResponse = { error: true, errorMsg: 'Payment Method didnt match with Order Placed' };
-	   res.render('common/scripterror', {
-	       log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
-	   });
-	   return next();
+    if (session.forms.genericTestInterfaceForm.checkstatuspaymenttype.htmlValue !== paymentType) {
+        serviceResponse = { error: true, errorMsg: 'Payment Method didnt match with Order Placed' };
+        res.render('common/scriptError', {
+            log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
+        });
+        return next();
     }
     var CommonFacade = require('~/cartridge/scripts/facade/CommonFacade');
-	   serviceResponse = CommonFacade.CheckPaymentStatusRequest(Order);
-	   apCheckStatusTitle = 'Check payment Status';
-	   apCheckStatusReply = 'apCheckStatusReply';
+    serviceResponse = CommonFacade.CheckPaymentStatusRequest(Order);
+    apCheckStatusTitle = 'Check payment Status';
+    apCheckStatusReply = 'apCheckStatusReply';
 
     if (!empty(serviceResponse)) {
         // display the result page
-	   	res.render('services/transactionresult', {
-	   		serviceReply: apCheckStatusReply,
-	   		response: serviceResponse,
-	   		msgHeader: apCheckStatusTitle
-	       });
-	   	return next();
+        res.render('services/transactionresult', {
+            serviceReply: apCheckStatusReply,
+            response: serviceResponse,
+            msgHeader: apCheckStatusTitle
+        });
+        return next();
     }
-    res.render('common/scripterror', {
+    res.render('common/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();

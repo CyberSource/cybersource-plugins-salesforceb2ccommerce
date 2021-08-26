@@ -94,5 +94,6 @@ CybersourceConstants.SA_SUBMITORDER = 'SUBMITORDER';
 CybersourceConstants.SA_REVIEWORDER = 'REVIEWORDER';
 CybersourceConstants.SA_SUMMARY = 'SUMMARY';
 CybersourceConstants.SA_GOTO = 'GOTO';
+CybersourceConstants.SA_CANCEL = 'SA_CANCEL';
 CybersourceConstants.SECUREACCEPTANCEHELPER = CybersourceConstants.CS_CORE_SCRIPT+'secureacceptance/helper/SecureAcceptanceHelper';
 module.exports = CybersourceConstants;

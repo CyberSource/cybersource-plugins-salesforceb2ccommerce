@@ -1,5 +1,8 @@
 'use strict';
 
+/**
+ * Function: ConsumerObject
+ */
 function ConsumerObject() {
     this.Email1 = '';
     this.Email2 = '';

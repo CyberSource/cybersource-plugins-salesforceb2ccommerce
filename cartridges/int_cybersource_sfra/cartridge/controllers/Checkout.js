@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable */
 var page = module.superModule;
 var server = require('server');
 var Site = require('dw/system/Site');
@@ -83,7 +84,7 @@ server.append('Begin', function (req, res, next) {
     var nonGCPaymentInstrument = COHelpers.getNonGCPaymemtInstument(currentBasket);
     if (nonGCPaymentInstrument != null) {
         selectedPayment = nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypal', 'cybersource', null)
-			|| nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null) ? Resource.msg('paymentmethodname.paypal', 'cybersource', null) : 'others';
+            || nonGCPaymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null) ? Resource.msg('paymentmethodname.paypal', 'cybersource', null) : 'others';
         if (!paypalBillingFields) {
             paymentClass = CommonHelper.GetPaymentClass(nonGCPaymentInstrument);
         }
@@ -142,7 +143,7 @@ server.post('SetBillingAddress', csrfProtection.generateToken, server.middleware
         }
     });
     res.json({
-        error: false,
+        error: false
     });
     next();
 });
@@ -159,12 +160,12 @@ server.prepend('Begin', function (req, res, next) {
     var currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
         if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
-			&& 'orderID' in session.privacy && session.privacy.orderID !== null) {
+            && 'orderID' in session.privacy && session.privacy.orderID !== null) {
             var order = OrderMgr.getOrder(session.privacy.orderID);
             var currentBasket = COHelpers.reCreateBasket(order);
             res.redirect(URLUtils.url('Cart-Show'));
         } else if ('isReCreateBasket' in session.privacy && session.privacy.isReCreateBasket
-			&& 'orderID' in session.privacy && session.privacy.orderID !== null) {
+            && 'orderID' in session.privacy && session.privacy.orderID !== null) {
             var order = OrderMgr.getOrder(session.privacy.orderID);
             var currentBasket = COHelpers.reCreateBasket(order);
         } else {

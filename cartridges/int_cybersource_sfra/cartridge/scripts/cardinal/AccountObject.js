@@ -8,6 +8,9 @@
 
 //* @see {@link module:cartridge/scripts/cardinal/AccountObject~MyFunction} */
 // exports.MyFunction = myFunction;
+/**
+ * AccountObject
+ */
 function AccountObject() {
     this.AccountNumber = '';
     this.ExpirationMonth = '';

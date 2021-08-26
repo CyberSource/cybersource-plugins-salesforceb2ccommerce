@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 /**
@@ -53,7 +54,7 @@ function onGooglePayLoaded() {
     paymentsClient.isReadyToPay({ allowedPaymentMethods: allowedPaymentMethods })
         .then(function (response) {
             if (response.result) {
-        	// alert(response.result);
+            // alert(response.result);
                 addGooglePayButton();
                 prefetchGooglePaymentData();
             }
@@ -74,7 +75,7 @@ function addGooglePayButton() {
     var paymentsClient = getGooglePaymentsClient();
     var button = paymentsClient.createButton({ onClick: onGooglePaymentButtonClicked });
     if ($('#js-googlepay-container').length > 0) {
-	  document.getElementById('js-googlepay-container').appendChild(button);
+        document.getElementById('js-googlepay-container').appendChild(button);
     }
 }
 
@@ -94,7 +95,7 @@ function getGooglePaymentDataConfiguration() {
         emailRequired: true,
         phoneNumberRequired: true,
         cardRequirements: {
-            allowedCardNetworks: allowedCardNetworks,
+            allowedCardNetworks: allowedCardNetworks
             // billingAddressRequired: true,
             // billingAddressFormat: 'FULL'
         }
@@ -177,48 +178,48 @@ function processPayment(paymentData) {
     var paymentForm = $('#dwfrm_billing').serialize();
 
   function loadFormErrors(parentSelector, fieldErrors) { // eslint-disable-line
-		    // Display error messages and highlight form fields with errors.
-		    $.each(fieldErrors, function (attr) {
-		        $('*[name=' + attr + ']', parentSelector)
-		        .addClass('is-invalid')
-		        .siblings('.invalid-feedback')
-		        .html(fieldErrors[attr]);
-		    });
+        // Display error messages and highlight form fields with errors.
+        $.each(fieldErrors, function (attr) {
+            $('*[name=' + attr + ']', parentSelector)
+                .addClass('is-invalid')
+                .siblings('.invalid-feedback')
+                .html(fieldErrors[attr]);
+        });
     }
 
-	  $.ajax({
-		   url: $('#dwfrm_billing').attr('action'),
-		  type: 'post',
-		  dataType: 'json',
-		  data: paymentForm,
-		  success: function (data) {
-			  if (data.error) {
-		          if (data.fieldErrors.length) {
-		              data.fieldErrors.forEach(function (error) {
-		                  if (Object.keys(error).length) {
-		                	  loadFormErrors('.payment-form', error);
-		                  }
-		              });
-		          }
+    $.ajax({
+        url: $('#dwfrm_billing').attr('action'),
+        type: 'post',
+        dataType: 'json',
+        data: paymentForm,
+        success: function (data) {
+            if (data.error) {
+                if (data.fieldErrors.length) {
+                    data.fieldErrors.forEach(function (error) {
+                        if (Object.keys(error).length) {
+                            loadFormErrors('.payment-form', error);
+                        }
+                    });
+                }
 
-		          if (data.serverErrors.length) {
-		              data.serverErrors.forEach(function (error) {
-		                  $('.error-message').show();
-		                  $('.error-message-text').text(error);
-		              });
-		          }
+                if (data.serverErrors.length) {
+                    data.serverErrors.forEach(function (error) {
+                        $('.error-message').show();
+                        $('.error-message-text').text(error);
+                    });
+                }
 
-		          if (data.cartError) {
-		              window.location.href = data.redirectUrl;
-		          }
-			  } else {
-				  window.location.href = submiturl;
-		      }
-		  },
-		  error: function (err) {
-	          if (err.responseJSON.redirectUrl) {
-	              window.location.href = err.responseJSON.redirectUrl;
-	          }
-	      }
+                if (data.cartError) {
+                    window.location.href = data.redirectUrl;
+                }
+            } else {
+                window.location.href = submiturl;
+            }
+        },
+        error: function (err) {
+            if (err.responseJSON.redirectUrl) {
+                window.location.href = err.responseJSON.redirectUrl;
+            }
+        }
     });
 }

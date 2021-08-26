@@ -6,8 +6,10 @@
 
 'use strict';
 
-function OrderObject()
-{
+/**
+ * Function OrderObject
+ */
+function OrderObject() {
     this.Authorization = '';
     this.Cart = '';
     this.Consumer = '';

@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable no-undef */
 var page = module.superModule;
 var server = require('server');
 
@@ -36,8 +37,8 @@ server.append('SubmitShipping', function (req, res, next) {
 
     var taxError = false;
     if (session.privacy.isTaxCalculationFailed) {
-    	session.privacy.isTaxCalculationFailed = false;
-    	taxError = true;
+        session.privacy.isTaxCalculationFailed = false;
+        taxError = true;
     }
     var selectedPayment;
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
@@ -47,8 +48,7 @@ server.append('SubmitShipping', function (req, res, next) {
         paymentInstrument = currentBasket.getPaymentInstruments()[0];
     }
     if (paymentInstrument != null) {
-        selectedPayment = basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL'
-							|| basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod == 'PAYPAL_CREDIT' ? 'PAYPAL' : 'others';
+        selectedPayment = basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod === 'PAYPAL' || basketModel.billing.payment.selectedPaymentInstruments[0].paymentMethod === 'PAYPAL_CREDIT' ? 'PAYPAL' : 'others';
     }
     paidWithPayPal = CommonHelper.ValidatePayPalInstrument(currentBasket, basketModel);
     session.privacy.paypalShippingIncomplete = false;
@@ -56,7 +56,7 @@ server.append('SubmitShipping', function (req, res, next) {
     viewData.options = options;
     viewData.taxError = taxError;
     if (taxError) {
-    	viewData.taxErrorMsg = Resource.msg('error.message.taxcalculation.fail', 'cybersource', null);
+        viewData.taxErrorMsg = Resource.msg('error.message.taxcalculation.fail', 'cybersource', null);
     }
     res.setViewData(viewData);
     next();
@@ -74,17 +74,17 @@ server.append('UpdateShippingMethodsList', function (req, res, next) {
     Transaction.wrap(function () {
         if (!empty(billingAddress) && session.privacy.updateBillingAddress) {
             session.privacy.updateBillingAddress = false;
-			 	billingAddress.setFirstName(address.firstName);
-		        billingAddress.setLastName(address.lastName);
-		        billingAddress.setAddress1(address.address1);
-		        billingAddress.setAddress2(address.address2);
-		        billingAddress.setCity(address.city);
-		        billingAddress.setPostalCode(address.postalCode);
-		        billingAddress.setStateCode(address.stateCode);
-		        billingAddress.setCountryCode(address.countryCode);
-		        if (!billingAddress.phone) {
-		            billingAddress.setPhone(address.phone);
-		        }
+            billingAddress.setFirstName(address.firstName);
+            billingAddress.setLastName(address.lastName);
+            billingAddress.setAddress1(address.address1);
+            billingAddress.setAddress2(address.address2);
+            billingAddress.setCity(address.city);
+            billingAddress.setPostalCode(address.postalCode);
+            billingAddress.setStateCode(address.stateCode);
+            billingAddress.setCountryCode(address.countryCode);
+            if (!billingAddress.phone) {
+                billingAddress.setPhone(address.phone);
+            }
         }
     });
     next();

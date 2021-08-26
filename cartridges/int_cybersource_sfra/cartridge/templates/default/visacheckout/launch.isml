@@ -23,15 +23,15 @@
 					<isprint value="${visaToken.VInitFormattedString}" encoding="htmlsinglequote" />
 				);
 				V.on("payment.success", function(payment) {
-					$("#dwfrm_visacheckout_callId").val(payment['callid']);
-					$("#dwfrm_visacheckout_encryptedPaymentWrappedKey").val(payment['encKey']);
-					$("#dwfrm_visacheckout_encryptedPaymentData").val(payment['encPaymentData']);
+					$("#dwfrm_visaCheckout_callId").val(payment['callid']);
+					$("#dwfrm_visaCheckout_encryptedPaymentWrappedKey").val(payment['encKey']);
+					$("#dwfrm_visaCheckout_encryptedPaymentData").val(payment['encPaymentData']);
 					if (payment['partialShippingAddress'] != null) {
-						$("#dwfrm_visacheckout_countryCode").val(payment['partialShippingAddress']['countryCode']);
-						$("#dwfrm_visacheckout_postalCode").val(payment['partialShippingAddress']['postalCode']);
+						$("#dwfrm_visaCheckout_countryCode").val(payment['partialShippingAddress']['countryCode']);
+						$("#dwfrm_visaCheckout_postalCode").val(payment['partialShippingAddress']['postalCode']);
 					}
 					if (${visaToken.Basket != null}) {
-						$("#dwfrm_visacheckout_basketUUID").val('${visaToken.Signature}');
+						$("#dwfrm_visaCheckout_basketUUID").val('${visaToken.Signature}');
 					}
 					$(".visaCheckoutDecrypt").submit();
 				}
@@ -47,38 +47,38 @@
         <div class="col-12">
             <div class="form-group">
                 <div class="callId">
-                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_callId"
-                        value="" name="dwfrm_visacheckout_callId"/>
+                    <input type="hidden" class="form-control" id="dwfrm_visaCheckout_callId"
+                        value="" name="dwfrm_visaCheckout_callId"/>
                 </div>
             </div>
             <div class="form-group">
                 <div class="encryptedPaymentWrappedKey">
-                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_encryptedPaymentWrappedKey"
-                        value="" name="dwfrm_visacheckout_encryptedPaymentWrappedKey"/>
+                    <input type="hidden" class="form-control" id="dwfrm_visaCheckout_encryptedPaymentWrappedKey"
+                        value="" name="dwfrm_visaCheckout_encryptedPaymentWrappedKey"/>
                 </div>
             </div>
             <div class="form-group">
                 <div class="encryptedPaymentData">
-                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_encryptedPaymentData"
-                        value="" name="dwfrm_visacheckout_encryptedPaymentData"/>
+                    <input type="hidden" class="form-control" id="dwfrm_visaCheckout_encryptedPaymentData"
+                        value="" name="dwfrm_visaCheckout_encryptedPaymentData"/>
                 </div> 
             </div>
             <div class="form-group">
                 <div class="countryCode">
-                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_countryCode"
-                        value="" name="dwfrm_visacheckout_countryCode"/>
+                    <input type="hidden" class="form-control" id="dwfrm_visaCheckout_countryCode"
+                        value="" name="dwfrm_visaCheckout_countryCode"/>
                 </div>
             </div>
             <div class="form-group">
                 <div class="postalCode">
-                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_postalCode"
-                        value="" name="dwfrm_visacheckout_postalCode"/>
+                    <input type="hidden" class="form-control" id="dwfrm_visaCheckout_postalCode"
+                        value="" name="dwfrm_visaCheckout_postalCode"/>
                 </div>
             </div>
             <div class="form-group">
                 <div class="basketUUID">
-                    <input type="hidden" class="form-control" id="dwfrm_visacheckout_basketUUID"
-                        value="" name="dwfrm_visacheckout_basketUUID"/>
+                    <input type="hidden" class="form-control" id="dwfrm_visaCheckout_basketUUID"
+                        value="" name="dwfrm_visaCheckout_basketUUID"/>
                 </div>
             </div>
         </div>		

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
 * Server Script File - SAMerchantPostJob
 * Update SA redirect/Iframe orders in SFCC which are
@@ -17,94 +19,62 @@ var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstan
 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
 
-function SAMerchantPostJob() {
-    // get all SA order with below query status
-    var query = 'custom.processed = false';
+/**
+ * Remove all custom objects for already processed Order
+ */
+function removeProcessedOrders() {
+    var query = 'custom.processed = true';
     var coIterator = CustomObjectMgr.queryCustomObjects('SA_MerchantPost', query, null, null);
+    // eslint-disable-next-line
     if (!empty(coIterator)) {
         Transaction.wrap(function () {
             while (coIterator.hasNext()) {
                 var CO = coIterator.next();
-                var orderID = CO.custom.OrderID;
-                // Search all order which are in created state
-					 var orders = OrderMgr.searchOrders('orderNo={0} AND status={1}', 'creationDate desc', orderID, dw.order.Order.ORDER_STATUS_CREATED);
-					 try {
-                    if (orders.count > 0) {
-                     	var order = orders.next();
-                        var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
-                        var responseObject : Object = JSON.parse(CO.custom.postParams);
-						 if (paymentInstrument == null || responseObject == null) {
-						 	Logger.error('[SAmerchantPost.js] Error occured for order:', orderID);
-						 	throw new Error('Error occured for order');
-						 } else {
-                            var Decision = responseObject.Decision;
-                            // update payment instrument, payment transaction, billing/shipping details,
-                            updatePIDetails(order, responseObject, paymentInstrument);
-                        }
-                    }
-   					} catch (e) {
-   						Logger.error('[SAmerchantPost.js] Error in Merchant post job request ( {0} )', e.message);
-   						throw new Error('Error in Merchant post job request');
-   					}
-   					CO.custom.processed = true;
+                CustomObjectMgr.remove(CO);
             }
         });
     }
-    removeProcessedOrders();
 }
 
-function updatePIDetails(order, responseObject, paymentInstrument) {
-    var Decision = responseObject.Decision;
-    if ((Decision === 'ACCEPT' && responseObject.ReasonCode === '100') || Decision === 'REVIEW') {
-        if (!empty(order) && !empty(responseObject)) {
-            // Update Billing/Shipping details
-            PaymentInstrumentUtils.UpdateOrderBillingShippingDetails(order, responseObject, false, false);
-            // Update Transaction details
-            PaymentInstrumentUtils.UpdatePaymentTransactionSecureAcceptanceAuthorize(order, responseObject);
-            var cardToken = !empty(responseObject.SubscriptionID) ? responseObject.SubscriptionID : responseObject.req_payment_token;
-            // update card details
-            PaymentInstrumentUtils.updatePaymentInstumenSACard(paymentInstrument, responseObject.req_card_expiry_date, responseObject.req_card_number, responseObject.req_card_type, cardToken, responseObject.req_bill_to_forename, responseObject.req_bill_to_surname);
-            var customerObj	= order.getCustomer();
-            secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
-            // update Order status based on response recieved from service
-            updateOrderStatus(order);
-        }
-    } else {
-        // if Decision is not ACCEPT, fail order in SFCC
-        FailSAOrder(order, responseObject);
-    }
-}
+/**
+ * updateOrderStatus
+ * @param {*} order order
+ */
 function updateOrderStatus(order) {
     var orderStatus = OrderMgr.placeOrder(order);
     if (orderStatus.code === 'OK') {
         order.setExportStatus(Order.EXPORT_STATUS_READY);
         order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+        /* eslint-disable */
         var MailFrom = dw.system.Site.getCurrent().getCustomPreferenceValue('customerServiceEmail');
         var MailSubject = dw.web.Resource.msg('order.orderconfirmation-email.001', 'order', null) + '' + order.orderNo;
         var MailTemplate = 'mail/orderconfirmation';
         var MailTo = order.customerEmail;
         if (!empty(MailFrom) && !empty(MailSubject) && !empty(MailTemplate) && !empty(MailTo)) {
-					 var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-					 	 CommonHelper.sendMail({
-					        template: 'mail/orderconfirmation',
-					        recipient: order.getCustomerEmail(),
-					        subject: Resource.msg('order.orderconfirmation-email.001', 'order', null),
-					        context: {
-					            Order: order
-					        	}
+            var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+            CommonHelper.sendMail({
+                template: 'mail/orderconfirmation',
+                recipient: order.getCustomerEmail(),
+                subject: Resource.msg('order.orderconfirmation-email.001', 'order', null),
+                context: {
+                    Order: order
+                }
             });
         }
-	   } else {
-	   		Logger.error('[SAmerchantPost.js] DECISION ACCEPT/REVIEW -  Placeorder Error for order:', order.orderNo);
-	   		throw new Error('DECISION ACCEPT/REVIEW -  Placeorder Error for order');
-	   	}
+        /* eslint-enable */
+    } else {
+        Logger.error('[SAmerchantPost.js] DECISION ACCEPT/REVIEW -  Placeorder Error for order:', order.orderNo);
+        throw new Error('DECISION ACCEPT/REVIEW -  Placeorder Error for order');
+    }
 }
 
 /**
-* This method will fail Order in SFCC
-* for fa script call service to initiate payment for Alipay and set the response in response object
-* and also handles the logging of different error scenarios while making service call.
-* */
+ * This method will fail Order in SFCC
+ * for fa script call service to initiate payment for Alipay and set the response in response object
+ * and also handles the logging of different error scenarios while making service call.
+ * @param {*} order order
+ * @param {*} responseObject responseObject
+ */
 function FailSAOrder(order, responseObject) {
     // if Decision is not ACCEPT
     var orderStatus = OrderMgr.failOrder(order, true);
@@ -118,18 +88,76 @@ function FailSAOrder(order, responseObject) {
         throw new Error('DECISION ERROR -  FailOrder Called for order');
     }
 }
-/* Remove all custom objects for already processed Order */
-function removeProcessedOrders() {
-    var query = 'custom.processed = true';
+
+/**
+ * updatePIDetails
+ * @param {*} order order
+ * @param {*} responseObject responseObject
+ * @param {*} paymentInstrument paymentInstrument
+ */
+function updatePIDetails(order, responseObject, paymentInstrument) {
+    var Decision = responseObject.Decision;
+    if ((Decision === 'ACCEPT' && responseObject.ReasonCode === '100') || Decision === 'REVIEW') {
+        // eslint-disable-next-line
+        if (!empty(order) && !empty(responseObject)) {
+            // Update Billing/Shipping details
+            PaymentInstrumentUtils.UpdateOrderBillingShippingDetails(order, responseObject, false, false);
+            // Update Transaction details
+            PaymentInstrumentUtils.UpdatePaymentTransactionSecureAcceptanceAuthorize(order, responseObject);
+            // eslint-disable-next-line
+            var cardToken = !empty(responseObject.SubscriptionID) ? responseObject.SubscriptionID : responseObject.req_payment_token;
+            // update card details
+            PaymentInstrumentUtils.updatePaymentInstumenSACard(paymentInstrument, responseObject.req_card_expiry_date, responseObject.req_card_number, responseObject.req_card_type, cardToken, responseObject.req_bill_to_forename, responseObject.req_bill_to_surname);
+            var customerObj = order.getCustomer();
+            secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customerObj);
+            // update Order status based on response recieved from service
+            updateOrderStatus(order);
+        }
+    } else {
+        // if Decision is not ACCEPT, fail order in SFCC
+        FailSAOrder(order, responseObject);
+    }
+}
+
+/**
+ * SAMerchantPostJob
+ */
+function SAMerchantPostJob() {
+    // get all SA order with below query status
+    var query = 'custom.processed = false';
     var coIterator = CustomObjectMgr.queryCustomObjects('SA_MerchantPost', query, null, null);
+    // eslint-disable-next-line
     if (!empty(coIterator)) {
         Transaction.wrap(function () {
             while (coIterator.hasNext()) {
                 var CO = coIterator.next();
-                CustomObjectMgr.remove(CO);
+                var orderID = CO.custom.OrderID;
+                // Search all order which are in created state
+                // eslint-disable-next-line
+                var orders = OrderMgr.searchOrders('orderNo={0} AND status={1}', 'creationDate desc', orderID, dw.order.Order.ORDER_STATUS_CREATED);
+                try {
+                    if (orders.count > 0) {
+                        var order = orders.next();
+                        var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
+                        var responseObject = JSON.parse(CO.custom.postParams);
+                        if (paymentInstrument == null || responseObject == null) {
+                            Logger.error('[SAmerchantPost.js] Error occured for order:', orderID);
+                            throw new Error('Error occured for order');
+                        } else {
+                            // var Decision = responseObject.Decision;
+                            // update payment instrument, payment transaction, billing/shipping details,
+                            updatePIDetails(order, responseObject, paymentInstrument);
+                        }
+                    }
+                } catch (e) {
+                    Logger.error('[SAmerchantPost.js] Error in Merchant post job request ( {0} )', e.message);
+                    throw new Error('Error in Merchant post job request');
+                }
+                CO.custom.processed = true;
             }
         });
     }
+    removeProcessedOrders();
 }
 
 /** Exported functions * */

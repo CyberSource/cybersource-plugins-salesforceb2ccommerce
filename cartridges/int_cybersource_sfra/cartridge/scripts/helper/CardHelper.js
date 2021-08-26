@@ -41,6 +41,7 @@ function HandleDAVResponse(ResponseObject) {
  * @param {Object} serviceResponse
  * @returns response as authorized, error, declined
  */
+// eslint-disable-next-line
 function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     var responseObject = {};
     responseObject.RequestID = serviceResponse.requestID;
@@ -48,6 +49,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     responseObject.ReasonCode = serviceResponse.reasonCode.get();
     responseObject.Decision = serviceResponse.decision;
     responseObject.ccAuthReply = (serviceResponse.ccAuthReply !== null) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.paySubscriptionCreateReply) && !empty(serviceResponse.paySubscriptionCreateReply.subscriptionID)) {
         responseObject.SubscriptionID = serviceResponse.paySubscriptionCreateReply.subscriptionID;
     }
@@ -61,9 +63,11 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     /** ******************************************* */
     /* DAV-related WebService response processing */
     /** ******************************************* */
+    // eslint-disable-next-line
     if (!empty(serviceResponse.missingField)) {
         responseObject.MissingFieldsArray = serviceResponse.missingField;
     }
+    // eslint-disable-next-line
     if (!empty(serviceResponse.invalidField)) {
         responseObject.InvalidFieldsArray = serviceResponse.invalidField;
     }
@@ -71,6 +75,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
         responseObject.DAVReasonCode = serviceResponse.davReply.reasonCode.get();
 
         var updateShipAddress = Site.getCurrent().getCustomPreferenceValue('CsCorrectShipAddress');
+        // eslint-disable-next-line
         if (updateShipAddress && !empty(serviceResponse.davReply.standardizedAddress1)) {
             var stdAddress = {};
             stdAddress.firstName = shipTo.firstName;
@@ -94,8 +99,8 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
 
 /**
  * Handle the Card ReasonCode.
- * @param ResponseObject
- * @returns response as authorized, error, declined
+ * @param {*} ResponseObject ResponseObj
+ * @returns {*} obj
  */
 function HandleCardResponse(ResponseObject) {
     Logger.debug('[CardHelper.js] HandleDAVResponse ReasonCode : ' + ResponseObject.ReasonCode);
@@ -128,16 +133,17 @@ function HandleCardResponse(ResponseObject) {
 
 /**
  * Write in debug log request object for card auth service for sandboxes only when sitepref CsDebugCybersource is true.
- * @param serviceRequest
- * @param orderNo
- * @returns response as authorized, error, declined
+ * @param {*} serviceRequest serviceRequest
  */
 function writeOutDebugLog(serviceRequest) {
     // Do not allow debug logging on production.
+    // eslint-disable-next-line
     if (!dw.system.Logger.isDebugEnabled() || dw.system.System.getInstanceType() !== dw.system.System.DEVELOPMENT_SYSTEM) return;
 
+    // eslint-disable-next-line
     var debug = dw.system.Site.getCurrent().getCustomPreferenceValue('CsDebugCybersource');
     if (debug) {
+        // eslint-disable-next-line
         var log = dw.system.Logger.getLogger('CsDebugCybersource');
         log.debug('REQUEST DATA SENT TO CYBERSOURCE');
         log.debug('billTo.firstName {0}', serviceRequest.billTo.firstName);
@@ -160,77 +166,14 @@ function writeOutDebugLog(serviceRequest) {
 }
 
 /**
- * On basis of formType card object data is updated like firstname,lastname,cad details etc.
- * @param formType : can hold value like subscription,billing or paymentinstruments.
- */
-
-function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
-    var fullName;
-    var accounNumber;
-    var cardType;
-    var expiryMonth;
-    var expiryYear;
-    var cvnNumber;
-    var subscriptionToken;
-    var firstName;
-    var lastName;
-    var cardObject;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-
-    switch (formType) {
-        case 'subscription':
-            fullName = session.forms.subscription.firstName.htmlValue + ' ' + session.forms.subscription.lastName.htmlValue;
-            accounNumber = session.forms.subscription.accountNumber.htmlValue;
-            cardType = session.forms.subscription.cardType.htmlValue;
-            expiryMonth = session.forms.subscription.expiryMonth.htmlValue;
-            expiryYear = session.forms.subscription.expiryYear.htmlValue;
-            cvnNumber = session.forms.subscription.cvnNumber.htmlValue;
-            break;
-        case 'billing':
-            firstName = session.forms.billing.addressFields.firstName.value;
-            lastName = session.forms.billing.addressFields.lastName.value;
-            fullName = !empty(firstName) ? firstName + ' ' + lastName : null;
-            accounNumber = session.forms.billing.creditCardFields.cardNumber.value;
-            cardType = session.forms.billing.creditCardFields.cardType.value;
-            expiryMonth = '' + session.forms.billing.creditCardFields.expirationMonth.value;
-            expiryYear = '' + session.forms.billing.creditCardFields.expirationYear.value;
-            cvnNumber = session.forms.billing.creditCardFields.securityCode.value;
-            if (SubscriptionID && !empty(SubscriptionID)) {
-                subscriptionToken = SubscriptionID;
-            }
-            break;
-        case 'paymentinstruments':
-            firstName = session.forms.creditCard.addressFields.firstName.value;
-            lastName = session.forms.creditCard.addressFields.lastName.value;
-            accounNumber = session.forms.creditCard.cardNumber.value;
-            cardType = '' + session.forms.creditCard.cardType.value;
-            expiryMonth = '' + session.forms.creditCard.expirationMonth.value;
-            expiryYear = '' + session.forms.creditCard.expirationYear.value;
-            cvnNumber = session.forms.creditCard.securityCode.value;
-            subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.creditCard.selectedCardID.value, customer);
-            break;
-    }
-    if (!empty(cardType)) {
-        var Card_Object = require('~/cartridge/scripts/cybersource/Cybersource_Card_Object');
-        cardObject = new Card_Object();
-        if (empty(subscriptionToken)) {
-            cardObject.setAccountNumber(accounNumber.replace(/\s/g, ''));
-        }
-        cardObject.setFullName(fullName);
-        cardObject.setExpirationMonth(expiryMonth);
-        cardObject.setExpirationYear(expiryYear);
-        cardObject.setCvNumber(cvnNumber);
-        cardObject.setCardType(returnCardType(cardType));
-    }
-    return { success: true, card: cardObject };
-}
-/**
  * Returns the value of the on basis of card type
- * @param cardType : String value like Visa,mastercard,amex etc
+ * @param {*} cardType cardType
+ * @returns {*} obj
  */
 function returnCardType(cardType) {
     var cardTypeNew = '';
     if (cardType) {
+        // eslint-disable-next-line
         switch (cardType.toLowerCase()) {
             case 'visa':
                 cardTypeNew = '001';
@@ -266,15 +209,86 @@ function returnCardType(cardType) {
 }
 
 /**
- * Sets currency and amount in purchase object.
- * @param currency : Currency of the site
- * @param amount : purchasable amount
+ * On basis of formType card object data is updated like firstname,lastname,cad details etc.
+ * @param {*} formType formType
+ * @param {*} SubscriptionID SubscriptionID
+ * @returns {*} obj
  */
+function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
+    var fullName;
+    var accounNumber;
+    var cardType;
+    var expiryMonth;
+    var expiryYear;
+    var cvnNumber;
+    var subscriptionToken;
+    var firstName;
+    var lastName;
+    var cardObject;
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 
-function CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount) {
-    var currency = currency;
-    var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
-    var purchaseObject = new PurchaseTotals_Object();
+    /* eslint-disable */
+    switch (formType) {
+        case 'subscription':
+            fullName = session.forms.subscription.firstName.htmlValue + ' ' + session.forms.subscription.lastName.htmlValue;
+            accounNumber = session.forms.subscription.accountNumber.htmlValue;
+            cardType = session.forms.subscription.cardType.htmlValue;
+            expiryMonth = session.forms.subscription.expiryMonth.htmlValue;
+            expiryYear = session.forms.subscription.expiryYear.htmlValue;
+            cvnNumber = session.forms.subscription.cvnNumber.htmlValue;
+            break;
+        case 'billing':
+            firstName = session.forms.billing.addressFields.firstName.value;
+            lastName = session.forms.billing.addressFields.lastName.value;
+            fullName = !empty(firstName) ? firstName + ' ' + lastName : null;
+            accounNumber = session.forms.billing.creditCardFields.cardNumber.value;
+            cardType = session.forms.billing.creditCardFields.cardType.value;
+            expiryMonth = '' + session.forms.billing.creditCardFields.expirationMonth.value;
+            expiryYear = '' + session.forms.billing.creditCardFields.expirationYear.value;
+            cvnNumber = session.forms.billing.creditCardFields.securityCode.value;
+            if (SubscriptionID && !empty(SubscriptionID)) {
+                subscriptionToken = SubscriptionID;
+            }
+            break;
+        case 'paymentinstruments':
+            firstName = session.forms.creditCard.addressFields.firstName.value;
+            lastName = session.forms.creditCard.addressFields.lastName.value;
+            accounNumber = session.forms.creditCard.cardNumber.value;
+            cardType = '' + session.forms.creditCard.cardType.value;
+            expiryMonth = '' + session.forms.creditCard.expirationMonth.value;
+            expiryYear = '' + session.forms.creditCard.expirationYear.value;
+            cvnNumber = session.forms.creditCard.securityCode.value;
+            subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.creditCard.selectedCardID.value, customer);
+            break;
+    }
+    /* eslint-enable */
+    // eslint-disable-next-line
+    if (!empty(cardType)) {
+        var CardObject = require('~/cartridge/scripts/cybersource/CybersourceCardObject');
+        cardObject = new CardObject();
+        // eslint-disable-next-line
+        if (empty(subscriptionToken)) {
+            cardObject.setAccountNumber(accounNumber.replace(/\s/g, ''));
+        }
+        cardObject.setFullName(fullName);
+        cardObject.setExpirationMonth(expiryMonth);
+        cardObject.setExpirationYear(expiryYear);
+        cardObject.setCvNumber(cvnNumber);
+        cardObject.setCardType(returnCardType(cardType));
+    }
+    return { success: true, card: cardObject };
+}
+
+/**
+ * Sets currency and amount in purchase object.
+ * @param {*} currency currency
+ * @param {*} Amount Amount
+ * @returns {*} obj
+ */
+function CreateCyberSourcePurchaseTotalsObjectUserData(currency, Amount) {
+    var amount = Amount;
+    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var purchaseObject = new PurchaseTotalsObject();
     purchaseObject.setCurrency(currency);
     amount = parseFloat(amount);
     var StringUtils = require('dw/util/StringUtils');
@@ -284,10 +298,11 @@ function CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount) {
 
 /**
  * Returns the boolean variable if payer auth is available for the requested card type
- * @param cardType : String value like Visa,mastercard,amex etc
+ * @param {*} cardType cardType
+ * @returns {*} obj
  */
-
 function PayerAuthEnable(cardType) {
+    // eslint-disable-next-line
     var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
     if (paymentMethod === null) { return { error: true, errorMsg: 'Payment method CREDIT_CARD not found' }; }
     var paymentCard;
@@ -313,7 +328,7 @@ function PayerAuthEnable(cardType) {
 function getNonGCPaymemtInstument(lineItemCtnr) {
     var paymentInstruments = lineItemCtnr.getPaymentInstruments();
     if (paymentInstruments.size() > 0) {
-        for (var i = 0; i < paymentInstruments.length; i++) {
+        for (var i = 0; i < paymentInstruments.length; i += 1) {
             var paymentInstrument = paymentInstruments[i];
             // For GC we need to create an array of objects to be passed to PayeezyFacade-PaymentAuthorize.
             if (!'GIFT_CERTIFICATE'.equalsIgnoreCase(paymentInstrument.paymentMethod)) {
@@ -363,24 +378,30 @@ function getCardType(cardTypeValue) {
  * If debug value id true then the response is printed in logs.
  * @param serviceResponse : Response from the service
  */
-
+// eslint-disable-next-line
 function protocolResponse(serviceResponse) {
+    // eslint-disable-next-line
     var debug = dw.system.Site.getCurrent().getCustomPreferenceValue('CsDebugCybersource');
     var checkValue = true;
     if (checkValue || debug) {
         var HashMap = require('dw/util/HashMap');
         var arr = new HashMap();
-        var xx;
-        for (xx in serviceResponse) {
+        // var xx;
+
+        Object.keys(serviceResponse).forEach(function (xx) {
             arr.put(xx, serviceResponse[xx]);
-        }
-        for (xx in serviceResponse.payPalPaymentReply) {
-            // trace('checking ' + xx);
-            try {
-                arr.put('PayPalPaymentReply.' + xx, serviceResponse.payPalPaymentReply[xx]);
-            } catch (exception) {
-                arr.put('PayPalPaymentReply.' + xx, ' caused ex ' + exception);
-            }
+        });
+
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.payPalPaymentReply)) {
+            Object.keys(serviceResponse.payPalPaymentReply).forEach(function (xx) {
+                // trace('checking ' + xx);
+                try {
+                    arr.put('PayPalPaymentReply.' + xx, serviceResponse.payPalPaymentReply[xx]);
+                } catch (exception) {
+                    arr.put('PayPalPaymentReply.' + xx, ' caused ex ' + exception);
+                }
+            });
         }
 
         var nullList = [];
@@ -403,19 +424,30 @@ function protocolResponse(serviceResponse) {
 }
 
 /**
+ * addOrUpdateToken
+ * @param {*} paymentInstrument paymentInstrument
+ * @param {*} customer customer
+ * @returns {*} obj
+ */
+function addOrUpdateToken(paymentInstrument, customer) {
+    var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
+    return secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customer);
+}
+
+/**
  * Card Response for processing service response
- * @param order
- * @param paymentInstrument
- * @param serviceResponse
- * @returns
+ * @param {*} order order
+ * @param {*} paymentInstrument paymentInstrument
+ * @param {*} serviceResponse serviceResponse
+ * @returns {*} obj
  */
 function CardResponse(order, paymentInstrument, serviceResponse) {
     // response validate
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    if (!(CybersourceHelper.getDavEnable() && CybersourceHelper.getDavOnAddressVerificationFailure() === 'REJECT'
-        && serviceResponse.ReasonCode !== 100 && !empty(serviceResponse.DAVReasonCode) && serviceResponse.DAVReasonCode !== 100)) {
+    // eslint-disable-next-line
+    if (!(CybersourceHelper.getDavEnable() && CybersourceHelper.getDavOnAddressVerificationFailure() === 'REJECT' && serviceResponse.ReasonCode !== 100 && !empty(serviceResponse.DAVReasonCode) && serviceResponse.DAVReasonCode !== 100)) {
         // simply logging detail response not utilized
         HandleDAVResponse(serviceResponse);
         if (serviceResponse.AVSCode === 'N') {
@@ -430,10 +462,12 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
         var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
         var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
         PaymentInstrumentUtils.UpdatePaymentTransactionCardAuthorize(paymentInstrument, serviceResponse);
-        if (serviceResponse.StandardizedAddress && (serviceResponse.ReasonCode == '100' || serviceResponse.ReasonCode == '480')) {
+        if (serviceResponse.StandardizedAddress && (serviceResponse.ReasonCode === '100' || serviceResponse.ReasonCode === '480')) {
+            // eslint-disable-next-line
             CommonHelper.UpdateOrderShippingAddress(serviceResponse.StandardizedAddress, order, session.forms.shipping.shippingAddress.shippingAddressUseAsBillingAddress.value);
         }
-        if (serviceResponse.ReasonCode == '100' || serviceResponse.ReasonCode == '480') {
+        if (serviceResponse.ReasonCode === '100' || serviceResponse.ReasonCode === '480') {
+            // eslint-disable-next-line
             addOrUpdateToken(paymentInstrument, customer.authenticated ? customer : null);
         }
         // returns response as authorized, error, declined based on ReasonCode
@@ -443,13 +477,8 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
     return HandleDAVResponse(serviceResponse);
 }
 
-function addOrUpdateToken(paymentInstrument, customer) {
-    var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-    return secureAcceptanceHelper.AddOrUpdateToken(paymentInstrument, customer);
-}
-
 module.exports = {
-    CreateCyberSourcePurchaseTotalsObject_UserData: CreateCyberSourcePurchaseTotalsObject_UserData,
+    CreateCyberSourcePurchaseTotalsObject_UserData: CreateCyberSourcePurchaseTotalsObjectUserData,
     CreateCybersourcePaymentCardObject: CreateCybersourcePaymentCardObject,
     CardResponse: CardResponse,
     PayerAuthEnable: PayerAuthEnable,

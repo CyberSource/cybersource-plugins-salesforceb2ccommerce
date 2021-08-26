@@ -1,20 +1,22 @@
 'use strict';
 
 /*
-	This line has to be updated to reference checkoutHelpers.js from the site cartridge's checkoutHelpers.js
+    This line has to be updated to reference checkoutHelpers.js from the site cartridge's checkoutHelpers.js
 */
 
 var base = module.superModule;
 var renderTemplateHelper = require('*/cartridge/scripts/renderTemplateHelper');
 
 /**
- * saves payment instrument to customers wallet
- * @param {Object} billingData - billing information entered by the user
- * @param {dw.order.Basket} currentBasket - The current basket
- * @param {dw.customer.Customer} customer - The current customer
- * @returns {dw.customer.CustomerPaymentInstrument} newly stored payment Instrument
+ * creates a new payment instrument in customers wallet if payment instrument is new
+ * otherwise returns the already existing payment instrument
+ * @param {*} billingDataObj billing information entered by the user
+ * @param {*} currentBasket The current basket
+ * @param {*} customer The current customer
+ * @returns {*} obj
  */
-function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
+function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) {
+    var billingData = billingDataObj;
     var HookMgr = require('dw/system/HookMgr');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
@@ -24,8 +26,8 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     var Resource = require('dw/web/Resource');
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-    if (CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
-    	billingData.paymentInformation.cardType.value = CardHelper.getCardType(billingData.paymentInformation.cardType.value);
+    if (CsSAType != null && CsSAType === Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
+        billingData.paymentInformation.cardType.value = CardHelper.getCardType(billingData.paymentInformation.cardType.value);
     }
     var verifyDuplicates = false;
 
@@ -35,39 +37,64 @@ function savePaymentInstrumentToWallet(billingData, currentBasket, customer) {
     var paymentInstruments = wallet.getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
     var enableTokenization = Site.getCurrent().getCustomPreferenceValue('CsTokenizationEnable').value;
     var processor = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD).getPaymentProcessor();
-    if (CsSAType == null && enableTokenization.equals('YES') && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
+    if (enableTokenization.equals('YES') && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
         verifyDuplicates = true;
         tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'billing');
     }
     var payInstrument = CardHelper.getNonGCPaymemtInstument(basket);
-    Transaction.begin();
-    var storedPaymentInstrument = wallet.createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+    var storedPaymentInstrument;
+    var alreadyExists = false;
 
-    storedPaymentInstrument.setCreditCardHolder(
-        currentBasket.billingAddress.fullName
-    );
-    storedPaymentInstrument.setCreditCardNumber(
-        billingData.paymentInformation.cardNumber.value
-    );
-    storedPaymentInstrument.setCreditCardType(
-    		billingData.paymentInformation.cardType.value
-    );
-    storedPaymentInstrument.setCreditCardExpirationMonth(
-        billingData.paymentInformation.expirationMonth.value
-    );
-    storedPaymentInstrument.setCreditCardExpirationYear(
-        billingData.paymentInformation.expirationYear.value
-    );
-    if (!tokenizationResult.error && !empty(tokenizationResult.subscriptionID)) {
-        storedPaymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
-        storedPaymentInstrument.custom.isCSToken = true;
-        payInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
+    Transaction.begin();
+    var savedCreditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
+    var ccNumber = billingData.paymentInformation.cardNumber.value;
+    // eslint-disable-next-line
+    for (var i = 0; i < savedCreditCards.length; i++) {
+        var creditcard = savedCreditCards[i];
+        var creditcardNo = creditcard.getCreditCardNumber();
+        if (creditcard.creditCardExpirationMonth === billingData.paymentInformation.expirationMonth.value
+            && creditcard.creditCardExpirationYear === billingData.paymentInformation.expirationYear.value
+            && creditcard.creditCardType === billingData.paymentInformation.cardType.value
+            && creditcardNo.toString().substring(creditcardNo.length - 4).equals(ccNumber.substring(ccNumber.length - 4))) {
+            storedPaymentInstrument = creditcard;
+            alreadyExists = true;
+            break;
+        }
     }
-    if (CsSAType != null && CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
-        var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
-        var flexString = JSON.parse(flexResponse);
-        storedPaymentInstrument.setCreditCardToken(flexString.token);
+
+    if (!alreadyExists) {
+        storedPaymentInstrument = wallet.createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+
+        storedPaymentInstrument.setCreditCardHolder(
+            currentBasket.billingAddress.fullName
+        );
+        storedPaymentInstrument.setCreditCardNumber(
+            billingData.paymentInformation.cardNumber.value
+        );
+        storedPaymentInstrument.setCreditCardType(
+            billingData.paymentInformation.cardType.value
+        );
+        storedPaymentInstrument.setCreditCardExpirationMonth(
+            billingData.paymentInformation.expirationMonth.value
+        );
+        storedPaymentInstrument.setCreditCardExpirationYear(
+            billingData.paymentInformation.expirationYear.value
+        );
+
+        // eslint-disable-next-line
+        if (!tokenizationResult.error && !empty(tokenizationResult.subscriptionID)) {
+            storedPaymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
+            storedPaymentInstrument.custom.isCSToken = true;
+            payInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
+        }
+        if (CsSAType != null && CsSAType === Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
+            // eslint-disable-next-line
+            var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
+            var flexString = JSON.parse(flexResponse);
+            storedPaymentInstrument.setCreditCardToken(flexString.token);
+        }
     }
+
     if (verifyDuplicates) {
         var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
         PaymentInstrumentUtils.removeDuplicates({
@@ -107,18 +134,15 @@ function handlePayments(order, orderNumber) {
         }
 
         if (!result.error) {
-            for (var i = 0; i < paymentInstruments.length; i++) {
+            for (var i = 0; i < paymentInstruments.length; i += 1) {
                 var paymentInstrument = paymentInstruments[i];
-                var paymentProcessor = PaymentMgr
-                    .getPaymentMethod(paymentInstrument.paymentMethod)
-                    .paymentProcessor;
+                var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod).paymentProcessor;
                 if (paymentProcessor === null) {
                     Transaction.begin();
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
                     Transaction.commit();
                 } else {
-                    if (HookMgr.hasHook('app.payment.processor.'
-                            + paymentProcessor.ID.toLowerCase())) {
+                    if (HookMgr.hasHook('app.payment.processor.' + paymentProcessor.ID.toLowerCase())) {
                         authorizationResult = HookMgr.callHook(
                             'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
                             'Authorize',
@@ -180,7 +204,7 @@ function validatePayment(req, currentBasket) {
 
     var invalid = true;
 
-    for (var i = 0; i < paymentInstruments.length; i++) {
+    for (var i = 0; i < paymentInstruments.length; i += 1) {
         var paymentInstrument = paymentInstruments[i];
 
         if (PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstrument.paymentMethod)) {
@@ -217,9 +241,10 @@ function validatePayment(req, currentBasket) {
 
 /**
  * renders the user's stored payment Instruments
- * @param {Object} req - The request object
- * @param {Object} accountModel - The account model for the current customer
- * @returns {string|null} newly stored payment Instrument
+ * @param {*} req The request object
+ * @param {*} paymentInstruments paymentInstruments
+ * @param {*} paymentID paymentID
+ * @returns {*} obj
  */
 function getOrderPaymentInstruments(req, paymentInstruments, paymentID) {
     var result;
@@ -235,10 +260,15 @@ function getOrderPaymentInstruments(req, paymentInstruments, paymentID) {
     return result || null;
 }
 
+/**
+ * Function
+ * @param {*} basket basket
+ * @returns {*} obj
+ */
 function getPayPalInstrument(basket) {
-    for (var i = 0; i < basket.paymentInstruments.length; i++) {
+    for (var i = 0; i < basket.paymentInstruments.length; i += 1) {
         var paymentInstrument = basket.paymentInstruments[i];
-        if (paymentInstrument.paymentMethod == 'PAYPAL' || paymentInstrument.paymentMethod == 'PAYPAL_CREDIT') {
+        if (paymentInstrument.paymentMethod === 'PAYPAL' || paymentInstrument.paymentMethod === 'PAYPAL_CREDIT') {
             return paymentInstrument;
         }
     }
@@ -254,6 +284,10 @@ function validatePPLForm(form) {
     return base.validateFields(form);
 }
 
+/**
+ * Function
+ * @param {*} basket basket
+ */
 function handlePayPal(basket) {
     var ccPaymentInstrs = basket.getPaymentInstruments();
 
@@ -267,6 +301,7 @@ function handlePayPal(basket) {
     while (iter.hasNext()) {
         existingPI = iter.next();
         if (existingPI.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {
+            // eslint-disable-next-line
             continue;
         } else if (existingPI.paymentMethod.equals('PAYPAL') || existingPI.paymentMethod.equals('PAYPAL_CREDIT')) {
             basket.removePaymentInstrument(existingPI);
@@ -274,12 +309,22 @@ function handlePayPal(basket) {
     }
 }
 
+/**
+ * Function
+ */
 function clearPaymentAttributes() {
+    /* eslint-disable */
     session.privacy.isPaymentRedirectInvoked = '';
     session.privacy.paymentType = '';
     session.privacy.orderID = '';
+    /* eslint-enable */
 }
 
+/**
+ * Function
+ * @param {*} order order
+ * @returns {*} obj
+ */
 function reCreateBasket(order) {
     var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
@@ -287,10 +332,15 @@ function reCreateBasket(order) {
     Transaction.wrap(function () {
         OrderMgr.failOrder(order, true);
     });
-    var BasketMgr = require('dw/order/BasketMgr');
+    // var BasketMgr = require('dw/order/BasketMgr');
     return BasketMgr.getCurrentBasket();
 }
 
+/**
+ * Function
+ * @param {*} order order
+ * @returns {*} obj
+ */
 function handleSilentPostAuthorize(order) {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var HookMgr = require('dw/system/HookMgr');
@@ -300,7 +350,7 @@ function handleSilentPostAuthorize(order) {
         paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
     }
     var authorizationResult;
-    var result = {};
+    // var result = {};
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod).paymentProcessor;
     if (HookMgr.hasHook('app.payment.processor.' + paymentProcessor.ID.toLowerCase())) {
         authorizationResult = HookMgr.callHook(
@@ -314,6 +364,12 @@ function handleSilentPostAuthorize(order) {
     return authorizationResult;
 }
 
+/**
+ * Function
+ * @param {*} order order
+ * @param {*} customerObj customerObj
+ * @param {*} res res
+ */
 function addOrUpdateToken(order, customerObj, res) {
     var URLUtils = require('dw/web/URLUtils');
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
@@ -322,10 +378,16 @@ function addOrUpdateToken(order, customerObj, res) {
         paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
     }
     CardHelper.addOrUpdateToken(paymentInstrument, customerObj);
+    // eslint-disable-next-line
     session.privacy.orderId = order.orderNo;
     res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
 }
 
+/**
+ * Function
+ * @param {*} basket basket
+ * @returns {*} obj
+ */
 function getNonGCPaymemtInstument(basket) {
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     return CardHelper.getNonGCPaymemtInstument(basket);

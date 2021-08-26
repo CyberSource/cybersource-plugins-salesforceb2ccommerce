@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 /**
@@ -16,7 +17,7 @@ var Resource = require('dw/web/Resource');
  * @returns {Object} ApplePayRequest validation object
  */
 function validateMobilePaymentRequest(order) {
-    var Site = require('dw/system/Site');
+    // var Site = require('dw/system/Site');
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
     var headersMap = request.httpHeaders; // eslint
@@ -174,7 +175,7 @@ function PrepareAuthRequestObjects(lineItemCtnr) {
     };
 }
 
-function createLineItemCtnrShippingAddress(lineItemCtnrAddress : dw.order.OrderAddress, decryptedData : Object) {
+function createLineItemCtnrShippingAddress(lineItemCtnrAddress, decryptedData) {
     // validate the lineItemCtnrAddress exists
     if (decryptedData.shipTo === null) {
         throw new Error('Shipping Address not available in visa checkout decrypted payment data from cybersource');
@@ -209,7 +210,7 @@ function createLineItemCtnrShippingAddress(lineItemCtnrAddress : dw.order.OrderA
 * @param lineItemCtnrAddress : dw.order.OrderAddress
 * @param decryptedData : Object
 */
-function createLineItemCtnrBillingAddress(lineItemCtnrAddress : dw.order.OrderAddress, billingInfo : Object) {
+function createLineItemCtnrBillingAddress(lineItemCtnrAddress, billingInfo) {
     // address line 1 and line 2
     lineItemCtnrAddress.setAddress1(billingInfo.address1);
     if (!empty(billingInfo.address2)) {

@@ -5,7 +5,7 @@
     name="payment-form" ${pdict.paymentForm.attributes}>
 
     <!-- Credit Card Type -->
-    <input type="hidden" class="form-control" id="cardType" value="" <isprint value="${pdict.paymentForm.cardType.attributes}" encoding="off" /> autocomplete="cc-type">
+    <input type="hidden" class="form-control" id="cardType" value="" <isprint value="${pdict.paymentForm.cardType.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-type">
 
     <div class="form-group custom-control custom-radio">
         <input
@@ -14,7 +14,7 @@
             type="radio"
             class="custom-control-input"
             checked
-            <isprint value="${pdict.paymentForm.paymentMethod.attributes}" encoding="off" />
+            <isprint value="${pdict.paymentForm.paymentMethod.attributes}" encoding="htmlsinglequote" />
         >
         <label for="paymentOption-Credit" class="custom-control-label">
             <span>${Resource.msg('label.payment.credit','payment',null)}</span>
@@ -31,7 +31,7 @@
             <isprint value="${pdict.paymentForm.cardOwner.label}" encoding="htmlcontent" />
         </label>
         <input type="text" class="form-control" id="cardOwner"
-            <isprint value="${pdict.paymentForm.cardOwner.attributes}" encoding="off" />
+            <isprint value="${pdict.paymentForm.cardOwner.attributes}" encoding="htmlsinglequote" />
             autocomplete="cc-name">
         <div class="invalid-feedback">
             <isprint value="${pdict.paymentForm.cardOwner.error}" encoding="htmlcontent" />
@@ -59,7 +59,7 @@
             </label>
             <div class="card-number-wrapper">
                 <input type="text" class="form-control" id="cardNumber"
-                    <isprint value="${pdict.paymentForm.cardNumber.attributes}" encoding="off" />
+                    <isprint value="${pdict.paymentForm.cardNumber.attributes}" encoding="htmlsinglequote" />
                     autocomplete="cc-number">
                 <div class="invalid-feedback">
                     <isprint value="${pdict.paymentForm.cardNumber.error}" encoding="htmlcontent" />
@@ -76,7 +76,7 @@
                 <label class="form-control-label" for="month">
                     <isprint value="${pdict.paymentForm.expirationMonth.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="month" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="off" /> autocomplete="cc-exp-month">
+                <select class="form-control custom-select" id="month" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-exp-month">
                     <isloop items=${pdict.paymentForm.expirationMonth.options} var="month">
                         <option id="${month.id}" value="${month.htmlValue}" <isif condition="${month.selected}">selected</isif> >${month.label}</option>
                     </isloop>
@@ -93,7 +93,7 @@
                 <label class="form-control-label" for="year">
                     <isprint value="${pdict.paymentForm.expirationYear.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="year" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="off" /> autocomplete="cc-exp-year">
+                <select class="form-control custom-select" id="year" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-exp-year">
                     <option value="${pdict.paymentForm.expirationYear.options[0].htmlValue}">${pdict.paymentForm.expirationYear.options[0].label}</option>
                     <isloop items=${pdict.expirationYears} var="year">
                         <option id="${year}" value="${year}" <isif condition="${year == pdict.paymentForm.expirationYear.value}">selected</isif> >${year}</option>
@@ -115,7 +115,7 @@
         </span>
 
         <input type="text" class="form-control securityCode" id="securityCode"
-            <isprint value=${pdict.paymentForm.securityCode.attributes} encoding="off"/>
+            <isprint value=${pdict.paymentForm.securityCode.attributes} encoding="htmlsinglequote"/>
         <div class="invalid-feedback"></div>
     </div>
 
@@ -135,7 +135,7 @@
 		<label class="form-control-label" for="firstName">
 			<isprint value="${pdict.paymentForm.addressFields.firstName.label}" encoding="htmlcontent" />
 		</label>
-		<input type="text" class="form-control" id="firstName" <isprint value="${pdict.paymentForm.addressFields.firstName.attributes}" encoding="off" />
+		<input type="text" class="form-control" id="firstName" <isprint value="${pdict.paymentForm.addressFields.firstName.attributes}" encoding="htmlsinglequote" />
             autocomplete="given-name">
 		<div class="invalid-feedback"></div>
 	</div>
@@ -146,7 +146,7 @@
 		<label class="form-control-label" for="lastName">
 			<isprint value="${pdict.paymentForm.addressFields.lastName.label}" encoding="htmlcontent" />
 		</label>
-		<input type="text" class="form-control" id="lastName" <isprint value="${pdict.paymentForm.addressFields.lastName.attributes}" encoding="off" />
+		<input type="text" class="form-control" id="lastName" <isprint value="${pdict.paymentForm.addressFields.lastName.attributes}" encoding="htmlsinglequote" />
            autocomplete="family-name">
 		<div class="invalid-feedback"></div>
 	</div>
@@ -155,7 +155,7 @@
 		<label class="form-control-label" for="address1">
 			<isprint value="${pdict.paymentForm.addressFields.address1.label}" encoding="htmlcontent" />
 		</label>
-		<input type="text" class="form-control" id="address1" <isprint value="${pdict.paymentForm.addressFields.address1.attributes}" encoding="off" />
+		<input type="text" class="form-control" id="address1" <isprint value="${pdict.paymentForm.addressFields.address1.attributes}" encoding="htmlsinglequote" />
             autocomplete="address-line1">
 		<div class="invalid-feedback"></div>
 	</div>
@@ -164,7 +164,7 @@
 		<label class="form-control-label" for="address2">
 			<isprint value="${pdict.paymentForm.addressFields.address2.label}" encoding="htmlcontent" />
 		</label>
-		<input type="text" class="form-control" id="address2" <isprint value="${pdict.paymentForm.addressFields.address2.attributes}" encoding="off" />
+		<input type="text" class="form-control" id="address2" <isprint value="${pdict.paymentForm.addressFields.address2.attributes}" encoding="htmlsinglequote" />
             autocomplete="billing address-line2">
 		<div class="invalid-feedback"></div>
 	</div>            
@@ -174,7 +174,7 @@
 	    	<isprint value="${pdict.paymentForm.addressFields.country.label}" encoding="htmlcontent" />
 	    </label>
        <select class="form-control custom-select" id="billingCountry"
-           <isprint value=${pdict.paymentForm.addressFields.country.attributes} encoding="off"/>
+           <isprint value=${pdict.paymentForm.addressFields.country.attributes} encoding="htmlsinglequote"/>
            autocomplete="billing country">
                <option label=" "></option>
                <isloop items=${pdict.paymentForm.addressFields.country.options} var="country">
@@ -193,7 +193,7 @@
 	            	<isprint value="${pdict.paymentForm.addressFields.states.stateCode.label}" encoding="htmlcontent" />
 	            </label>
 	            <select class="form-control custom-select" id="billingState"
-	                <isprint value=${pdict.paymentForm.addressFields.states.stateCode.attributes} encoding="off"/>
+	                <isprint value=${pdict.paymentForm.addressFields.states.stateCode.attributes} encoding="htmlsinglequote"/>
 	                autocomplete="billing address-level1">
 	                    <isloop items=${pdict.paymentForm.addressFields.states.stateCode.options} var="state">
 	                        <option id="${state.id}"  value="${state.htmlValue}">
@@ -210,7 +210,7 @@
 	            	<label class="form-control-label" for="billingAddressCity">
 	            		<isprint value="${pdict.paymentForm.addressFields.city.label}" encoding="htmlcontent" />
 	            	</label>
-	            <input type="text" class="form-control" id="billingAddressCity" <isprint value=${pdict.paymentForm.addressFields.city.attributes} encoding="off"/>
+	            <input type="text" class="form-control" id="billingAddressCity" <isprint value=${pdict.paymentForm.addressFields.city.attributes} encoding="htmlsinglequote"/>
 	                autocomplete="billing address-level2">
 				<div class="invalid-feedback"></div>
 	        </div>
@@ -221,7 +221,7 @@
 		<label class="form-control-label" for="postalCode">
 			<isprint value="${pdict.paymentForm.addressFields.postalCode.label}" encoding="htmlcontent" />
 		</label>
-		<input type="text" class="form-control" id="postalCode" <isprint value="${pdict.paymentForm.addressFields.postalCode.attributes}" encoding="off" />
+		<input type="text" class="form-control" id="postalCode" <isprint value="${pdict.paymentForm.addressFields.postalCode.attributes}" encoding="htmlsinglequote" />
 			autocomplete="postal-code">
 		<div class="invalid-feedback"></div>
 	</div>
@@ -230,7 +230,7 @@
 		<label class="form-control-label" for="email">
 			<isprint value="${pdict.paymentForm.email.label}" encoding="htmlcontent" />
 		</label>
-		<input type="text" class="form-control" id="email" <isprint value="${pdict.paymentForm.email.attributes}" encoding="off" />>
+		<input type="text" class="form-control" id="email" <isprint value="${pdict.paymentForm.email.attributes}" encoding="htmlsinglequote" />>
 		<div class="invalid-feedback"></div>
 	</div>
 	</isif>

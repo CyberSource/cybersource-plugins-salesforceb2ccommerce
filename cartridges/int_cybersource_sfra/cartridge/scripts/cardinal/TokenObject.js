@@ -9,6 +9,9 @@
 //* @see {@link module:cartridge/scripts/cardinal/TokenObject~MyFunction} */
 // exports.MyFunction = myFunction;
 
+/**
+ * Function: TokenObject
+ */
 function TokenObject() {
     this.Token = '';
     this.CardCode = '';

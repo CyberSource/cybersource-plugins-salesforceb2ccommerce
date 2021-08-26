@@ -1,3 +1,5 @@
+'use strict';
+
 var countries = [{
     countryCode: 'US',
     name: {
@@ -1490,12 +1492,13 @@ var Locale = require('dw/util/Locale');
  * @return {array} allowedCountries array of countries that have allowed locales
  */
 function getCountries() {
+    // eslint-disable-next-line
     var site = dw.system.Site.getCurrent();
     var allowedLocales = site.getAllowedLocales();
     var allowedCountries = countries.filter(function (country) {
         var hasAllowedLocale = false;
         // loop over allowed locales
-        for (var i = 0; i < allowedLocales.length; i++) {
+        for (var i = 0; i < allowedLocales.length; i += 1) {
             var locale = Locale.getLocale(allowedLocales[i]);
             if (country.countryCode === locale.country) {
                 hasAllowedLocale = true;
@@ -1507,12 +1510,16 @@ function getCountries() {
     return allowedCountries;
 }
 
+/**
+ * getCountriesGroupedBy
+ * @param {Object} group group
+ * @returns {Object} countriesGrouped
+ */
 function getCountriesGroupedBy(group) {
-    var countries = getCountries();
     var countriesGrouped = {};
     countries.forEach(function (country) {
-        var key = country.hasOwnProperty(group) ? country[group] : undefined;
-        if (countriesGrouped.hasOwnProperty(key)) {
+        var key = Object.prototype.hasOwnProperty.call(country, group) ? country[group] : undefined;
+        if (Object.prototype.hasOwnProperty.call(countriesGrouped, key)) {
             countriesGrouped[key].push(country);
         } else {
             countriesGrouped[key] = [country];
@@ -1524,21 +1531,21 @@ function getCountriesGroupedBy(group) {
 /**
  * @description iterate over the countries array, find the first country that has the current locale
  * @param {PipelineDictionary} pdict the current pdict object
- * @return {object} country the object containing the country's settings
+ * @return {Object} country the object containing the country's settings
  */
 function getCurrent(pdict) {
     if (!countries || countries.length === 0) {
-        return;
+        return undefined;
     }
     var currentLocale = Locale.getLocale(pdict.CurrentRequest.locale);
     var country;
     if (!currentLocale.country) {
         return countries[0]; // return the first in the list if the requested one is not available
     }
-    for (var i = 0; i < countries.length; i++) {
-        var _country = countries[i];
-        if (_country.countryCode === currentLocale.country) {
-            country = _country;
+    for (var i = 0; i < countries.length; i += 1) {
+        var countryAtIndex = countries[i];
+        if (countryAtIndex.countryCode === currentLocale.country) {
+            country = countryAtIndex;
             break;
         }
     }

@@ -1,11 +1,11 @@
 'use strict';
 
 /**
-*@file 		  : File Name - CybersourceConstants
+*@file           : File Name - CybersourceConstants
 *@description : This script file is used to define the payment method names used
-* 				in this cartridge .
+*                 in this cartridge .
 *
-*@author	  :	Michael doss
+*@author      :    Michael doss
 *@created On  : 21 Jun 2018
 **********************************************************************************
 *@copyright  (C) 2018-2020 Cybersource.  All Rights Reserved.

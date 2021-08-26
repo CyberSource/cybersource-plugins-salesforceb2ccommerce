@@ -1,6 +1,7 @@
 'use strict';
 
-var cart = require('base/cart/cart');
+// var cart = require('base/cart/cart');
+/* eslint-disable no-undef */
 
 module.exports = function () {
     // cart();
@@ -23,8 +24,8 @@ module.exports = function () {
                 $('.minicart .popover').empty();
                 $('.minicart .popover').append(data);
 
-                var isPaypalEnabled = !!($('#paypal_enabled').length > 0 && document.getElementById('paypal_enabled').value == 'true');
-                var isGooglePayEnabled = !!($('#isGooglePayEnabled').length > 0 && $('#isGooglePayEnabled').val() == 'true');
+                var isPaypalEnabled = !!($('#paypal_enabled').length > 0 && document.getElementById('paypal_enabled').value === 'true');
+                var isGooglePayEnabled = !!($('#isGooglePayEnabled').length > 0 && $('#isGooglePayEnabled').val() === 'true');
 
                 if (isPaypalEnabled) {
                     paypalhelper.paypalMini();
@@ -52,15 +53,16 @@ module.exports = function () {
             event.stopPropagation();
             return;
         }
-        	if (!($(document).find('.paypal-checkout-sandbox').length > 0)) {
-        		$('.minicart .popover').empty();
-        		$('.minicart .popover').removeClass('show');
-        	}
+        if (!($(document).find('.paypal-checkout-sandbox').length > 0)) {
+            $('.minicart .popover').empty();
+            $('.minicart .popover').removeClass('show');
+        }
 
         event.stopImmediatePropagation();
     });
     $('body').on('change', '.minicart .quantity', function () {
         if ($(this).parents('.bonus-product-line-item').length && $('.cart-page').length) {
+            // eslint-disable-next-line
             location.reload();
         }
     });

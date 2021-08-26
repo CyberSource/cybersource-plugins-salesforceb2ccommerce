@@ -23,7 +23,7 @@
                         && pdict.order.billing.payment.selectedPaymentInstruments.length > 0
                         ? pdict.order.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber||''
                         : ''}"
-                    <isprint value=${creditFields.cardNumber.attributes} encoding="off"/>
+                    <isprint value=${creditFields.cardNumber.attributes} encoding="htmlsinglequote"/>
                     autocomplete="cc-number"
                 >
                 <div class="invalid-feedback"></div>
@@ -39,7 +39,7 @@
             ${creditFields.expirationMonth.htmlName}">
             <label class="form-control-label" for="expirationMonth">${Resource.msg('field.credit.card.expiration.month','creditCard',null)}</label>
             <select class="form-control expirationMonth custom-select" id="expirationMonth"
-            <isprint value=${creditFields.expirationMonth.attributes} encoding="off"/> autocomplete="cc-exp-month">
+            <isprint value=${creditFields.expirationMonth.attributes} encoding="htmlsinglequote"/> autocomplete="cc-exp-month">
                 <isloop items=${creditFields.expirationMonth.options} var="month">
                     <option id="${month.id}" value="${month.htmlValue}"
                         <isif condition="${pdict.order.billing.payment.selectedPaymentInstruments
@@ -60,7 +60,7 @@
             ${creditFields.expirationYear.htmlName}">
             <label class="form-control-label" for="expirationYear">${Resource.msg('field.credit.card.expiration.year','creditCard',null)}</label>
             <select class="form-control expirationYear custom-select" id="expirationYear"
-            <isprint value=${creditFields.expirationYear.attributes} encoding="off"/> autocomplete="cc-exp-year">
+            <isprint value=${creditFields.expirationYear.attributes} encoding="htmlsinglequote"/> autocomplete="cc-exp-year">
                 <option value="${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].htmlValue}">${pdict.forms.billingForm.creditCardFields.expirationYear.options[0].label}</option>
                 <isloop items=${pdict.expirationYears} var="year">
                     <option id="${year.toFixed(0)}" value="${year.toFixed(0)}"
@@ -91,7 +91,7 @@
             </span>
 
             <input type="text" class="form-control securityCode" id="securityCode"
-                <isprint value=${creditFields.securityCode.attributes} encoding="off"/> >
+                <isprint value=${creditFields.securityCode.attributes} encoding="htmlsinglequote"/> >
             <div class="invalid-feedback"></div>
         </div>
     </div>
@@ -111,7 +111,7 @@
 	            </span>
 	            <input type="text" class="form-control email" id="email"
 	                value="${(pdict.order.orderEmail
-	                ? pdict.order.orderEmail : (pdict.customer.profile != null ? pdict.customer.profile.email:''))}" <isprint value=${creditFields.email.attributes} encoding="off"/> >
+	                ? pdict.order.orderEmail : (pdict.customer.profile != null ? pdict.customer.profile.email:''))}" <isprint value=${creditFields.email.attributes} encoding="htmlsinglequote"/> >
 	            <div class="invalid-feedback"></div>
 	        
 	        </div>
@@ -131,7 +131,7 @@
 	            <input type="tel" class="form-control phone" id="phoneNumber"
 	                value="${pdict.order.billing.billingAddress.address
 	                ? pdict.order.billing.billingAddress.address.phone||''
-	                : ''}" <isprint value=${creditFields.phone.attributes} encoding="off"/> >
+	                : ''}" <isprint value=${creditFields.phone.attributes} encoding="htmlsinglequote"/> >
 	            <div class="invalid-feedback"></div>
 	        </div>
 	    </div>
@@ -167,7 +167,7 @@
 		            </button>
 		
 		            <input type="text" class="form-control email" id="email"
-		                value="${pdict.order.orderEmail||''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.email.attributes} encoding="off"/>
+		                value="${pdict.order.orderEmail||''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.email.attributes} encoding="htmlsinglequote"/>
 		                aria-describedby="emailInvalidMessage" >
 		            <div class="invalid-feedback" id="emailInvalidMessage"></div>
 		        </div>
@@ -189,7 +189,7 @@
 		            <input type="tel" class="form-control phone" id="phoneNumber"
 		                value="${pdict.order.billing.billingAddress.address
 		                ? pdict.order.billing.billingAddress.address.phone||''
-		                : ''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.phone.attributes} encoding="off"/>
+		                : ''}" <isprint value=${pdict.forms.billingForm.contactInfoFields.phone.attributes} encoding="htmlsinglequote"/>
 		                aria-describedby="phoneInvalidMessage" >
 		            <div class="invalid-feedback" id="phoneInvalidMessage"></div>
 		        </div>

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 'use strict';
 
 /**
@@ -53,7 +55,7 @@ function onGooglePayLoaded() {
     paymentsClient.isReadyToPay({ allowedPaymentMethods: allowedPaymentMethods })
         .then(function (response) {
             if (response.result) {
-        	// alert(response.result);
+            // alert(response.result);
                 addGooglePayButton();
                 prefetchGooglePaymentData();
             }
@@ -74,7 +76,7 @@ function addGooglePayButton() {
     var paymentsClient = getGooglePaymentsClient();
     var button = paymentsClient.createButton({ onClick: onGooglePaymentButtonClicked });
     if ($('#js-googlepay-container').length > 0) {
-	  document.getElementById('js-googlepay-container').appendChild(button);
+        document.getElementById('js-googlepay-container').appendChild(button);
     }
 }
 
@@ -169,22 +171,22 @@ function processPayment(paymentData) {
     var postdataUrl = window.googlepayval.sessionCallBack;
     var i = JSON.stringify(paymentData);
     var urlParams = {
-	  paymentData: JSON.stringify(paymentData)
+        paymentData: JSON.stringify(paymentData)
 
     };
 
     $.ajax({
-	  url: postdataUrl,
-	  type: 'post',
-	  dataType: 'json',
-	  data: urlParams,
-	  success: function (data) {
-	   if (data.status === 'success') {
-		   window.location.href = window.googlepayval.returnURL;
-	   } else {
-		   window.location.href = window.googlepayval.cartURL;
-		   }
-	   }
+        url: postdataUrl,
+        type: 'post',
+        dataType: 'json',
+        data: urlParams,
+        success: function (data) {
+            if (data.status === 'success') {
+                window.location.href = window.googlepayval.returnURL;
+            } else {
+                window.location.href = window.googlepayval.cartURL;
+            }
+        }
     });
     // pass payment data response to gateway to process payment
 }

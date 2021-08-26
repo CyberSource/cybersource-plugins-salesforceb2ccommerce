@@ -1,8 +1,10 @@
+/* eslint-disable */
+
 var init = {
     initConfig: function () {
-        var requestId; var billingAgreementFlag;		// A Flag to show whether user has opted for Billing Agreement or not
-        var billingAgreementButton;					// The Billing Agreement Checkbox
-        var billingAgreementID;						// Billing Agreement ID
+        var requestId; var billingAgreementFlag; // A Flag to show whether user has opted for Billing Agreement or not
+        var billingAgreementButton; // The Billing Agreement Checkbox
+        var billingAgreementID; // Billing Agreement ID
         var isPayPalCredit = false; var
             endPoint = $('#paypal_endpoint').length > 0 ? document.getElementById('paypal_endpoint').value : 'sandbox';
         var config = {
@@ -29,10 +31,10 @@ var init = {
                 billingAgreementFlag = (billingAgreementButton == null) ? false : billingAgreementButton.checked;
                 // Append a parameter to URL when Billing Agreement is checked
                 if (billingAgreementFlag) {
-                    CREATE_URL = CREATE_URL + '?billingAgreement=true';
+                    CREATE_URL += '?billingAgreement=true';
                 } else if (isPayPalCredit) {
                 // Append a parameter to URL when PayPal Credit is used
-                    CREATE_URL = CREATE_URL + '?isPayPalCredit=true';
+                    CREATE_URL += '?isPayPalCredit=true';
                 }
                 return paypal.request.post(CREATE_URL)
                     .then(function (res) {
@@ -70,8 +72,8 @@ var init = {
         var locale = $('#currentLocale').length > 0 ? document.getElementById('currentLocale').value : '';
         var config = init.initConfig();
         config.paymentOption = {
-        	express: true,
-        	credit: false
+            express: true,
+            credit: false
         };
         config.locale = locale;
         if (isPaypalEnabled && $('.paypal-button-container-cart1').length > 0) {
@@ -85,15 +87,15 @@ var init = {
         }
         // Settings for PayPal Credit Card Button
         if (isPaypalEnabled && $('#paypal-credit-container').length > 0) {
-    	var creditConfig = init.initConfig();
+            var creditConfig = init.initConfig();
             creditConfig.style = {
                 label: 'credit',
                 size: 'small', // small | medium
                 shape: 'rect' // pill | rect
             };
             creditConfig.paymentOption = {
-        	express: false,
-        	credit: true
+                express: false,
+                credit: true
             };
             creditConfig.locale = locale;
             paypal.Button.render(creditConfig, '#paypal-credit-container');
@@ -111,7 +113,7 @@ var init = {
             e.stopImmediatePropagation();
             var formaction = $(this).attr('data-action');
             setTimeout(function () {
-		  window.location.href = formaction;
+                window.location.href = formaction;
             }, 500);
         });
 
@@ -178,27 +180,27 @@ var init = {
         * is displayed on the the page. This function handles the action of that button.
         * This functions directly calls checkstatusservice
     */
-   	$(document).on('click', '.billingAgreementExpressCheckout', function (e) {
+        $(document).on('click', '.billingAgreementExpressCheckout', function (e) {
             e.preventDefault();
             var paypalcallback = document.getElementById('paypal_callback').value;
             var form = $('<form action="' + paypalcallback + '" method="post">'
-            		+ '</form>');
+                    + '</form>');
             $('body').append(form);
             form.submit();
         });
 
         $(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .gpy, .eps, .sof, .mch, .idl , .klarna, .wechat', function (e) {
             e.stopImmediatePropagation();
-    	var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
-    	var paymentMethodID = $('input[name=dwfrm_billing_paymentMethod]').val();
-    	var paymentMethodIds = ['KLARNA', 'ALIPAY', 'GPY', 'EPS', 'SOF', 'IDL', 'MCH', 'WECHAT'];
+            var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
+            var paymentMethodID = $('input[name=dwfrm_billing_paymentMethod]').val();
+            var paymentMethodIds = ['KLARNA', 'ALIPAY', 'GPY', 'EPS', 'SOF', 'IDL', 'MCH', 'WECHAT'];
             var paymentMethod = $.inArray(paymentMethodID, paymentMethodIds) > -1;
-    	if ((CsSaType != 'CREDIT_CARD' && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
-    		var formaction = $(this).attr('data-action');
+            if ((CsSaType != 'CREDIT_CARD' && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
+                var formaction = $(this).attr('data-action');
                 setTimeout(function () {
-			  window.location.href = formaction;
+                    window.location.href = formaction;
                 }, 500);
-      	}
+            }
         });
 
         /**
@@ -208,37 +210,38 @@ var init = {
         $(document).on('click', '.sa_iframe', function (e) {
             e.stopImmediatePropagation();
             var creditCardItem = $('li[data-method-id="CREDIT_CARD"]');
-    	var CsSaType = $(creditCardItem).attr('data-sa-type');
-    	if (CsSaType == 'SA_IFRAME') {
-    		var formaction = $(this).attr('data-action');
-    			 $.ajax({
-    					url: formaction,
-    					type: 'POST',
-    					success: function (xhr, data) {
-    						if (xhr) {
-    							if (xhr.error == true) {
-    								 $('#saspCardError').html(xhr.errorMsg);
-    								 $('#saspCardError').addClass('error');
-    							} else {
-    								  $('#secureAcceptanceIframe').html(xhr);
-    						   }
-    						} else {
-    				        	 $('#saspCardError').html(xhr.errorMsg);
-    							 $('#saspCardError').addClass('error');
-    				        }
-    						return true;
-    					},
-    				    error: function () {
-    				    	 $('#saspCardError').html(xhr.errorMsg).addClass('error');
-    					}
-    			  });
-    	} else {
-    		return true;
-    	}
+            var CsSaType = $(creditCardItem).attr('data-sa-type');
+            if (CsSaType == 'SA_IFRAME') {
+                var formaction = $(this).attr('data-action');
+                $.ajax({
+                    url: formaction,
+                    type: 'POST',
+                    success: function (xhr, data) {
+                        if (xhr) {
+                            if (xhr.error == true) {
+                                $('#saspCardError').html(xhr.errorMsg);
+                                $('#saspCardError').addClass('error');
+                            } else {
+                                $('#secureAcceptanceIframe').html(xhr);
+                                document.getElementById('submit-order').classList.add('d-none');
+                            }
+                        } else {
+                            $('#saspCardError').html(xhr.errorMsg);
+                            $('#saspCardError').addClass('error');
+                        }
+                        return true;
+                    },
+                    error: function () {
+                        $('#saspCardError').html(xhr.errorMsg).addClass('error');
+                    }
+                });
+            } else {
+                return true;
+            }
         });
 
         $('#capturepaymenttype, #authreversalpaymenttype').change(function () {
-            if ($(this).val() == 'visacheckout')	{
+            if ($(this).val() == 'visacheckout') {
                 $('#orderRequestID').attr('required', 'required');
                 $('.orderRequestID').removeClass('hidden').addClass('show');
             } else {
@@ -248,19 +251,19 @@ var init = {
         });
 
         if ($('#checkout-main').attr('data-checkout-stage') === 'placeOrder') {
-    	var placeOrderBtn = $('#checkout-main').find('#submit-order');
-    	$(placeOrderBtn).closest('.row').find('.next-step-button').removeClass('next-step-button');
+            var placeOrderBtn = $('#checkout-main').find('#submit-order');
+            $(placeOrderBtn).closest('.row').find('.next-step-button').removeClass('next-step-button');
         }
     }
 };
 
 var paypalhelper = {
     paypalMini: function () {
-    	var config = init.initConfig();
-    	var locale = $('#currentLocale').length > 0 ? document.getElementById('currentLocale').value : '';
-    	config.paymentOption = {
-        	express: true,
-        	credit: false
+        var config = init.initConfig();
+        var locale = $('#currentLocale').length > 0 ? document.getElementById('currentLocale').value : '';
+        config.paymentOption = {
+            express: true,
+            credit: false
         };
         config.locale = locale;
         var isPaypalEnabled = false;
@@ -272,11 +275,11 @@ var paypalhelper = {
         }
     },
     validateForms: function () {
-    	var currentForm = $('data-checkout-stage').attr('data-checkout-stage');
-    	if (currentForm == 'payment') {
-    		false;
-    	} return true;
-    },
+        var currentForm = $('data-checkout-stage').attr('data-checkout-stage');
+        if (currentForm == 'payment') {
+            false;
+        } return true;
+    }
 };
 
 var paypalvalidator = {
@@ -309,19 +312,19 @@ var paypalvalidator = {
     loadFormErrors: function (parentSelector, fieldErrors) {
         $.each(fieldErrors, function (attr) {
             $('*[name=' + attr + ']', parentSelector).addClass('is-invalid').siblings('.invalid-feedback').html(fieldErrors[attr]);
-    	});
+        });
     },
 
     paypalMini: function () {
-    	var config = init.initConfig();
-    	var isPaypalEnabled = document.getElementById('paypal_enabled').value;
-    	if (isPaypalEnabled && $('.paypal-button-container-mini').length > 0) {
+        var config = init.initConfig();
+        var isPaypalEnabled = document.getElementById('paypal_enabled').value;
+        if (isPaypalEnabled && $('.paypal-button-container-mini').length > 0) {
             paypal.Button.render(config, '.paypal-button-container-mini');
         }
     },
     validateAddress: function (callback) {
-    	 var paymentForm = $('#dwfrm_billing').serialize();
-    	 $.ajax({
+        var paymentForm = $('#dwfrm_billing').serialize();
+        $.ajax({
             method: 'POST',
             async: false,
             data: paymentForm,
@@ -330,7 +333,7 @@ var paypalvalidator = {
                 callback(data);
             },
             error: function (err) {
-            },
+            }
         });
     },
     onChangeForm: function (handler) {
@@ -343,6 +346,6 @@ $(document).ready(function () {
     init.initPayPalButtons();
     init.initFunctions();
     if ($('#isGooglePayEnabled').val() == 'true') {
-    	onGooglePayLoaded();
+        onGooglePayLoaded();
     }
 });

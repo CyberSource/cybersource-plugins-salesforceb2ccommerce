@@ -13,7 +13,7 @@
                 </div>
             </span>
             <input type="text" class="form-control email" id="email"
-                value="${pdict.order.orderEmail||''}" <isprint value=${paypalFields.paypalEmail.attributes} encoding="off"/> >
+                value="${pdict.order.orderEmail||''}" <isprint value=${paypalFields.paypalEmail.attributes} encoding="htmlsinglequote"/> >
             <div class="invalid-feedback"></div>
         </div>
     </div>
@@ -31,7 +31,7 @@
             <input type="tel" class="form-control phone" id="phoneNumber"
                 value="${pdict.order.billing.billingAddress.address
                 ? pdict.order.billing.billingAddress.address.phone||''
-                : ''}" <isprint value=${paypalFields.paypalPhone.attributes} encoding="off"/> >
+                : ''}" <isprint value=${paypalFields.paypalPhone.attributes} encoding="htmlsinglequote"/> >
             <div class="invalid-feedback"></div>
         </div>
     </div>

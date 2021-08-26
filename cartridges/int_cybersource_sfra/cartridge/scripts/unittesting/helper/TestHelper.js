@@ -2,10 +2,11 @@
 
 /**
  * Creates testing billing address  for the application.
+ * @returns {Object} obj
  */
 function CreateCyberSourceBillToObject() {
-    var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
-    var billToObject = new BillTo_Object();
+    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var billToObject = new BillToObject();
 
     billToObject.setTitle('This is the Title');
     billToObject.setFirstName('Donald');
@@ -26,10 +27,11 @@ function CreateCyberSourceBillToObject() {
 
 /**
  * Creates testing shipping address  for the application.
+ * @returns {Object} Object
  */
 function CreateCyberSourceShipToObject() {
-    var ShipTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
-    var shipToObject = new ShipTo_Object();
+    var ShipToObject = require('~/cartridge/scripts/cybersource/CybersourceShipToObject');
+    var shipToObject = new ShipToObject();
     shipToObject.setTitle('This is the Title');
     shipToObject.setFirstName('Donald');
     shipToObject.setLastName('Rivard');
@@ -47,25 +49,26 @@ function CreateCyberSourceShipToObject() {
 
 /**
  * Creates the testing purchase Object where currency is passed in arguments for the application.
- * @param args : having currency value.
+ * @param {Object} args : having currency value.
+ * @returns {Object} Object
  */
 function CreateCyberSourcePurchaseTotalsObject(args) {
-    var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
-    var purchaseObject = new PurchaseTotals_Object();
+    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var purchaseObject = new PurchaseTotalsObject();
 
     /**
-	* It is mandatory for all Vme services.
-	*
-	* */
+    * It is mandatory for all Vme services.
+    *
+    * */
     if (undefined !== args && args.currency) {
         purchaseObject.setCurrency(args.currency);
     } else {
         purchaseObject.setCurrency('USD');
     }
     /** *
-	 * It is mandatory for Vme confirm purchase (The actual total amount of an order required here), Vme Transaction Details, optional for all services
-	 *
-	 * */
+     * It is mandatory for Vme confirm purchase (The actual total amount of an order required here), Vme Transaction Details, optional for all services
+     *
+     * */
     var amount;
     if (undefined !== args && args.amount) {
         amount = parseFloat(args.amount);
@@ -81,16 +84,17 @@ function CreateCyberSourcePurchaseTotalsObject(args) {
 
 /**
  * Creates the testing purchase Object for Tax where currency is passed in arguments for the application.
- * @param args : having currency value.
+ * @param {Object} args : having currency value.
+ * @returns {Object} Object
  */
 function CreateCyberSourcePurchaseTotalsObjectTax(args) {
-    var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
-    var purchaseObject = new PurchaseTotals_Object();
+    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var purchaseObject = new PurchaseTotalsObject();
 
     /**
-	* It is mandatory for all Vme services.
-	*
-	* */
+    * It is mandatory for all Vme services.
+    *
+    * */
     if (undefined !== args && args.currency) {
         purchaseObject.setCurrency(args.currency);
     } else {
@@ -101,10 +105,11 @@ function CreateCyberSourcePurchaseTotalsObjectTax(args) {
 
 /**
  * Creates the testing Payment Card  Object for the application.
+ * @returns {Object} Object
  */
 function CreateCyberSourcePaymentCardObject() {
-    var Card_Object = require('~/cartridge/scripts/cybersource/Cybersource_Card_Object');
-    var cardObject = new Card_Object();
+    var CardObject = require('~/cartridge/scripts/cybersource/CybersourceCardObject');
+    var cardObject = new CardObject();
     cardObject.setAccountNumber('4000000000000002');
     cardObject.setCardType('001');
     cardObject.setFullName('Donald Rivard');
@@ -117,16 +122,17 @@ function CreateCyberSourcePaymentCardObject() {
 
 /**
  * Creates testing billing object to check the missing field check.
- * @param InvalidFields : boolean.
- * @param MissingFields : boolean.
+ * @param {Object} InvalidFields : boolean.
+ * @param {Object} MissingFields : boolean.
+ * @returns {Object} Object
  */
-
-function CreateMockCybersourceBillToObject(InvalidFields: Boolean, MissingFields: Boolean) {
-    var BillTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_BillTo_Object');
-    var billToObject = new BillTo_Object();
+function CreateMockCybersourceBillToObject(InvalidFields, MissingFields) {
+    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var billToObject = new BillToObject();
 
     billToObject.setFirstName('Peter');
     billToObject.setLastName('Pritchard');
+    // eslint-disable-next-line
     if (!empty(InvalidFields) && InvalidFields.valueOf()) {
         billToObject.setStreet1('xxxxxxxxxxxxxx');
     } else {
@@ -135,6 +141,7 @@ function CreateMockCybersourceBillToObject(InvalidFields: Boolean, MissingFields
     billToObject.setStreet2('');
     billToObject.setCity('Billerica');
     billToObject.setState('MA');
+    // eslint-disable-next-line
     if (!empty(MissingFields) && MissingFields.valueOf()) {
         billToObject.setPostalCode('');
     } else {
@@ -152,16 +159,17 @@ function CreateMockCybersourceBillToObject(InvalidFields: Boolean, MissingFields
 
 /**
  * Creates testing shipping object to check the missing field check.
- * @param InvalidFields : boolean.
- * @param MissingFields : boolean.
+ * @param {Object} InvalidFields : boolean.
+ * @param {Object} MissingFields : boolean.
+ * @returns {Object} obj
  */
-
-function CreateMockCybersourceShipToObject(InvalidFields: Boolean, MissingFields: Boolean) {
-    var ShipTo_Object = require('~/cartridge/scripts/cybersource/Cybersource_ShipTo_Object');
-    var shipToObject = new ShipTo_Object();
+function CreateMockCybersourceShipToObject(InvalidFields, MissingFields) {
+    var ShipToObject = require('~/cartridge/scripts/cybersource/CybersourceShipToObject');
+    var shipToObject = new ShipToObject();
 
     shipToObject.setFirstName('Peter');
     shipToObject.setLastName('Pritchard');
+    // eslint-disable-next-line
     if (!empty(InvalidFields) && InvalidFields.valueOf()) {
         shipToObject.setStreet1('xxxxxxxxxxxxxx');
     } else {
@@ -170,6 +178,7 @@ function CreateMockCybersourceShipToObject(InvalidFields: Boolean, MissingFields
     shipToObject.setStreet2('');
     shipToObject.setCity('Billerica');
     shipToObject.setState('MA');
+    // eslint-disable-next-line
     if (!empty(MissingFields) && MissingFields.valueOf()) {
         shipToObject.setPostalCode('');
     } else {
@@ -185,15 +194,34 @@ function CreateMockCybersourceShipToObject(InvalidFields: Boolean, MissingFields
 }
 
 /**
- * Creates objet to check the taxation service.
+ * function creates items for testing purpose.
+ * @returns {Object} obj
  */
+function getLineItems() {
+    var ArrayList = require('dw/util/ArrayList');
+    var items = new ArrayList();
+    var MockLineItemObject = require('~/cartridge/scripts/cybersource/LineItemObject');
+    var item = new MockLineItemObject();
+    item.basePrice = '109.00';
+    item.quantity = '5';
+    item.lineItemClass = 'dw.order.ProductLineItem';
+    item.productName = 'foobar is my name';
+    item.productID = '11111111';
+    item.productCode = '';
+    items.add(item);
+    return items.iterator();
+}
 
+/**
+ * Creates objet to check the taxation service.
+* @returns {Object} obj
+ */
 function CreateCybersourceTaxationItems() {
     var ArrayList = require('dw/util/ArrayList');
     var itemMap = new ArrayList();
     var lineItems = getLineItems();
     var items = [];
-    var idcount: Number = 0;
+    var idcount = 0;
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     while (lineItems.hasNext()) {
@@ -223,6 +251,7 @@ function CreateCybersourceTaxationItems() {
             item.productSKU = 'PriceAdjustment';
             item.productCode = 'coupon';
         }
+        // eslint-disable-next-line
         item.id = idcount++;
         items.push(item);
     }
@@ -230,23 +259,9 @@ function CreateCybersourceTaxationItems() {
 }
 
 /**
- * function creates items for testing purpose.
+ * createTaxRequest
+ * @returns {Object} obj
  */
-function getLineItems(): Iterator {
-    var ArrayList = require('dw/util/ArrayList');
-    var items = new ArrayList();
-    var MockLineItem_Object = require('~/cartridge/scripts/cybersource/LineItemObject');
-    var item = new MockLineItem_Object();
-    item.basePrice = '109.00';
-    item.quantity = '5';
-    item.lineItemClass = 'dw.order.ProductLineItem';
-    item.productName = 'foobar is my name';
-    item.productID = '11111111';
-    item.productCode = '';
-    items.add(item);
-    return items.iterator();
-}
-
 function createTaxRequest() {
     var responseObject;
     var BasketMgr = require('dw/order/BasketMgr');
@@ -259,15 +274,16 @@ function createTaxRequest() {
             var productInCart;
             var shipment = basket.defaultShipment;
             var productListItems = basket.productLineItems;
-            for (var q = 0; q < basket.productLineItems.length; q++) {
+            for (var q = 0; q < basket.productLineItems.length; q += 1) {
                 if (productListItems[q].productID === product.ID) {
                     productInCart = productListItems[q];
                     break;
                 }
             }
             if (!productInCart) {
-                var productLineItem = basket.createProductLineItem(product, null, shipment);
+                basket.createProductLineItem(product, null, shipment);
             }
+            // eslint-disable-next-line
             dw.system.HookMgr.callHook('dw.order.calculate', 'calculate', basket);
         }
     });
@@ -289,6 +305,7 @@ function createTaxRequest() {
         var defaultShippingMethod = ShippingMgr.getDefaultShippingMethod();
 
         defaultShipment.setShippingMethod(defaultShippingMethod);
+        // eslint-disable-next-line
         dw.system.HookMgr.callHook('dw.order.calculate', 'calculate', basket);
         var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
         var TaxFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
@@ -297,6 +314,7 @@ function createTaxRequest() {
 
     return responseObject;
 }
+
 module.exports = {
     CreateCyberSourceBillToObject: CreateCyberSourceBillToObject,
     CreateCyberSourceShipToObject: CreateCyberSourceShipToObject,

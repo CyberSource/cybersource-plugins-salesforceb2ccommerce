@@ -1,3 +1,6 @@
+'use strict';
+
+// eslint-disable-next-line
 window.jQuery = window.$ = require('jquery');
 var processInclude = require('base/util');
 

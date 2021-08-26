@@ -65,6 +65,7 @@ base.submitPayment = function () {
                         $('.paymentInstruments').html(toInsert);
                     }
                 } else {
+                    // eslint-disable-next-line
                     location.href = data.redirectUrl;
                 }
             },

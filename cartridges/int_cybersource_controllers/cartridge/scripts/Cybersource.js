@@ -240,7 +240,7 @@ function saveCreditCard() {
     }
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     if (customer.authenticated && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value 
-    		&& app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value.equals(PaymentInstrument.METHOD_CREDIT_CARD)) {
+    		&& (app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value.equals(PaymentInstrument.METHOD_CREDIT_CARD) || app.getForm('billing').object.paymentMethods.selectedPaymentMethodID.value.equals(CybersourceConstants.METHOD_SA_FLEX))) {
     	var enableTokenization = Site.getCurrent().getCustomPreferenceValue("CsTokenizationEnable").value;
 	    subscriptionID = CommonHelper.GetSubscriptionToken( app.getForm('billing').object.paymentMethods.creditCard.selectedCardID.value, customer);
     	if (empty(subscriptionID) && enableTokenization =='YES' ) {
