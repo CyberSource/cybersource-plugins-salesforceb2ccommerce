@@ -9,6 +9,9 @@
 //* @see {@link module:cartridge/scripts/cardinal/CartItemObject~MyFunction} */
 // exports.MyFunction = myFunction;
 
+/**
+ * Function: CartItemObject
+ */
 function CartItemObject() {
     this.Name = '';
     this.SKU = '';

@@ -16,7 +16,7 @@
                  ${Resource.msg('tooltip.email','creditCard',null)}
             </div>
         </span>
-        <input type="text" class="form-control email" id="email" <isprint value=${pdict.forms.billingForm.klarnaEmail.attributes} encoding="off"/> />
+        <input type="text" class="form-control email" id="email" <isprint value=${pdict.forms.billingForm.klarnaEmail.attributes} encoding="htmlsinglequote"/> />
         <div class="invalid-feedback"></div>
     </div>
 

@@ -1,6 +1,5 @@
 'use strict';
 
-var dwsvc = require('dw/svc');
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
@@ -13,18 +12,22 @@ var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
  * @param orderNo : String
  */
 
+// eslint-disable-next-line
 function CCAuthRequest(Basket, OrderNo, IPAddress) {
     var basket = Basket;
     var orderNo = OrderNo;
 
-    var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
-    var data = session.forms.visacheckout.encryptedPaymentData.value;
-    var callID = session.forms.visacheckout.callId.value;
+    /* eslint-disable */
+    var wrappedKey = session.forms.visaCheckout.encryptedPaymentWrappedKey.value;
+    var data = session.forms.visaCheckout.encryptedPaymentData.value;
+    var callID = session.forms.visaCheckout.callId.value;
+    /* eslint-enable */
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     //* *************************************************************************//
     // Set WebReference & Stub
     //* *************************************************************************//
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -47,12 +50,12 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
     result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
     purchaseObject = result.purchaseTotals;
     result = CommonHelper.CreateCybersourceItemObject(basket);
-    var items : dw.util.List = result.items;
+    var items = result.items;
 
     /** ***************************** */
     /* TOKEN-related WebService setup */
     /** ***************************** */
-    var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+    var enableTokenization = CybersourceHelper.getTokenizationEnabled();
     if (enableTokenization === 'YES') {
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, null, OrderNo);
     }
@@ -99,7 +102,7 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -108,8 +111,10 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     Logger.debug(response);
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || !'OK'.equals(serviceResponse.status)) {
         Logger.error('[VisaCheckoutFacade.js] CCAuthRequest Error : null response');
         return { error: true, errorMsg: 'empty or error in test CCAuthRequest response: ' + serviceResponse };
@@ -125,26 +130,31 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
 
 /**
  * This method decrypt the data for the visa checkout functionality.
- * @param wrappedKey : Object
- * @param data : Object
- * @param orderNo : String
+ * @param {Object} orderNo orderNo
+ * @param {Object} wrappedKey wrappedKey
+ * @param {Object} data data
+ * @param {Object} callID callID
+ * @returns {Object} obj
  */
-
 function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     CybersourceHelper.addVCDecryptRequestInfo(serviceRequest, orderNo, wrappedKey, data);
     CybersourceHelper.addVCOrderID(serviceRequest, callID);
     var serviceResponse = null;
+    var address2;
+    var firstName;
+    var lastName;
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -152,6 +162,7 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
         Logger.error('[VisaCheckoutFacade.js] Error in VCDecryptRequest request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
+    // eslint-disable-next-line
     if (empty(serviceResponse) || !'OK'.equals(serviceResponse.status)) {
         Logger.error('[VisaCheckoutFacade.js] response in VCDecryptRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in VCDecryptRequest response: ' + serviceResponse };
@@ -163,14 +174,19 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     responseObject.ReasonCode = serviceResponse.reasonCode.get();
     responseObject.Decision = serviceResponse.decision;
     responseObject.MerchantReferenceCode = serviceResponse.merchantReferenceCode;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.purchaseTotals)) {
         responseObject.PurchaseTotalsCurrency = serviceResponse.purchaseTotals.currency;
     }
+    // eslint-disable-next-line
     responseObject.decryptVisaCheckoutDataReply = (!empty(serviceResponse.decryptVisaCheckoutDataReply)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.decryptVisaCheckoutDataReply)) {
         responseObject.VCDecryptReasonCode = serviceResponse.decryptVisaCheckoutDataReply.reasonCode.get();
     }
+    // eslint-disable-next-line
     responseObject.vcReply = (!empty(serviceResponse.vcReply)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.vcReply)) {
         responseObject.VCXID = serviceResponse.vcReply.xid;
         responseObject.VCParesTimeStamp = serviceResponse.vcReply.paresTimeStamp;
@@ -193,23 +209,29 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
         responseObject.VCPaymentInstrumentID = serviceResponse.vcReply.paymentInstrumentID;
         responseObject.VCCardVerificationStatus = serviceResponse.vcReply.cardVerificationStatus;
         responseObject.VCCardType = serviceResponse.vcReply.cardType;
+        // eslint-disable-next-line
         responseObject.cardArt = (!empty(serviceResponse.vcReply.cardArt)) ? 'exists' : null;
+        // eslint-disable-next-line
         if (!empty(serviceResponse.vcReply.cardArt)) {
             responseObject.VCCardArtFileName = serviceResponse.vcReply.cardArt.fileName;
             responseObject.VCCardArtHeight = serviceResponse.vcReply.cardArt.height;
             responseObject.VCCardArtWidth = serviceResponse.vcReply.cardArt.width;
         }
     }
+    // eslint-disable-next-line
     responseObject.card = (!empty(serviceResponse.card)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.card)) {
         responseObject.ExpirationMonth = serviceResponse.card.expirationMonth;
         responseObject.ExpirationYear = serviceResponse.card.expirationYear;
         responseObject.CardSuffix = serviceResponse.card.suffix;
     }
+    // eslint-disable-next-line
     responseObject.shipTo = (!empty(serviceResponse.shipTo)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.shipTo)) {
         responseObject.shipTo_Address1 = serviceResponse.shipTo.street1;
-        var address2 = serviceResponse.shipTo.street2 != null ? serviceResponse.shipTo.street2 : '';
+        address2 = serviceResponse.shipTo.street2 != null ? serviceResponse.shipTo.street2 : '';
         address2 = serviceResponse.shipTo.street3 != null ? ', ' + serviceResponse.shipTo.street3 : address2;
         address2 = serviceResponse.shipTo.street4 != null ? ', ' + serviceResponse.shipTo.street4 : address2;
         responseObject.shipTo_Address2 = address2;
@@ -223,16 +245,18 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
         responseObject.shipTo_Email = serviceResponse.shipTo.email;
         responseObject.shipTo_ShippingMethod = serviceResponse.shipTo.shippingMethod;
         responseObject.shipTo_AddressVerificationStatus = serviceResponse.shipTo.addressVerificationStatus;
-        var firstName = serviceResponse.shipTo.firstName == null ? serviceResponse.shipTo.name.split(' ')[0] : serviceResponse.shipTo.firstName;
-        var lastName = serviceResponse.shipTo.lastName != null ? serviceResponse.shipTo.lastName : null;
+        firstName = serviceResponse.shipTo.firstName == null ? serviceResponse.shipTo.name.split(' ')[0] : serviceResponse.shipTo.firstName;
+        lastName = serviceResponse.shipTo.lastName != null ? serviceResponse.shipTo.lastName : null;
         lastName = lastName == null && serviceResponse.shipTo.name.indexOf(' ') >= 0 ? serviceResponse.shipTo.name.substring(serviceResponse.shipTo.name.indexOf(' ')) : '';
         responseObject.shipTo_FirstName = firstName;
         responseObject.shipTo_LastName = lastName;
     }
+    // eslint-disable-next-line
     responseObject.billTo = (!empty(serviceResponse.billTo)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.billTo)) {
         responseObject.billTo_Address1 = serviceResponse.billTo.street1;
-        var address2 = serviceResponse.billTo.street2 != null ? serviceResponse.billTo.street2 : '';
+        address2 = serviceResponse.billTo.street2 != null ? serviceResponse.billTo.street2 : '';
         address2 = serviceResponse.billTo.street3 != null ? ', ' + serviceResponse.billTo.street3 : address2;
         address2 = serviceResponse.billTo.street4 != null ? ', ' + serviceResponse.billTo.street4 : address2;
         responseObject.billTo_Address2 = address2;
@@ -244,8 +268,8 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
         responseObject.billTo_Company = serviceResponse.billTo.company;
         responseObject.billTo_Phone = serviceResponse.billTo.phoneNumber;
         responseObject.billTo_Email = serviceResponse.billTo.email;
-        var firstName = serviceResponse.billTo.firstName == null ? serviceResponse.billTo.name.split(' ')[0] : serviceResponse.billTo.firstName;
-        var lastName = serviceResponse.billTo.lastName != null ? serviceResponse.billTo.lastName : null;
+        firstName = serviceResponse.billTo.firstName == null ? serviceResponse.billTo.name.split(' ')[0] : serviceResponse.billTo.firstName;
+        lastName = serviceResponse.billTo.lastName != null ? serviceResponse.billTo.lastName : null;
         lastName = lastName == null && serviceResponse.billTo.name.indexOf(' ') >= 0 ? serviceResponse.billTo.name.substring(serviceResponse.billTo.name.indexOf(' ')) : '';
         responseObject.billTo_FirstName = firstName;
         responseObject.billTo_LastName = lastName;
@@ -255,37 +279,39 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
 
 /**
  * This method is called when payer authorization is required along with CC validation.Service response is send to the calling method.
- * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
- * @param Amount : Money
- * @param orderNo : String
+ * @param {dw.order.LineItemCtnr} LineItemCtnrObj contains object of basket or order
+ * @param {Money} Amount Amount
+ * @param {Object} OrderNo orderNo
+ * @returns {Object} obj
  */
-
 function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     var lineItemCtnrObj = LineItemCtnrObj;
     var amount = Amount;
-    var orderNo : String = OrderNo;
+    var orderNo = OrderNo;
 
     if (lineItemCtnrObj == null) {
         Logger.error('[VisaCheckoutFacade.js] Please provide a Basket!');
         return { error: true };
     }
 
-    var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
-    var data = session.forms.visacheckout.encryptedPaymentData.value;
-    var callID = session.forms.visacheckout.callId.value;
+    /* eslint-disable */
+    var wrappedKey = session.forms.visaCheckout.encryptedPaymentWrappedKey.value;
+    var data = session.forms.visaCheckout.encryptedPaymentData.value;
+    var callID = session.forms.visaCheckout.callId.value;
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var deviceType = CommonHelper.getDeviceType(request);
+    /* eslint-enable */
 
     CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest, orderNo, null, null, amount, null, LineItemCtnrObj.billingAddress.phone, deviceType);
 
     // Objects to set in the Service Request inside facade
-    var shipTo; var billTo; var
-        purchaseObject;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var shipTo;
+    var billTo;
+    var purchaseObject;
     var result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnrObj);
     shipTo = result.shipTo;
     result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
@@ -293,11 +319,11 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnrObj);
     purchaseObject = result.purchaseTotals;
     result = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
-    var items : dw.util.List = result.items;
+    var items = result.items;
     /** ***************************** */
     /* TOKEN-related WebService setup */
     /** ***************************** */
-    var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+    var enableTokenization = CybersourceHelper.getTokenizationEnabled();
     if (enableTokenization === 'YES') {
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, null, OrderNo);
     }
@@ -334,7 +360,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -342,6 +368,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
         Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthEnrollCheck request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
+    // eslint-disable-next-line
     if (empty(serviceResponse) || !'OK'.equals(serviceResponse.status)) {
         Logger.error('[VisaCheckoutFacade.js] response in PayerAuthEnrollCheck response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayerAuthEnrollCheck response: ' + serviceResponse };
@@ -352,7 +379,9 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
     responseObject = result.responseObject;
+    // eslint-disable-next-line
     responseObject.payerAuthEnrollReply = (!empty(serviceResponse.payerAuthEnrollReply)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.payerAuthEnrollReply)) {
         responseObject.PAReasonCode = serviceResponse.payerAuthEnrollReply.reasonCode.get();
         responseObject.PACommerceIndicator = serviceResponse.payerAuthEnrollReply.commerceIndicator;
@@ -369,15 +398,18 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
 
 /**
  * This method is called when payer authorization and validation is done and CC validation is also done .Service response is send to the calling method.
- * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
- * @param PaRes : String
- * @param Amount : Money
- * @param orderNo : String
+ * @param {dw.order.LineItemCtnr} LineItemCtnrObj  contains object of basket or order
+ * @param {Object} PaRes PaRes
+ * @param {Money} Amount Amount
+ * @param {Object} OrderNo orderNo
+ * @param {Object} processorTransactionId processorTransactionId
+ * @returns {Object} obj
  */
-function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtnr, PaRes : String, Amount : dw.value.Money, OrderNo : String, processorTransactionId : String) {
+function PayerAuthValidationCCAuthRequest(LineItemCtnrObj, PaRes, Amount, OrderNo, processorTransactionId) {
     var lineItemCtnrObj = LineItemCtnrObj;
     var orderNo = OrderNo;
     var amount = Amount;
+    // eslint-disable-next-line
     var signedPaRes = !empty(PaRes) ? dw.util.StringUtils.trim(PaRes) : '';
     // var signedPaRes : String =PaRes;
     signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g', '');
@@ -387,11 +419,13 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var wrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
-    var data = session.forms.visacheckout.encryptedPaymentData.value;
-    var callID = session.forms.visacheckout.callId.value;
+    /* eslint-disable */
+    var wrappedKey = session.forms.visaCheckout.encryptedPaymentWrappedKey.value;
+    var data = session.forms.visaCheckout.encryptedPaymentData.value;
+    var callID = session.forms.visaCheckout.callId.value;
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
+    /* eslint-enable */
 
     CybersourceHelper.addPayerAuthValidateInfo(serviceRequest, orderNo, signedPaRes, null, amount, null, processorTransactionId);
 
@@ -406,11 +440,11 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
     result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnrObj);
     purchaseObject = result.purchaseTotals;
     result = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
-    var items : dw.util.List = result.items;
+    var items = result.items;
     /** ***************************** */
     /* TOKEN-related WebService setup */
     /** ***************************** */
-    var enableTokenization : String = CybersourceHelper.getTokenizationEnabled();
+    var enableTokenization = CybersourceHelper.getTokenizationEnabled();
     if (enableTokenization === 'YES') {
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, null, OrderNo);
     }
@@ -427,7 +461,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -436,6 +470,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[VisaCheckoutFacade.js] response in PayerAuthValidation response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayerAuthValidation response: ' + serviceResponse };
@@ -446,7 +481,9 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
     responseObject = result.responseObject;
+    // eslint-disable-next-line
     responseObject.payerAuthValidateReply = (!empty(serviceResponse.payerAuthValidateReply)) ? 'exists' : null;
+    // eslint-disable-next-line
     if (!empty(serviceResponse.payerAuthValidateReply)) {
         responseObject.AuthenticationResult = serviceResponse.payerAuthValidateReply.authenticationResult;
         responseObject.AuthenticationStatusMessage = serviceResponse.payerAuthValidateReply.authenticationStatusMessage;
@@ -463,15 +500,15 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj : dw.order.LineItemCtn
 
 /**
  * Load Visa Checkout Button via remote include where get th button settings from site preferences.
+ * @returns {Object} result
  */
-
 function ButtonDisplay() {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
     var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive();
     if (isVisaCheckout) {
-    	var buttonsource = !empty(request.httpParameterMap.buttonsource.value) ? request.httpParameterMap.buttonsource.value : 'cart';
-    	// set the response header (X-FRAME-OPTIONS) to prevent clickjacking
+        // set the response header (X-FRAME-OPTIONS) to prevent clickjacking
+        // eslint-disable-next-line
         response.addHttpHeader('X-FRAME-OPTIONS', 'SAMEORIGIN');
         // Visa Checkout Button settings query string from site preferences
         var result = VisaCheckoutHelper.GetButtonDisplaySettings();
@@ -482,33 +519,36 @@ function ButtonDisplay() {
 
 /**
  * Visa Checkout Capture call is made to cybersource and response is sent back.
- * @param requestID : Capture request ID, which is same as that of VC Authorize service
- * @param merchantRefCode : Cybersource Merchant Reference Code
- * @param paymentType : Payment Type for Capture
- * @param purchaseTotal : Order total for current request
- * @param currency :
- * @param orderid : Order No
+ * @param {Object} requestID Capture request ID, which is same as that of VC Authorize service
+ * @param {Object} merchantRefCode Cybersource Merchant Reference Code
+ * @param {Object} paymentType Payment Type for Capture
+ * @param {Object} purchaseTotal Order total for current request
+ * @param {Object} currency currency
+ * @param {Object} orderid Order No
+ * @returns {Object} obj
  */
-
 function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal, currency, orderid) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
     purchaseObject = purchaseObject.purchaseTotals;
     serviceRequest.purchaseTotals = libCybersource.copyPurchaseTotals(purchaseObject);
-	 // Adding Payment Solution in Request For Visa Checkout
+    // Adding Payment Solution in Request For Visa Checkout
     serviceRequest.paymentSolution = paymentType;
     libCybersource.setClientData(serviceRequest, merchantRefCode);
     // get the order object from OrderMgr class
+    // eslint-disable-next-line
     var order = dw.order.OrderMgr.getOrder(orderid);
     // Fetch the payment Instrument for the placed order
     var paymentinstr = CardHelper.getNonGCPaymemtInstument(order);
+    // eslint-disable-next-line
     if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
         CybersourceHelper.addVCOrderID(serviceRequest, paymentinstr.custom.callId);
     }
@@ -518,6 +558,7 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Capture', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -529,7 +570,7 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -538,6 +579,7 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[VisaCheckoutFacade.js] response in VCCaptureRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in VCCaptureRequest response: ' + serviceResponse };
@@ -548,30 +590,33 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
 
 /**
  * Visa Checkout AuthReversalService call is made to cybersource and response if send back.
- * @param requestID :
- * @param amount : order total
- * @param merchantRefCode : cybersource reference number
- * @param paymentType : payment type
- * @currency : currency used
- * @param orderid : Order No
+ * @param {Object} requestID requestID
+ * @param {Object} merchantRefCode cybersource reference number
+ * @param {Object} paymentType payment type
+ * @param {Currency} currency currency used
+ * @param {Object} amount order total
+ * @param {Object} orderid Order No
+ * @returns {Object} obj
  */
 function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
     purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
-    	serviceRequest.purchaseTotals = purchaseTotals;
+    serviceRequest.purchaseTotals = purchaseTotals;
     // Adding Payment Solution in Request For Visa Checkout
     serviceRequest.paymentSolution = paymentType;
     // get the order object from OrderMgr class
-   	var order = dw.order.OrderMgr.getOrder(orderid);
+    // eslint-disable-next-line
+    var order = dw.order.OrderMgr.getOrder(orderid);
     // Fetch the payment Instrument for the placed order
     var paymentinstr = CardHelper.getNonGCPaymemtInstument(order);
+    // eslint-disable-next-line
     if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
         CybersourceHelper.addVCOrderID(serviceRequest, paymentinstr.custom.callId);
     }
@@ -582,6 +627,7 @@ function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'AuthReversal', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -590,38 +636,41 @@ function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency
     // send request
     var serviceResponse = null;
     try {
-	        // create request,make service call and store returned response
-	        var service = CSServices.CyberSourceTransactionService;
+        // create request,make service call and store returned response
+        var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-		    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
-	  	} catch (e) {
-	        Logger.error('[VisaCheckoutFacade.js] Error in VCAuthReversalService: {0}', e.message);
-	        return { error: true, errorMsg: e.message };
-	    }
+    } catch (e) {
+        Logger.error('[VisaCheckoutFacade.js] Error in VCAuthReversalService: {0}', e.message);
+        return { error: true, errorMsg: e.message };
+    }
 
-	    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-	        return { error: true, errorMsg: 'empty or error in VC auth reversal service response: ' + serviceResponse };
-	    }
-	    if (!empty(serviceResponse)) {
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        return { error: true, errorMsg: 'empty or error in VC auth reversal service response: ' + serviceResponse };
+    }
+    // eslint-disable-next-line
+    if (!empty(serviceResponse)) {
         serviceResponse = serviceResponse.object;
-	    }
+    }
 
-	    return serviceResponse;
+    return serviceResponse;
 }
 
 /**
  * VC Credit call is made to cybersource and response is sent back.
- * @param requestID : Capture request ID, which is same as that of CC Authorize service
- * @param merchantRefCode : Cybersource Merchant Reference Code
- * @param paymentType : Payment Type for Credit
- * @param purchaseTotal : Order total for current request
- * @param currency :
- * @param orderid : Order No
+ * @param {Object} requestID Capture request ID, which is same as that of CC Authorize service
+ * @param {Object} merchantRefCode Cybersource Merchant Reference Code
+ * @param {Object} paymentType Payment Type for Credit
+ * @param {Object} purchaseTotal Order total for current request
+ * @param {Object} currency currency
+ * @param {Object} orderid Order No
+ * @returns {Object} serviceResponse
  */
 function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal, currency, orderid) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
@@ -629,6 +678,7 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -638,9 +688,11 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     // Adding Payment Solution in Request For Visa Checkout
     serviceRequest.paymentSolution = paymentType;
     // get the order object from OrderMgr class
-   	var order = dw.order.OrderMgr.getOrder(orderid);
+    // eslint-disable-next-line
+    var order = dw.order.OrderMgr.getOrder(orderid);
     // Fetch the payment Instrument for the placed order
     var paymentinstr = CardHelper.getNonGCPaymemtInstument(order);
+    // eslint-disable-next-line
     if (!empty(order.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
         CybersourceHelper.addVCOrderID(serviceRequest, paymentinstr.custom.callId);
     }
@@ -651,6 +703,7 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Credit', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -662,7 +715,7 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -671,6 +724,7 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[VisaCheckoutFacade.js] response in VCCreditRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in VCCreditRequest response: ' + serviceResponse };

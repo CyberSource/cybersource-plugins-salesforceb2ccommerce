@@ -1,23 +1,24 @@
 'use strict';
 
-var dwsvc = require('dw/svc');
+// var dwsvc = require('dw/svc');
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+// eslint-disable-next-line
+var csReference = webreferences2.CyberSourceTransaction;
+
 /**
  * This method create the input for the cybersource credit card payment method, validates it and gets response from the service.
- * @param LineItemCtnrObj : dw.order.LineItemCtnr
- * @param IPAddress : Client Ip address
- * @param orderNo : String
- * @param SubscriptionID : String
- * @param payerEnrollResponse : Object
- * @param payerValidationResponse : Object
- * @param ReadFromBasket : boolean
+ * @param {*} Basket Basket
+ * @param {*} OrderNo OrderNo
+ * @param {*} IPAddress IPAddress
+ * @param {*} SubscriptionID SubscriptionID
+ * @param {*} payerEnrollResponse payerEnrollResponse
+ * @param {*} payerValidationResponse payerValidationResponse
+ * @param {*} ReadFromBasket ReadFromBasket
+ * @returns {*} obj
  */
-
-function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddress : String, SubscriptionID:String,
-    payerEnrollResponse : Object, payerValidationResponse : Object, ReadFromBasket : Boolean)
-{
+function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollResponse, payerValidationResponse, ReadFromBasket) {
     var basket = Basket;
     var orderNo = OrderNo;
 
@@ -28,13 +29,13 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
         Logger.error('Please provide a Basket!');
         return { error: true };
     }
-    var PaymentInstrument = require('dw/order/PaymentInstrument');
+    // var PaymentInstrument = require('dw/order/PaymentInstrument');
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var Site = require('dw/system/Site');
-    var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
+    // var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    // var Site = require('dw/system/Site');
+    // var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // Objects to set in the Service Request inside facade
@@ -51,21 +52,21 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
     result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
     purchaseObject = result.purchaseTotals;
     result = CommonHelper.CreateCybersourceItemObject(basket);
-    var items : dw.util.List = result.items;
+    var items = result.items;
 
     //* *************************************************************************//
     // Set WebReference & Stub
     //* *************************************************************************//
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
 
     var serviceRequest = new csReference.RequestMessage();
     //* *************************************************************************//
     // the request object holds the input parameter for the OnDemand Subscription request
     //* *************************************************************************//
+    // eslint-disable-next-line
     if (!empty(SubscriptionID)) {
         CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
-    }
-    else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
+    } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
     }
 
@@ -96,13 +97,14 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
     var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
     //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
+    // eslint-disable-next-line
     if (!empty(basket.getPaymentInstruments())) {
         paymentInstrument = basket.getPaymentInstruments()[0];
     }
     if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
-        if (enableDAV == 'YES') {
+        if (enableDAV === 'YES') {
             var ignoreDAVResult = false;
-            if (approveDAV == 'APPROVE') {
+            if (approveDAV === 'APPROVE') {
                 ignoreDAVResult = true;
             }
             CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
@@ -114,7 +116,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
         var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
 
         CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
-	 }
+    }
     /* End of AVS Service setup */
     CardHelper.writeOutDebugLog(serviceRequest, orderNo);
 
@@ -122,6 +124,7 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'CCAuth', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -130,37 +133,35 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
     // Execute Request
     //* *************************************************************************//
     var serviceResponse = null;
-    try
-    {
+    try {
         var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
-	   if (paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay) {
-		    serviceRequest.paymentSolution = '012';
-		    var csReference = webreferences2.CyberSourceTransaction;
-            var request_encryptedPayment = new csReference.EncryptedPayment();
-		     request_encryptedPayment.data = session.privacy.encryptedDataGP;
-		     serviceRequest.encryptedPayment = request_encryptedPayment;
-	   }
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        if (paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay) {
+            serviceRequest.paymentSolution = '012';
+            // var csReference = webreferences2.CyberSourceTransaction;
+            var requestEncryptedPayment = new csReference.EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = session.privacy.encryptedDataGP;
+            serviceRequest.encryptedPayment = requestEncryptedPayment;
+        }
 
         requestWrapper.request = serviceRequest;
 
         requestWrapper.merchantCredentials = merchantCrdentials;
 
         serviceResponse = service.call(requestWrapper);
-    }
-    catch (e)
-    {
+    } catch (e) {
         Logger.error('[CardFacade.js] Error in CCAuthRequest ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
 
     Logger.debug(serviceResponse);
 
-    if (empty(serviceResponse) || serviceResponse.status !== 'OK')
-    {
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[CardFacade.js] CCAuthRequest Error : null response');
         return { error: true, errorMsg: 'empty or error in test CCAuthRequest response: ' + serviceResponse };
     }
@@ -175,13 +176,12 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 
 /**
  * DAV request call is made to cybersource and response if send back.
- * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
- * @param bill To : billing address of the order
- * @param ship to : Shipping address of the order
+ * @param {*} Basket contains object of basket or order
+ * @param {*} billTo billing address of the order
+ * @param {*} shipTo Shipping address of the order
+ * @returns {*} obj
  */
-
-function DAVRequest(Basket : dw.order.LineItemCtnr, billTo : Object, shipTo : Object)
-{
+function DAVRequest(Basket, billTo, shipTo) {
     // read pipeline dictionary input parameter
     var basket = Basket;
 
@@ -196,7 +196,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr, billTo : Object, shipTo : Ob
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addDAVRequestInfo(serviceRequest, billToObject, shipToObject);
@@ -207,7 +207,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr, billTo : Object, shipTo : Ob
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -216,6 +216,7 @@ function DAVRequest(Basket : dw.order.LineItemCtnr, billTo : Object, shipTo : Ob
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[CardFacade.js] response in DAV response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in DAV response: ' + serviceResponse };
@@ -236,18 +237,17 @@ function DAVRequest(Basket : dw.order.LineItemCtnr, billTo : Object, shipTo : Ob
 
 /**
  * Payer Auth call is made to cybersource and response if send back.
- * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
- * @param amount : order total
- * @param OrderNo : Order number
- * @param CreditCardForm : details of the card
+ * @param {*} LineItemCtnrObj contains object of basket or order
+ * @param {*} Amount order total
+ * @param {*} OrderNo Order number
+ * @param {*} CreditCardForm details of the card
+ * @returns {*} obj
  */
-
-function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr, Amount : dw.value.Money, OrderNo : String, CreditCardForm)
-{
+function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) {
     var lineItemCtnrObj = LineItemCtnrObj;
     var amount = Amount;
     var creditCardForm = CreditCardForm;
-    var orderNo : String = OrderNo;
+    var orderNo = OrderNo;
 
     if ((lineItemCtnrObj === null || creditCardForm === null)) {
         Logger.error('[CardFacade.js] Please provide a Basket and the credit card form element!');
@@ -257,14 +257,24 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr, Amount : 
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
+    var SubscriptionID = paymentInstrument.getCreditCardToken();
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    // eslint-disable-next-line
     var deviceType = CommonHelper.getDeviceType(request);
     var billTo;
     var result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
     billTo = result.billTo;
+    result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnrObj);
+    var shipTo = result.shipTo;
+    result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
+    var cardObject = result.card;
+    result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnrObj);
+    var purchaseObject = result.purchaseTotals;
+    var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
+    var items = payerAuthsitems.items;
 
     CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest, orderNo, creditCardForm, lineItemCtnrObj.billingAddress.countryCode.value, amount, paymentInstrument.getCreditCardToken(), lineItemCtnrObj.billingAddress.phone, deviceType, billTo);
 
@@ -272,18 +282,50 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr, Amount : 
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'PayerAuthEnroll', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
     }
+    // eslint-disable-next-line
+    if (!empty(SubscriptionID)) {
+        CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
+    } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
+        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+    }
 
+    CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+    /** ***************************** */
+    /* DAV-related WebService setup */
+    /** ***************************** */
+
+    var enableDAV = CybersourceHelper.getDavEnable();
+    var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+    // eslint-disable-next-line
+    if (enableDAV == 'YES') {
+            var ignoreDAVResult = false;
+            // eslint-disable-next-line
+        if (approveDAV == 'APPROVE') {
+                ignoreDAVResult = true;
+            }
+            CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
+        }
+        /* End of DAV WebService setup */
+
+        /* AVS Service setup */
+        var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+        var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+        CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+    }
     var serviceResponse = null;
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -291,6 +333,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr, Amount : 
         Logger.error('[CardFacade.js] Error in PayerAuthEnrollCheck request ( {0} )', e.message);
         return { error: true, errorMsg: e.message };
     }
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[CardFacade.js] response in PayerAuthEnrollCheck response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayerAuthEnrollCheck response: ' + serviceResponse };
@@ -322,26 +365,38 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr, Amount : 
         responseObject.ParesStatus = serviceResponse.payerAuthEnrollReply.paresStatus;
         responseObject.ECIRaw = serviceResponse.payerAuthEnrollReply.eciRaw;
         responseObject.challengeCancelCode = serviceResponse.payerAuthEnrollReply.challengeCancelCode;
-        responseObject.authenticationStatusReason = (!empty(serviceResponse.payerAuthEnrollReply.authenticationStatusReason)) && ((serviceResponse.payerAuthEnrollReply.authenticationStatusReason).toString().length == 1) ? '0' + serviceResponse.payerAuthEnrollReply.authenticationStatusReason : serviceResponse.payerAuthEnrollReply.authenticationStatusReason;
+        // eslint-disable-next-line
+        responseObject.authenticationStatusReason = (!empty(serviceResponse.payerAuthEnrollReply.authenticationStatusReason)) && ((serviceResponse.payerAuthEnrollReply.authenticationStatusReason).toString().length === 1) ? '0' + serviceResponse.payerAuthEnrollReply.authenticationStatusReason : serviceResponse.payerAuthEnrollReply.authenticationStatusReason;
     }
 
     return { success: true, serviceResponse: responseObject };
 }
 
 /**
- * Payer Auth validation call is made to cybersource and response if send back.
- * @param PaRes :
- * @param amount : order total
- * @param OrderNo : Order number
- * @param CreditCardForm : details of the card
+ * Payer Auth validation call is made to cybersource and response if send back
+ * @param {*} PaRes PaRes
+ * @param {*} Amount order total
+ * @param {*} OrderNo Order number
+ * @param {*} CreditCardForm details of the card
+ * @param {*} CreditCardToken CreditCardToken
+ * @param {*} processorTransactionId processorTransactionId
+ * @param {*} billTo billTo
+ * @param {*} paymentInstrument paymentInstrument
+ * @param {*} shipTo shipTo
+ * @param {*} purchaseObject purchaseObject
+ * @param {*} items items
+ * @returns {*} obj
  */
-
-function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : String, CreditCardForm : dw.web.FormElement, CreditCardToken: String, processorTransactionId: String, billTo : Object)
-{
+function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardToken, processorTransactionId, billTo, paymentInstrument, shipTo, purchaseObject, items) {
     var orderNo = OrderNo;
     var amount = Amount;
     var creditCardForm = CreditCardForm;
-    var billTo = billTo;
+    // var billTo = billTo;
+    // eslint-disable-next-line
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var SubscriptionID = paymentInstrument.getCreditCardToken();
+    var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
+    // eslint-disable-next-line
     var signedPaRes = !empty(PaRes) ? dw.util.StringUtils.trim(PaRes) : '';
     signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g', '');
     //* *************************************************************************//
@@ -350,7 +405,7 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addPayerAuthValidateInfo(serviceRequest, orderNo, signedPaRes, creditCardForm, amount, CreditCardToken, processorTransactionId, billTo);
@@ -359,18 +414,50 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'PayerAuthValidation', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
     }
+    // eslint-disable-next-line
+    if (!empty(SubscriptionID)) {
+        CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
+    } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
+        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject.card, OrderNo);
+    }
 
+    CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject.card, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+    /** ***************************** */
+    /* DAV-related WebService setup */
+    /** ***************************** */
+
+    var enableDAV = CybersourceHelper.getDavEnable();
+    var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+        // eslint-disable-next-line
+        if (enableDAV == 'YES') {
+            var ignoreDAVResult = false;
+            // eslint-disable-next-line
+            if (approveDAV == 'APPROVE') {
+                ignoreDAVResult = true;
+            }
+            CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
+        }
+        /* End of DAV WebService setup */
+
+        /* AVS Service setup */
+        var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+        var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+        CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+    }
     var serviceResponse = null;
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -379,6 +466,7 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[CardFacade.js] response in PayerAuthValidation response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in PayerAuthValidation response: ' + serviceResponse };
@@ -389,6 +477,19 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
     responseObject.RequestID = serviceResponse.requestID;
     responseObject.RequestToken = serviceResponse.requestToken;
     responseObject.ReasonCode = serviceResponse.reasonCode.get();
+    responseObject.AuthorizationReasonCode = serviceResponse.reasonCode.get();
+    responseObject.DAVReasonCode = serviceResponse.reasonCode.get();
+    // eslint-disable-next-line
+    if (!empty(serviceResponse.ccAuthReply)) {
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.authorizationCode)) {
+            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.authorizationCode;
+        }
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.amount)) {
+            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.amount;
+        }
+    }
     responseObject.Decision = serviceResponse.decision;
     responseObject.payerAuthValidateReply = (serviceResponse.payerAuthValidateReply !== null) ? 'exists' : null;
     if (serviceResponse.payerAuthValidateReply !== null) {
@@ -406,7 +507,8 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
         responseObject.cavvAlgorithm = serviceResponse.payerAuthValidateReply.cavvAlgorithm;
         responseObject.effectiveAuthenticationType = serviceResponse.payerAuthValidateReply.effectiveAuthenticationType;
         responseObject.challengeCancelCode = serviceResponse.payerAuthValidateReply.challengeCancelCode;
-        responseObject.authenticationStatusReason = (!empty(serviceResponse.payerAuthValidateReply.authenticationStatusReason)) && ((serviceResponse.payerAuthValidateReply.authenticationStatusReason).toString().length == 1) ? '0' + serviceResponse.payerAuthValidateReply.authenticationStatusReason : serviceResponse.payerAuthValidateReply.authenticationStatusReason;
+        // eslint-disable-next-line
+        responseObject.authenticationStatusReason = (!empty(serviceResponse.payerAuthValidateReply.authenticationStatusReason)) && ((serviceResponse.payerAuthValidateReply.authenticationStatusReason).toString().length === 1) ? '0' + serviceResponse.payerAuthValidateReply.authenticationStatusReason : serviceResponse.payerAuthValidateReply.authenticationStatusReason;
         responseObject.acsTransactionID = serviceResponse.payerAuthValidateReply.acsTransactionID;
         responseObject.authorizationPayload = serviceResponse.payerAuthValidateReply.authorizationPayload;
     }
@@ -414,24 +516,25 @@ function PayerAuthValidation(PaRes : String, Amount : dw.value.Money, OrderNo : 
 }
 
 /**
- * CCAuthReversalService call is made to cybersource and response if send back.
- * @param requestID :
- * @param amount : order total
- * @param merchantRefCode : cybersource reference number
- * @param paymentType : payment type
- * @currency : currency used
+ * CCAuthReversalService call is made to cybersource and response if send back
+ * @param {*} requestID requestID
+ * @param {*} merchantRefCode cybersource reference number
+ * @param {*} paymentType payment type
+ * @param {*} currency currency used
+ * @param {*} amount order total
+ * @returns {*} obj
  */
 function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    // var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
     purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
-    	serviceRequest.purchaseTotals = purchaseTotals;
+    serviceRequest.purchaseTotals = purchaseTotals;
 
     // Create CCAuthReversal service reference for Credit Card
     CybersourceHelper.addCCAuthReversalServiceInfo(serviceRequest, merchantRefCode, requestID);
@@ -440,6 +543,7 @@ function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'AuthReversal', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -448,45 +552,47 @@ function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency
     // send request
     var serviceResponse = null;
     try {
-	        // create request,make service call and store returned response
-	        var service = CSServices.CyberSourceTransactionService;
+        // create request,make service call and store returned response
+        var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-		    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
-	  	} catch (e) {
-	        Logger.error('[CardFacade.js] Error in CCAuthReversalService: {0}', e.message);
-	        return { error: true, errorMsg: e.message };
-	    }
+    } catch (e) {
+        Logger.error('[CardFacade.js] Error in CCAuthReversalService: {0}', e.message);
+        return { error: true, errorMsg: e.message };
+    }
 
-	    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-	        return { error: true, errorMsg: 'empty or error in CC auth reversal service response: ' + serviceResponse };
-	    }
-	    if (!empty(serviceResponse)) {
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        return { error: true, errorMsg: 'empty or error in CC auth reversal service response: ' + serviceResponse };
+    }
+    // eslint-disable-next-line
+    if (!empty(serviceResponse)) {
         serviceResponse = serviceResponse.object;
-	    }
+    }
 
-	    return serviceResponse;
+    return serviceResponse;
 }
 
 /**
  * Credit Card Capture call is made to cybersource and response is sent back.
- * @param requestID : Capture request ID, which is same as that of CC Authorize service
- * @param merchantRefCode : Cybersource Merchant Reference Code
- * @param paymentType : Payment Type for Capture
- * @param purchaseTotal : Order total for current request
- * @param currency :
+ * @param {*} requestID Capture request ID, which is same as that of CC Authorize service
+ * @param {*} merchantRefCode Cybersource Merchant Reference Code
+ * @param {*} paymentType Payment Type for Capture
+ * @param {*} purchaseTotal Order total for current request
+ * @param {*} currency currency
+ * @returns {*} obj
  */
-
-function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String) {
+function CCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal, currency) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -500,6 +606,7 @@ function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentTyp
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Capture', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -511,7 +618,7 @@ function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentTyp
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -520,6 +627,7 @@ function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentTyp
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[CardFacade.js] response in CCCaptureRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in CCCaptureRequest response: ' + serviceResponse };
@@ -530,18 +638,19 @@ function CCCaptureRequest(requestID: String, merchantRefCode: String, paymentTyp
 
 /**
  * CC Credit call is made to cybersource and response is sent back.
- * @param requestID : Capture request ID, which is same as that of CC Authorize service
- * @param merchantRefCode : Cybersource Merchant Reference Code
- * @param paymentType : Payment Type for Credit
- * @param purchaseTotal : Order total for current request
- * @param currency :
+ * @param {*} requestID Capture request ID, which is same as that of CC Authorize service
+ * @param {*} merchantRefCode Cybersource Merchant Reference Code
+ * @param {*} paymentType Payment Type for Credit
+ * @param {*} purchaseTotal Order total for current request
+ * @param {*} currency currency
+ * @returns {*} obj
  */
-function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType: String, purchaseTotal : dw.value.Money, currency : String) {
+function CCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal, currency) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
-    var csReference = webreferences2.CyberSourceTransaction;
+    // var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -556,6 +665,7 @@ function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Credit', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -567,7 +677,7 @@ function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -576,12 +686,86 @@ function CCCreditRequest(requestID: String, merchantRefCode: String, paymentType
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[CardFacade.js] response in CCCaptureRequest response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in CCCaptureRequest response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
     return serviceResponse;
+}
+
+/**
+ * decisionManager call is made to cybersource and response is sent back.
+ * @param {*} Basket Basket
+ * @param {*} OrderNo Order number
+ * @param {*} ReadFromBasket ReadFromBasket
+ * @returns {*} obj
+ */
+function decisionManager(Basket, OrderNo, ReadFromBasket) {
+    var basket = Basket;
+    var orderNo = OrderNo;
+
+    //* *************************************************************************//
+    // Check if Basket exists
+    //* *************************************************************************//
+    if (basket === null) {
+        Logger.error('Please provide a Basket!');
+        return { error: true };
+    }
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // Objects to set in the Service Request inside facade
+    var billTo; var
+        shipTo;
+    var result = CommonHelper.CreateCyberSourceBillToObject(basket, ReadFromBasket);
+    billTo = result.billTo;
+    result = CommonHelper.CreateCybersourceShipToObject(basket);
+
+    shipTo = result.shipTo;
+
+    //* *************************************************************************//
+    // Set WebReference & Stub
+    //* *************************************************************************//
+    // var csReference = webreferences2.CyberSourceTransaction;
+
+    var serviceRequest = new csReference.RequestMessage();
+
+    result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
+    result = CommonHelper.CreateCybersourceItemObject(basket);
+    var items = result.items;
+
+    //* *************************************************************************//
+    // the request object holds the input parameter for the DM request
+    //* *************************************************************************//
+    CybersourceHelper.apDecisionManagerService(serviceRequest, billTo, shipTo, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+
+    //* *************************************************************************//
+    // Execute Request
+    //* *************************************************************************//
+    var serviceResponse = null;
+    try {
+        var service = CSServices.CyberSourceTransactionService;
+        // getting merchant id and key for specific payment method
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+        var requestWrapper = {};
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
+    } catch (e) {
+        Logger.error('[CardFacade.js] Error in DM service( {0} )', e.message);
+        return { error: true, errorMsg: e.message };
+    }
+    Logger.debug(serviceResponse);
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        Logger.error('[CardFacade.js] DM service Error : null response');
+        return { error: true, errorMsg: 'empty or error in test DM service response: ' + serviceResponse };
+    }
+    serviceResponse = serviceResponse.object;
+    return { success: true, serviceResponse: serviceResponse };
 }
 
 module.exports = {
@@ -591,5 +775,6 @@ module.exports = {
     DAVRequest: DAVRequest,
     CCAuthReversalService: CCAuthReversalService,
     CCCaptureRequest: CCCaptureRequest,
-    CCCreditRequest: CCCreditRequest
+    CCCreditRequest: CCCreditRequest,
+    DecisionManager: decisionManager
 };

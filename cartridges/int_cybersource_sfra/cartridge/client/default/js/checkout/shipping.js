@@ -25,10 +25,10 @@ base.methods.shippingFormResponse = function (defer, data) {
             defer.reject();
         }
     } else if (data.taxError) {
-    	$('.error-message').css({ display: 'block', 'margin-top': '0' });
-    	var errorPara = $('.error-message-text');
+        $('.error-message').css({ display: 'block', 'margin-top': '0' });
+        var errorPara = $('.error-message-text');
         if (errorPara.length > 0) {
-        	errorPara[0].innerText = data.taxErrorMsg;
+            errorPara[0].innerText = data.taxErrorMsg;
         }
         defer.reject();
     } else {

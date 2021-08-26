@@ -1,7 +1,13 @@
 'use strict';
 
+/* eslint-disable no-undef */
 var totalServiceCalls = 1;
 
+/**
+ * function
+ * @param {*} serviceCalls serviceCalls
+ * @param {*} enforceError enforceError
+ */
 function weChatCheckStatus(serviceCalls, enforceError) {
     var orderNumber = document.getElementById('orderNo').value;
     var request = { orderNo: orderNumber };
@@ -39,9 +45,10 @@ function weChatCheckStatus(serviceCalls, enforceError) {
                 window.location.href = data.redirectUrl;
             }
         },
+        // eslint-disable-next-line
         error: function (err) {
             $('.modal').spinner().stop();
-			 window.location.href = data.redirectUrl;
+            window.location.href = data.redirectUrl;
         }
     });
 }

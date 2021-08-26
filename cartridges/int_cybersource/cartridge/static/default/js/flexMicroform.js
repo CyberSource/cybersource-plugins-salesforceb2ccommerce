@@ -36,8 +36,15 @@ $(document).ready(function () {
   }
 
   function flexTokenCreation() {
-    var expMonth = $('.checkout-billing').find('select[name*="expiration_month"]').val();
-    var expYear = $('.checkout-billing').find('select[name*="expiration_year"]').val();
+	if($('.continue-place-order').length > 0) {
+	    var expMonth = $('.checkout-billing').find('select[name*="expiration_month"]').val();
+	    var expYear = $('.checkout-billing').find('select[name*="expiration_year"]').val();
+	    if (expMonth === '' || expYear === '') {
+	      return false;
+	    }
+	}
+    var expMonth = $('.field-wrapper').find('select[name*="expiration_month"]').val();
+    var expYear = $('.field-wrapper').find('select[name*="expiration_year"]').val();
     if (expMonth === '' || expYear === '') {
       return false;
     }
@@ -66,25 +73,38 @@ $(document).ready(function () {
         return true;
       }
       var decodedJwt = parseJwt(response);
-      $('.checkout-billing').find('input[name*="creditCard_flexresponse"]').val(decodedJwt.jti);
-      $('.checkout-billing').find('input[name*="_number"]').val(decodedJwt.data.number);
-      $('.continue-place-order').trigger('click');
+      if($('.continue-place-order').length > 0) {
+	      $('.checkout-billing').find('input[name*="creditCard_flexresponse"]').val(decodedJwt.jti);
+	      $('.checkout-billing').find('input[name*="_number"]').val(decodedJwt.data.number);
+	      $('.continue-place-order').trigger('click');
+      }
+      
+      $('.field-wrapper').find('input[name*="_newcreditcard_flexresponse"]').val(decodedJwt.jti);
+      $('.field-wrapper').find('input[name*="_number"]').val(decodedJwt.data.number);
+      $('#applyBtn').trigger('click');
+      
     });
     return true;
   }
 
-  
-
   // intercept the form submission and make a tokenize request instead
   $('.continue-place-order').on('click', function (event) {
-	  if($('input[name$="_selectedPaymentMethodID"]:checked').val() == 'SA_FLEX'){
+	  if($('input[name$="_selectedPaymentMethodID"]:checked').val() == 'SA_FLEX' && !$('#creditCardList').val()){
 	  $('.number-invalid-feedback').css('display', 'none');
 	  $('.securityCode-invalid-feedback').css('display', 'none');
-    if (($('.checkout-billing').find('input[name*="creditCard_flexresponse"]').val() === '' || $('.checkout-billing').find('input[name*="creditCard_flexresponse"]').val() === undefined)) {
-     
+      if (($('.checkout-billing').find('input[name*="creditCard_flexresponse"]').val() === '' || $('.checkout-billing').find('input[name*="creditCard_flexresponse"]').val() === undefined)) {
       flexTokenCreation();
       event.preventDefault();
-    }
+      }
+	  }
+  });
+  
+  $('#applyBtn').on('click', function (event) {
+	  $('.number-invalid-feedback').css('display', 'none');
+	  $('.securityCode-invalid-feedback').css('display', 'none');
+	  if ($('.field-wrapper').find('input[name*="_newcreditcard_flexresponse"]').val() === '' || $('.field-wrapper').find('input[name*="_newcreditcard_flexresponse"]').val() === undefined) {  
+	  flexTokenCreation();
+      event.preventDefault();
 	  }
   });
 });

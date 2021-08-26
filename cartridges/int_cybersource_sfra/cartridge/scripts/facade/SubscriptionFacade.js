@@ -1,7 +1,7 @@
 'use strict';
 
 var Logger = require('dw/system/Logger');
-var dwsvc = require('dw/svc');
+// var dwsvc = require('dw/svc');
 var UUIDUtils = require('dw/util/UUIDUtils');
 var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
@@ -9,17 +9,18 @@ var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * This function creates subscription on basis of billto,card object,amount and currency of the order.
- * @param purchaseTotals : Object having value of currency and amount.
- * @param bill To : billing address of the order
- * @param card : details of the card like name,account number, expiry year and month
+ * @param {*} billTo billing address of the order
+ * @param {*} card details of the card like name,account number, expiry year and month
+ * @param {*} purchaseTotals Object having value of currency and amount.
+ * @returns {*} obj
  */
-function CreateSubscription(billTo : Object, card : Object, purchaseTotals : Object)
-{
+function CreateSubscription(billTo, card, purchaseTotals) {
     var billToObject = billTo;
     var cardObject = card;
     var purchaseObject = purchaseTotals;
 
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -31,23 +32,23 @@ function CreateSubscription(billTo : Object, card : Object, purchaseTotals : Obj
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[subscriptionFacade.js] Error in subscription request ( {0} )', e.message);
-		 return { error: true, errorMsg: e.message };
+        return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
-		 return { error: true, errorMsg: 'empty or error in CreateSubscription response: ' + serviceResponse };
+        return { error: true, errorMsg: 'empty or error in CreateSubscription response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
     var createSubscriptionResponse = {};
 
-    if (serviceResponse.paySubscriptionCreateReply !== null)
-    {
+    if (serviceResponse.paySubscriptionCreateReply !== null) {
         createSubscriptionResponse.SubscriptionIDToken = serviceResponse.paySubscriptionCreateReply.subscriptionID;
     }
     createSubscriptionResponse.decision = serviceResponse.decision;
@@ -61,11 +62,12 @@ function CreateSubscription(billTo : Object, card : Object, purchaseTotals : Obj
 
 /**
  * This function deletes the  subscription on basis of its ID.
- * @param subscriptionID : unique value of the subscription.
+ * @param {*} subscriptionID unique value of the subscription.
+ * @returns {*} obj
  */
-function DeleteSubscription(subscriptionID)
-{
+function DeleteSubscription(subscriptionID) {
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -77,7 +79,7 @@ function DeleteSubscription(subscriptionID)
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -86,6 +88,7 @@ function DeleteSubscription(subscriptionID)
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         return { error: true };
     }
@@ -102,21 +105,22 @@ function DeleteSubscription(subscriptionID)
 
 /**
  * This function updates the  subscription on basis of subscription Id with updated values of billto,card object,amount and currency of the order.
- * @param purchaseTotals : Object having value of currency and amount.
- * @param bill To : billing address of the order
- * @param card : details of the card like name,account number, expiry year and month
- * @param subscriptionID : unique value of the subscription.
+ * @param {*} billTo billing address of the order
+ * @param {*} card details of the card like name,account number, expiry year and month
+ * @param {*} purchaseTotals Object having value of currency and amount.
+ * @param {*} storedSubscriptionID unique value of the subscription.
+ * @returns {*} obj
  */
-function UpdateSubscription(billTo : Object, card : Object, purchaseTotals : Object, storedSubscriptionID : String)
-{
+function UpdateSubscription(billTo, card, purchaseTotals, storedSubscriptionID) {
     var billToObject = billTo;
     var cardObject = card;
     var purchaseObject = purchaseTotals;
-    var storedSubscriptionID : String = storedSubscriptionID;
+    // var storedSubscriptionID = storedSubscriptionID;
 
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var subscriptionObject = {};
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -128,16 +132,16 @@ function UpdateSubscription(billTo : Object, card : Object, purchaseTotals : Obj
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
-    }
-    catch (e) {
+    } catch (e) {
         Logger.error('[UpdateSubscription.js] Error in Service Call', e.message);
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[UpdateSubscription.js] response is null');
         return { error: true };
@@ -160,14 +164,14 @@ function UpdateSubscription(billTo : Object, card : Object, purchaseTotals : Obj
 
 /**
  * This function fetches details of the particular subscription on basis of its ID.
- * @param subscriptionID : unique value of the subscription.
+ * @param {*} subscriptionID unique value of the subscription.
+ * @returns {*} obj
  */
-
-function ViewSubscription(subscriptionID)
-{
+function ViewSubscription(subscriptionID) {
     var subscriptionObject = {};
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -179,7 +183,7 @@ function ViewSubscription(subscriptionID)
         var service = CSServices.CyberSourceTransactionService;
         var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-	    serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
         requestWrapper.request = serviceRequest;
         requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
@@ -188,13 +192,13 @@ function ViewSubscription(subscriptionID)
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         return { error: true };
     }
 
     serviceResponse = serviceResponse.object;
-    if (serviceResponse.paySubscriptionRetrieveReply !== null)
-    {
+    if (serviceResponse.paySubscriptionRetrieveReply !== null) {
         subscriptionObject.response = serviceResponse.paySubscriptionRetrieveReply;
     }
     subscriptionObject.decision = serviceResponse.decision;

@@ -243,4 +243,16 @@
             display: block;
         }
     }
+
+    &[data-checkout-stage=shipping] {
+        button.paypal {
+            display: none;
+        }
+    }
+
+    &[data-checkout-stage=payment] {
+        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay,button.paypal, button.wechat {
+            display: none;
+        }
+    }
 }

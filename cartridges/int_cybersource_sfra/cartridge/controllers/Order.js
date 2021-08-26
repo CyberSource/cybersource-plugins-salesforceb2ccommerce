@@ -23,18 +23,19 @@ server.append('Confirm', function (req, res, next) {
 
     //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
+    // eslint-disable-next-line
     if (!empty(order.getPaymentInstruments())) {
         paymentInstrument = order.getPaymentInstruments()[0];
     }
 
     // Google Pay Credit Card Details
-    if (paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
+    if (paymentInstrument != null && paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
         var cardType = paymentInstrument.creditCardType;
         orderModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
         orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
     }
     // Visa Checkout Credit Card Details
-    if (paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)) {
+    if (paymentInstrument != null && paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)) {
         orderModel.resources.cardType = '';
         orderModel.resources.cardEnding = '';
         orderModel.billing.payment.selectedPaymentInstruments[0].type = paymentInstrument.creditCardType;
@@ -43,7 +44,7 @@ server.append('Confirm', function (req, res, next) {
         orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
     }
     viewData = {
-    	order: orderModel
+        order: orderModel
     };
     res.setViewData(viewData);
     next();
@@ -67,18 +68,19 @@ server.append('Details', function (req, res, next) {
 
     //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
+    // eslint-disable-next-line
     if (!empty(order.getPaymentInstruments())) {
         paymentInstrument = order.getPaymentInstruments()[0];
     }
 
     // Google Pay Credit Card Details
-    if (paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
+    if (paymentInstrument != null && paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
         var cardType = paymentInstrument.creditCardType;
         orderModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
         orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
     }
     // Visa Checkout Credit Card Details
-    if (paymentInstrument != null && paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)) {
+    if (paymentInstrument != null && paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)) {
         orderModel.resources.cardType = '';
         orderModel.resources.cardEnding = '';
         orderModel.billing.payment.selectedPaymentInstruments[0].type = paymentInstrument.creditCardType;
@@ -87,7 +89,7 @@ server.append('Details', function (req, res, next) {
         orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
     }
     viewData = {
-    	order: orderModel
+        order: orderModel
     };
     res.setViewData(viewData);
     next();

@@ -1,20 +1,23 @@
 'use strict';
 
 /* API includes */
+// eslint-disable-next-line
 var Logger = dw.system.Logger.getLogger('Cybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
 
 /**
-* This script call service to initiate payment for Alipay and set the response in response object
+ * This script call service to initiate payment for Alipay and set the response in response object
 * and also handles the logging of different error scenarios while making service call.
-* */
-
+ * @param {*} request request
+ * @returns {*} obj
+ */
 function AlipayInitiatePaymentRequest(request) {
-  	// create service stubs
-   	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-   	var CybersourceHelper = libCybersource.getCybersourceHelper();
-   	var csReference = webreferences2.CyberSourceTransaction;
+    // create service stubs
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // eslint-disable-next-line
+    var csReference = webreferences2.CyberSourceTransaction;
 
     // set alipay payment type to pass it as input in request
     var alipayPaymentType = CybersourceHelper.getAlipayPaymentType();
@@ -28,16 +31,21 @@ function AlipayInitiatePaymentRequest(request) {
     return serviceResponse;
 }
 
-/** ***************************************************************************
- * Name: RefundService
- * Description: Initiate refund CyberSource for Alipay order.
- * param : Request stub ,order object and Payment type
-*************************************************************************** */
+/**
+ * Initiate refund CyberSource for Alipay order.
+ * @param {*} requestID requestID
+ * @param {*} merchantRefCode merchantRefCode
+ * @param {*} paymentType paymentType
+ * @param {*} amount amount
+ * @param {*} currency currency
+ * @returns {*} obj
+ */
 function AliPayRefundService(requestID, merchantRefCode, paymentType, amount, currency) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
@@ -52,6 +60,7 @@ function AliPayRefundService(requestID, merchantRefCode, paymentType, amount, cu
     var HookMgr = require('dw/system/HookMgr');
     if (HookMgr.hasHook('app.cybersource.modifyrequest')) {
         var modifiedServiceRequest = HookMgr.callHook('app.cybersource.modifyrequest', 'Credit', serviceRequest);
+        // eslint-disable-next-line
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
@@ -72,6 +81,7 @@ function AliPayRefundService(requestID, merchantRefCode, paymentType, amount, cu
         return { error: true, errorMsg: e.message };
     }
 
+    // eslint-disable-next-line
     if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
         Logger.error('[AliPayFacade.js] response in AliPayRefundService response ( {0} )', serviceResponse);
         return { error: true, errorMsg: 'empty or error in AliPayRefundService response: ' + serviceResponse };

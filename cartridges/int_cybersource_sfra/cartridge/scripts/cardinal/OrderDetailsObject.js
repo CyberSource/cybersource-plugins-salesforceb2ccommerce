@@ -8,7 +8,9 @@
 
 //* @see {@link module:cartridge/scripts/cardinal/OrderDetailsObject~MyFunction} */
 // exports.MyFunction = myFunction;
-
+/**
+ * Function: OrderDetailsObject
+ */
 function OrderDetailsObject() {
     this.OrderNumber = '';
     this.Amount = '';

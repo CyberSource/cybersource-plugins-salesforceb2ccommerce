@@ -1,10 +1,34 @@
 'use strict';
 
+// eslint-disable-next-line
 var Logger = dw.system.Logger.getLogger('Cybersource');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var collections = require('*/cartridge/scripts/util/collections');
 
-function getOrderObject(Basket : dw.order.LineItemCtnr) {
+/**
+ * function
+ * @param {*} Obj Obj
+ */
+function deleteEmptyProperties(Obj) {
+    var object = Obj;
+    var value;
+
+    Object.keys(object).forEach(function (name) {
+        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+            value = object[name];
+            if (value === '' || value === null) {
+                delete object[name];
+            }
+        }
+    });
+}
+
+/**
+ * Function
+ * @param {*} Basket Basket
+ * @returns {*} obj
+ */
+function getOrderObject(Basket) {
     var basket = Basket;
 
     if (basket == null) {
@@ -14,12 +38,12 @@ function getOrderObject(Basket : dw.order.LineItemCtnr) {
 
     var OrderObject = require('~/cartridge/scripts/cardinal/OrderObject');
     var ConsumerObject = require('~/cartridge/scripts/cardinal/ConsumerObject');
-    var AddressObject = require('~/cartridge/scripts/cardinal/Billing_Shipping_AddressObject');
+    var AddressObject = require('~/cartridge/scripts/cardinal/BillingShippingAddressObject');
     var AccountObject = require('~/cartridge/scripts/cardinal/AccountObject');
     var TokenObject = require('~/cartridge/scripts/cardinal/TokenObject');
-    var OrderDetailsObject = require('~/cartridge/scripts/cardinal/OrderDetailsObject');
+    // var OrderDetailsObject = require('~/cartridge/scripts/cardinal/OrderDetailsObject');
     var CartItemObject = require('~/cartridge/scripts/cardinal/CartItemObject');
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    // var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     // var app = require(CybersourceConstants.APP);
 
     var orderObject = new OrderObject();
@@ -29,8 +53,9 @@ function getOrderObject(Basket : dw.order.LineItemCtnr) {
 
     var accountObject = new AccountObject();
     var tokenObject = new TokenObject();
-    var orderdetailsObject = new OrderDetailsObject();
+    // var orderdetailsObject = new OrderDetailsObject();
     var cartObject = new CartItemObject();
+    // eslint-disable-next-line
     var creditCardForm = session.forms.billing.creditCardFields;
     var cardSecurityCode = creditCardForm.securityCode.value;
 
@@ -48,10 +73,12 @@ function getOrderObject(Basket : dw.order.LineItemCtnr) {
         }
     }
 
+    // eslint-disable-next-line
     if (!empty(billingaddress) && !empty(basket)) {
         /* This if condition checks if billingAddress.address1 is present only for V.Me
-			* create the billingObject using billingAddress else it will create billingObject using shippingAddress
-			*/
+            * create the billingObject using billingAddress else it will create billingObject using shippingAddress
+            */
+        // eslint-disable-next-line
         if (!empty(billingaddress.address1)) {
             billingObject.setFullName(billingaddress.fullName);
             billingObject.setFirstName(billingaddress.firstName);
@@ -81,8 +108,9 @@ function getOrderObject(Basket : dw.order.LineItemCtnr) {
 
     deleteEmptyProperties(billingObject);
 
+    // eslint-disable-next-line
     if (!empty(shippingAddress)) {
-	 			shippingObject.setFullName(shippingAddress.fullName);
+        shippingObject.setFullName(shippingAddress.fullName);
         shippingObject.setFirstName(shippingAddress.firstName);
         shippingObject.setMiddleName(shippingAddress.secondName);
         shippingObject.setLastName(shippingAddress.lastName);
@@ -119,10 +147,9 @@ function getOrderObject(Basket : dw.order.LineItemCtnr) {
     collections.forEach(ccPaymentInstruments, function (pi) {
         //  for each (var pi in ccPaymentInstruments) {
         if (pi.paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) || pi.paymentMethod.equals(CybersourceConstants.METHOD_SA_SILENTPOST)
-			|| pi.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT))
-    	{
-    		paymentinstrument = pi;
-    	}
+            || pi.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
+            paymentinstrument = pi;
+        }
     });
 
     accountObject.setAccountNumber(paymentinstrument.creditCardNumber);
@@ -156,6 +183,12 @@ function getOrderObject(Basket : dw.order.LineItemCtnr) {
     return orderObject;
 }
 
+/**
+ * function
+ * @param {*} order order
+ * @param {*} transactionId transactionId
+ * @returns {*} obj
+ */
 function getOrderDetailsObject(order, transactionId) {
     var OrderDetailsObject = require('~/cartridge/scripts/cardinal/OrderDetailsObject');
     var orderdetailsObject = new OrderDetailsObject();
@@ -168,22 +201,6 @@ function getOrderDetailsObject(order, transactionId) {
     deleteEmptyProperties(orderdetailsObject);
 
     return orderdetailsObject;
-}
-
-function deleteEmptyProperties(object) {
-    var value;
-
-    for (var name : String in object)
-    {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1)
-        {
-            value = object[name];
-            if (value === '' || value === null)
-            {
-                delete object[name];
-            }
-        }
-    }
 }
 
 module.exports = {

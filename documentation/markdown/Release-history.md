@@ -1,5 +1,14 @@
 ## <ins>Release History
 
+**Version 21.2.0 (Aug 27, 2021)**
+•	We have updated credit card form page in the My Account page with Flex Microform v0.11 implementation. 
+•	We have updated the cartridge to make it compatible with Salesforce B2C Commerce release 21.2.
+•	We have implemented Decision manager in Payer Authentication call. 
+•	We have implemented standalone Decision manager service so merchants can call this service on demand.
+•	We have implemented standalone service for Capture, Credit, Auth reversal for Klarna. 
+•	We improved the quality of the code by linting.
+
+
 **Version 21.1.0 (Feb 15, 2021)**
 •	Provide an option to enable/disable cartridge via business manager configuration.
 •	Upgrade the cartridge to support SFRA v5.1.0

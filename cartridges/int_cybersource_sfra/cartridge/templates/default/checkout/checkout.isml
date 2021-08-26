@@ -51,7 +51,9 @@
                 </div>
 				
 				<iscomment>Secure Acceptance Error Display </iscomment>
-				<isif condition="${pdict.CurrentHttpParameterMap.SecureAcceptanceError != null && !empty(pdict.CurrentHttpParameterMap.SecureAcceptanceError.stringValue)}">
+				<isif condition="${pdict.CurrentHttpParameterMap.SecureAcceptanceError != null && (pdict.CurrentHttpParameterMap.SecureAcceptanceError.stringValue == '476')}">
+					<div class="alert alert-danger PlaceOrderError">${Resource.msg('error.payment.not.valid', 'checkout', null)}</div>
+				<iselseif condition="${pdict.CurrentHttpParameterMap.SecureAcceptanceError != null && !empty(pdict.CurrentHttpParameterMap.SecureAcceptanceError.stringValue)}">
 					<div class="alert alert-danger PlaceOrderError">${Resource.msg('error.technical','checkout',null)}</div>
 				<iselseif condition="${pdict.PlaceOrderError != null}">
 					<div class="alert alert-danger PlaceOrderError">${Resource.msg(pdict.PlaceOrderError.code,'checkout',null)}</div>

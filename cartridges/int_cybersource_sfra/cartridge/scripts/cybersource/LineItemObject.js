@@ -1,8 +1,10 @@
+'use strict';
+
 /**
 * LineItemObject.js
 * This Mock Object is used for the Cybersource Line Item xsd
 */
-function MockLineItem_Object() {
+function MockLineItemObject() {
     this.tax = '';
     this.grossPrice = '';
     this.product = '';
@@ -14,7 +16,7 @@ function MockLineItem_Object() {
     this.productCode = '';
     this.netPrice = '';
 }
-MockLineItem_Object.prototype = {
+MockLineItemObject.prototype = {
     setTax: function (value) {
         this.tax = value;
     },
@@ -25,6 +27,7 @@ MockLineItem_Object.prototype = {
     setGrossPrice: function (value) {
         this.grossPrice = value;
     },
+    // eslint-disable-next-line
     getGrossPrice: function (value) {
         return this.grossPrice;
     },
@@ -43,4 +46,4 @@ MockLineItem_Object.prototype = {
     }
 };
 
-module.exports = MockLineItem_Object;
+module.exports = MockLineItemObject;

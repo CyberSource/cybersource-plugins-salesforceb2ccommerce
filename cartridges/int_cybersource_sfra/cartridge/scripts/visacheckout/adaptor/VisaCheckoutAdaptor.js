@@ -15,30 +15,39 @@ var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstan
 
 var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/facade/VisaCheckoutFacade');
 var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
-/*
- * Method to display Visa checkout button
- */
 
+/**
+ * Method to display Visa checkout button
+ * @returns {Object} result - Settings for Button to Display
+ */
 function ButtonDisplay() {
+    var result;
     try {
-        var result = VisaCheckoutFacade.ButtonDisplay();
+        result = VisaCheckoutFacade.ButtonDisplay();
     } catch (err) {
         logger.error('Exception while executing ButtonDisplay in VisaCheckoutAdapter.js' + err);
-    } finally {
-        return result;
     }
+    return result;
 }
 
+/**
+ * GetButtonInitializeSettings
+ * @param {Object} Basket Basket
+ * @param {Object} IsDeliveryAddress IsDeliveryAddress
+ * @returns {Object} result
+ */
 function GetButtonInitializeSettings(Basket, IsDeliveryAddress) {
     var result = VisaCheckoutHelper.GetButtonInitializeSettings(Basket, IsDeliveryAddress);
-    session.forms.visacheckout.clearFormElement();
+    // eslint-disable-next-line
+    session.forms.visaCheckout.clearFormElement();
     return result;
 }
 
 /**
  * Update shipping details in cart object
+ * @param {Object} decryptedPaymentData decryptedPaymentData
+ * @return {Object} obj
  */
-
 function UpdateShipping(decryptedPaymentData) {
     var BasketMgr = require('dw/order/BasketMgr');
     var ShippingMgr = require('dw/order/ShippingMgr');
@@ -47,10 +56,12 @@ function UpdateShipping(decryptedPaymentData) {
     var shippingAddress = {};
     var Transaction = require('dw/system/Transaction');
 
+    // eslint-disable-next-line
     if (!empty(shipment.getShippingAddress())) {
         return { success: true };
     }
     try {
+        // eslint-disable-next-line
         Transaction.wrap(function () {
             // Create or replace the shipping address
             shippingAddress = shipment.createShippingAddress();
@@ -59,28 +70,37 @@ function UpdateShipping(decryptedPaymentData) {
             if (!shippingAddress.success) {
                 return shippingAddress;
             }
-		    // Set shipping method to default if not already set
+            // Set shipping method to default if not already set
             if (shipment.shippingMethod === null) {
                 shipment.setShippingMethod(ShippingMgr.getDefaultShippingMethod());
             }
         });
-		    return { success: true };
+        return {
+            success: true
+        };
     } catch (err) {
         logger.error('[VisaCheckout.js]Error creating shipment from Visa Checkout address: {0}', err.message);
-        return { error: true, errorMsg: Resource.msg('visaCheckout.shippingUpdate.prepareShipments', 'cybersource', null) };
+        return {
+            error: true,
+            errorMsg: Resource.msg('visaCheckout.shippingUpdate.prepareShipments', 'cybersource', null)
+        };
     }
 }
 
 /**
  * Update billing details in cart object
+ * @param {Object} Basket Basket
+ * @param {Object} VisaCheckoutCallId VisaCheckoutCallId
+ * @param {Object} VisaCheckoutPaymentData VisaCheckoutPaymentData
+ * @return {Object} result
  */
-
 function UpdateBilling(Basket, VisaCheckoutCallId, VisaCheckoutPaymentData) {
     var result = {};
     var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
 
     try {
         // Retrieve the inputs
+        // eslint-disable-next-line
         if (!empty(Basket) && !empty(VisaCheckoutPaymentData.MerchantReferenceCode) && Basket.getUUID().equals(VisaCheckoutPaymentData.MerchantReferenceCode)) {
             PaymentInstrumentUtils.UpdatePaymentInstrumentVisaDecrypt(Basket, VisaCheckoutPaymentData, VisaCheckoutCallId);
             result.success = true;
@@ -91,44 +111,67 @@ function UpdateBilling(Basket, VisaCheckoutCallId, VisaCheckoutPaymentData) {
     } catch (err) {
         logger.error('Error creating Visa Checkout payment instrument: {0}', err.message);
         result.error = true;
-    } finally {
-        return result;
+    }
+
+    return result;
+}
+
+/**
+ * Determines if the cart already contains payment instruments of the given payment method and removes them
+ * from the basket.
+ *
+ * @transactional
+ * @alias module:models/CartModel~CartModel/removeExistingPaymentInstruments
+ * @param {Object} basket basket
+ * @param {Object} method - Name of the payment method.
+ */
+function removeExistingPaymentInstruments(basket, method) {
+    var iter = basket.getPaymentInstruments(method).iterator();
+
+    // Remove payment instruments.
+    while (iter.hasNext()) {
+        basket.removePaymentInstrument(iter.next());
     }
 }
 
+/**
+ * DecryptPayload
+ * @returns {Object} result
+ */
 function DecryptPayload() {
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var Site = require('dw/system/Site');
     var Transaction = require('dw/system/Transaction');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var BasketMgr = require('dw/order/BasketMgr');
+    var result = {};
 
     try {
         if (PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)).isActive()) {
             var basket = BasketMgr.getCurrentOrNewBasket();
-            var result = {};
             var decryptedPaymentData = {};
-            var callId = session.forms.visacheckout.callId.htmlValue;
-            var encryptedPaymentWrappedKey = session.forms.visacheckout.encryptedPaymentWrappedKey.value;
-            var encryptedPaymentData = session.forms.visacheckout.encryptedPaymentData.value;
-            var countryCode = session.forms.visacheckout.countryCode.value;
-            var postalCode = session.forms.visacheckout.postalCode.value;
-            var basketUUID = session.forms.visacheckout.basketUUID.value;
+            /* eslint-disable */
+            var callId = session.forms.visaCheckout.callId.htmlValue;
+            var encryptedPaymentWrappedKey = session.forms.visaCheckout.encryptedPaymentWrappedKey.value;
+            var encryptedPaymentData = session.forms.visaCheckout.encryptedPaymentData.value;
+            var basketUUID = session.forms.visaCheckout.basketUUID.value;
             var signature = CommonHelper.signedDataUsingHMAC256(basket.getUUID(), Site.getCurrent().getCustomPreferenceValue('cybVisaSecretKey'));
+            /* eslint-enable */
 
-		    if (!empty(basket && basketUUID && encryptedPaymentData && encryptedPaymentWrappedKey && callId) && (basketUUID === signature)) {
-		    	Transaction.wrap(function () {
-		    		CommonHelper.removeExistingPaymentInstruments(basket);
-		    		removeExistingPaymentInstruments(basket, CybersourceConstants.METHOD_VISA_CHECKOUT);
-		        });
-		    	result = VisaCheckoutFacade.VCDecryptRequest(basket.getUUID(), encryptedPaymentWrappedKey, encryptedPaymentData, callId);
-		    	if (result.success && result.serviceResponse.ReasonCode === 100) {
-		   			decryptedPaymentData = result.serviceResponse;
+            // eslint-disable-next-line
+            if (!empty(basket && basketUUID && encryptedPaymentData && encryptedPaymentWrappedKey && callId) && (basketUUID === signature)) {
+                Transaction.wrap(function () {
+                    CommonHelper.removeExistingPaymentInstruments(basket);
+                    removeExistingPaymentInstruments(basket, CybersourceConstants.METHOD_VISA_CHECKOUT);
+                });
+                result = VisaCheckoutFacade.VCDecryptRequest(basket.getUUID(), encryptedPaymentWrappedKey, encryptedPaymentData, callId);
+                if (result.success && result.serviceResponse.ReasonCode === 100) {
+                    decryptedPaymentData = result.serviceResponse;
 
+                    // eslint-disable-next-line
                     if (!empty(basket) && !empty(decryptedPaymentData.MerchantReferenceCode) && basket.getUUID().equals(decryptedPaymentData.MerchantReferenceCode)) {
-		    			result = UpdateBilling(basket, callId, decryptedPaymentData);
-                      	if (decryptedPaymentData.shipTo == null && decryptedPaymentData.billTo != null) {
+                        result = UpdateBilling(basket, callId, decryptedPaymentData);
+                        if (decryptedPaymentData.shipTo == null && decryptedPaymentData.billTo != null) {
                             // If shipTo is empty, use billing address as shipping address
                             decryptedPaymentData.shipTo_Address1 = decryptedPaymentData.billTo_Address1;
                             decryptedPaymentData.shipTo_Address2 = decryptedPaymentData.billTo_Address2;
@@ -144,20 +187,20 @@ function DecryptPayload() {
                             decryptedPaymentData.shipTo_LastName = decryptedPaymentData.billTo_LastName;
                             decryptedPaymentData.shipTo = decryptedPaymentData.billTo;
                         }
-		    			result.decryptedPaymentData = decryptedPaymentData;
-		    			result.basket = basket;
+                        result.decryptedPaymentData = decryptedPaymentData;
+                        result.basket = basket;
                     } else {
                         logger.error('Error while calling billing update method in decrypt payload in visacheckout adaptor');
                     }
-		    	} else {
-		    		logger.error('error result in VCDecryptRequest');
-		    	}
-		    } else {
-		    	// if basket/basketUUID/encryptedPaymentData/encryptedPaymentWrappedKey/callId is empty
-		    	// or basketUUID not equal to signature
-		    	logger.error('basket/basketUUID/encryptedPaymentData/encryptedPaymentWrappedKey/callId is empty or basketUUID not equal to signature');
-		    	result.error = true;
-	    	}
+                } else {
+                    logger.error('error result in VCDecryptRequest');
+                }
+            } else {
+                // if basket/basketUUID/encryptedPaymentData/encryptedPaymentWrappedKey/callId is empty
+                // or basketUUID not equal to signature
+                logger.error('basket/basketUUID/encryptedPaymentData/encryptedPaymentWrappedKey/callId is empty or basketUUID not equal to signature');
+                result.error = true;
+            }
         } else {
             // if payment method not Visa
             logger.error('payment method not Visa');
@@ -165,26 +208,8 @@ function DecryptPayload() {
         }
     } catch (err) {
         logger.error('Error while executing DecryptpayLoad in VisaCheckoutAdapter', err.message);
-    } finally {
-        return result;
     }
-}
-
-/**
- * Determines if the cart already contains payment instruments of the given payment method and removes them
- * from the basket.
- *
- * @transactional
- * @alias module:models/CartModel~CartModel/removeExistingPaymentInstruments
- * @param {String} method - Name of the payment method.
- */
-function removeExistingPaymentInstruments(basket, method) {
-    var iter = basket.getPaymentInstruments(method).iterator();
-
-    // Remove payment instruments.
-    while (iter.hasNext()) {
-        basket.removePaymentInstrument(iter.next());
-    }
+    return result;
 }
 
 module.exports = {

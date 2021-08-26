@@ -30,8 +30,8 @@ base.handleCreditCardNumber = function (cardFieldSelector, cardTypeSelector) {
             }
         }
     });
-    if ($('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type') != 'SA_FLEX') {
-    	$(cardFieldSelector).data('cleave', cleave);
+    if ($('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type') !== 'SA_FLEX') {
+        $(cardFieldSelector).data('cleave', cleave);
     }
 };
 
@@ -40,9 +40,9 @@ base.serializeData = function (form) {
 
     serializedArray.forEach(function (item) {
         if (item.name.indexOf('cardNumber') > -1) {
-        	if ($('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type') != 'SA_FLEX') {
-        		item.value = $('#cardNumber').data('cleave').getRawValue(); // eslint-disable-line
-        	}
+            if ($('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type') !== 'SA_FLEX') {
+                item.value = $('#cardNumber').data('cleave').getRawValue(); // eslint-disable-line
+            }
         }
     });
 

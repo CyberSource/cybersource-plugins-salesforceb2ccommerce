@@ -1,6 +1,8 @@
+'use strict';
+
 /** *******************************************************************************
 *
-* Description: 	Class for Cybersource SOAP Service Initialization,
+* Description:     Class for Cybersource SOAP Service Initialization,
 *
 /******************************************************************************** */
 var HashMap = require('dw/util/HashMap');
@@ -8,21 +10,90 @@ var WSUtil = require('dw/ws/WSUtil');
 var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 /**
  *
- *	SOAP Services
+ *    SOAP Services
  *
  */
 
+/**
+ * filterServiceLog
+ * @param {*} msg msg
+ * @returns {*} obj
+ */
+function filterServiceLog(msg) {
+    //  Filter Logging on production system.
+    // eslint-disable-next-line
+    if (dw.system.System.getInstanceType() === dw.system.System.PRODUCTION_SYSTEM) {
+        //  Filter Logic.
+        try {
+            // eslint-disable-next-line
+            if (empty(msg)) {
+                return 'Message Missing';
+            }
+            var messageData = JSON.parse(msg);
+
+            var filteredData = {};
+            if (Object.keys(messageData).indexOf('encryptionType')) {
+                filteredData.encryptionType = messageData.encryptionType;
+            }
+            if (Object.keys(messageData).indexOF('targetOrigin') >= 0) {
+                filteredData.targetOrigin = messageData.targetOrigin;
+            }
+            if (Object.keys(messageData).indexOf('merchantReferenceCode') >= 0) {
+                filteredData.merchantReferenceCode = messageData.merchantReferenceCode;
+            }
+            if (Object.keys(messageData).indexOf('requestID') >= 0) {
+                filteredData.requestID = messageData.requestID;
+            }
+            if (Object.keys(messageData).indexOf('reasonCode') >= 0) {
+                filteredData.reasonCode = messageData.reasonCode;
+            }
+            if (Object.keys(messageData).indexOf('decision') >= 0) {
+                filteredData.decision = messageData.decision;
+            }
+
+            if (Object.keys(messageData).indexOf('purchaseTotals') >= 0) {
+                if (Object.keys(messageData.purchaseTotals).indexOf('currency') >= 0) {
+                    filteredData.currency = messageData.purchaseTotals.currency;
+                }
+                if (Object.keys(messageData.purchaseTotals).indexOf('taxAmount') >= 0) {
+                    filteredData.taxAmount = messageData.purchaseTotals.taxAmount;
+                }
+            }
+
+            if (Object.keys(messageData).indexOf('taxReply') >= 0) {
+                if (Object.keys(messageData.taxReply).indexOf('reasonCode') >= 0) {
+                    filteredData.taxReasonCode = messageData.taxReply.reasonCode;
+                }
+                if (Object.keys(messageData.taxReply).indexOf('totalTaxAmount') >= 0) {
+                    filteredData.totalTaxAmount = messageData.taxReply.totalTaxAmount;
+                }
+            }
+
+            var filteredMessage = 'PRODUCTION SYSTEM DETECTED.  DATA HAS BEEN FILTERED : ';
+            filteredMessage += JSON.stringify(filteredData);
+
+            return filteredMessage;
+        } catch (e) {
+            //  Message was not a JSON string.
+            return 'Unable to parse Service log message.';
+        }
+    } else {
+        //  Return full message on other systems.
+        return msg;
+    }
+}
+
 /** *******************************************************************************
 * Service Name : cybersource.soap.transactionprocessor.generic
-* Input 	   : request object holds the input parameter for the respective service request(custom) Object
+* Input        : request object holds the input parameter for the respective service request(custom) Object
 *
 /******************************************************************************** */
 
 // dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic", {
 /*
 * Description  : Method to Initialize cybersource.soap.transactionprocessor service
-* Input 	   : None
-* output	   : Service Client
+* Input        : None
+* output       : Service Client
 *
 /** */
 var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersource.soap.transactionprocessor.generic', {
@@ -32,9 +103,9 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     * @param {Object} svc cybersource transaction processor generic service
     * @param {Object} requestObj request Object
     * @returns {Object} requestObj updated service Request
-    *
-    /* */
+    */
     createRequest: function (svc, requestObj) {
+        // eslint-disable-next-line
         var csReference = webreferences2.CyberSourceTransaction;
         var service = csReference.getDefaultService();
 
@@ -42,7 +113,9 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
         var CybersourceHelper = libCybersource.getCybersourceHelper();
         CybersourceHelper.setEndpoint(service);
 
+        // eslint-disable-next-line
         svc.webReference = csReference;
+        // eslint-disable-next-line
         svc.serviceClient = service;
 
         if (requestObj) {
@@ -52,10 +125,9 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     },
     /**
     * Description  : Method to Execute service request for cybersource.soap.transactionprocessor.generic
-    * Input 	   : Customer Object
-    * output	   : None
-    *
-    /* */
+    * Input        : Customer Object
+    * output       : None
+    */
 
     execute: function (svc, parameter) {
         var userName = parameter.merchantCredentials.merchantID;
@@ -77,7 +149,7 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     },
     /**
     * Description  : Method to get the response from cybersource.soap.transactionprocessor.generic service
-    * Input 	   : response object
+    * Input        : response object
     * @param {Object} service cybersource transaction processor generic service
     * @param {Object} response service response
     * @returns {Object} response: updated service response
@@ -94,7 +166,7 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
 
 /** *******************************************************************************
 * Service Name : ybersource.conversiondetailreport
-* Input 	   : request object holds the input parameter for the respective service request(custom) Object
+* Input        : request object holds the input parameter for the respective service request(custom) Object
 *
 /******************************************************************************** */
 
@@ -138,70 +210,6 @@ var CyberSourceConversionDetailReportService = LocalServiceRegistry.createServic
         return filterServiceLog(msg);
     }
 });
-
-function filterServiceLog(msg) {
-    //  Filter Logging on production system.
-    if (dw.system.System.getInstanceType() == dw.system.System.PRODUCTION_SYSTEM) {
-        //  Filter Logic.
-        try {
-            if (empty(msg)) {
-                return 'Message Missing';
-            }
-            messageData = JSON.parse(msg);
-
-            filteredData = {};
-            if (messageData.hasOwnProperty('encryptionType')) {
-                filteredData.encryptionType = messageData.encryptionType;
-            }
-            if (messageData.hasOwnProperty('targetOrigin')) {
-                filteredData.targetOrigin = messageData.targetOrigin;
-            }
-            if (messageData.hasOwnProperty('merchantReferenceCode')) {
-                filteredData.merchantReferenceCode = messageData.merchantReferenceCode;
-            }
-            if (messageData.hasOwnProperty('requestID')) {
-                filteredData.requestID = messageData.requestID;
-            }
-            if (messageData.hasOwnProperty('reasonCode')) {
-                filteredData.reasonCode = messageData.reasonCode;
-            }
-            if (messageData.hasOwnProperty('decision')) {
-                filteredData.decision = messageData.decision;
-            }
-
-            if (messageData.hasOwnProperty('purchaseTotals')) {
-                if (messageData.purchaseTotals.hasOwnProperty('currency')) {
-                    filteredData.currency = messageData.purchaseTotals.currency;
-                }
-                if (messageData.purchaseTotals.hasOwnProperty('taxAmount')) {
-                    filteredData.taxAmount = messageData.purchaseTotals.taxAmount;
-                }
-            }
-
-            if (messageData.hasOwnProperty('taxReply')) {
-                if (messageData.taxReply.hasOwnProperty('reasonCode')) {
-                    filteredData.taxReasonCode = messageData.taxReply.reasonCode;
-                }
-                if (messageData.taxReply.hasOwnProperty('totalTaxAmount')) {
-                    filteredData.totalTaxAmount = messageData.taxReply.totalTaxAmount;
-                }
-            }
-
-            var filteredMessage = 'PRODUCTION SYSTEM DETECTED.  DATA HAS BEEN FILTERED : ';
-            filteredMessage += JSON.stringify(filteredData);
-
-            return filteredMessage;
-        }
-        catch (e) {
-            //  Message was not a JSON string.
-            return 'Unable to parse Service log message.';
-        }
-    }
-    else {
-        //  Return full message on other systems.
-        return msg;
-    }
-}
 
 exports.CyberSourceTransactionService = CyberSourceTransactionService;
 exports.CyberSourceConversionDetailReportService = CyberSourceConversionDetailReportService;

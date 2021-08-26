@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable no-undef */
 var server = require('server');
 
 /*
@@ -35,8 +36,8 @@ server.get('OpenIframe', function (req, res, next) {
  * This method receive response from the third party in http Parameter map, verify the signature , update the payment instrument with card value received, go to place order.
  */
 server.post('SilentPostResponse', server.middleware.https, function (req, res, next) {
-	 res.redirect(require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').SilentPostResponse());
-	 next();
+    res.redirect(require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').SilentPostResponse());
+    next();
 });
 
 /**
@@ -49,7 +50,7 @@ server.get('MerchantPost', server.middleware.https, function (req, res, next) {
             res.render('common/http_404');
         }
     } else {
-    	res.render('common/http_200');
+        res.render('common/http_200');
     }
     next();
 });
@@ -70,7 +71,7 @@ server.get('ReCreateBasket', server.middleware.https, function (req, res, next) 
     var OrderMgr = require('dw/order/OrderMgr');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var order = OrderMgr.getOrder(session.privacy.order_id);
-    var currentBasket = COHelpers.reCreateBasket(order);
+    COHelpers.reCreateBasket(order);
     res.json({
         success: true
     });

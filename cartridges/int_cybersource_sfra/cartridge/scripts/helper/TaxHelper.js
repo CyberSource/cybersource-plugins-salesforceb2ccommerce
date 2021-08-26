@@ -4,9 +4,9 @@ var Logger = require('dw/system/Logger');
 
 /**
  * Creates the data from basket / order to get tax calculated from cybersource.
- * @param LineItemCtnrObj contains object of basket or order
+ * @param {*} Basket Basket
+ * @returns {*} obj
  */
-
 function CreateCybersourceTaxationItemsObject(Basket) {
     var HashMap = require('dw/util/HashMap');
     var Money = require('dw/value/Money');
@@ -19,6 +19,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
     var idcount = 0;
 
     var shippingMethodTaxCode = null;
+    // eslint-disable-next-line
     if (!empty(shippingMethod)) {
         shippingMethodTaxCode = shippingMethod.taxClassID;
     }
@@ -28,7 +29,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
 
     var orderDiscount = new Money(0, basket.currencyCode);
     var subTotal = basket.adjustedMerchandizeTotalNetPrice;
-    for (var i = 0; i < basket.priceAdjustments; i++) {
+    for (var i = 0; i < basket.priceAdjustments; i += 1) {
         var promo = basket.priceAdjustments[i];
         orderDiscount = orderDiscount.add(promo.netPrice);
         if (promo.netPrice.value < 0) {
@@ -43,6 +44,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
     while (orderLevelIterator.hasNext()) {
         var oLevelPriceAdjustment = orderLevelIterator.next();
 
+        // eslint-disable-next-line
         if (empty(orderLevelAdjustmentPrice)) {
             orderLevelAdjustmentPrice = oLevelPriceAdjustment.price;
         } else {
@@ -55,6 +57,8 @@ function CreateCybersourceTaxationItemsObject(Basket) {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var adjustedLineItemFinalPrice;
+
+    /* eslint-disable */
     while (lineItems.hasNext()) {
         var actualQuantity = 0;
         var lineItem = lineItems.next();
@@ -92,7 +96,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
             item.id = idcount++;
 
             var shipPriceAdjustTotal = 0;
-            var shipPriceTotal = 0;
+            // var shipPriceTotal = 0;
             var basketShippingPriceAdjustments = basket.getShippingPriceAdjustments().iterator();
             while (basketShippingPriceAdjustments.hasNext()) {
                 var lineItem = basketShippingPriceAdjustments.next();
@@ -145,23 +149,25 @@ function CreateCybersourceTaxationItemsObject(Basket) {
             item.productSKU = 'PriceAdjustment';
         }
     }
+    /* eslint-enable */
 
     return { success: true, itemarray: items, itemmap: itemMap };
 }
 
 /**
  * Creates the data from basket / order to get tax calculated from cybersource.
- * @param LineItemCtnrObj contains object of basket or order
- * @param orderLevelAdjustmentPrice :
- * @param basketSubTotalPrice :
- * @param currencyCode :
- * @param quantity :
+ * @param {*} lineItemPrice lineItemPrice
+ * @param {*} orderLevelAdjustmentPrice orderLevelAdjustmentPrice
+ * @param {*} basketSubTotalPrice basketSubTotalPrice
+ * @param {*} currencyCode currencyCode
+ * @param {*} quantity quantity
+ * @returns {*} obj
  */
-
 function getOrderLevelAdjustedLineItemPrice(lineItemPrice, orderLevelAdjustmentPrice, basketSubTotalPrice, currencyCode, quantity) {
     var price = 0;
     var Money = require('dw/value/Money');
 
+    // eslint-disable-next-line
     if (lineItemPrice != null && orderLevelAdjustmentPrice != null && basketSubTotalPrice != null && !empty(currencyCode)) {
         var ratioDivided = lineItemPrice.divide(basketSubTotalPrice.getValue());
 
@@ -171,6 +177,7 @@ function getOrderLevelAdjustedLineItemPrice(lineItemPrice, orderLevelAdjustmentP
 
         price = lineItemPrice.subtract(adjustedPrice);
 
+        // eslint-disable-next-line
         if (!empty(quantity) && quantity > 1) {
             price = price.divide(quantity);
         }
@@ -181,15 +188,15 @@ function getOrderLevelAdjustedLineItemPrice(lineItemPrice, orderLevelAdjustmentP
 
 /**
  * Creates the purchase object for tax calculation
- * @param LineItemCtnrObj contains object of basket or order
+ * @param {*} Basket Basket
+ * @returns {*} obj
  */
-
 function CreateCybersourceTaxationPurchaseTotalsObject(Basket) {
     var basket = Basket;
 
-    var PurchaseTotals_Object = require('~/cartridge/scripts/cybersource/Cybersource_PurchaseTotals_Object');
-    var purchaseObject = new PurchaseTotals_Object();
-    var amount = basket.totalGrossPrice;
+    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var purchaseObject = new PurchaseTotalsObject();
+    // var amount = basket.totalGrossPrice;
     purchaseObject.setCurrency(basket.getCurrencyCode());
 
     return { success: true, CybersourcePurchaseTotals: purchaseObject };
@@ -197,13 +204,13 @@ function CreateCybersourceTaxationPurchaseTotalsObject(Basket) {
 
 /**
  * Sets data in taxServiceObject fro tax calculation.
+ * @returns {*} obj
  */
-
 function CreateCyberSourceTaxRequestObject() {
     var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var TaxService_Object = require('~/cartridge/scripts/cybersource/Cybersource_TaxRequest_Object');
-    var taxServiceObject = new TaxService_Object();
+    var TaxServiceObject = require('~/cartridge/scripts/cybersource/CybersourceTaxRequestObject');
+    var taxServiceObject = new TaxServiceObject();
 
     taxServiceObject.setOrderAcceptanceCity(CybersourceHelper.getPOACity());
     taxServiceObject.setOrderAcceptanceState(CybersourceHelper.getPOAStateCode());
@@ -220,7 +227,8 @@ function CreateCyberSourceTaxRequestObject() {
 
 /**
  * Update the price adjustments i.e if any promotion is applied on prodcut or order then tax is updated.
- * @param LineItemCtnrObj contains object of basket or order
+ * @param {*} Basket Basket
+ * @returns {*} obj
  */
 function UpdatePriceAdjustment(Basket) {
     var basket = Basket;
@@ -243,23 +251,22 @@ function UpdatePriceAdjustment(Basket) {
             while (shipmentLineItems.hasNext()) {
                 var lineItem = shipmentLineItems.next();
 
+                // eslint-disable-next-line
                 if (lineItem instanceof dw.order.ProductLineItem) {
                     if (!lineItem.bonusProductLineItem) {
                         lineItem.updateTax(lineItem.taxRate, lineItem.proratedPrice);
-                    }
-                    else {
+                    } else {
                         // tax is not getting calculated for bonus product which is updating bonus line item's tax as /NA. it has the direct impact on basket totals
                         // Resolution - update line item tax with 0 which will resolve the tax calculation N/A for bonus line items.
                         lineItem.updateTax(0);
                     }
-                }
-                else if (lineItem instanceof dw.order.ShippingLineItem) {
+                    // eslint-disable-next-line
+                } else if (lineItem instanceof dw.order.ShippingLineItem) {
                     lineItem.updateTax(lineItem.taxRate, lineItem.adjustedNetPrice);
-                }
-                else if (!lineItem instanceof dw.order.PriceAdjustment) { // eslint-disable-line no-unsafe-negation
+                    // eslint-disable-next-line
+                } else if (!lineItem instanceof dw.order.PriceAdjustment) { // eslint-disable-line no-unsafe-negation
                     lineItem.updateTax(lineItem.taxRate, lineItem.netPrice);
-                }
-                else {
+                } else {
                     lineItem.updateTax(lineItem.taxRate, lineItem.netPrice);
                 }
             }

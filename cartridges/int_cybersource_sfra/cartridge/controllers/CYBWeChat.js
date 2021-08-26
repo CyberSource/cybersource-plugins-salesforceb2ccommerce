@@ -1,18 +1,19 @@
 'use strict';
 
+/* eslint-disable no-undef */
 var server = require('server');
 var HookMgr = require('dw/system/HookMgr');
 var URLUtils = require('dw/web/URLUtils');
 var Resource = require('dw/web/Resource');
 var OrderMgr = require('dw/order/OrderMgr');
-var BasketMgr = require('dw/order/BasketMgr');
+// var BasketMgr = require('dw/order/BasketMgr');
 var Transaction = require('dw/system/Transaction');
-var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+// var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+// var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var COHelpers = require('~/cartridge/scripts/checkout/checkoutHelpers');
 var WeChatAdaptor = require('~/cartridge/scripts/wechat/adapter/WeChatAdaptor');
-var OrderModel = require('*/cartridge/models/order');
+// var OrderModel = require('*/cartridge/models/order');
 var collections = require('*/cartridge/scripts/util/collections');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
@@ -29,7 +30,7 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
         }
     });
     var result = WeChatAdaptor.CheckStatusServiceRequest(orderNo, pi);
-    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', order);
+    HookMgr.callHook('app.fraud.detection', 'fraudDetection', order);
     var redirectUrl = '';
 
     if (result.submit) {
@@ -39,7 +40,7 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
             pi.paymentTransaction.custom.AmountPaid = Number(order.totalGrossPrice);
         });
 
-        var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+        // var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
 
         session.privacy.paypalShippingIncomplete = '';
         session.privacy.paypalBillingIncomplete = '';

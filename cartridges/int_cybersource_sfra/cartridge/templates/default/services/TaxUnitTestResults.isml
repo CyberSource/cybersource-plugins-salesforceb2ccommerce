@@ -7,19 +7,19 @@
 <isif condition="${!empty(pdict.taxResponse.CybersourceShipTo)}" >
 	<h2>${Resource.msg('test.inpshipaddress','cybersource',null)}</h2>
 	<isset name="addressObj" value="${pdict.taxResponse.CybersourceShipTo}" scope="pdict" >
-	<p><isinclude template="services/responseaddressdetails"/></p>
+	<p><isinclude template="services/responseAddressDetails"/></p>
 </isif>
 
 <isif condition="${!empty(pdict.taxResponse.shipFrom)}" >
 	<h2>${Resource.msg('test.inpshipfromaddress','cybersource',null)}</h2>${pdict.taxResponse.shipFrom}
 	<isset name="addressObj" value="${pdict.taxResponse.shipFrom}" scope="pdict" />
-	<p><isinclude template="services/responseaddressdetails" /></p>
+	<p><isinclude template="services/responseAddressDetails" /></p>
 </isif>
 
 <isif condition="${!empty(pdict.taxResponse.CybersourceBillTo)}" >
 	<h2>${Resource.msg('test.inpbillingaddress','cybersource',null)}</h2>${pdict.taxResponse.CybersourceBillTo}
 	<isset name="addressObj" value="${pdict.taxResponse.CybersourceBillTo}" scope="pdict"/>
-	<p><isinclude template="services/responseaddressdetails" /></p>
+	<p><isinclude template="services/responseAddressDetails" /></p>
 </isif>
 
 <isif condition="${!empty(pdict.taxResponse.Decision)}" >

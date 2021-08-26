@@ -14,12 +14,14 @@
 
 var BankTransferHelper = (function () {
     var that = {};
-    var _getBankListJson = function (paymentMethod) {
+    var getBankListJson = function (paymentMethod) {
         var CustomObjectMgr = require('dw/object/CustomObjectMgr');
         var retObj = null;
+        // eslint-disable-next-line
         if (!empty(paymentMethod)) {
             var existingBankList = CustomObjectMgr.queryCustomObjects('BTBankList', 'custom.paymentType = {0}', null, paymentMethod.ID);
             retObj = [];
+            // eslint-disable-next-line
             while (!empty(existingBankList) && existingBankList.hasNext()) {
                 var bank = existingBankList.next();
                 retObj.push({ name: bank.custom.BankName, id: bank.custom.BankID });
@@ -27,23 +29,27 @@ var BankTransferHelper = (function () {
         }
         return retObj;
     };
-    var _isBankListRequired = function (paymentMethod) {
-        var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentMethod);
+    var isBankListRequired = function (paymentMethodObj) {
+        var paymentMethod = paymentMethodObj;
+        // eslint-disable-next-line
+        paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentMethod);
         if ('isSupportedBankListRequired' in paymentMethod.custom && paymentMethod.custom.isSupportedBankListRequired) {
             return paymentMethod.custom.isSupportedBankListRequired;
         }
         return false;
     };
-    var _isBicRequired = function (paymentMethod) {
-        var paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentMethod);
+    var isBicRequired = function (paymentMethodObj) {
+        var paymentMethod = paymentMethodObj;
+        // eslint-disable-next-line
+        paymentMethod = dw.order.PaymentMgr.getPaymentMethod(paymentMethod);
         if ('isBicEnabled' in paymentMethod.custom && paymentMethod.custom.isBicEnabled) {
             return paymentMethod.custom.isBicEnabled;
         }
         return false;
     };
-    that.getBankListJson = _getBankListJson;
-    that.isBankListRequired = _isBankListRequired;
-    that.isBicRequired = _isBicRequired;
+    that.getBankListJson = getBankListJson;
+    that.isBankListRequired = isBankListRequired;
+    that.isBicRequired = isBicRequired;
     return that;
 }());
 

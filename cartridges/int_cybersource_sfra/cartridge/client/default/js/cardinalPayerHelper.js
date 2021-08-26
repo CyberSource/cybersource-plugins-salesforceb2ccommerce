@@ -1,3 +1,7 @@
+'use strict';
+
+/* eslint-disable no-undef */
+// eslint-disable-next-line
 window.jQuery = window.$ = require('jquery');
 
 $(document).ready(function () {
@@ -24,11 +28,14 @@ $(document).ready(function () {
         jwt: document.getElementById('JWT').value,
         order: orderObject
     });
+
+    // eslint-disable-next-line
     Cardinal.on('payments.validated', function (data, jwt) {
         document.getElementById('processorTransactionId').value = data.Payment.ProcessorTransactionId;
         document.RedirectForm.submit();
     });
 
+    // eslint-disable-next-line
     Cardinal.on('payments.setupComplete', function (setupCompleteData) {
         Cardinal.continue('cca', continueObject, orderObject, jwt);
     });

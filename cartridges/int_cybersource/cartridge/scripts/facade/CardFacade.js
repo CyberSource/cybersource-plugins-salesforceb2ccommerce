@@ -47,13 +47,10 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 
 	var serviceRequest = new csReference.RequestMessage();
 	
-	if (empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST)) && empty(CreditCardForm.flexresponse.value)) {
-		result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
-		cardObject = result.card;
-	} else {
-		serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
-		serviceRequest.tokenSource.transientToken = CreditCardForm.flexresponse.value;
-	}
+	
+	result = CardHelper.CreateCybersourcePaymentCardObject("billing", SubscriptionID);
+	cardObject = result.card;
+	
 	result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
 	purchaseObject = result.purchaseTotals;
 	result = CommonHelper.CreateCybersourceItemObject(basket);

@@ -8,6 +8,8 @@
  *
  */
 var Site = require('dw/system/Site');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var app = require(CybersourceConstants.APP);
 
 var numbersOnlyRegExp : RegExp = /\D/g;
 var CybersourceHelper = {
@@ -47,7 +49,7 @@ var CybersourceHelper = {
 	},
 
 	getPartnerSolutionID : function () {
-		return "FUGE3CWU";
+		return "J4NLG7K6";
 	},
 
 	getDeveloperID : function () {
@@ -409,10 +411,14 @@ var CybersourceHelper = {
 		}
 		request.shipTo = __copyShipTo( shipTo );
 		request.purchaseTotals = __copyPurchaseTotals( purchase );
-
 		if (!empty(card)) {
 			if (empty(card.getCreditCardToken())){
-				request.card = __copyCreditCard( card );
+				if(!empty(session.forms.billing.paymentMethods.creditCard.flexresponse.value) && app.getForm('billing').object.paymentMethods.creditCard.saveCard.value == false && session.forms.billing.paymentMethods.selectedPaymentMethodID.value.equals(CybersourceConstants.METHOD_SA_FLEX)){
+				    request.tokenSource = new CybersourceHelper.csReference.TokenSource();
+					request.tokenSource.transientToken = session.forms.billing.paymentMethods.creditCard.flexresponse.value;
+				} else {
+					request.card = __copyCreditCard( card );
+				}
 			} else {
 				var request_card : Object = new CybersourceHelper.csReference.Card();
 				var value : String;
@@ -430,7 +436,7 @@ var CybersourceHelper = {
 				request.card = request_card;
 			}
 
-			if (request.card.cardType.equals("002")) {
+			if (!empty(request.card) && request.card.cardType.equals("002")) {
 				var mastercardAuthIndicator : String = CybersourceHelper.getMasterCardAuthIndicator();
 				if(!empty(mastercardAuthIndicator) && mastercardAuthIndicator==='0')
 				{
@@ -439,6 +445,9 @@ var CybersourceHelper = {
 					request.authIndicator=1;
 				}
 			}
+		} else {
+			request.tokenSource = new CybersourceHelper.csReference.TokenSource();
+			request.tokenSource.transientToken = session.forms.billing.paymentMethods.creditCard.flexresponse.value;
 		}
 
 		var items = [];
@@ -521,7 +530,16 @@ var CybersourceHelper = {
 		request.billTo = __copyBillTo( billTo );
 	}
 	request.purchaseTotals = __copyPurchaseTotals( purchase );
-	if (null !== card) {
+	
+	if (null !== card && (!empty(session.forms.paymentinstruments.creditcards.newcreditcard.flexresponse.value) || !empty(session.forms.billing.paymentMethods.creditCard.flexresponse.value))) {
+		request.tokenSource = new CybersourceHelper.csReference.TokenSource();
+		if(!empty(session.forms.paymentinstruments.creditcards.newcreditcard.flexresponse.value)){
+			request.tokenSource.transientToken = session.forms.paymentinstruments.creditcards.newcreditcard.flexresponse.value;
+		} else {
+			request.tokenSource.transientToken = session.forms.billing.paymentMethods.creditCard.flexresponse.value;
+		}
+		
+	} else {
 		request.card = __copyCreditCard( card );
 	}
 	request.cardTypeSelectionIndicator = '1';

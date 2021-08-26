@@ -1,28 +1,31 @@
+'use strict';
+
 /** *******************************************************************************
 *
-* Description: 	Class for Cybersource HTTP Service Initialization,
+* Description:     Class for Cybersource HTTP Service Initialization,
 *
 /******************************************************************************** */
-var HashMap = require('dw/util/HashMap');
+// var HashMap = require('dw/util/HashMap');
 var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 var Logger = require('dw/system/Logger');
+
 var logger = Logger.getLogger('CyberSource', 'RestAPIServices');
 /**
  *
- *	HTTP Services
+ *    HTTP Services
  *
  */
 /** *******************************************************************************
 * Service Name : cybersource.http.flextoken
-* Input 	   : request object holds the input parameter for the respective service request(custom) Object
+* Input        : request object holds the input parameter for the respective service request(custom) Object
 *
 /******************************************************************************** */
 
 // dwsvc.ServiceRegistry.configure("cybersource.soap.transactionprocessor.generic", {
 /*
 * Description  : Method to Initialize cybersource.soap.transactionprocessor service
-* Input 	   : None
-* output	   : Service Client
+* Input        : None
+* output       : Service Client
 *
 /** */
 var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersource.http.flextoken', {
@@ -33,7 +36,7 @@ var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersourc
         svc.addHeader('Content-Type', 'application/json; charset=utf-8');
         collections.forEach(requestObj.keySet(), function (key) {
             //  for each (var key in requestObj.keySet()) {
-	         svc.addHeader(key, requestObj.get(key));
+            svc.addHeader(key, requestObj.get(key));
         });
         return digestString;
     },
@@ -42,19 +45,21 @@ var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersourc
     },
     filterLogMessage: function (msg) {
         //  Filter Logging on production system.
-        if (dw.system.System.getInstanceType() == dw.system.System.PRODUCTION_SYSTEM) {
+        // eslint-disable-next-line
+        if (dw.system.System.getInstanceType() === dw.system.System.PRODUCTION_SYSTEM) {
             //  Filter Logic.
             try {
+                // eslint-disable-next-line
                 if (empty(msg)) {
                     return 'Message Missing';
                 }
-                messageData = JSON.parse(msg);
+                var messageData = JSON.parse(msg);
 
-                filteredData = {};
-                if (messageData.hasOwnProperty('encryptionType')) {
+                var filteredData = {};
+                if (Object.keys(messageData).indexOf('encryptionType') >= 0) {
                     filteredData.encryptionType = messageData.encryptionType;
                 }
-                if (messageData.hasOwnProperty('targetOrigin')) {
+                if (Object.keys(messageData).indexOf('targetOrigin') >= 0) {
                     filteredData.targetOrigin = messageData.targetOrigin;
                 }
 
@@ -62,14 +67,12 @@ var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersourc
                 filteredMessage += JSON.stringify(filteredData);
 
                 return filteredMessage;
-            }
-            catch (e) {
+            } catch (e) {
                 //  msg was not a JSON string.
                 //  In this case, we hide all data.
                 return 'Unable to parse Service log message.';
             }
-        }
-        else {
+        } else {
             //  Return full message on other systems.
             return msg;
         }
@@ -83,8 +86,9 @@ var CyberSourceDMService = LocalServiceRegistry.createService('cybersource.conve
         svc.addHeader('Content-Type', 'application/json');
         collections.forEach(requestObj.keySet(), function (key) {
             //  for each (var key in requestObj.keySet()) {
-	         svc.addHeader(key, requestObj.get(key));
+            svc.addHeader(key, requestObj.get(key));
         });
+        // eslint-disable-next-line
         svc.URL += '?startTime=' + starttime + '&endTime=' + endtime + '&organizationId=' + merchantId;
     },
     parseResponse: function (svc, client) {

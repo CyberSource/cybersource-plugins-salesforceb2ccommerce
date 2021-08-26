@@ -1,5 +1,6 @@
 'use strict';
 
+/* eslint-disable no-undef */
 var server = require('server');
 
 /*

@@ -6,5 +6,8 @@
         "global-require": "off",
         "no-var": "off",
         "prefer-const": "off"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018
     }
 }

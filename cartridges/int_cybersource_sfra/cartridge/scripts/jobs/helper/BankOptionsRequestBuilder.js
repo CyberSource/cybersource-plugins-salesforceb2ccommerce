@@ -1,8 +1,11 @@
+'use strict';
+
 var BankOptionsRequestBuilder = (function () {
     var that = {};
-    var _buildOptionsRequest = function (params) {
+    var buildOptionsRequest = function (params) {
         var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
         var CybersourceHelper = libCybersource.getCybersourceHelper();
+        // eslint-disable-next-line
         var csReference = webreferences2.CyberSourceTransaction;
         var serviceRequest = new csReference.RequestMessage();
         serviceRequest.merchantID = params.merchantId;
@@ -13,7 +16,7 @@ var BankOptionsRequestBuilder = (function () {
         return serviceRequest;
     };
 
-    that.GetOptionsRequestObj = _buildOptionsRequest;
+    that.GetOptionsRequestObj = buildOptionsRequest;
     return that;
 }());
 

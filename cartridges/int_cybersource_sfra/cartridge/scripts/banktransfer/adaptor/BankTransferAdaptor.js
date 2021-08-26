@@ -6,22 +6,88 @@
 */
 /* API includes */
 var bankTransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
-var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+// var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
 var bankTransferHelper = require(CybersourceConstants.CS_CORE_SCRIPT + '/banktransfer/helper/BankTransferHelper');
 /* Script Modules */
 
-/*
-* This method set the request object along with other inputs to call session
+/**
+ * Common function to update transaction level details
+ * @param {*} responseObject responseObject
+ * @param {*} paymentInstrumentObj paymentInstrumentObj
+ * @param {*} Order Order
+ */
+function ProcessResponse(responseObject, paymentInstrumentObj, Order) {
+    var order = Order;
+    var paymentInstrument = paymentInstrumentObj;
+    // update instrument level variables
+    paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = responseObject.reconciliationID;
+    paymentInstrument.paymentTransaction.custom.apPaymentStatus = responseObject.paymentStatus;
+    // change the order payment status to paid after getting authorized or settled response
+    if (responseObject.reasonCode.get() === 100 && (responseObject.paymentStatus === 'authorized'
+        || responseObject.paymentStatus === 'settled')) {
+        order.paymentStatus = 2;
+    }
+}
+
+/*  */
+/**
+ * Update Payment Transaction details after sale service of bank transfer
+ * @param {*} order order
+ * @param {*} responseObject responseObject
+ * @param {*} paymentType paymentType
+ */
+function AuthorizeBankTransferOrderUpdate(order, responseObject, paymentType) {
+    // declare transaction
+    var Transaction = require('dw/system/Transaction');
+    Transaction.wrap(function () {
+        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        // get payment instrument detail
+        var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
+        // set transaction level object with custom values after getting response of sale service
+        if (paymentInstrument != null && responseObject !== null) {
+            paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
+            paymentInstrument.paymentTransaction.custom.requestId = responseObject.requestID;
+            paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
+            paymentInstrument.paymentTransaction.custom.apPaymentType = paymentType;
+            if (responseObject.apSaleReply !== null) {
+                ProcessResponse(responseObject.apSaleReply, paymentInstrument, order);
+            }
+        }
+    });
+}
+
+/**
+ * This method will get custom preference for Bank transfer
+* from SFCC and set the value is object
+ * @returns {*} obj
+ */
+function GetCustomPreferencesForBT() {
+    var Site = require('dw/system/Site');
+    var customPref = {};
+    customPref.merchantDescriptor = Site.getCurrent().getCustomPreferenceValue('merchantDescriptor');
+    customPref.merchantDescriptorContact = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorContact');
+    customPref.merchantDescriptorStreet = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorStreet');
+    customPref.merchantDescriptorCity = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorCity');
+    customPref.merchantDescriptorState = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorState');
+    customPref.merchantDescriptorPostalCode = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorPostalCode');
+    customPref.merchantDescriptorCountry = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorCountry');
+    return customPref;
+}
+
+/**
+ * This method set the request object along with other inputs to call session
 * service of bank transfer
-*/
+ * @param {*} Order Order
+ * @returns {*} obj
+ */
 function CreateSaleServiceRequest(Order) {
     // declare variables
-    var billingForm = session.forms.billing;
+    // var billingForm = session.forms.billing;
     // declare common helper variable to call its required methods
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var selectedPaymentMethod = session.forms.billing.paymentMethod.value;
+    // var selectedPaymentMethod = session.forms.billing.paymentMethod.value;
     var billTo; var purchaseObject; var
         paymentType;
     var URLUtils = require('dw/web/URLUtils');
@@ -29,6 +95,7 @@ function CreateSaleServiceRequest(Order) {
     var successURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'banktransfer').toString();
     var failureURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'cancelfail', 'cfk', false).toString();
     // setting the value of payment type after getting from payment method
+    // eslint-disable-next-line
     paymentType = session.forms.billing.paymentMethod.value;
     // create billto, shipto, item and purchase total object
     var result = CommonHelper.CreateCyberSourceBillToObject(Order, true);
@@ -40,7 +107,7 @@ function CreateSaleServiceRequest(Order) {
     var merchantDescriptorValue;
     // get bank contact custom preference from SFCC
     var customPref = GetCustomPreferencesForBT();
-    if (paymentType == 'IDL' || paymentType == 'IDL') {
+    if (paymentType === 'IDL' || paymentType === 'IDL') {
         merchantDescriptorValue = customPref.merchantDescriptor.substring(0, 35);
     } else {
         merchantDescriptorValue = customPref.merchantDescriptor.substring(0, 27);
@@ -63,16 +130,21 @@ function CreateSaleServiceRequest(Order) {
     saleObject.merchantDescriptorPostalCode = customPref.merchantDescriptorPostalCode;
     saleObject.merchantDescriptorCountry = customPref.merchantDescriptorCountry;
     saleObject.orderNo = Order.orderNo;
-    if (paymentType == 'IDL') {
+    if (paymentType === 'IDL') {
+        // eslint-disable-next-line
         if (bankTransferHelper.isBankListRequired(session.forms.billing.paymentMethod.value)) {
-			 saleObject.paymentOptionID = session.forms.billing.bankListSelection.value;
+            // eslint-disable-next-line
+            saleObject.paymentOptionID = session.forms.billing.bankListSelection.value;
         }
     }
     // set the swiftcode (bank swift code), if available
+    // eslint-disable-next-line
     if (bankTransferHelper.isBicRequired(session.forms.billing.paymentMethod.value)) {
-        if (paymentType == 'EPS') {
+        if (paymentType === 'EPS') {
+            // eslint-disable-next-line
             saleObject.bicNumber = session.forms.billing.epsBic.value;
-        } else if (paymentType == 'GPY') {
+        } else if (paymentType === 'GPY') {
+            // eslint-disable-next-line
             saleObject.bicNumber = session.forms.billing.giropayBic.value;
         }
     }
@@ -82,8 +154,9 @@ function CreateSaleServiceRequest(Order) {
 
     AuthorizeBankTransferOrderUpdate(Order, saleResponse, paymentType);
     /* return the response as per decision and reason code, redirect the user to
-	 merchant site for payment completion */
+     merchant site for payment completion */
     if (saleResponse.decision === 'ACCEPT' && saleResponse.reasonCode.get() === 100) {
+        // eslint-disable-next-line
         session.privacy.order_id = Order.orderNo;
         switch (saleResponse.apSaleReply.paymentStatus) {
             case 'pending':
@@ -102,26 +175,12 @@ function CreateSaleServiceRequest(Order) {
     }
 }
 
-/*
-* This method will get custom preference for Bank transfer
-* from SFCC and set the value is object
-*/
-function GetCustomPreferencesForBT() {
-    var Site = require('dw/system/Site');
-    var customPref = {};
-    customPref.merchantDescriptor = Site.getCurrent().getCustomPreferenceValue('merchantDescriptor');
-    customPref.merchantDescriptorContact = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorContact');
-    customPref.merchantDescriptorStreet = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorStreet');
-    customPref.merchantDescriptorCity = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorCity');
-    customPref.merchantDescriptorState = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorState');
-    customPref.merchantDescriptorPostalCode = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorPostalCode');
-    customPref.merchantDescriptorCountry = Site.getCurrent().getCustomPreferenceValue('merchantDescriptorCountry');
-    return customPref;
-}
-/*
-* This method set the request object along with other inputs to call check status
+/**
+ * This method set the request object along with other inputs to call check status
 * service of Bank Transfer
-*/
+ * @param {*} Order Order
+ * @returns {*} obj
+ */
 function CheckStatusServiceRequest(Order) {
     // create helper variable
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
@@ -131,9 +190,12 @@ function CheckStatusServiceRequest(Order) {
     return response;
 }
 
-/* Create payment instrument along and check if payment method for bank
+/**
+ * Create payment instrument along and check if payment method for bank
  * transfer is not as per the value mentioned in site preference
- * */
+ * @param {*} Basket Basket
+ * @returns {*} obj
+ */
 function HandleRequest(Basket) {
     // create helper variable
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
@@ -143,7 +205,14 @@ function HandleRequest(Basket) {
     return response;
 }
 
-function AuthorizeRequest(orderNo, paymentInstrument) {
+/**
+ * Function
+ * @param {*} orderNo orderNo
+ * @param {*} paymentInstrumentObj paymentInstrumentObj
+ * @returns {*} obj
+ */
+function AuthorizeRequest(orderNo, paymentInstrumentObj) {
+    var paymentInstrument = paymentInstrumentObj;
     var OrderMgr = require('dw/order/OrderMgr');
     var Order = OrderMgr.getOrder(orderNo);
     var PaymentMgr = require('dw/order/PaymentMgr');
@@ -155,41 +224,11 @@ function AuthorizeRequest(orderNo, paymentInstrument) {
     });
     // call sale service and process the response
     var response = CreateSaleServiceRequest(Order);
+    // eslint-disable-next-line
     session.privacy.isPaymentRedirectInvoked = true;
+    // eslint-disable-next-line
     session.privacy.orderID = orderNo;
     return response;
-}
-/* Update Payment Transaction details after sale service of bank transfer */
-function AuthorizeBankTransferOrderUpdate(order, responseObject, paymentType) {
-    // declare transaction
-    var Transaction = require('dw/system/Transaction');
-    Transaction.wrap(function () {
-        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-        // get payment instrument detail
-        var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
-        // set transaction level object with custom values after getting response of sale service
-        if (paymentInstrument != null && responseObject !== null) {
-            paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
-            paymentInstrument.paymentTransaction.custom.requestId = responseObject.requestID;
-            paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
-            paymentInstrument.paymentTransaction.custom.apPaymentType = paymentType;
-            if (responseObject.apSaleReply !== null) {
-                ProcessResponse(responseObject.apSaleReply, paymentInstrument, order);
-            }
-        }
-    });
-}
-
-/* Common function to update transaction level details */
-function ProcessResponse(responseObject, paymentInstrument, order) {
-    // update instrument level variables
-    paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = responseObject.reconciliationID;
-    paymentInstrument.paymentTransaction.custom.apPaymentStatus = responseObject.paymentStatus;
-    // change the order payment status to paid after getting authorized or settled response
-    if (responseObject.reasonCode.get() === 100 && (responseObject.paymentStatus === 'authorized'
-		|| responseObject.paymentStatus === 'settled')) {
-        order.paymentStatus = 2;
-    }
 }
 
 /** Exported functions * */

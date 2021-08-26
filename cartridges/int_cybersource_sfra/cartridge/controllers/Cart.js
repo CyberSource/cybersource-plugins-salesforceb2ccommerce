@@ -3,6 +3,7 @@
 var page = module.superModule;
 var server = require('server');
 
+/* eslint-disable no-undef */
 server.extend(page);
 
 server.append('Show', function (req, res, next) {
