@@ -80,13 +80,15 @@ function GetCustomPreferencesForBT() {
  * This method set the request object along with other inputs to call session
 * service of bank transfer
  * @param {*} Order Order
+ * @param {*} testMethod String need provide data here in string format when testing through CYBServicesTesting-DMStandalone
  * @returns {*} obj
  */
-function CreateSaleServiceRequest(Order) {
+function CreateSaleServiceRequest(Order, testMethod) {
     // declare variables
     // var billingForm = session.forms.billing;
     // declare common helper variable to call its required methods
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    // var CybersourceHelper = libCybersource.getCybersourceHelper();
     // var selectedPaymentMethod = session.forms.billing.paymentMethod.value;
     var billTo; var purchaseObject; var
         paymentType;
@@ -137,24 +139,15 @@ function CreateSaleServiceRequest(Order) {
             saleObject.paymentOptionID = session.forms.billing.bankListSelection.value;
         }
     }
-    // set the swiftcode (bank swift code), if available
-    // eslint-disable-next-line
-    if (bankTransferHelper.isBicRequired(session.forms.billing.paymentMethod.value)) {
-        if (paymentType === 'EPS') {
-            // eslint-disable-next-line
-            saleObject.bicNumber = session.forms.billing.epsBic.value;
-        } else if (paymentType === 'GPY') {
-            // eslint-disable-next-line
-            saleObject.bicNumber = session.forms.billing.giropayBic.value;
-        }
-    }
 
+    var paymentMethod = session.forms.billing.paymentMethod.value || testMethod;
     // call session method of libCybersourceHelper to create session request
-    var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject);
+    var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject, paymentMethod);
 
     AuthorizeBankTransferOrderUpdate(Order, saleResponse, paymentType);
+
     /* return the response as per decision and reason code, redirect the user to
-     merchant site for payment completion */
+    merchant site for payment completion */
     if (saleResponse.decision === 'ACCEPT' && saleResponse.reasonCode.get() === 100) {
         // eslint-disable-next-line
         session.privacy.order_id = Order.orderNo;
@@ -209,9 +202,10 @@ function HandleRequest(Basket) {
  * Function
  * @param {*} orderNo orderNo
  * @param {*} paymentInstrumentObj paymentInstrumentObj
+ * @param {*} testMethod String need provide data here in string format when testing through CYBServicesTesting-DMStandalone
  * @returns {*} obj
  */
-function AuthorizeRequest(orderNo, paymentInstrumentObj) {
+function AuthorizeRequest(orderNo, paymentInstrumentObj, testMethod) {
     var paymentInstrument = paymentInstrumentObj;
     var OrderMgr = require('dw/order/OrderMgr');
     var Order = OrderMgr.getOrder(orderNo);
@@ -223,7 +217,7 @@ function AuthorizeRequest(orderNo, paymentInstrumentObj) {
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
     });
     // call sale service and process the response
-    var response = CreateSaleServiceRequest(Order);
+    var response = CreateSaleServiceRequest(Order, testMethod);
     // eslint-disable-next-line
     session.privacy.isPaymentRedirectInvoked = true;
     // eslint-disable-next-line

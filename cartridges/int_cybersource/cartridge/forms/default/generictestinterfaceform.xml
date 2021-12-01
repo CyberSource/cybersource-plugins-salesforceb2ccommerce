@@ -35,9 +35,7 @@
 		<options>
 			<option optionid="Klarna" value="KLI" label="KLARNA"/>
 			<option optionid="Bancontact" value="MCH" label="BANCONTACT"/>
-			<option optionid="Giropay" value="GPY" label="GIROPAY"/>
 			<option optionid="Ideal" value="IDL" label="IDEAL"/>
-			<option optionid="EPS" value="EPS" label="EPS"/>
 			<option optionid="Sofort" value="SOF" label="SOFORT"/>
 			<option optionid="AliPay" value="AliPay" label="ALIPAY"/>
 		</options>

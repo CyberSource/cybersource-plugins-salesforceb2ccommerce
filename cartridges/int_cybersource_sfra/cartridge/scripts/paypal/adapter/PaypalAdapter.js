@@ -155,6 +155,7 @@ function initSessionCallback(lineItemCntr, args) {
         }
         var paypalFacade = require('../facade/PayPalFacade');
         var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+        var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
         var skipShipAddressValidation;
         var checkStatusResult = paypalFacade.CheckStatusService(lineItemCntr, requestID);
         result.shippingAddressMissing = false;
@@ -168,12 +169,16 @@ function initSessionCallback(lineItemCntr, args) {
             if (!commonHelper.ValidatePayPalBillingAddress(checkStatusResult.checkStatusResponse, lineItemCntr)) {
                 result.billingAddressMissing = true;
             }
+            var overrideAddressPaypalPreference = !CybersourceHelper.IsPaypalAddressOverride();
             Transaction.wrap(function () {
+                var addressUpdateStatus;
                 if (checkStatusResult.isBillingAgreement) {
-                    commonHelper.AddAddressToCart(lineItemCntr, checkStatusResult.checkStatusResponse, true);
+                    addressUpdateStatus = commonHelper.AddAddressToCart(lineItemCntr, checkStatusResult.checkStatusResponse, true);
                 } else {
-                    commonHelper.AddAddressToCart(lineItemCntr, checkStatusResult.checkStatusResponse, false);
+                    addressUpdateStatus = commonHelper.AddAddressToCart(lineItemCntr, checkStatusResult.checkStatusResponse, overrideAddressPaypalPreference);
                 }
+                result.shippingAddressMissing = !!addressUpdateStatus.shippingAddressMissing;
+                result.billingAddressMissing = !!addressUpdateStatus.billingAddressMissing;
                 setShippingMethod(lineItemCntr);
             });
             result.success = true;

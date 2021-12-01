@@ -88,6 +88,7 @@ function TestCCAuth(billTo,shipTo,card,purchaseTotals)
 	
 	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billToObject,shipToObject,purchaseObject,cardObject,"test",CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
 	
+	CybersourceHelper.apDecisionManagerService(paymentMethod, serviceRequest, billToObject, shipToObject, purchaseObject, 'test', CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
 	/********************************/
 	/* DAV-related WebService setup */
 	/********************************/	
@@ -1110,12 +1111,6 @@ function getPaymentMethod(paymentType)
 	
 	else if(paymentType.equals(CybersourceConstants.BANCONTACT_PAYMENT_TYPE))
 		paymentMethod = CybersourceConstants.BANCONTACT_PAYMENT_METHOD;
-
-	else if(paymentType.equals(CybersourceConstants.EPS_PAYMENT_TYPE))
-		paymentMethod = CybersourceConstants.EPS_PAYMENT_METHOD;
-
-	else if(paymentType.equals(CybersourceConstants.GIROPAY_PAYMENT_TYPE))
-		paymentMethod = CybersourceConstants.GIROPAY_PAYMENT_METHOD;
 
 	else if(paymentType.equals(CybersourceConstants.SOFORT_PAYMENT_TYPE))
 		paymentMethod = CybersourceConstants.SOFORT_PAYMENT_METHOD;

@@ -17,7 +17,10 @@ function Handle(args) {
     var basket = args;
     Transaction.wrap(function () {
         CommonHelper.removeExistingPaymentInstruments(basket);
-        basket.createPaymentInstrument(CybersourceConstants.METHOD_PAYPAL, CommonHelper.CalculateNonGiftCertificateAmountPaypal(basket));
+        basket.createPaymentInstrument(
+            CybersourceConstants.METHOD_PAYPAL,
+            CommonHelper.CalculateNonGiftCertificateAmountPaypal(basket)
+        );
     });
     return { success: true };
 }

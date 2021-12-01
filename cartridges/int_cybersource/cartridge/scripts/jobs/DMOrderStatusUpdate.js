@@ -54,7 +54,7 @@ function orderStatusUpdate(jobParams) {
 	
         var signature, targetOrigin;
 
-        targetOrigin = "https://" + host;
+        var targetOrigin = "https://" + host;
 	    signedHeaders.put('host', host);
 		signedHeaders.put('date', getTime());
 		signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
@@ -78,17 +78,15 @@ function orderStatusUpdate(jobParams) {
         signedHeaders.remove("(request-target)");
 
         var service = CRServices.CyberSourceDMService;
-        responseObj = service.call(signedHeaders,time.start,time.end,merchantId);
+        responseObj = service.call(signedHeaders, time.start, time.end, merchantId);
         //  Handle error scenarios in case of error return from service
         handleErrorCases(responseObj);
         //  Set success response object in message object
         message = responseObj.object;
         //  Parse service JSON response and set Order status based on response
         parseJSONResponse(message, orderHashMap);
-        return;
     }
 
-    return;
 
 }
 /**

@@ -284,8 +284,10 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var csReference  = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
+
+	var paymentMethodID = lineItemCtnrObj.paymentInstrument.paymentMethod;
 	
-	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,null,null,amount, null);
+	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,null,null,amount, null, null, paymentMethodID);
 
 	//Objects to set in the Service Request inside facade
 	var shipTo, billTo, purchaseObject;

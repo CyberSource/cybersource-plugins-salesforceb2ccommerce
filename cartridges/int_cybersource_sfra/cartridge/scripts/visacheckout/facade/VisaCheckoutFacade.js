@@ -305,8 +305,9 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var deviceType = CommonHelper.getDeviceType(request);
     /* eslint-enable */
+    var paymentMethodID = lineItemCtnrObj.paymentInstrument.paymentMethod;
 
-    CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest, orderNo, null, null, amount, null, LineItemCtnrObj.billingAddress.phone, deviceType);
+    CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest, orderNo, null, null, amount, null, LineItemCtnrObj.billingAddress.phone, deviceType, null, paymentMethodID);
 
     // Objects to set in the Service Request inside facade
     var shipTo;

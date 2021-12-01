@@ -158,7 +158,7 @@ function TestCCAuth(billTo, shipTo, card, purchaseTotals) {
 
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billToObject, shipToObject, purchaseObject, cardObject, 'test', CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
 
-    CybersourceHelper.apDecisionManagerService(serviceRequest, billToObject, shipToObject, purchaseObject, 'test', CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
+    CybersourceHelper.apDecisionManagerService(paymentMethod, serviceRequest, billToObject, shipToObject, purchaseObject, 'test', CybersourceHelper.getDigitalFingerprintEnabled(), itemObjects);
 
     /** ***************************** */
     /* DAV-related WebService setup */
@@ -642,7 +642,7 @@ function TestSACreateToken(billToObject, shipToObject, purchaseObject) {
 function getPaymentMethod(paymentType) {
     var paymentMethod = '';
 
-    if (paymentType.equals(CybersourceConstants.KLARNA_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.KLARNA_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.PAYPAL_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.METHOD_PAYPAL; } else if (paymentType.equals(CybersourceConstants.BANCONTACT_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.BANCONTACT_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.EPS_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.EPS_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.GIROPAY_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.GIROPAY_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.SOFORT_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.SOFORT_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.IDEAL_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.IDEAL_PAYMENT_METHOD; }
+    if (paymentType.equals(CybersourceConstants.KLARNA_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.KLARNA_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.PAYPAL_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.METHOD_PAYPAL; } else if (paymentType.equals(CybersourceConstants.BANCONTACT_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.BANCONTACT_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.SOFORT_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.SOFORT_PAYMENT_METHOD; } else if (paymentType.equals(CybersourceConstants.IDEAL_PAYMENT_TYPE)) { paymentMethod = CybersourceConstants.IDEAL_PAYMENT_METHOD; }
 
     return paymentMethod;
 }

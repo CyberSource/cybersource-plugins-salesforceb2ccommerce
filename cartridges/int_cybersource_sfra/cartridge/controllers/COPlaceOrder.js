@@ -73,7 +73,7 @@ function reviewOrder(orderId, req, res, next) {
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
-    res.redirect(URLUtils.https('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
+    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken)); 
     return next();
 }
 
@@ -118,7 +118,7 @@ function submitOrder(orderId, req, res, next) {
     COHelpers.sendConfirmationEmail(order, req.locale.id);
     // Reset using MultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
-    res.redirect(URLUtils.https('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken));
+    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken)); 
     return next();
 }
 
@@ -239,4 +239,13 @@ server.get('SilentPostReviewOrder', csrfProtection.generateToken, function (req,
     reviewOrder(orderId, req, res, next);
 });
 
+server.get('SubmitOrderConformation', csrfProtection.generateToken, function (req, res, next) {
+    var orderId = req.querystring.ID;
+    var token = req.querystring.token;
+    res.render('cart/RedirectToConformation', {
+        orderId: orderId,
+        orderToken: token
+    });
+    return next();
+});
 module.exports = server.exports();

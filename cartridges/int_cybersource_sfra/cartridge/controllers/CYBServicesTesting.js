@@ -502,4 +502,39 @@ server.post('Generate', csrfProtection.generateToken, function (req, res, next) 
     next();
 });
 
+server.get('DMStandalone', server.middleware.https, function (req, res, next) {
+    var bankTransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var OrderMgr = require('dw/order/OrderMgr');
+
+    var Order = OrderMgr.getOrder('00000202');
+    var saleObject = {};
+
+    var result = CommonHelper.CreateCyberSourceBillToObject(Order, true);
+    saleObject.billTo = result.billTo;
+
+    result = CommonHelper.CreateCybersourcePurchaseTotalsObject(Order);
+    saleObject.purchaseObject = result.purchaseTotals;
+
+    result = CommonHelper.CreateCybersourceItemObject(Order);
+    saleObject.items = result.items;
+
+    saleObject.paymentType = 'SOF';
+    saleObject.cancelURL = 'https://zzkm-020.sandbox.us01.dx.commercecloud.salesforce.com/on/demandware.store/Sites-RefArch-Site/it_IT/COPlaceOrder-Submit?provider=cancelfail&cfk=false';
+    saleObject.successURL = 'https://zzkm-020.sandbox.us01.dx.commercecloud.salesforce.com/on/demandware.store/Sites-RefArch-Site/it_IT/COPlaceOrder-Submit?provider=banktransfer';
+    saleObject.failureURL = 'https://zzkm-020.sandbox.us01.dx.commercecloud.salesforce.com/on/demandware.store/Sites-RefArch-Site/it_IT/COPlaceOrder-Submit?provider=cancelfail&cfk=false';
+    saleObject.merchantDescriptor = 'Online Store';
+    saleObject.merchantDescriptorContact = '6504327350';
+    saleObject.merchantDescriptorStreet = 'P.O. Box 8999';
+    saleObject.merchantDescriptorCity = 'San Francisco';
+    saleObject.merchantDescriptorState = 'CA';
+    saleObject.merchantDescriptorPostalCode = '94128';
+    saleObject.merchantDescriptorCountry = 'US';
+    saleObject.orderNo = '00000202';
+
+    var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject, saleObject.paymentType);
+    res.json();
+    return next();
+});
+
 module.exports = server.exports();

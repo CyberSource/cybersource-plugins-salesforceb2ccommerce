@@ -49,7 +49,7 @@ var CybersourceHelper = {
 	},
 
 	getPartnerSolutionID : function () {
-		return "J4NLG7K6";
+		return "NL7LODLG";
 	},
 
 	getDeveloperID : function () {
@@ -79,6 +79,10 @@ var CybersourceHelper = {
 	getCardDecisionManagerEnable : function () {
 		return Site.getCurrent().getCustomPreferenceValue("csCardDecisionManagerEnable");
 	},
+
+	getBankTransferDecisionManagerFlag: function () {
+        return Site.getCurrent().getCustomPreferenceValue('IsBankTransferDMEnabled');
+    },
 
 	getDavOnAddressVerificationFailure : function () {
 		return Site.getCurrent().getCustomPreferenceValue("CsDavOnAddressVerificationFailure");
@@ -682,7 +686,7 @@ var CybersourceHelper = {
 	},
 
 
-	addPayerAuthEnrollInfo : function(serviceRequest : Object, orderNo : String, creditCardForm : dw.web.FormElement, countryCode : String, amount : dw.value.Money, subscriptionToken : String, phoneNumber : String){
+	addPayerAuthEnrollInfo : function(serviceRequest : Object, orderNo : String, creditCardForm : dw.web.FormElement, countryCode : String, amount : dw.value.Money, subscriptionToken : String, phoneNumber : String, paymentMethodID : String){
 		serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
 		__setClientData( serviceRequest, orderNo );
@@ -711,6 +715,13 @@ var CybersourceHelper = {
 		serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceID;
 		serviceRequest.payerAuthEnrollService.mobilePhone=phoneNumber;
 		serviceRequest.payerAuthEnrollService.transactionMode= getTransactionMode(session.privacy.device);
+		/* serviceRequest.afsService = new CybersourceHelper.csReference.AFSService();
+        serviceRequest.afsService.run = true; */
+		if (!empty(paymentMethodID)) {
+            CybersourceHelper.apDecisionManagerService(paymentMethodID, serviceRequest);
+        }
+        serviceRequest.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
+        serviceRequest.ccAuthService.run = true;
 	},
 
 	addTestPayerAuthEnrollInfo : function(request : Object, card : Object)
@@ -773,6 +784,12 @@ var CybersourceHelper = {
 		case "Maestro":
 			request.card.cardType="042";
 			break;
+		case 'JCB':
+            request.card.cardType = '007';
+            break;
+        case 'DinersClub':
+            request.card.cardType = '005';
+            break;
 		default :
 			request.card.cardType="001";
 			break;
@@ -812,6 +829,8 @@ var CybersourceHelper = {
 		request.item = items;
 
 		request.payerAuthValidateService.run=true;
+		request.afsService = new CybersourceHelper.csReference.AFSService();
+        request.afsService.run = true;
 	},
 
 	addPayerAuthReplyInfo : function(request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
@@ -1162,8 +1181,78 @@ var CybersourceHelper = {
 		request.payPalAuthReversalService=payPalAuthReversalService;
 		request.payPalAuthReversalService.run=true;
 
-	}
+	},
+    
+	 /** ***************************************************************************
+     * Name: DecisionManager
+     * Description: DecisionManagerService.
+     *
+     *************************************************************************** */
+	apDecisionManagerService: function (paymentMethodID, request, billTo, shipTo, purchase, refCode, enableDeviceFingerprint, itemsCybersource) {
+		var PaymentMgr = require('dw/order/PaymentMgr');
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var paymentProcessorID = PaymentMgr.getPaymentMethod(paymentMethodID).paymentProcessor.ID;
 
+        request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+
+		if (CybersourceConstants.BANK_TRANSFER_PAYMENT_METHOD.equals(paymentProcessorID)) {
+            request.decisionManager.enabled = CybersourceHelper.getBankTransferDecisionManagerFlag();
+		} else if (CybersourceConstants.METHOD_VISA_CHECKOUT.equals(paymentMethodID)) {
+            request.decisionManager.enabled = CybersourceHelper.getCardDecisionManagerEnable();
+        } else if (CybersourceConstants.METHOD_PAYPAL.equals(paymentMethodID) || CybersourceConstants.METHOD_PAYPAL_CREDIT.equals(paymentMethodID)) {
+            request.decisionManager.enabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('isDecisionManagerEnable');
+		} else {
+			request.merchantID = CybersourceHelper.getMerchantID();
+			var fingerprint = null;
+			if (enableDeviceFingerprint) {
+				fingerprint = session.sessionID;
+			}
+
+			__setClientData(request, refCode, fingerprint);
+			if (billTo !== null) {
+				request.billTo = __copyBillTo(billTo);
+			}
+			request.shipTo = __copyShipTo(shipTo);
+			request.purchaseTotals = __copyPurchaseTotals(purchase);
+			var items = [];
+			if (itemsCybersource !== null) {
+				var iter = itemsCybersource.iterator();
+				while (iter.hasNext()) {
+					items.push(__copyItemFrom(iter.next()));
+				}
+			}
+
+			request.item = items;
+
+			// request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+			request.decisionManager.enabled = CybersourceHelper.getCardDecisionManagerEnable();
+		}
+
+		// DM service
+        request.afsService = new CybersourceHelper.csReference.AFSService();
+        request.afsService.run = true;
+    },
+
+	/**
+     * Sets APSaleService parameters
+     * @param {*} saleObject saleObject
+     * @param {*} request request
+     */
+	postPreAuth: function (saleObject, request) {
+        var apSaleService = new CybersourceHelper.csReference.APSaleService();
+        apSaleService.cancelURL = saleObject.cancelURL;
+        apSaleService.successURL = saleObject.successURL;
+        apSaleService.failureURL = saleObject.failureURL;
+
+        if (saleObject.paymentOptionID) {
+            apSaleService.paymentOptionID = saleObject.paymentOptionID;
+        }
+
+        request.apSaleService = apSaleService;
+
+        // set run instance to true
+        request.apSaleService.run = true;
+    }
 }
 
 // Helper method to export the helper
@@ -1181,7 +1270,7 @@ function __setClientData( request, refCode, fingerprint)
 		request.developerID=developerID;
 	}
 	request.clientLibrary='Salesforce Commerce Cloud';
-	request.clientLibraryVersion='21.1.0';
+	request.clientLibraryVersion='21.3.0';
 	request.clientEnvironment='Linux';
 	request.clientApplicationVersion = 'SG';
 	if (fingerprint) {

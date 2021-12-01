@@ -39,14 +39,16 @@ function copyShipTo(shipTo) {
     // eslint-disable-next-line
     var requestShipTo = new CybersourceHelper.csReference.ShipTo();
     var value;
-    Object.keys(shipTo).forEach(function (name) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = shipTo[name];
-            if (value !== '') {
-                requestShipTo[name] = value;
+    if (!empty(shipTo)) {
+        Object.keys(shipTo).forEach(function (name) {
+            if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+                value = shipTo[name];
+                if (value !== '') {
+                    requestShipTo[name] = value;
+                }
             }
-        }
-    });
+        });
+    }
     return requestShipTo;
 }
 
@@ -54,14 +56,16 @@ function copyPurchaseTotals(purchase) {
     // eslint-disable-next-line
     var requestPurchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
     var value;
-    Object.keys(purchase).forEach(function (name) {
-        if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
-            value = purchase[name];
-            if (value !== '') {
-                requestPurchaseTotals[name] = value;
+    if (!empty(purchase)) {
+        Object.keys(purchase).forEach(function (name) {
+            if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
+                value = purchase[name];
+                if (value !== '') {
+                    requestPurchaseTotals[name] = value;
+                }
             }
-        }
-    });
+        });
+    }
     return requestPurchaseTotals;
 }
 
@@ -171,7 +175,7 @@ function setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '21.1.0';
+    request.clientLibraryVersion = '21.3.0';
     request.clientEnvironment = 'Linux';
     request.partnerSDKversion = Resource.msg('global.version.number', 'version', null);
     request.clientApplicationVersion = 'SFRA';
@@ -218,7 +222,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'MHL5XH4D';
+        return '7RHZ38UY';
     },
 
     getDeveloperID: function () {
@@ -247,6 +251,14 @@ var CybersourceHelper = {
 
     getCardDecisionManagerEnable: function () {
         return Site.getCurrent().getCustomPreferenceValue('csCardDecisionManagerEnable');
+    },
+
+    getBankTransferDecisionManagerFlag: function () {
+        return Site.getCurrent().getCustomPreferenceValue('IsBankTransferDMEnabled');
+    },
+
+    getPayPapDMEnableFlag: function () {
+        return Site.getCurrent().getCustomPreferenceValue('isDecisionManagerEnable');
     },
 
     getDavOnAddressVerificationFailure: function () {
@@ -805,7 +817,7 @@ var CybersourceHelper = {
         }
     },
 
-    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo) {
+    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, paymentMethodID) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
@@ -837,10 +849,9 @@ var CybersourceHelper = {
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
-        serviceRequest.afsService = new CybersourceHelper.csReference.AFSService();
-        serviceRequest.afsService.run = true;
-        serviceRequest.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
-        serviceRequest.ccAuthService.run = true;
+        if (!empty(paymentMethodID)) {
+            CybersourceHelper.apDecisionManagerService(paymentMethodID, serviceRequest);
+        }
         // serviceRequest.payerAuthEnrollService.transactionMode= 'S';
     },
 
@@ -1006,7 +1017,7 @@ var CybersourceHelper = {
             request.ccAuthService.authorizationPayload = authorizationPayload;
         } */
 
-        request.ccAuthService.paAuthenticationDate = new Date().toDateString();
+        request.ccAuthService.paAuthenticationDate = dw.util.StringUtils.formatCalendar(new dw.util.Calendar(), 'yyyyMMddHHmmss');
 
         if (!empty(ucafAuthenticationData)) {
             request.ucaf = new CybersourceHelper.csReference.UCAF();
@@ -1398,38 +1409,67 @@ var CybersourceHelper = {
      * Description: DecisionManagerService.
      *
      *************************************************************************** */
-    apDecisionManagerService: function (request, billTo, shipTo, purchase, refCode, enableDeviceFingerprint, itemsCybersource) {
-        request.merchantID = CybersourceHelper.getMerchantID();
-        var fingerprint = null;
-        if (enableDeviceFingerprint) {
-            fingerprint = session.sessionID;
-        }
-
-        setClientData(request, refCode, fingerprint);
-        if (billTo !== null) {
-            request.billTo = copyBillTo(billTo);
-        }
-        request.shipTo = copyShipTo(shipTo);
-        request.purchaseTotals = copyPurchaseTotals(purchase);
-        var items = [];
-        if (itemsCybersource !== null) {
-            var iter = itemsCybersource.iterator();
-            while (iter.hasNext()) {
-                items.push(copyItemFrom(iter.next()));
-            }
-        }
-
-        request.item = items;
-
+    apDecisionManagerService: function (paymentMethodID, request, billTo, shipTo, purchase, refCode, enableDeviceFingerprint, itemsCybersource) {
+        var PaymentMgr = require('dw/order/PaymentMgr');
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var paymentProcessorID = PaymentMgr.getPaymentMethod(paymentMethodID).paymentProcessor.ID;
         request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
-        if (CybersourceHelper.getCardDecisionManagerEnable()) {
-            request.decisionManager.enabled = true;
+
+        if (CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(paymentProcessorID)) {
+            request.decisionManager.enabled = CybersourceHelper.getBankTransferDecisionManagerFlag();
+        } else if (CybersourceConstants.METHOD_PAYPAL.equals(paymentMethodID) || CybersourceConstants.METHOD_PAYPAL_CREDIT.equals(paymentMethodID)) {
+            request.decisionManager.enabled = CybersourceHelper.getPayPapDMEnableFlag();
+        } else if (CybersourceConstants.METHOD_VISA_CHECKOUT.equals(paymentMethodID)) {
+            request.decisionManager.enabled = CybersourceHelper.getCardDecisionManagerEnable();
         } else {
-            request.decisionManager.enabled = false;
+            request.merchantID = CybersourceHelper.getMerchantID();
+            var fingerprint = null;
+            if (enableDeviceFingerprint) {
+                fingerprint = session.sessionID;
+            }
+
+            setClientData(request, refCode, fingerprint);
+            if (billTo !== null) {
+                request.billTo = copyBillTo(billTo);
+            }
+            request.shipTo = copyShipTo(shipTo);
+            request.purchaseTotals = copyPurchaseTotals(purchase);
+            var items = [];
+            if (itemsCybersource !== null) {
+                var iter = itemsCybersource.iterator();
+                while (iter.hasNext()) {
+                    items.push(copyItemFrom(iter.next()));
+                }
+            }
+
+            request.item = items;
+
+            request.decisionManager.enabled = CybersourceHelper.getCardDecisionManagerEnable();
         }
-        // CMCIC
+        // DM standalone
         request.afsService = new CybersourceHelper.csReference.AFSService();
         request.afsService.run = true;
+    },
+
+    /**
+     * Sets APSaleService parameters
+     * @param {*} saleObject saleObject
+     * @param {*} request request
+     */
+    postPreAuth: function (saleObject, request) {
+        var apSaleService = new CybersourceHelper.csReference.APSaleService();
+        apSaleService.cancelURL = saleObject.cancelURL;
+        apSaleService.successURL = saleObject.successURL;
+        apSaleService.failureURL = saleObject.failureURL;
+
+        if (saleObject.paymentOptionID) {
+            apSaleService.paymentOptionID = saleObject.paymentOptionID;
+        }
+
+        request.apSaleService = apSaleService;
+
+        // set run instance to true
+        request.apSaleService.run = true;
     }
 };
 

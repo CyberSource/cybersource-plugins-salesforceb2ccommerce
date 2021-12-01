@@ -77,7 +77,7 @@ base.paymentTabs = function () {
     $('.payment-options .nav-item').on('click', function (e) {
         e.preventDefault();
         var methodID = $(this).data('method-id');
-        var paymentMethodIds = ['ALIPAY', 'SOF', 'IDL', 'MCH', 'GPY', 'EPS', 'BANK_TRANSFER', 'WECHAT'];
+        var paymentMethodIds = ['ALIPAY', 'SOF', 'IDL', 'MCH', 'BANK_TRANSFER', 'WECHAT'];
         var paymentMethod = $.inArray(methodID, paymentMethodIds) > -1;
         $('.payment-information').data('payment-method-id', methodID);
         $('input[name*="billing_paymentMethod"]').val(methodID);
@@ -88,7 +88,7 @@ base.paymentTabs = function () {
             $('#credit-card-content .user-payment-instruments.container').addClass('checkout-hidden');
             $('.credit-card-form').removeClass('checkout-hidden');
             $('.btn.btn-block.cancel-new-payment, .save-credit-card.custom-control.custom-checkbox ').hide();
-            if (methodID === 'EPS' || methodID === 'GPY' || methodID === 'IDL') {
+            if (methodID === 'IDL') {
                 $('.bankTransfer').show();
                 $('.bankTransfer #' + methodID.toLowerCase()).show();
                 $('.bankTransfer #' + methodID.toLowerCase()).siblings().hide();

@@ -72,8 +72,9 @@ function CreateSaleServiceRequest(Order){
 		saleObject.bicNumber = billingForm.paymentMethods.bicNumber.value;
 	}
 	
+	var paymentMethod = billingForm.paymentMethods.selectedPaymentMethodID.selectedOption;
 	//call session method of libCybersourceHelper to create session request
-	var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject);
+	var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject, paymentMethod.value);
 	
 	AuthorizeBankTransferOrderUpdate(Order,saleResponse,paymentType);
 	/*return the response as per decision and reason code, redirect the user to

@@ -22,10 +22,6 @@
      <!-- BANK TRANSFER-->
      <field formid="bankListSelection" label="payment.bankselection" type="string" mandatory="false" 
 				missing-error="payment.bankselectionerorr" value-error="payment.bankselectionerorr" />
-	<field formid="giropayBic" label="payment.bicnumber" type="string" mandatory="true" 
-				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" binding="giropayBic"/>
-	<field formid="epsBic" label="payment.bicnumber" type="string" mandatory="true" 
-				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" binding="epsBic" />
 				
 	<field formid="klarnaEmail" label="payment.klarnaemail" type="string" binding="email"
            max-length="254" missing-error="error.card.info.missing.email" />

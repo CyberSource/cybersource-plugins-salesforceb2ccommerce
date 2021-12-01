@@ -188,11 +188,11 @@ var init = {
             form.submit();
         });
 
-        $(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .gpy, .eps, .sof, .mch, .idl , .klarna, .wechat', function (e) {
+        $(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .sof, .mch, .idl , .klarna, .wechat', function (e) {
             e.stopImmediatePropagation();
             var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
             var paymentMethodID = $('input[name=dwfrm_billing_paymentMethod]').val();
-            var paymentMethodIds = ['KLARNA', 'ALIPAY', 'GPY', 'EPS', 'SOF', 'IDL', 'MCH', 'WECHAT'];
+            var paymentMethodIds = ['KLARNA', 'ALIPAY', 'SOF', 'IDL', 'MCH', 'WECHAT'];
             var paymentMethod = $.inArray(paymentMethodID, paymentMethodIds) > -1;
             if ((CsSaType != 'CREDIT_CARD' && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
                 var formaction = $(this).attr('data-action');

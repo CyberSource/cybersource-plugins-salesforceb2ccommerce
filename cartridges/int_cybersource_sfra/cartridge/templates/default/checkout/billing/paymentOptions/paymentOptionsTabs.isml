@@ -36,12 +36,6 @@
 	
 	    <iselseif condition="${paymentOption.ID === 'MCH'}">
 	        <isinclude template="checkout/billing/paymentOptions/bancontactTab" />
-	
-	    <iselseif condition="${paymentOption.ID === 'GPY'}">
-	        <isinclude template="checkout/billing/paymentOptions/giroPayTab" />
-	
-	    <iselseif condition="${paymentOption.ID === 'EPS'}">
-	        <isinclude template="checkout/billing/paymentOptions/epsTab" />
 	        
 	    <iselseif condition="${paymentOption.ID === 'KLARNA'}">
 	        <isinclude template="checkout/billing/paymentOptions/klarnaTab" />

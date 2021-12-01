@@ -70,20 +70,6 @@ function CCAuthRequest(Basket : dw.order.LineItemCtnr, OrderNo : String, IPAddre
 	//**************************************************************************//	
 	CybersourceHelper.addCCAuthRequestInfo(serviceRequest,billTo,shipTo,purchaseObject,cardObject,orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 	
-	//Populate Payer Auth Reply service response attributes		
-	if (payerValidationResponse) {
-		CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, payerValidationResponse.CAVV, payerValidationResponse.UCAFAuthenticationData, 
-			payerValidationResponse.UCAFCollectionIndicator, payerValidationResponse.ECIRaw, payerValidationResponse.PAVCommerceIndicator, 
-			payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion,payerValidationResponse.directoryServerTransactionID,payerValidationResponse.cavvAlgorithm,
-			payerValidationResponse.effectiveAuthenticationType, payerValidationResponse.challengeCancelCode, payerValidationResponse.authenticationStatusReason, payerValidationResponse.acsTransactionID, payerValidationResponse.authorizationPayload);
-	} else if (payerEnrollResponse) {
-		CybersourceHelper.addPayerAuthReplyInfo(
-			serviceRequest, payerEnrollResponse.CAVV, payerEnrollResponse.UCAFAuthenticationData, 
-			payerEnrollResponse.UCAFCollectionIndicator, payerEnrollResponse.ECIRaw, payerEnrollResponse.PACommerceIndicator, 
-			payerEnrollResponse.PAXID, payerEnrollResponse.ParesStatus,payerEnrollResponse.specificationVersion,payerEnrollResponse.directoryServerTransactionID, null, 
-			payerEnrollResponse.effectiveAuthenticationType, payerEnrollResponse.challengeCancelCode, payerEnrollResponse.authenticationStatusReason, payerEnrollResponse.acsTransactionID
-		);
-	}
 	/********************************/
 	/* DAV-related WebService setup */
 	/********************************/	
@@ -229,11 +215,58 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	
 	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 	var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	var CybersourceHelper = libCybersource.getCybersourceHelper();
 	var csReference  = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(lineItemCtnrObj);
+	var SubscriptionID = paymentInstrument.getCreditCardToken();
+	var billTo;
+    var result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
+    billTo = result.billTo;
+    result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnrObj);
+    var shipTo = result.shipTo;
+    result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
+    var cardObject = result.card;
+    result = CommonHelper.CreateCybersourcePurchaseTotalsObject(lineItemCtnrObj);
+    var purchaseObject = result.purchaseTotals;
+    var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
+    var items = payerAuthsitems.items;
+
 	CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest,orderNo,creditCardForm,lineItemCtnrObj.billingAddress.countryCode.value,amount, paymentInstrument.getCreditCardToken(),lineItemCtnrObj.billingAddress.phone);
+
+	  // eslint-disable-next-line
+	  if (!empty(SubscriptionID)) {
+		CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
+	} else if (CybersourceHelper.getTokenizationEnabled().equals('YES')) {
+		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+	}
+	
+	CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+	/** ***************************** */
+	/* DAV-related WebService setup */
+	/** ***************************** */
+	
+	var enableDAV = CybersourceHelper.getDavEnable();
+	var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+	//  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+	if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+		// eslint-disable-next-line
+		if (enableDAV == 'YES') {
+			var ignoreDAVResult = false;
+			// eslint-disable-next-line
+			if (approveDAV == 'APPROVE') {
+				ignoreDAVResult = true;
+			}
+			CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
+		}
+		/* End of DAV WebService setup */
+	
+		/* AVS Service setup */
+		var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+		var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+		CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+	}
 
 	var serviceResponse = null;
 	// send request
@@ -260,6 +293,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	responseObject["RequestToken"] = serviceResponse.requestToken;
 	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
 	responseObject["Decision"] = serviceResponse.decision;
+	responseObject.DAVReasonCode = serviceResponse.reasonCode.get();
 	responseObject["payerAuthEnrollReply"] = (null !== serviceResponse.payerAuthEnrollReply) ? "exists" : null;
 	if(null !== serviceResponse.payerAuthEnrollReply){
 		responseObject["PACommerceIndicator"] = serviceResponse.payerAuthEnrollReply.commerceIndicator;
@@ -294,7 +328,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
  * @param CreditCardForm : details of the card
  */
  
-function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String ,processorTransactionId :String)
+function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : String,CreditCardForm : dw.web.FormElement, CreditCardToken: String ,processorTransactionId :String, billTo, paymentInstrument, shipTo, purchaseObject, items)
 {
 	var orderNo = OrderNo;
     var amount = Amount;
@@ -309,8 +343,44 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	
 	var csReference = webreferences2.CyberSourceTransaction;
 	var serviceRequest = new csReference.RequestMessage();
+	var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var SubscriptionID = paymentInstrument.getCreditCardToken();
+
+    var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
 	
 	CybersourceHelper.addPayerAuthValidateInfo(serviceRequest,orderNo,signedPaRes,creditCardForm,amount, CreditCardToken,processorTransactionId);
+
+	if (!empty(SubscriptionID)) {
+        CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
+    }
+    else if (CybersourceHelper.getTokenizationEnabled().equals('YES')) {
+        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject.card, OrderNo);
+    }
+
+    CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject.card, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+    /** ***************************** */
+    /* DAV-related WebService setup */
+    /** ***************************** */
+
+    var enableDAV = CybersourceHelper.getDavEnable();
+    var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
+    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+    if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+        if (enableDAV == 'YES') {
+            var ignoreDAVResult = false;
+            if (approveDAV == 'APPROVE') {
+                ignoreDAVResult = true;
+            }
+            CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
+        }
+        /* End of DAV WebService setup */
+
+        /* AVS Service setup */
+        var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
+        var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
+
+        CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
+	 }
 
 	var serviceResponse = null;
 	// send request
@@ -338,6 +408,19 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	responseObject["RequestToken"] = serviceResponse.requestToken;
 	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
 	responseObject["Decision"] = serviceResponse.decision;
+	responseObject.AuthorizationReasonCode = serviceResponse.reasonCode.get();
+    responseObject.DAVReasonCode = serviceResponse.reasonCode.get();
+    // eslint-disable-next-line
+    if (!empty(serviceResponse.ccAuthReply)) {
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.authorizationCode)) {
+            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.authorizationCode;
+        }
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.amount)) {
+            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.amount;
+        }
+    }
 	responseObject["payerAuthValidateReply"] = (null !== serviceResponse.payerAuthValidateReply) ? "exists" : null;
 	if(null !== serviceResponse.payerAuthValidateReply){
 		responseObject["AuthenticationResult"] = serviceResponse.payerAuthValidateReply.authenticationResult;
@@ -360,9 +443,85 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	}
 	return {success:true, serviceResponse:responseObject};
 }
+
+/**
+ * decisionManager call is made to cybersource and response is sent back.
+ * @param {*} Basket Basket
+ * @param {*} OrderNo Order number
+ * @param {*} ReadFromBasket ReadFromBasket
+ * @returns {*} obj
+ */
+ function decisionManager(Basket, OrderNo, ReadFromBasket) {
+    var basket = Basket;
+    var orderNo = OrderNo;
+
+    //* *************************************************************************//
+    // Check if Basket exists
+    //* *************************************************************************//
+    if (basket === null) {
+        Logger.error('Please provide a Basket!');
+        return { error: true };
+    }
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // Objects to set in the Service Request inside facade
+    var billTo; var
+        shipTo;
+    var result = CommonHelper.CreateCyberSourceBillToObject(basket, ReadFromBasket);
+    billTo = result.billTo;
+    result = CommonHelper.CreateCybersourceShipToObject(basket);
+
+    shipTo = result.shipTo;
+
+    //* *************************************************************************//
+    // Set WebReference & Stub
+    //* *************************************************************************//
+    var csReference = webreferences2.CyberSourceTransaction;
+
+    var serviceRequest = new csReference.RequestMessage();
+
+    result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
+	purchaseObject = result.purchaseTotals; 
+    result = CommonHelper.CreateCybersourceItemObject(basket);
+    var items : dw.util.List = result.items;
+
+    //* *************************************************************************//
+    // the request object holds the input parameter for the DM request
+    //* *************************************************************************//
+    CybersourceHelper.apDecisionManagerService(serviceRequest, billTo, shipTo, purchaseObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+
+    //* *************************************************************************//
+    // Execute Request
+    //* *************************************************************************//
+    var serviceResponse = null;
+    try {
+        var service = CSServices.CyberSourceTransactionService;
+        // getting merchant id and key for specific payment method
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+        var requestWrapper = {};
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
+    } catch (e) {
+        Logger.error('[CardFacade.js] Error in DM service( {0} )', e.message);
+        return { error: true, errorMsg: e.message };
+    }
+    Logger.debug(serviceResponse);
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        Logger.error('[CardFacade.js] DM service Error : null response');
+        return { error: true, errorMsg: 'empty or error in test DM service response: ' + serviceResponse };
+    }
+    serviceResponse = serviceResponse.object;
+    return { success: true, serviceResponse: serviceResponse };
+}
+
 module.exports = {
 		PayerAuthEnrollCheck: PayerAuthEnrollCheck,
 		PayerAuthValidation: PayerAuthValidation,
 		CCAuthRequest : CCAuthRequest,
-		DAVRequest : DAVRequest
+		DAVRequest : DAVRequest,
+		DecisionManager: decisionManager
 	};
