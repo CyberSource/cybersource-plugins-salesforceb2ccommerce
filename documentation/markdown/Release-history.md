@@ -1,6 +1,7 @@
 ## <ins>Release History
 
 **Version 21.3.0 (Nov 30, 2021)**
+•	We have upgraded the cartridge to support SFRA v6.0.0.
 •	We have disable Giropay and EPS Bank transfer method. 
 •	We have implemented Decision Manager service for Bank Transfer. 
 •	We have implemented Decision Manager service for Visa Click to Pay. 
