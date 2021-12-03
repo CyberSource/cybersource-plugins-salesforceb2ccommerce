@@ -42,6 +42,7 @@ function getOrderObject(Basket : dw.order.LineItemCtnr,creditCardForm){
 	
 	var billingaddress = basket.getBillingAddress();
 	var shippingAddress;
+	var shippingMethod;
 	var it  = basket.getShipments().iterator();
 	
 	if(shippingAddress == null){

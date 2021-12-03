@@ -850,8 +850,23 @@ function HookIn3DRequest(args) {
 		result = VisaCheckoutFacade.CCAuthRequest(args.Order, args.orderNo, CommonHelper.GetIPAddress());
 	} else {
 		var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-		result = CardFacade.CCAuthRequest(args.Order, args.Order.orderNo, CommonHelper.GetIPAddress(), session.forms.billing.paymentMethods.creditCard, 
+		var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        var Resource = require('dw/web/Resource');
+		var payerAuthEnable = CardHelper.PayerAuthEnable(args.paymentInstrument.creditCardType);
+        if (payerAuthEnable.error) {
+            return { error: true };
+        } if (payerAuthEnable.paEnabled && args.paymentInstrument.paymentMethod != Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
+			if (!empty(args.payerValidationResponse)) {
+                result = { serviceResponse: args.payerValidationResponse };
+            }
+            // eslint-disable-next-line
+            if (!empty(args.payerEnrollResponse)) {
+                result = { serviceResponse: args.payerEnrollResponse };
+            }
+        } else {
+            result = CardFacade.CCAuthRequest(args.Order, args.Order.orderNo, CommonHelper.GetIPAddress(), session.forms.billing.paymentMethods.creditCard, 
 			args.SubscriptionID, args.payerEnrollResponse, args.payerValidationResponse, ReadFromBasket);
+        }
 	}
 	//facade response handling
 	if (result.error) {
@@ -896,7 +911,7 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         if (!empty(serviceResponse.networkScore)) {
             session.privacy.networkScore = serviceResponse.networkScore;
         }
-		if (serviceResponse.ReasonCode === 100) {
+		if (serviceResponse.ReasonCode === 100 || serviceResponse.ReasonCode === 480) {
 			return {OK:true, serviceResponse:serviceResponse};
 		} else if (!empty(serviceResponse.AcsURL)) {
 			session.privacy.order_id = orderNo;

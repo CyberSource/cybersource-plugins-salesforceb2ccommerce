@@ -11,7 +11,7 @@ server.append('Confirm', function (req, res, next) {
     var Locale = require('dw/util/Locale');
     var OrderModel = require('*/cartridge/models/order');
     var viewData = res.getViewData();
-    var order = OrderMgr.getOrder(req.querystring.ID);
+    var order = OrderMgr.getOrder(viewData.order.orderNumber);
     var config = {
         numberOfLineItems: '*'
     };

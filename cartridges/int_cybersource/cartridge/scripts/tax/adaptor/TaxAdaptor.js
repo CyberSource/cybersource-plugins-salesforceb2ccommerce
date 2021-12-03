@@ -23,7 +23,7 @@ function calculateTaxes(cart){
 			cartStateString = result.CartStateString;
 			if (empty(session.privacy.SkipTaxCalculation)||!session.privacy.SkipTaxCalculation) {
 				var TaxFacade = require('~/cartridge/scripts/tax/facade/TaxFacade');
-				taxationResponse = TaxFacade.TaxationRequest(cart);
+				var taxationResponse = TaxFacade.TaxationRequest(cart);
 				if (taxationResponse.success && taxationResponse.response !== null) {
 					session.privacy.cartStateString = cartStateString;
 					session.privacy.SkipTaxCalculation = true;

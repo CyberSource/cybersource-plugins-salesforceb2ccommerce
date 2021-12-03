@@ -275,11 +275,13 @@ function saveCreditCard() {
     var BasketMgr = require('dw/order/BasketMgr');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     var basket = BasketMgr.getCurrentOrNewBasket();
+    var Site = require('dw/system/Site');
+    var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     if (!empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_PAYPAL))) {
         return true;
     }
     if (!empty(customer) && customer.authenticated && session.forms.billing.creditCardFields.saveCard.value
-        && session.forms.billing.paymentMethod.value.equals(PaymentInstrument.METHOD_CREDIT_CARD)) {
+        && session.forms.billing.paymentMethod.value.equals(PaymentInstrument.METHOD_CREDIT_CARD)|| CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST) ) {
         subscriptionID = CommonHelper.GetSubscriptionToken(session.forms.billing.creditCardFields.selectedCardID.value, customer);
         if (empty(subscriptionID)) {
             var createSubscriptionBillingResult = createSubscriptionBilling({ Basket: basket });

@@ -200,12 +200,6 @@
 <iscomment>Bank Transfer </iscomment>
 <isif condition="${isCartridgeEnabled}">
 	<div class="bankTransfer" id="bankTransfer">
-		<div id="eps">
-			<isinclude template="checkout/billing/paymentOptions/epsContent" />
-		</div>
-		<div id="gpy">
-			<isinclude template="checkout/billing/paymentOptions/giroPayContent" />
-		</div>
 		<div id="idl">
 			<isinclude template="checkout/billing/paymentOptions/iDealContent" />
 		</div>

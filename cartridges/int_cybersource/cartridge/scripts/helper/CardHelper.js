@@ -262,6 +262,12 @@ function returnCardType (cardType : String) : String {
 			case "maestro": 
 				cardTypeNew="042";
 				break;
+			case 'jcb':
+                cardTypeNew ="007";
+                break;
+            case 'dinersclub':
+                cardTypeNew ="005";
+                break;
 		}
 	}
 	return cardTypeNew;
@@ -354,6 +360,14 @@ function getCardType( cardTypeValue : String ) {
 				case "042": 
 					cardType="Maestro";
 					break;
+				case '005':
+					cardType = 'DinersClub';
+					break;
+				case '007':
+					cardType = 'JCB';
+					break;
+				default:
+					cardType = '';
 			} 
 	return cardType;
 	}

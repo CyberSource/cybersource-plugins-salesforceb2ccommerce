@@ -62,20 +62,20 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
         var Transaction = require('dw/system/Transaction');
         var status = Transaction.wrap(function () {
             // eslint-disable-next-line
+            if (!empty(matchedPaymentInstrument)) {
+                wallet.removePaymentInstrument(matchedPaymentInstrument);
+            }
+            // eslint-disable-next-line
+            var paymentInstrument = wallet.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
+            paymentInstrument.setCreditCardHolder(cardHolder);
+            paymentInstrument.setCreditCardNumber(cardNumber);
+            paymentInstrument.setCreditCardExpirationMonth(cardMonth);
+            paymentInstrument.setCreditCardExpirationYear(cardYear);
+            paymentInstrument.setCreditCardType(cardType);
             if (!empty(cardToken)) {
-                // eslint-disable-next-line
-                if (!empty(matchedPaymentInstrument)) {
-                    wallet.removePaymentInstrument(matchedPaymentInstrument);
-                }
-                // eslint-disable-next-line
-                var paymentInstrument = wallet.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
-                paymentInstrument.setCreditCardHolder(cardHolder);
-                paymentInstrument.setCreditCardNumber(cardNumber);
-                paymentInstrument.setCreditCardExpirationMonth(cardMonth);
-                paymentInstrument.setCreditCardExpirationYear(cardYear);
-                paymentInstrument.setCreditCardType(cardType);
                 paymentInstrument.setCreditCardToken(cardToken);
             }
+            // }
             return { success: true };
         });
         if (!status.success) {

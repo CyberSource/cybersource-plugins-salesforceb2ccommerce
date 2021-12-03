@@ -381,8 +381,6 @@ Bank Transfer supports 5 types of Payment methods
 •	SOFORT
 •	BANCONTACT
 •	IDEAL
-•	GIROPAY
-•	EPS
 
 **Bank Transfer Service Support by Country**
 |  |  |  |
@@ -391,8 +389,6 @@ Bank Transfer supports 5 types of Payment methods
 | Payment Method | Country | Services |
 | -------------- | ------------ | ----|
 | Bancontact | Belgium | Sale, Check Status, Refund |
-| EPS | Austria | Sale, Check Status |
-| giropay | Germany | Sale, Check Status | 
 | iDEAL | Netherlands | Options, Sale, Check Status, Refund |
 | Sofort | Austria, Belgium, Germany, Italy, Netherlands, Spain | Sale, Check Status, Refund |
 
@@ -426,7 +422,6 @@ Step 3: Go to Merchant Tools > Ordering > Payments Methods > Bank_Transfer and s
 
 | FIeld                       | Description                                                                                |
 | --------------------------- | ------------------------------------------------------------------------------------------ |
-| isBicEnabled                | Attribute to check if BIC field is required for EPS and GIROPAY to display on billing page |
 | isSupportedBankListRequired | Attribute to check if bank list is required for IDEAL to display on billing page           |
 
 ### **7. Alipay**

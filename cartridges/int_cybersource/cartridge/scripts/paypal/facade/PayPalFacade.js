@@ -135,9 +135,9 @@ function __addBillingAgreementId(request,lineItemCntr){
 	 * param : request
 ****************************************************************************/
 function __addDecisionManager(request){
-	var decisionManager  = new csReference.DecisionManager();
-	decisionManager.enabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('isDecisionManagerEnable');
-	request.decisionManager = decisionManager;
+	request.decisionManager  = new csReference.DecisionManager();
+	request.decisionManager.enabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('isDecisionManagerEnable');
+	//request.decisionManager = decisionManager;
 }
 /*****************************************************************************
 	 * Name: checkStatusService
@@ -231,7 +231,7 @@ function createBasicRequest(typeofService,request,lineItemCntr){
 		//create request stub for sale service
 		var serviceRequest = new csReference.RequestMessage();
 		createBasicRequest('authorizeService', serviceRequest,lineItemCntr);
-		__addDecisionManager(serviceRequest);
+		CybersourceHelper.apDecisionManagerService(paymentInstrument.paymentMethod, serviceRequest);
 		if(serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()){
 			libCybersource.setClientData( serviceRequest, lineItemCntr.orderNo,session.sessionID); 	
 		}else{

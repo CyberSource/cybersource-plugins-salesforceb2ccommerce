@@ -75,20 +75,6 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     //* *************************************************************************//
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 
-    // Populate Payer Auth Reply service response attributes
-    if (payerValidationResponse) {
-        CybersourceHelper.addPayerAuthReplyInfo(serviceRequest, payerValidationResponse.CAVV, payerValidationResponse.UCAFAuthenticationData,
-            payerValidationResponse.UCAFCollectionIndicator, payerValidationResponse.ECIRaw, payerValidationResponse.PAVCommerceIndicator,
-            payerValidationResponse.PAVXID, payerValidationResponse.ParesStatus, payerValidationResponse.specificationVersion, payerValidationResponse.directoryServerTransactionID, payerValidationResponse.cavvAlgorithm,
-            payerValidationResponse.effectiveAuthenticationType, payerValidationResponse.challengeCancelCode, payerValidationResponse.authenticationStatusReason, payerValidationResponse.acsTransactionID, payerValidationResponse.authorizationPayload);
-    } else if (payerEnrollResponse) {
-        CybersourceHelper.addPayerAuthReplyInfo(
-            serviceRequest, payerEnrollResponse.CAVV, payerEnrollResponse.UCAFAuthenticationData,
-            payerEnrollResponse.UCAFCollectionIndicator, payerEnrollResponse.ECIRaw, payerEnrollResponse.PACommerceIndicator,
-            payerEnrollResponse.PAXID, payerEnrollResponse.ParesStatus, payerEnrollResponse.specificationVersion, payerEnrollResponse.directoryServerTransactionID, null,
-            payerEnrollResponse.effectiveAuthenticationType, payerEnrollResponse.challengeCancelCode, payerEnrollResponse.authenticationStatusReason, payerEnrollResponse.acsTransactionID
-        );
-    }
     /** ***************************** */
     /* DAV-related WebService setup */
     /** ***************************** */
@@ -292,6 +278,13 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
         CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
     } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+    }
+
+    // eslint-disable-next-line
+    if (!empty(SubscriptionID)) {
+    CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
+    } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
+    CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
     }
 
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
@@ -739,7 +732,8 @@ function decisionManager(Basket, OrderNo, ReadFromBasket) {
     //* *************************************************************************//
     // the request object holds the input parameter for the DM request
     //* *************************************************************************//
-    CybersourceHelper.apDecisionManagerService(serviceRequest, billTo, shipTo, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
+    var paymentMethod = session.forms.billing.paymentMethod.value;
+    CybersourceHelper.apDecisionManagerService(paymentMethod, serviceRequest, billTo, shipTo, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 
     //* *************************************************************************//
     // Execute Request

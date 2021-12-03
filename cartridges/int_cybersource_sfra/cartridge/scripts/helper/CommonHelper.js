@@ -1290,8 +1290,13 @@ function getItemObject(typeofService, basket) {
                 itemObject.setProductCode(lineItem.ID);
                 itemObject.setProductName(lineItem.ID);
                 itemObject.setProductSKU(lineItem.ID);
-                if (lineItem.adjustedTax.available && lineItem.adjustedTax.value > 0) {
-                    itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.adjustedTax.value), '#.00', locale));
+
+                if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
+                    if (lineItem.adjustedTax.available && lineItem.adjustedTax.getValue() > 0) {
+                        itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.adjustedTax.getValue()), '#.00', locale));
+                    } else if (lineItem.adjustedTax.available && lineItem.adjustedTax.value > 0) {
+                        itemObject.setTaxAmount(StringUtils.formatNumber(0, '0.00', locale));
+                    }
                 }
                 itemObject.setId(count);
             }
@@ -1324,7 +1329,6 @@ function billAddressExistsInBasket(lineItemCntr) {
 *  Function to add address in basket from 3rd party payment provider
 */
 function addAddressToCart(lineItemCntr, responseObj, overrideShippingFlag) {
-    var overrideShipping = overrideShippingFlag;
     var billTo = responseObj.billTo;
     var shipTo = responseObj.shipTo;
     var billingAddress = lineItemCntr.getBillingAddress();
@@ -1332,6 +1336,7 @@ function addAddressToCart(lineItemCntr, responseObj, overrideShippingFlag) {
         billingAddress = lineItemCntr.createBillingAddress();
     }
 
+    var addressUpdateStatus = {};
     /* Custom Address fields handling for Shipping and Billing for PayPal. Priortize basket billing address, if it exists,
         over paypal billing address. Validate all mandatory SFRA-billing fields. */
     if (billAddressExistsInBasket(lineItemCntr)) {
@@ -1341,34 +1346,26 @@ function addAddressToCart(lineItemCntr, responseObj, overrideShippingFlag) {
             lineItemCntr.setCustomerEmail(billTo.email);
         }
     } else {
-        // if (!empty(billTo.street1) && !empty(billTo.city) && !empty(billTo.state)
-        // && !empty(billTo.postalCode) && !empty(billTo.country)) {
-        billingAddress.setFirstName(billTo.firstName);
-        billingAddress.setLastName(billTo.lastName);
-        billingAddress.setAddress1(billTo.street1);
-        billingAddress.setAddress2(billTo.street2);
-        billingAddress.setCity(billTo.city);
-        billingAddress.setPostalCode(billTo.postalCode);
-        billingAddress.setCountryCode(billTo.country);
-        billingAddress.setStateCode(billTo.state);
-        if (customer.authenticated) {
-            lineItemCntr.setCustomerEmail(customer.profile.email);
-        } else {
-            lineItemCntr.setCustomerEmail(billTo.email);
-        }
-        billingAddress.setPhone(billTo.phoneNumber);
-        /* } else {
+        if (overrideShippingFlag) {
+            // if (!empty(billTo.street1) && !empty(billTo.city) && !empty(billTo.state)
+            // && !empty(billTo.postalCode) && !empty(billTo.country)) {
             billingAddress.setFirstName(billTo.firstName);
             billingAddress.setLastName(billTo.lastName);
-            billingAddress.setAddress1('1295 Charleston Rd');
-            billingAddress.setAddress2('');
-            billingAddress.setCity('Mountain View');
-            billingAddress.setStateCode('CA');
-            billingAddress.setPostalCode('94043');
-            billingAddress.setCountryCode('US');
-            billingAddress.setPhone('3333333333');
-            lineItemCntr.setCustomerEmail(billTo.email);
-        } */
+            billingAddress.setAddress1(billTo.street1);
+            billingAddress.setAddress2(billTo.street2);
+            billingAddress.setCity(billTo.city);
+            billingAddress.setPostalCode(billTo.postalCode);
+            billingAddress.setCountryCode(billTo.country);
+            billingAddress.setStateCode(billTo.state);
+            if (customer.authenticated) {
+                lineItemCntr.setCustomerEmail(customer.profile.email);
+            } else {
+                lineItemCntr.setCustomerEmail(billTo.email);
+            }
+            billingAddress.setPhone(billTo.phoneNumber);
+        } else {
+            addressUpdateStatus.billingAddressMissing = true;
+        }
     }
 
     var defaultShipment; var
@@ -1377,11 +1374,8 @@ function addAddressToCart(lineItemCntr, responseObj, overrideShippingFlag) {
     shippingAddress = defaultShipment.getShippingAddress();
     if (shippingAddress === null) {
         shippingAddress = defaultShipment.createShippingAddress();
-        overrideShipping = true;
-    } else {
-        overrideShipping = true;
     }
-    if (overrideShipping) {
+    if (overrideShippingFlag) {
         shippingAddress.setFirstName(shipTo.firstName);
         shippingAddress.setLastName(shipTo.lastName);
         shippingAddress.setAddress1(shipTo.street1);
@@ -1390,7 +1384,10 @@ function addAddressToCart(lineItemCntr, responseObj, overrideShippingFlag) {
         shippingAddress.setPostalCode(shipTo.postalCode);
         shippingAddress.setCountryCode(shipTo.country);
         shippingAddress.setStateCode(shipTo.state);
+    } else {
+        addressUpdateStatus.shippingAddressMissing = true;
     }
+    return addressUpdateStatus;
 }
 /**
 * Log response based on reason code
@@ -1620,12 +1617,10 @@ function validatePayPalInstrument(basket, orderModel) {
     for (var i = 0; i < basket.paymentInstruments.length; i += 1) {
         var paymentInstrument = basket.paymentInstruments[i];
         // var req = 'requestId' in paymentInstrument.paymentTransaction.custom && !empty(paymentInstrument.paymentTransaction.custom.requestId);
-        if ((paymentInstrument.paymentMethod === 'PAYPAL' || paymentInstrument.paymentMethod === 'PAYPAL_CREDIT') && 'paymentTransaction' in paymentInstrument
-            && 'requestId' in paymentInstrument.paymentTransaction.custom && !empty(paymentInstrument.paymentTransaction.custom.requestId)) {
+        if ((paymentInstrument.paymentMethod === 'PAYPAL' || paymentInstrument.paymentMethod === 'PAYPAL_CREDIT') && 'paymentTransaction' in paymentInstrument && 'requestId' in paymentInstrument.paymentTransaction.custom && !empty(paymentInstrument.paymentTransaction.custom.requestId)) {
             if (paymentInstrument.paymentMethod === 'PAYPAL_CREDIT' && paymentInstrument.paymentTransaction.amount.toFormattedString() === orderModel.totals.grandTotal) {
                 return true;
-            } if (paymentInstrument.paymentMethod === 'PAYPAL' && paymentInstrument.paymentTransaction.amount.toFormattedString() === orderModel.totals.grandTotal
-                && !empty(paymentInstrument.paymentTransaction.custom.payerID) && !empty(paymentInstrument.paymentTransaction.custom.apSessionProcessorTID)) {
+            } if (paymentInstrument.paymentMethod === 'PAYPAL' && !empty(paymentInstrument.paymentTransaction.custom.payerID) && !empty(paymentInstrument.paymentTransaction.custom.apSessionProcessorTID)) {
                 return true;
             }
         }

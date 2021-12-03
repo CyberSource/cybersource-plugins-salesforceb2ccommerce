@@ -1,4 +1,5 @@
 'use strict';
+
 var Logger = require('dw/system/Logger');
 
 /**
@@ -17,7 +18,7 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 	var lineItems : Iterator = basket.allLineItems.iterator();
 	var items  = [];
 	var idcount : Number = 0;
-	
+	var orderLevelAdjustmentPrice = null;
 	var shippingMethodTaxCode = null;
 	if( !empty(shippingMethod) ) {
 		shippingMethodTaxCode = shippingMethod.taxClassID;
@@ -38,7 +39,7 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 	var orderLevelAdjustment = basket.getPriceAdjustments();
 	
 	var orderLevelIterator : Iterator = orderLevelAdjustment.iterator();
-	var orderLevelAdjustmentPrice = null;
+	
 	while( orderLevelIterator.hasNext() ) {
 	    var oLevelPriceAdjustment = orderLevelIterator.next();
 	    
@@ -57,6 +58,7 @@ function CreateCybersourceTaxationItemsObject(Basket : dw.order.LineItemCtnr)
 	while( lineItems.hasNext() ) {
 		var actualQuantity : Number = 0;
 		var lineItem = lineItems.next();
+		var adjustedLineItemFinalPrice = null;
 		var item = new CybersourceHelper.csReference.Item();
 		
  		if( lineItem instanceof dw.order.ProductLineItem ) {

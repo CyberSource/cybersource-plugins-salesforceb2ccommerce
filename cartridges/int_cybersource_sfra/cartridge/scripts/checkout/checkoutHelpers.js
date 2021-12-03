@@ -6,6 +6,8 @@
 
 var base = module.superModule;
 var renderTemplateHelper = require('*/cartridge/scripts/renderTemplateHelper');
+var Transaction = require('dw/system/Transaction');
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 
 /**
  * creates a new payment instrument in customers wallet if payment instrument is new
@@ -393,6 +395,35 @@ function getNonGCPaymemtInstument(basket) {
     return CardHelper.getNonGCPaymemtInstument(basket);
 }
 
+/**
+ * Sets the payment transaction amount
+ * @param {dw.order.Basket} currentBasket - The current basket
+ * @returns {Object} an error object
+ */
+function calculatePaymentTransaction(currentBasket) {
+    var result = { error: false };
+
+    try {
+        Transaction.wrap(function () {
+            var paymentInstruments = currentBasket.paymentInstruments;
+
+            if (!paymentInstruments.length) {
+                return;
+            }
+            var orderTotal = currentBasket.totalGrossPrice;
+            var paymentInstrument = paymentInstruments[0];
+
+            if (!(paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_PAYPAL) || paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_PAYPAL_CREDIT))) {
+                paymentInstrument.paymentTransaction.setAmount(orderTotal);
+            }
+        });
+    } catch (e) {
+        result.error = true;
+    }
+
+    return result;
+}
+
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
 base.handlePayments = handlePayments;
 base.validatePayment = validatePayment;
@@ -405,4 +436,6 @@ base.handleSilentPostAuthorize = handleSilentPostAuthorize;
 base.reCreateBasket = reCreateBasket;
 base.addOrUpdateToken = addOrUpdateToken;
 base.getNonGCPaymemtInstument = getNonGCPaymemtInstument;
+base.calculatePaymentTransaction = calculatePaymentTransaction;
+
 module.exports = base;

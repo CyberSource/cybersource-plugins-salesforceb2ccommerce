@@ -51,7 +51,7 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
         session.privacy.cartStateString = null;
         // Reset usingMultiShip after successful Order placement
         req.session.privacyCache.set('usingMultiShipping', false);
-        redirectUrl = URLUtils.url('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString();
+        redirectUrl = URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken).toString();
     } else if (result.pending) {
         session.privacy.isReCreateBasket = true;
         session.privacy.orderID = order.orderNo;

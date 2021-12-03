@@ -1,5 +1,18 @@
 ## <ins>Release History
 
+**Version 21.3.0 (Nov 30, 2021)**
+•	We have upgraded the cartridge to support SFRA v6.0.0.
+•	We have disable Giropay and EPS Bank transfer method. 
+•	We have implemented Decision Manager service for Bank Transfer. 
+•	We have implemented Decision Manager service for Visa Click to Pay. 
+•	We have implemented Decision Manager service for PayPal. 
+•	We have added missing isSubscription custom field in metadata file. (GitHub issue#10)
+•	We have fixed GitHub issue #71
+•	We have fixed GitHub issue #69
+•	We have fixed GitHub issue #75
+•	We have implemented a new flag to override shipping address of PayPal. 
+
+
 **Version 21.2.0 (Aug 27, 2021)**
 •	We have updated credit card form page in the My Account page with Flex Microform v0.11 implementation. 
 •	We have updated the cartridge to make it compatible with Salesforce B2C Commerce release 21.2.

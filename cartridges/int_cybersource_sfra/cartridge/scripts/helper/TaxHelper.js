@@ -29,7 +29,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
 
     var orderDiscount = new Money(0, basket.currencyCode);
     var subTotal = basket.adjustedMerchandizeTotalNetPrice;
-    for (var i = 0; i < basket.priceAdjustments; i += 1) {
+    for (var i = 0; i < basket.priceAdjustments.length; i += 1) {
         var promo = basket.priceAdjustments[i];
         orderDiscount = orderDiscount.add(promo.netPrice);
         if (promo.netPrice.value < 0) {

@@ -159,8 +159,13 @@ function Process3DRequestParent(args) {
     			return {fail: true, PlaceOrderError : new Status(Status.ERROR, "confirm.error.declined")};
             }	
 			var CardFacade = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/facade/CardFacade');
-            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken(),transactionId);
-            if (result.success && result.serviceResponse.ReasonCode === 100) {
+			var payerAuthbillTo = CommonHelper.CreateCyberSourceBillToObject(order, true);
+            var payerAuthshipTo= CommonHelper.CreateCybersourceShipToObject(order);
+            var purchaseObject = CommonHelper.CreateCybersourcePurchaseTotalsObject(order);
+            var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(order);
+            var items = payerAuthsitems.items;
+            var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken(),transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);
+            if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode == '480')) {
             	var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 				result = secureAcceptanceHelper.HookIn3DRequest({Order:order, payerValidationResponse:result.serviceResponse, paymentInstrument:paymentInstrument,SubscriptionID:paymentInstrument.getCreditCardToken()});
 				if (result.authorized)

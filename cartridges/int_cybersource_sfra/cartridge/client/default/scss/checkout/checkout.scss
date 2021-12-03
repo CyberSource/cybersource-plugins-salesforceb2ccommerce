@@ -124,7 +124,7 @@
     }
 	
 	&[data-checkout-stage] {
-        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
+        button.alipay, button.sof, button.idl, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
             display: none;
         }
     }
@@ -172,7 +172,7 @@
     }
     
     &[data-checkout-stage=payment] {
-        button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
+        button.alipay, button.sof, button.idl, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
             display: none;
         }
     }
@@ -233,7 +233,7 @@
     }
     
     &[data-checkout-stage=placeOrder] {
-       button.alipay, button.sof, button.eps, button.idl, button.gpy, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
+       button.alipay, button.sof, button.idl, button.mch, button.klarna, button.credit_card, button.dw_google_pay, button.wechat {
             display: block;
         }
     }
