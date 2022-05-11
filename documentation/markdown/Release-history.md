@@ -1,7 +1,16 @@
 ## <ins>Release History
 
+**Version 22.1.0 (May 15, 2022)**
+•	We have added paymentFlowMode configuration for Klarna payment.
+•	We have added support for SCA changes for Irish processor. 
+•	We have updated the payment method Id for PayPal Credit to support PayPal payment for Salesforce Order Management.  
+•	We have added Transaction Type and Transaction Id for PayPal payment to support PayPal payment for Salesforce Order Management.
+•	We have fixed a Decision Manager issue for Visa Click to Pay. 
+•	We have fixed a Decision Manager issue for Credit card transactions. 
+•	We have upgraded the Cybersource WSDL version to 1.192.
+
+
 **Version 21.3.0 (Nov 30, 2021)**
-•	We have upgraded the cartridge to support SFRA v6.0.0.
 •	We have disable Giropay and EPS Bank transfer method. 
 •	We have implemented Decision Manager service for Bank Transfer. 
 •	We have implemented Decision Manager service for Visa Click to Pay. 

@@ -172,6 +172,12 @@ function Process3DRequestParent(args) {
             var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(order);
             var items = payerAuthsitems.items;
             var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(), transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);
+
+            var scaEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('IsSCAEnabled');
+            if(scaEnabled && result.serviceResponse.ReasonCode === 478 && session.custom.SCA === false){
+                session.custom.SCA = true ;
+                result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(), transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);  
+            }
             if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode == '480') && (!empty(PAXID) ? PAXID === result.serviceResponse.PAVXID : true)) {
                 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
                 result = secureAcceptanceHelper.HookIn3DRequest({

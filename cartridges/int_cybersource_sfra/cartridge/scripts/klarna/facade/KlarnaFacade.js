@@ -23,9 +23,15 @@ function KlarnaServiceInterface(request) {
     return serviceResponse;
 }
 
-/*
-
+/**
+ * This method gets the value of IsKlarnaPaymentFlowModeEnabled in custom preferences
+ * @returns {boolean} obj
 */
+function getPaymentFlowMode() {
+    var paymentFlowMode = dw.system.Site.getCurrent().getCustomPreferenceValue('IsKlarnaPaymentFlowModeEnabled');
+    return paymentFlowMode;
+}
+
 /**
  * This method sets the request object with values required
  * in session service of klarna
@@ -70,6 +76,11 @@ function klarnaInitSessionService(sessionObject) {
     apSessionsService.successURL = sessionObject.successURL;
     apSessionsService.failureURL = sessionObject.failureURL;
     apSessionsService.sessionsType = 'N';
+    var paymentFlowMode = getPaymentFlowMode();
+    if (paymentFlowMode) {
+        apSessionsService.paymentFlowMode = 'inline';
+        apSessionsService.paymentMethodName = 'pay_now';
+    }
     request.apSessionsService = apSessionsService;
     request.apSessionsService.run = true;
 

@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <wsdl:definitions
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 	xmlns:http="http://schemas.xmlsoap.org/wsdl/http/"
-	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/2004-08-24.xsd"
+	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:tns="urn:schemas-cybersource-com:transaction-data:TransactionProcessor"
-	xmlns:data="urn:schemas-cybersource-com:transaction-data-1.170"
+	xmlns:data="urn:schemas-cybersource-com:transaction-data-1.192"
 	name="CyberSourceTransactionWS"
 	targetNamespace="urn:schemas-cybersource-com:transaction-data:TransactionProcessor">
 	<wsdl:types>
 		<xsd:schema>
 			<xsd:import
-				namespace="urn:schemas-cybersource-com:transaction-data-1.170"
-				schemaLocation="CyberSourceTransaction_1.170.xsd" />
+				namespace="urn:schemas-cybersource-com:transaction-data-1.192" 
+				schemaLocation="CyberSourceTransaction_1.192.xsd" />
 		</xsd:schema>
 	</wsdl:types>
 	<wsdl:message name="messageIn">
@@ -49,7 +49,7 @@
 		<wsdl:port name="portXML"
 			binding="tns:ITransactionProcessor">
 			<soap:address
-				location="https://ics2ws.ic3.com:443/commerce/1.x/transactionProcessor" />
+				location="https://ics2wstesta.ic3.com:443/commerce/1.x/transactionProcessor" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>

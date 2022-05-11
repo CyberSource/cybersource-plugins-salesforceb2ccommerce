@@ -113,7 +113,7 @@
  | Field                | Description                                                                                                                                                            | Value to Set |
  | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
  | CsSAType             | Secure Acceptance Type                                                                                                                                                 | **SA_FLEX**  |
- | SA_Flex_HostName     | Test: apitest.cybersource.com<br>Production: api.cybersource.com                                                                                                       |
+ | SA_Flex_HostName     | Test: testflex.cybersource.com<br>Production: flex.cybersource.com.com                                                                                                       |
  | SA_Flex_KeyID        | Flex Microform Key ID. Follow [link](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) to generate keys. |
  | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                           |
 

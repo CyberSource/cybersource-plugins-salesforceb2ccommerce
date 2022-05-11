@@ -282,11 +282,12 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
 
     // eslint-disable-next-line
     if (!empty(SubscriptionID)) {
-    CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
+        CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
     } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
-    CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
     }
-
+    // eslint-disable-next-line
+    session.custom.SCA = false ;
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
     /** ***************************** */
     /* DAV-related WebService setup */
@@ -732,6 +733,7 @@ function decisionManager(Basket, OrderNo, ReadFromBasket) {
     //* *************************************************************************//
     // the request object holds the input parameter for the DM request
     //* *************************************************************************//
+    // eslint-disable-next-line
     var paymentMethod = session.forms.billing.paymentMethod.value;
     CybersourceHelper.apDecisionManagerService(paymentMethod, serviceRequest, billTo, shipTo, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 

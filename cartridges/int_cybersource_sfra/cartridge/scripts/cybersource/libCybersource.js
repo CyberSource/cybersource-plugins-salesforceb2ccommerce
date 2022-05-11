@@ -175,7 +175,7 @@ function setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '21.3.0';
+    request.clientLibraryVersion = '22.1.0';
     request.clientEnvironment = 'Linux';
     request.partnerSDKversion = Resource.msg('global.version.number', 'version', null);
     request.clientApplicationVersion = 'SFRA';
@@ -222,7 +222,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return '7RHZ38UY';
+        return 'BC9LEGMV';
     },
 
     getDeveloperID: function () {
@@ -625,6 +625,10 @@ var CybersourceHelper = {
         // CMCIC
         request.cardTypeSelectionIndicator = '1';
         request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
+        // eslint-disable-next-line
+        if (session.custom.SCA === true) {
+            request.ccAuthService.paChallengeCode = '04';
+        }
         request.ccAuthService.run = true;
     },
 
@@ -962,8 +966,10 @@ var CybersourceHelper = {
         request.item = items;
 
         request.payerAuthValidateService.run = true;
-        request.afsService = new CybersourceHelper.csReference.AFSService();
-        request.afsService.run = true;
+        if (CybersourceHelper.getCardDecisionManagerEnable()){
+            request.afsService = new CybersourceHelper.csReference.AFSService();
+            request.afsService.run = true;
+        }
     },
 
     // eslint-disable-next-line
@@ -1414,13 +1420,17 @@ var CybersourceHelper = {
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
         var paymentProcessorID = PaymentMgr.getPaymentMethod(paymentMethodID).paymentProcessor.ID;
         request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
-
+        var flag = false;
         if (CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(paymentProcessorID)) {
             request.decisionManager.enabled = CybersourceHelper.getBankTransferDecisionManagerFlag();
+            request.afsService = new CybersourceHelper.csReference.AFSService();
+            request.afsService.run = true;
         } else if (CybersourceConstants.METHOD_PAYPAL.equals(paymentMethodID) || CybersourceConstants.METHOD_PAYPAL_CREDIT.equals(paymentMethodID)) {
             request.decisionManager.enabled = CybersourceHelper.getPayPapDMEnableFlag();
+            flag = CybersourceHelper.getPayPapDMEnableFlag();
         } else if (CybersourceConstants.METHOD_VISA_CHECKOUT.equals(paymentMethodID)) {
             request.decisionManager.enabled = CybersourceHelper.getCardDecisionManagerEnable();
+            flag = CybersourceHelper.getCardDecisionManagerEnable();
         } else {
             request.merchantID = CybersourceHelper.getMerchantID();
             var fingerprint = null;
@@ -1445,10 +1455,13 @@ var CybersourceHelper = {
             request.item = items;
 
             request.decisionManager.enabled = CybersourceHelper.getCardDecisionManagerEnable();
+            flag = CybersourceHelper.getCardDecisionManagerEnable();
         }
         // DM standalone
-        request.afsService = new CybersourceHelper.csReference.AFSService();
-        request.afsService.run = true;
+        if(flag){
+            request.afsService = new CybersourceHelper.csReference.AFSService();
+            request.afsService.run = true;
+        }
     },
 
     /**

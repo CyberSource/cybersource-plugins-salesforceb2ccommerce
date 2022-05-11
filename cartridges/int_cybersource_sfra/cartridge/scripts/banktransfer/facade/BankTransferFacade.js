@@ -7,6 +7,7 @@ var CybersourceHelper = libCybersource.getCybersourceHelper();
  * This script call service to initiate payment for and
 * set the response in response object. also handles the logging
 * of different error scenarios while making service call.
+ * @param {*} paymentMethod paymentMethod
  * @param {*} request request
  * @returns {*} obj
  */
@@ -19,7 +20,13 @@ function BankTransferServiceInterface(paymentMethod, request) {
     return serviceResponse;
 }
 
+/**
+ * @param {*} saleObject saleObject
+ * @param {*} config config
+ * @returns {*} obj
+ */
 function buildRequestObject(saleObject, config) {
+    // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
     // create reference of request object
     var request = new csReference.RequestMessage();
@@ -28,7 +35,7 @@ function buildRequestObject(saleObject, config) {
     request.merchantID = CybersourceHelper.getMerchantID();
 
     // if (empty(config.decision)) {
-        libCybersource.setClientData(request, saleObject.orderNo);
+    libCybersource.setClientData(request, saleObject.orderNo);
     // }
 
     // set purchase total and payment type
@@ -68,6 +75,7 @@ function buildRequestObject(saleObject, config) {
 
     request.invoiceHeader = invoiceHeader;
 
+    // eslint-disable-next-line
     if (empty(config.decision)) {
         CybersourceHelper.apDecisionManagerService(config.paymentMethod, request);
     } else {
@@ -122,9 +130,9 @@ function BanktransferRefundService(requestID, merchantRefCode, paymentType, amou
     var Logger = dw.system.Logger.getLogger('Cybersource');
     var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
     var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    // var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
     var csReference = webreferences2.CyberSourceTransaction;
