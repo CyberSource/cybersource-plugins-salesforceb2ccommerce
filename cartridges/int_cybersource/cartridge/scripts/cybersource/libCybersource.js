@@ -49,7 +49,7 @@ var CybersourceHelper = {
 	},
 
 	getPartnerSolutionID : function () {
-		return "NL7LODLG";
+		return "Q5FY4BNS";
 	},
 
 	getDeveloperID : function () {
@@ -829,8 +829,10 @@ var CybersourceHelper = {
 		request.item = items;
 
 		request.payerAuthValidateService.run=true;
-		request.afsService = new CybersourceHelper.csReference.AFSService();
-        request.afsService.run = true;
+		if (CybersourceHelper.getCardDecisionManagerEnable()){
+			request.afsService = new CybersourceHelper.csReference.AFSService();
+        	request.afsService.run = true;
+		}
 	},
 
 	addPayerAuthReplyInfo : function(request, cavv, ucafAuthenticationData, ucafCollectionIndicator, eciRaw,
@@ -883,7 +885,7 @@ var CybersourceHelper = {
         /*if (!empty(authorizationPayload)) {
         	request.ccAuthService.authorizationPayload = authorizationPayload;
         }*/
-        request.ccAuthService.paAuthenticationDate = new Date().toDateString();
+        request.ccAuthService.paAuthenticationDate = dw.util.StringUtils.formatCalendar(new dw.util.Calendar(), 'yyyyMMddHHmmss');
 
 		if(!empty(ucafAuthenticationData)){
 			request.ucaf = new CybersourceHelper.csReference.UCAF();

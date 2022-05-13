@@ -72,6 +72,7 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
             paymentInstrument.setCreditCardExpirationMonth(cardMonth);
             paymentInstrument.setCreditCardExpirationYear(cardYear);
             paymentInstrument.setCreditCardType(cardType);
+            // eslint-disable-next-line
             if (!empty(cardToken)) {
                 paymentInstrument.setCreditCardToken(cardToken);
             }

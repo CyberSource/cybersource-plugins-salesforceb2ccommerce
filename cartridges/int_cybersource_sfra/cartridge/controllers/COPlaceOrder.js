@@ -73,7 +73,7 @@ function reviewOrder(orderId, req, res, next) {
 
     // Reset usingMultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
-    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken)); 
+    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken));
     return next();
 }
 
@@ -118,7 +118,7 @@ function submitOrder(orderId, req, res, next) {
     COHelpers.sendConfirmationEmail(order, req.locale.id);
     // Reset using MultiShip after successful Order placement
     req.session.privacyCache.set('usingMultiShipping', false);
-    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken)); 
+    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken));
     return next();
 }
 

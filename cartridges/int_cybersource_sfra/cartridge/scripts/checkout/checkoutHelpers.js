@@ -22,7 +22,7 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
     var HookMgr = require('dw/system/HookMgr');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
-    var Transaction = require('dw/system/Transaction');
+    // var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
     var Site = require('dw/system/Site');
     var Resource = require('dw/web/Resource');
@@ -122,7 +122,7 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
 function handlePayments(order, orderNumber) {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var HookMgr = require('dw/system/HookMgr');
-    var Transaction = require('dw/system/Transaction');
+    // var Transaction = require('dw/system/Transaction');
     var OrderMgr = require('dw/order/OrderMgr');
     var authorizationResult;
     var result = {};
@@ -328,7 +328,7 @@ function clearPaymentAttributes() {
  * @returns {*} obj
  */
 function reCreateBasket(order) {
-    var Transaction = require('dw/system/Transaction');
+    // var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
     var OrderMgr = require('dw/order/OrderMgr');
     Transaction.wrap(function () {

@@ -139,7 +139,7 @@ function CreateSaleServiceRequest(Order, testMethod) {
             saleObject.paymentOptionID = session.forms.billing.bankListSelection.value;
         }
     }
-
+    // eslint-disable-next-line
     var paymentMethod = session.forms.billing.paymentMethod.value || testMethod;
     // call session method of libCybersourceHelper to create session request
     var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject, paymentMethod);

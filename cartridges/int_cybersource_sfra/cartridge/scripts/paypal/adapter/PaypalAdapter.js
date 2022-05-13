@@ -219,7 +219,8 @@ function authorizeService(order, paymentInstrument) {
         // process response received from sale service
         if (!empty(response) && response.decision.equals('ACCEPT') && response.apAuthReply.paymentStatus === 'AUTHORIZED' && response.reasonCode.get() === 100) {
             Transaction.wrap(function () {
-                paymentTransaction.transactionID = response.apAuthReply.processorTransactionID;
+                paymentTransaction.transactionID = response.requestID;
+                paymentTransaction.type = paymentTransaction.TYPE_AUTH;
                 paymentTransaction.custom.paymentStatus = response.apAuthReply.paymentStatus;
                 if (!empty(response.apReply) && !empty(response.apReply.processorFraudDecisionReason)) {
                     paymentTransaction.custom.processorFraudDecisionReason = response.apReply.processorFraudDecisionReason;
@@ -290,7 +291,8 @@ function saleService(Order, paymentInstrument) {
         // process response received from sale service
         if (!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'SETTLED' && response.reasonCode.get() === 100) {
             Transaction.wrap(function () {
-                paymentTransaction.transactionID = response.apSaleReply.processorTransactionID;
+                paymentTransaction.transactionID = response.requestID;
+                paymentTransaction.type = paymentTransaction.TYPE_CAPTURE;
                 paymentTransaction.custom.paymentStatus = response.apSaleReply.paymentStatus;
                 paymentTransaction.custom.saleProcessorTID = response.apSaleReply.processorTransactionID;
                 paymentTransaction.custom.saleRequestID = response.requestID;
