@@ -242,6 +242,9 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 		CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
 	}
 	
+
+	// eslint-disable-next-line
+	session.custom.SCA = false ;
 	CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
 	/** ***************************** */
 	/* DAV-related WebService setup */

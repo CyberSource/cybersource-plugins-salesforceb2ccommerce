@@ -475,6 +475,10 @@ var CybersourceHelper = {
 		//CMCIC
         request.cardTypeSelectionIndicator = '1';
 		request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
+		// eslint-disable-next-line
+		if (session.custom.SCA === true) {
+			request.ccAuthService.paChallengeCode = '04';
+		}
 		request.ccAuthService.run = true;
 	},
 

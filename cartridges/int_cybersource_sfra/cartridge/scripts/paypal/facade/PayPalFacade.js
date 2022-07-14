@@ -196,6 +196,7 @@ function addDecisionManager(request) {
 function checkStatusService(lineItemCntr, requestId) {
     // create request stub for check status service
     var request = new csReference.RequestMessage();
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 
     request.merchantID = CybersourceHelper.getMerchantID();
     libCybersource.setClientData(request, lineItemCntr.UUID);
@@ -213,6 +214,12 @@ function checkStatusService(lineItemCntr, requestId) {
     var result = {};
     result.checkStatusResponse = payPalSerivceInterface(request);
     result.isBillingAgreement = isBillingAgreement;
+    var translatedObject = CommonHelper.decodeObj({
+        street1: result.checkStatusResponse.shipTo.street1,
+        city: result.checkStatusResponse.shipTo.city
+        });
+    result.checkStatusResponse.shipTo.street1 = translatedObject.street1;
+    result.checkStatusResponse.shipTo.city = translatedObject.city;
     return result;
 }
 
