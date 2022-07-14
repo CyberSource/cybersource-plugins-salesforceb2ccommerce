@@ -40,6 +40,7 @@
 		    order: orderObject
 	  });	  
 	  Cardinal.on('payments.setupComplete', function(setupCompleteData){
+		  Cardinal.trigger("bin.process", orderObject.Consumer.Account.AccountNumber);
 		  var submitOrderElements = document.getElementsByName('submit');
           if (submitOrderElements){
               submitOrderElements.disabled = false;

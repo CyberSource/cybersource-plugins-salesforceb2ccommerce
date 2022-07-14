@@ -1532,6 +1532,42 @@ function reCreateBasket() {
         session.privacy.isIframe = false;
     }
 }
+
+function decodeObj(encodedObj) {
+    var attrs = Object.keys(encodedObj);
+    var decodedObj = {};
+
+    attrs.forEach(function (key) {
+           decodedObj[key] = getDecodedStr(encodedObj[key]);
+    });
+
+    return decodedObj;
+}
+
+function getDecodedStr(encodedStr) {
+    var start = 0;
+    var decodedStr = '';
+    var escapeStr = '';
+
+    for (let j = 0; j < encodedStr.length; j++) {
+        if (encodedStr.charCodeAt(j) > 127) {
+            start = j;
+
+            while(encodedStr.charCodeAt(j) > 127 && j < encodedStr.length) {
+                j++;
+            }
+
+            escapeStr = escape(encodedStr.substring(start,j));
+            decodedStr = decodedStr + decodeURIComponent(escapeStr);
+        }
+        if (j != encodedStr.length) {
+        decodedStr = decodedStr + encodedStr[j];  
+        }
+    }
+
+    return decodedStr;
+}
+
  
 module.exports = {
 	CreateCybersourceShipFromObject : CreateCybersourceShipFromObject,
@@ -1562,5 +1598,6 @@ module.exports = {
 	HandleRequest: HandleRequest,
 	sendMail: sendMail,
 	CalculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount,
-	reCreateBasket: reCreateBasket
+	reCreateBasket: reCreateBasket,
+	decodeObj: decodeObj
 };

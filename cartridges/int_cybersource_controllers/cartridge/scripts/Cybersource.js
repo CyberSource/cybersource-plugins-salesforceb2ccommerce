@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * Controller that performs card related services like (AVS, DAV, Payer Authentication,Tax Calculate, Capture Card, Fingerprint) services and Alipay and PayPay services.
  * The authorize and required functions of selected payment method are invoked from respective controller/script in merchant site code.
@@ -164,8 +165,14 @@ function Process3DRequestParent(args) {
             var purchaseObject = CommonHelper.CreateCybersourcePurchaseTotalsObject(order);
             var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(order);
             var items = payerAuthsitems.items;
+			var scaEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('IsSCAEnabled');
             var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken(),transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);
-            if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode == '480')) {
+            if (scaEnabled && result.success && result.serviceResponse.ReasonCode === 478) {
+                // eslint-disable-next-line
+				session.custom.SCA = true ;
+                result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.paymentMethods.creditCard, paymentInstrument.getCreditCardToken(),transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);
+                }
+			if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode === '480')) {
             	var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 				result = secureAcceptanceHelper.HookIn3DRequest({Order:order, payerValidationResponse:result.serviceResponse, paymentInstrument:paymentInstrument,SubscriptionID:paymentInstrument.getCreditCardToken()});
 				if (result.authorized)
