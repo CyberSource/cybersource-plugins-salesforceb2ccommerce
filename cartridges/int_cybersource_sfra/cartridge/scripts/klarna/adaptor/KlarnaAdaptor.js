@@ -59,7 +59,7 @@ function AuthorizeKlarnaOrderUpdate(order, responseObject) {
         var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
         // set transaction level object with custom values after getting response of sale service
         if (paymentInstrument != null && responseObject !== null) {
-            paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
+            paymentInstrument.paymentTransaction.custom.approvalStatus = Number(responseObject.reasonCode);
             paymentInstrument.paymentTransaction.custom.requestId = responseObject.requestID;
             paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
             paymentInstrument.paymentTransaction.custom.apPaymentType = CybersourceConstants.KLARNA_PAYMENT_TYPE;
@@ -149,7 +149,7 @@ function AuthorizationServiceRequest(Order, preApprovalToken) {
 
     /* return the response as per decision and reason code, redirect the user to
      merchant site for payment completion */
-    if ((authResponse.decision === 'ACCEPT' && authResponse.reasonCode.get() === 100) || (authResponse.decision === 'REVIEW' && authResponse.reasonCode.get() === 480)) {
+    if ((authResponse.decision === 'ACCEPT' && Number(authResponse.reasonCode) === 100) || (authResponse.decision === 'REVIEW' && Number(authResponse.reasonCode) === 480)) {
         // eslint-disable-next-line
         session.privacy.order_id = Order.orderNo;
         var isRedirectionRequired = true; // dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaRedirectionRequired');
@@ -268,7 +268,7 @@ function AuthorizeRequest(orderNo, pi, token) {
     var response = klarnaFacade.klarnaInitSessionService(sessionObject);
 
     // return the response as per decision and reason code
-    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+    if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
         // set the processor token into session variable
         session.privacy.processorToken = response.apSessionsReply.processorToken;
         return { submit: true };
@@ -287,7 +287,7 @@ function AuthorizeRequest(orderNo, pi, token) {
         var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
         // set transaction level object with custom values after getting response of Check status service
         if (paymentInstrument != null && responseObject !== null) {
-            paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
+            paymentInstrument.paymentTransaction.custom.approvalStatus = Number(responseObject.reasonCode);
             paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
 
             if (responseObject.apCheckStatusReply !== null) {

@@ -31,7 +31,7 @@ function initiateExpressCheckout(lineItemCntr,args){
 	var paypalFacade = require(CybersourceConstants.PATH_FACADE+'PayPalFacade');
 	var response = paypalFacade.SessionService(lineItemCntr,args);
 	//process response received from service
-	if(!empty(response) && response.reasonCode.get() === 100){
+	if(!empty(response) && Number(response.reasonCode) === 100){
 		result.success = true;
 		result.requestID = response.requestID;
 		result.processorTransactionID = response.apSessionsReply.processorTransactionID;
@@ -95,7 +95,7 @@ function orderService(order,paymentInstrument){
 		var orderServiceResponse;
 		orderServiceResponse = paypalFacade.OrderService(order,paymentInstrument);
 		//process response received from service
-		if(!empty(orderServiceResponse) && orderServiceResponse.reasonCode.get() === 100 && orderServiceResponse.apOrderReply.status==='CREATED'){
+		if(!empty(orderServiceResponse) && Number(orderServiceResponse.reasonCode) === 100 && orderServiceResponse.apOrderReply.status==='CREATED'){
 		    Transaction.wrap(function ()
 	    		{
 		    	 // save order Request ID to be used in Sale service	
@@ -144,7 +144,7 @@ function initSessionCallback(lineItemCntr,args){
 		 var paypalFacade = require('../facade/PayPalFacade');
 		 var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 		 var checkStatusResult = paypalFacade.CheckStatusService(lineItemCntr,requestID);
-		 if(!empty(checkStatusResult) && checkStatusResult.checkStatusResponse.reasonCode.get() === 100){
+		 if(!empty(checkStatusResult) && Number(checkStatusResult.checkStatusResponse.reasonCode) === 100){
 		 	 Transaction.wrap(function () {
 		 		if(checkStatusResult.isBillingAgreement){
 		 			commonHelper.AddAddressToCart(lineItemCntr,checkStatusResult.checkStatusResponse,true);
@@ -192,7 +192,7 @@ function billingAgreementService(requestId,order){
 	var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
 	var paypalFacade = require('../facade/PayPalFacade'),response;
 		response = paypalFacade.BillingAgreement(requestId,order.UUID);
-	if(!empty(response) && response.reasonCode.get() === 100){
+	if(!empty(response) && Number(response.reasonCode) === 100){
 		
 		 var paymentInstruments = order.paymentInstruments,pi;
 		 for each(var paymentInstrument in paymentInstruments ){
@@ -228,7 +228,7 @@ try{
 		var paypalFacade = require('../facade/PayPalFacade');
 		var response = paypalFacade.AuthorizeService(order,paymentInstrument);
 		//process response received from sale service
-		if(!empty(response) && response.decision.equals('ACCEPT')&& response.apAuthReply.paymentStatus === 'AUTHORIZED' && response.reasonCode.get() === 100){
+		if(!empty(response) && response.decision.equals('ACCEPT')&& response.apAuthReply.paymentStatus === 'AUTHORIZED' && Number(response.reasonCode) === 100){
 			 Transaction.wrap(function (){
 				//paymentTransaction.transactionID = response.apAuthReply.processorTransactionID;
 				paymentTransaction.transactionID = response.requestID;
@@ -245,7 +245,7 @@ try{
 				}
 			 });
 			result.authorized = true;
-		}else if(!empty(response) && response.decision.equals('ACCEPT')&& response.apAuthReply.paymentStatus === 'PENDING' && response.reasonCode.get() === 100){
+		}else if(!empty(response) && response.decision.equals('ACCEPT')&& response.apAuthReply.paymentStatus === 'PENDING' && Number(response.reasonCode) === 100){
 			     Transaction.wrap(function (){
 			     paymentTransaction.transactionID = response.apAuthReply.processorTransactionID;
 				 paymentTransaction.custom.paymentStatus= response.apAuthReply.paymentStatus;
@@ -260,7 +260,7 @@ try{
 				 }
 			 });
 			result.pending = true;
-		}else if(!empty(response) && response.decision.equals('REVIEW') && response.reasonCode.get() === 480){
+		}else if(!empty(response) && response.decision.equals('REVIEW') && Number(response.reasonCode) === 480){
 			     Transaction.wrap(function (){
 				 paymentTransaction.transactionID = response.apAuthReply.processorTransactionID;
 			     paymentTransaction.custom.paymentStatus= response.apAuthReply.paymentStatus;
@@ -299,7 +299,7 @@ function saleService(order,paymentInstrument){
 		var paypalFacade = require('../facade/PayPalFacade');
 		var response = paypalFacade.SaleService(order,paymentInstrument);
 		//process response received from sale service
-		if(!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'SETTLED' && response.reasonCode.get() === 100){
+		if(!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'SETTLED' && Number(response.reasonCode) === 100){
 			 Transaction.wrap(function (){
 				//paymentTransaction.transactionID = response.apSaleReply.processorTransactionID;
 				paymentTransaction.transactionID = response.requestID;
@@ -314,7 +314,7 @@ function saleService(order,paymentInstrument){
 				order.paymentStatus = 2;
 			 });
 			 result.authorized = true;
-		}else if(!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'PENDING' && response.reasonCode.get() === 100){
+		}else if(!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'PENDING' && Number(response.reasonCode) === 100){
 			Transaction.wrap(function (){
 				paymentTransaction.transactionID = response.apSaleReply.processorTransactionID;
 				paymentTransaction.custom.paymentStatus= response.apSaleReply.paymentStatus;
@@ -326,7 +326,7 @@ function saleService(order,paymentInstrument){
 			    }
 			});
 			result.pending = true;
-		}else if(!empty(response) && response.decision.equals('REVIEW')&& response.reasonCode.get() === 480 ){
+		}else if(!empty(response) && response.decision.equals('REVIEW')&& Number(response.reasonCode) === 480 ){
 			Transaction.wrap(function (){
 				paymentTransaction.custom.saleRequestID = response.requestID;
 				paymentTransaction.custom.saleRequestToken = response.requestToken;

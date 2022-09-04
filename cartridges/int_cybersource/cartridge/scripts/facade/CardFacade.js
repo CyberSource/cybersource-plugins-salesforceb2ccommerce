@@ -184,11 +184,11 @@ function DAVRequest(Basket : dw.order.LineItemCtnr,billTo : Object,shipTo : Obje
 	var responseObject = {};
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["RequestToken"] = serviceResponse.requestToken;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
 	responseObject["Decision"] = serviceResponse.decision;
 	responseObject["davReply"] = (null !== serviceResponse.davReply) ? "exists" : null;
 	if(null !== serviceResponse.davReply){
-		responseObject["DAVReasonCode"] = serviceResponse.davReply.reasonCode.get();
+		responseObject["DAVReasonCode"] = Number(serviceResponse.davReply.reasonCode);
 	}
 	return {success:true, serviceResponse:responseObject};
 }
@@ -294,9 +294,9 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	var responseObject = {};
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["RequestToken"] = serviceResponse.requestToken;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
 	responseObject["Decision"] = serviceResponse.decision;
-	responseObject.DAVReasonCode = serviceResponse.reasonCode.get();
+	responseObject.DAVReasonCode = Number(serviceResponse.reasonCode);
 	responseObject["payerAuthEnrollReply"] = (null !== serviceResponse.payerAuthEnrollReply) ? "exists" : null;
 	if(null !== serviceResponse.payerAuthEnrollReply){
 		responseObject["PACommerceIndicator"] = serviceResponse.payerAuthEnrollReply.commerceIndicator;
@@ -409,10 +409,10 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
 	var responseObject = {};
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["RequestToken"] = serviceResponse.requestToken;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
 	responseObject["Decision"] = serviceResponse.decision;
-	responseObject.AuthorizationReasonCode = serviceResponse.reasonCode.get();
-    responseObject.DAVReasonCode = serviceResponse.reasonCode.get();
+	responseObject.AuthorizationReasonCode = Number(serviceResponse.reasonCode);
+    responseObject.DAVReasonCode = Number(serviceResponse.reasonCode);
     // eslint-disable-next-line
     if (!empty(serviceResponse.ccAuthReply)) {
         // eslint-disable-next-line

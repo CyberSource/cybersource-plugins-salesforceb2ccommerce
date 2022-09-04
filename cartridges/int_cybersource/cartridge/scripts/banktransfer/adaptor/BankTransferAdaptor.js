@@ -79,7 +79,7 @@ function CreateSaleServiceRequest(Order){
 	AuthorizeBankTransferOrderUpdate(Order,saleResponse,paymentType);
 	/*return the response as per decision and reason code, redirect the user to
 	 merchant site for payment completion*/
-	if (saleResponse.decision === 'ACCEPT' && saleResponse.reasonCode.get() === 100) {
+	if (saleResponse.decision === 'ACCEPT' && Number(saleResponse.reasonCode) === 100) {
 		session.privacy.order_id = Order.orderNo;
 		switch(saleResponse.apSaleReply.paymentStatus)
 		{				
@@ -171,7 +171,7 @@ function AuthorizeBankTransferOrderUpdate(order,responseObject,paymentType)
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
 	//set transaction level object with custom values after getting response of sale service
 	if( paymentInstrument != null && responseObject !== null){
-		paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
+		paymentInstrument.paymentTransaction.custom.approvalStatus = Number(responseObject.reasonCode);
 		paymentInstrument.paymentTransaction.custom.requestId = responseObject.requestID;
 		paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
 		paymentInstrument.paymentTransaction.custom.apPaymentType = paymentType;
@@ -189,7 +189,7 @@ function ProcessResponse(responseObject, paymentInstrument, order){
 	paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = responseObject.reconciliationID;
 	paymentInstrument.paymentTransaction.custom.apPaymentStatus = responseObject.paymentStatus;
 	//change the order payment status to paid after getting authorized or settled response
-	if(responseObject.reasonCode.get() === 100 && (responseObject.paymentStatus === "authorized"
+	if(Number(responseObject.reasonCode) === 100 && (responseObject.paymentStatus === "authorized"
 		|| responseObject.paymentStatus === "settled")){
 		order.paymentStatus = 2;
 	}

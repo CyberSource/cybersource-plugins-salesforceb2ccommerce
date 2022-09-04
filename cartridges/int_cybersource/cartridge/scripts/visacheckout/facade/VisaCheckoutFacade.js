@@ -165,7 +165,7 @@ function VCDecryptRequest(orderNo,wrappedKey,data,callID)
 	//set response values in local variables
 	var responseObject = {};
 	responseObject["RequestID"] = serviceResponse.requestID;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
 	responseObject["Decision"] = serviceResponse.decision;
 	responseObject["MerchantReferenceCode"] = serviceResponse.merchantReferenceCode;
 	if(!empty(serviceResponse.purchaseTotals)){
@@ -173,7 +173,7 @@ function VCDecryptRequest(orderNo,wrappedKey,data,callID)
 	}
 	responseObject["decryptVisaCheckoutDataReply"] = (!empty(serviceResponse.decryptVisaCheckoutDataReply)) ? "exists" : null;
 	if(!empty(serviceResponse.decryptVisaCheckoutDataReply)){
-		responseObject["VCDecryptReasonCode"] = serviceResponse.decryptVisaCheckoutDataReply.reasonCode.get();
+		responseObject["VCDecryptReasonCode"] = Number(serviceResponse.decryptVisaCheckoutDataReply.reasonCode);
 	}
 	responseObject["vcReply"] = (!empty(serviceResponse.vcReply)) ? "exists" : null;
 	if(!empty(serviceResponse.vcReply)){
@@ -361,7 +361,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj,Amount,OrderNo)
 	responseObject = result.responseObject;
 	responseObject["payerAuthEnrollReply"] = (!empty(serviceResponse.payerAuthEnrollReply)) ? "exists" : null;
 	if(!empty(serviceResponse.payerAuthEnrollReply)){
-		responseObject["PAReasonCode"] = serviceResponse.payerAuthEnrollReply.reasonCode.get();
+		responseObject["PAReasonCode"] = Number(serviceResponse.payerAuthEnrollReply.reasonCode);
 		responseObject["PACommerceIndicator"] = serviceResponse.payerAuthEnrollReply.commerceIndicator;
 		responseObject["UCAFCollectionIndicator"] = serviceResponse.payerAuthEnrollReply.ucafCollectionIndicator;
 		responseObject["ProofXML"] = serviceResponse.payerAuthEnrollReply.proofXML;

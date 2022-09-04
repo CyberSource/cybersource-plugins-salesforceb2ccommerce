@@ -31,7 +31,7 @@ function initiateExpressCheckout(lineItemCntr, args) {
     var paypalFacade = require(CybersourceConstants.PATH_FACADE + 'PayPalFacade');
     var response = paypalFacade.SessionService(lineItemCntr, args);
     // process response received from service
-    if (!empty(response) && response.reasonCode.get() === 100) {
+    if (!empty(response) && Number(response.reasonCode) === 100) {
         result.success = true;
         result.requestID = response.requestID;
         result.processorTransactionID = response.apSessionsReply.processorTransactionID;
@@ -77,7 +77,7 @@ function orderService(order, pi) {
         var orderServiceResponse;
         orderServiceResponse = paypalFacade.OrderService(order, paymentInstrument);
         // process response received from service
-        if (!empty(orderServiceResponse) && orderServiceResponse.reasonCode.get() === 100 && orderServiceResponse.apOrderReply.status === 'CREATED') {
+        if (!empty(orderServiceResponse) && Number(orderServiceResponse.reasonCode) === 100 && orderServiceResponse.apOrderReply.status === 'CREATED') {
             Transaction.wrap(function () {
                 // save order Request ID to be used in Sale service
                 paymentInstrument.paymentTransaction.custom.orderRequestID = orderServiceResponse.requestID;
@@ -109,7 +109,7 @@ function billingAgreementService(requestId, order) {
     // var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     var paypalFacade = require('../facade/PayPalFacade'); var response;
     response = paypalFacade.BillingAgreement(requestId, order.UUID);
-    if (!empty(response) && response.reasonCode.get() === 100) {
+    if (!empty(response) && Number(response.reasonCode) === 100) {
         var paymentInstruments = order.paymentInstruments; var pi;
         collections.forEach(paymentInstruments, function (paymentInstrument) {
             // for each(var paymentInstrument in paymentInstruments ){
@@ -161,7 +161,7 @@ function initSessionCallback(lineItemCntr, args) {
         result.shippingAddressMissing = false;
         result.billingAddressMissing = false;
         skipShipAddressValidation = !!checkStatusResult.isBillingAgreement;
-        if (!empty(checkStatusResult) && checkStatusResult.checkStatusResponse.reasonCode.get() === 100) {
+        if (!empty(checkStatusResult) && Number(checkStatusResult.checkStatusResponse.reasonCode) === 100) {
             // Shipping address is overriden with billing address for PayPal Billing Agreement, no need to validate shipping address.
             if (!skipShipAddressValidation && !commonHelper.ValidatePayPalShippingAddress(checkStatusResult.checkStatusResponse, lineItemCntr)) {
                 result.shippingAddressMissing = true;
@@ -217,7 +217,7 @@ function authorizeService(order, paymentInstrument) {
         var paypalFacade = require('../facade/PayPalFacade');
         var response = paypalFacade.AuthorizeService(order, paymentInstrument);
         // process response received from sale service
-        if (!empty(response) && response.decision.equals('ACCEPT') && response.apAuthReply.paymentStatus === 'AUTHORIZED' && response.reasonCode.get() === 100) {
+        if (!empty(response) && response.decision.equals('ACCEPT') && response.apAuthReply.paymentStatus === 'AUTHORIZED' && Number(response.reasonCode) === 100) {
             Transaction.wrap(function () {
                 paymentTransaction.transactionID = response.requestID;
                 paymentTransaction.type = paymentTransaction.TYPE_AUTH;
@@ -233,7 +233,7 @@ function authorizeService(order, paymentInstrument) {
                 }
             });
             result.authorized = true;
-        } else if (!empty(response) && response.decision.equals('ACCEPT') && response.apAuthReply.paymentStatus === 'PENDING' && response.reasonCode.get() === 100) {
+        } else if (!empty(response) && response.decision.equals('ACCEPT') && response.apAuthReply.paymentStatus === 'PENDING' && Number(response.reasonCode) === 100) {
             Transaction.wrap(function () {
                 paymentTransaction.transactionID = response.apAuthReply.processorTransactionID;
                 paymentTransaction.custom.paymentStatus = response.apAuthReply.paymentStatus;
@@ -248,7 +248,7 @@ function authorizeService(order, paymentInstrument) {
                 }
             });
             result.pending = true;
-        } else if (!empty(response) && response.decision.equals('REVIEW') && response.reasonCode.get() === 480) {
+        } else if (!empty(response) && response.decision.equals('REVIEW') && Number(response.reasonCode) === 480) {
             Transaction.wrap(function () {
                 paymentTransaction.transactionID = response.apAuthReply.processorTransactionID;
                 paymentTransaction.custom.paymentStatus = response.apAuthReply.paymentStatus;
@@ -263,7 +263,7 @@ function authorizeService(order, paymentInstrument) {
                 }
             });
             result.pending = true;
-        } else if (!empty(response) && response.decision.equals('REJECT') && response.reasonCode.get() === 481) {
+        } else if (!empty(response) && response.decision.equals('REJECT') && Number(response.reasonCode) === 481) {
             handlePayPalReject(paymentInstrument);
             result.rejected = true;
         } else {
@@ -289,7 +289,7 @@ function saleService(Order, paymentInstrument) {
         var paypalFacade = require('../facade/PayPalFacade');
         var response = paypalFacade.SaleService(order, paymentInstrument);
         // process response received from sale service
-        if (!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'SETTLED' && response.reasonCode.get() === 100) {
+        if (!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'SETTLED' && Number(response.reasonCode) === 100) {
             Transaction.wrap(function () {
                 paymentTransaction.transactionID = response.requestID;
                 paymentTransaction.type = paymentTransaction.TYPE_CAPTURE;
@@ -303,7 +303,7 @@ function saleService(Order, paymentInstrument) {
                 order.paymentStatus = 2;
             });
             result.authorized = true;
-        } else if (!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'PENDING' && response.reasonCode.get() === 100) {
+        } else if (!empty(response) && response.decision.equals('ACCEPT') && response.apSaleReply.paymentStatus === 'PENDING' && Number(response.reasonCode) === 100) {
             Transaction.wrap(function () {
                 paymentTransaction.transactionID = response.apSaleReply.processorTransactionID;
                 paymentTransaction.custom.paymentStatus = response.apSaleReply.paymentStatus;
@@ -315,13 +315,13 @@ function saleService(Order, paymentInstrument) {
                 }
             });
             result.pending = true;
-        } else if (!empty(response) && response.decision.equals('REVIEW') && response.reasonCode.get() === 480) {
+        } else if (!empty(response) && response.decision.equals('REVIEW') && Number(response.reasonCode) === 480) {
             Transaction.wrap(function () {
                 paymentTransaction.custom.saleRequestID = response.requestID;
                 paymentTransaction.custom.saleRequestToken = response.requestToken;
             });
             result.pending = true;
-        } else if (!empty(response) && response.decision.equals('REJECT') && response.reasonCode.get() === 481) {
+        } else if (!empty(response) && response.decision.equals('REJECT') && Number(response.reasonCode) === 481) {
             handlePayPalReject(paymentInstrument);
             result.rejected = true;
         } else {

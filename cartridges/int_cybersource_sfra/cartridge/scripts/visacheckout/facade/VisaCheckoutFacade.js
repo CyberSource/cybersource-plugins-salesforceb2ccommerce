@@ -171,7 +171,7 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     // set response values in local variables
     var responseObject = {};
     responseObject.RequestID = serviceResponse.requestID;
-    responseObject.ReasonCode = serviceResponse.reasonCode.get();
+    responseObject.ReasonCode = Number(serviceResponse.reasonCode);
     responseObject.Decision = serviceResponse.decision;
     responseObject.MerchantReferenceCode = serviceResponse.merchantReferenceCode;
     // eslint-disable-next-line
@@ -182,7 +182,7 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     responseObject.decryptVisaCheckoutDataReply = (!empty(serviceResponse.decryptVisaCheckoutDataReply)) ? 'exists' : null;
     // eslint-disable-next-line
     if (!empty(serviceResponse.decryptVisaCheckoutDataReply)) {
-        responseObject.VCDecryptReasonCode = serviceResponse.decryptVisaCheckoutDataReply.reasonCode.get();
+        responseObject.VCDecryptReasonCode = Number(serviceResponse.decryptVisaCheckoutDataReply.reasonCode);
     }
     // eslint-disable-next-line
     responseObject.vcReply = (!empty(serviceResponse.vcReply)) ? 'exists' : null;
@@ -384,7 +384,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     responseObject.payerAuthEnrollReply = (!empty(serviceResponse.payerAuthEnrollReply)) ? 'exists' : null;
     // eslint-disable-next-line
     if (!empty(serviceResponse.payerAuthEnrollReply)) {
-        responseObject.PAReasonCode = serviceResponse.payerAuthEnrollReply.reasonCode.get();
+        responseObject.PAReasonCode = Number(serviceResponse.payerAuthEnrollReply.reasonCode);
         responseObject.PACommerceIndicator = serviceResponse.payerAuthEnrollReply.commerceIndicator;
         responseObject.UCAFCollectionIndicator = serviceResponse.payerAuthEnrollReply.ucafCollectionIndicator;
         responseObject.ProofXML = serviceResponse.payerAuthEnrollReply.proofXML;

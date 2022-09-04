@@ -197,7 +197,7 @@ function ProcessPOSResponse(serviceResponse){
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["RequestToken"] = serviceResponse.requestToken;
 	responseObject["MerchantReferenceCode"] = serviceResponse.merchantReferenceCode;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
 	responseObject["Decision"] = serviceResponse.decision;
 	responseObject["purchaseTotals"] = (null !== serviceResponse.purchaseTotals) ? "exists" : null;
 	if(null !== serviceResponse.purchaseTotals){
@@ -207,7 +207,7 @@ function ProcessPOSResponse(serviceResponse){
 	if(null !== serviceResponse.ccAuthReply){
 		responseObject["AuthorizationAmount"] = serviceResponse.ccAuthReply.amount;
 		responseObject["AuthorizationCode"] = serviceResponse.ccAuthReply.authorizationCode;
-		responseObject["AuthorizationReasonCode"] = serviceResponse.ccAuthReply.reasonCode.get();
+		responseObject["AuthorizationReasonCode"] = Number(serviceResponse.ccAuthReply.reasonCode);
 		responseObject["AVSCode"] = serviceResponse.ccAuthReply.avsCode;
 		responseObject["AVSCodeRaw"] = serviceResponse.ccAuthReply.avsCodeRaw;
 		responseObject["AuthReplyProcessorResponse"] = serviceResponse.ccAuthReply.processorResponse;
@@ -219,7 +219,7 @@ function ProcessPOSResponse(serviceResponse){
 	responseObject["ccCaptureReply"] = (null !== serviceResponse.ccCaptureReply) ? "exists" : null;
 	if(null !== serviceResponse.ccCaptureReply){
 		responseObject["CaptureReplyAmount"] = serviceResponse.ccCaptureReply.amount;
-		responseObject["CaptureReplyReasonCode"] = serviceResponse.ccCaptureReply.reasonCode.get();
+		responseObject["CaptureReplyReasonCode"] = Number(serviceResponse.ccCaptureReply.reasonCode);
 		responseObject["CaptureReplyReconciliationID"] = serviceResponse.ccCaptureReply.reconciliationID;
 	}
 	
@@ -235,7 +235,7 @@ function ProcessPOSResponse(serviceResponse){
 		responseObject["MissingField"] = serviceResponse.missingField;
 	}
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, serviceResponse.reasonCode.get(), serviceResponse.decision);
+	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, Number(serviceResponse.reasonCode), serviceResponse.decision);
 	
 	return {success:true, responseObject:responseObject};
 }

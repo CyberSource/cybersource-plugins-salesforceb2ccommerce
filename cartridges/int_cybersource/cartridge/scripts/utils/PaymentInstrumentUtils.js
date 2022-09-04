@@ -105,7 +105,7 @@ function authorizeAlipayOrderUpdate(order,alipayInitiatePaymentObject, apPayment
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
 	if( paymentInstrument != null && alipayInitiatePaymentObject !== null){
 			paymentInstrument.paymentTransaction.custom.apMerchantURL = alipayInitiatePaymentObject.apInitiateReply.merchantURL;
-			paymentInstrument.paymentTransaction.custom.approvalStatus = alipayInitiatePaymentObject.reasonCode.get();;
+			paymentInstrument.paymentTransaction.custom.approvalStatus = Number(alipayInitiatePaymentObject.reasonCode);
 			paymentInstrument.paymentTransaction.custom.apInitiatePaymentReconciliationID = alipayInitiatePaymentObject.apInitiateReply.reconciliationID;
 			paymentInstrument.paymentTransaction.custom.apInitiatePaymentRequestID = alipayInitiatePaymentObject.requestID;
 			paymentInstrument.paymentTransaction.custom.requestToken = alipayInitiatePaymentObject.requestToken;
@@ -123,7 +123,7 @@ function checkStatusOrderUpdate(order,responseObject,paymentType)
 	Transaction.wrap(function () {
 	var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
 	if(paymentInstrument != null && responseObject !== null){
-			paymentInstrument.paymentTransaction.custom.approvalStatus = responseObject.reasonCode.get();
+			paymentInstrument.paymentTransaction.custom.approvalStatus = Number(responseObject.reasonCode);
 			paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;
 			if(responseObject.apCheckStatusReply !== null){
 				paymentInstrument.paymentTransaction.custom.apPaymentStatus = responseObject.apCheckStatusReply.paymentStatus;
@@ -134,11 +134,11 @@ function checkStatusOrderUpdate(order,responseObject,paymentType)
 					paymentInstrument.paymentTransaction.transactionID = responseObject.apCheckStatusReply.processorTransactionID;
 				}
 			}
-			if(responseObject.reasonCode.get() === 100 && (responseObject.apCheckStatusReply.paymentStatus === 'COMPLETED'
+			if(Number(responseObject.reasonCode) === 100 && (responseObject.apCheckStatusReply.paymentStatus === 'COMPLETED'
 				|| responseObject.apCheckStatusReply.paymentStatus === 'settled')){
 				order.paymentStatus = 2;
 			} else if(CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)
-				&& responseObject.reasonCode.get() === 100 && responseObject.apCheckStatusReply.paymentStatus === 'authorized'){
+				&& Number(responseObject.reasonCode) === 100 && responseObject.apCheckStatusReply.paymentStatus === 'authorized'){
 				order.paymentStatus = 2;
 			}			
 		}

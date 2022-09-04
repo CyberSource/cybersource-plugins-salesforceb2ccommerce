@@ -1417,7 +1417,7 @@ function CheckStatusServiceRequest(args) {
 	var response = commonFacade.CheckPaymentStatusRequest(Order);
 	if (!empty(response)) {
 		PaymentInstrumentUtils.checkStatusOrderUpdate(Order,response,paymentType);
-		if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+		if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
 			switch(response.apCheckStatusReply.paymentStatus)
 			{
 				case 'COMPLETED':
@@ -1436,7 +1436,7 @@ function CheckStatusServiceRequest(args) {
 					return {error: true};
 			}
 		} else if (response.decision === 'REJECT' || response.decision === 'ERROR') {
-			if(getReasonCodes(response.reasonCode.get())){
+			if(getReasonCodes(Number(response.reasonCode))){
 				return {error: true};
 			}
 		} else if (response.decision === 'REVIEW'){

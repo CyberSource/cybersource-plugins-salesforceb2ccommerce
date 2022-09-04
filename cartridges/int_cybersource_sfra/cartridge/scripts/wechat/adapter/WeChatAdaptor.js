@@ -119,9 +119,9 @@ function CreateSaleServiceRequest(Basket) {
     var saleReplyURL = response.apSaleReply.merchantURL;
     var returnURL = saleReplyURL.substring(0, saleReplyURL.length - 1);
 
-    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+    if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
         // set the processor token into session variable
-        if (response.apSaleReply.reasonCode.get() === 100) {
+        if (Number(response.apSaleReply.reasonCode) === 100) {
             // eslint-disable-next-line
             session.privacy.WeChatSaleRequestId = response.requestID;
             return {
@@ -170,15 +170,15 @@ function CheckStatusServiceRequest(orderNo, paymentInstrument) {
     var paymentProcessor = PaymentMgr.getPaymentMethod(PaymentInstrument.getPaymentMethod()).getPaymentProcessor();
     var response = WeChatFacade.WeChatCheckStatusService(requestId, paymentType, orderNo);
     var result = {};
-    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+    if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
         // set the processor token into session variable
-        if (response.apCheckStatusReply.reasonCode.get() === 100 && response.apCheckStatusReply.paymentStatus === 'settled') {
+        if (Number(response.apCheckStatusReply.reasonCode) === 100 && response.apCheckStatusReply.paymentStatus === 'settled') {
             // eslint-disable-next-line
             session.privacy.wechatCheckStatus = true;
             result.submit = true;
-        } else if (response.apCheckStatusReply.reasonCode.get() === 100 && response.apCheckStatusReply.paymentStatus === 'pending') {
+        } else if (Number(response.apCheckStatusReply.reasonCode) === 100 && response.apCheckStatusReply.paymentStatus === 'pending') {
             result.pending = true;
-        } else if (response.apCheckStatusReply.reasonCode.get() === 100 && response.apCheckStatusReply.paymentStatus === 'abandoned') {
+        } else if (Number(response.apCheckStatusReply.reasonCode) === 100 && response.apCheckStatusReply.paymentStatus === 'abandoned') {
             result.error = true;
         } else {
             result.error = true;

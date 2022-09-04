@@ -150,7 +150,7 @@ function handleAlipayInitiatePaymentResponse(order, alipayReturnUrl, alipayRespo
 	var alipayPaymentType  = CybersourceHelper.getAlipayPaymentType();
 	switch(alipayResponse.decision) {
 		case 'ACCEPT' :
-		if (alipayResponse.reasonCode.get() === 100) {
+		if (Number(alipayResponse.reasonCode) === 100) {
 			var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
 			PaymentInstrumentUtils.authorizeAlipayOrderUpdate(order, alipayResponse, alipayPaymentType.value);
 			session.privacy.order_id = order.orderNo;
