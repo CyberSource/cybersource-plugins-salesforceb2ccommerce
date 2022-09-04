@@ -83,9 +83,9 @@ function CreateSaleServiceRequest(Basket) {
     // call session method of facade to create session request
     var response = WeChatFacade.WeChatSaleService(sessionObject);
     
-    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+    if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
         //set the processor token into session variable
-        if (response.apSaleReply.reasonCode.get() === 100 ) {  
+        if (Number(response.apSaleReply.reasonCode) === 100 ) {  
         	var saleReplyURL = response.apSaleReply.merchantURL;
         	var returnURL = saleReplyURL.substring(0,saleReplyURL.length-1);
         	session.privacy.WeChatSaleRequestId = response.requestID;
@@ -112,14 +112,14 @@ function CheckStatusService(Basket,paymentInstrument,orderNo) {
 	
 	var result={};
 	 
-	if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+	if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
 	        //set the processor token into session variable
-	        if (response.apCheckStatusReply.reasonCode.get() === 100 && response.apCheckStatusReply.paymentStatus === 'settled') { 
+	        if (Number(response.apCheckStatusReply.reasonCode) === 100 && response.apCheckStatusReply.paymentStatus === 'settled') { 
 	        	
 	        	session.privacy.wechatCheckStatus = true;
 	        	result.submit = true;      	
 	        }
-	        else if (response.apCheckStatusReply.reasonCode.get() === 100 && response.apCheckStatusReply.paymentStatus === 'pending') {        	
+	        else if (Number(response.apCheckStatusReply.reasonCode) === 100 && response.apCheckStatusReply.paymentStatus === 'pending') {        	
 	        	result.pending = true;   	 
 	        }
 	        else {	        	

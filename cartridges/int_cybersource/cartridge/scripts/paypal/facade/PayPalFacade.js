@@ -40,7 +40,7 @@ function payPalSerivceInterface(request)
 		
 	
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, serviceResponse.reasonCode.get(), serviceResponse.decision);
+	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, Number(serviceResponse.reasonCode), serviceResponse.decision);
 		   
 	return serviceResponse;
 }

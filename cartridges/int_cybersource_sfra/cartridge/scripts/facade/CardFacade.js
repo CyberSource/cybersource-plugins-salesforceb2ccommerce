@@ -212,11 +212,11 @@ function DAVRequest(Basket, billTo, shipTo) {
     var responseObject = {};
     responseObject.RequestID = serviceResponse.requestID;
     responseObject.RequestToken = serviceResponse.requestToken;
-    responseObject.ReasonCode = serviceResponse.reasonCode.get();
+    responseObject.ReasonCode = Number(serviceResponse.reasonCode);
     responseObject.Decision = serviceResponse.decision;
     responseObject.davReply = (serviceResponse.davReply !== null) ? 'exists' : null;
     if (serviceResponse.davReply !== null) {
-        responseObject.DAVReasonCode = serviceResponse.davReply.reasonCode.get();
+        responseObject.DAVReasonCode = Number(serviceResponse.davReply.reasonCode);
     }
     return { success: true, serviceResponse: responseObject };
 }
@@ -337,7 +337,20 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
     var responseObject = {};
     responseObject.RequestID = serviceResponse.requestID;
     responseObject.RequestToken = serviceResponse.requestToken;
-    responseObject.ReasonCode = serviceResponse.reasonCode.get();
+    responseObject.ReasonCode = Number(serviceResponse.reasonCode);
+    responseObject.AuthorizationReasonCode = Number(serviceResponse.reasonCode);
+    
+    if (!empty(serviceResponse.ccAuthReply)) {
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.authorizationCode)) {
+            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.authorizationCode;
+        }
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.amount)) {
+            responseObject.AuthorizationAmount = serviceResponse.ccAuthReply.amount;
+        }
+    }
+    
     responseObject.Decision = serviceResponse.decision;
     responseObject.payerAuthEnrollReply = (serviceResponse.payerAuthEnrollReply !== null) ? 'exists' : null;
     if (serviceResponse.payerAuthEnrollReply !== null) {
@@ -470,9 +483,9 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
     var responseObject = {};
     responseObject.RequestID = serviceResponse.requestID;
     responseObject.RequestToken = serviceResponse.requestToken;
-    responseObject.ReasonCode = serviceResponse.reasonCode.get();
-    responseObject.AuthorizationReasonCode = serviceResponse.reasonCode.get();
-    responseObject.DAVReasonCode = serviceResponse.reasonCode.get();
+    responseObject.ReasonCode = Number(serviceResponse.reasonCode);
+    responseObject.AuthorizationReasonCode = Number(serviceResponse.reasonCode);
+    responseObject.DAVReasonCode = Number(serviceResponse.reasonCode);
     // eslint-disable-next-line
     if (!empty(serviceResponse.ccAuthReply)) {
         // eslint-disable-next-line
@@ -481,7 +494,7 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
         }
         // eslint-disable-next-line
         if (!empty(serviceResponse.ccAuthReply.amount)) {
-            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.amount;
+            responseObject.AuthorizationAmount = serviceResponse.ccAuthReply.amount;
         }
     }
     responseObject.Decision = serviceResponse.decision;

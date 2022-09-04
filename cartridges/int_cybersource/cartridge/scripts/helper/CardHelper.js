@@ -45,7 +45,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo)
 	var responseObject = {};
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["RequestToken"] = serviceResponse.requestToken;
-	responseObject["ReasonCode"] = serviceResponse.reasonCode.get();
+	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
 	responseObject["Decision"] = serviceResponse.decision;
 	responseObject["ccAuthReply"] = (null !== serviceResponse.ccAuthReply) ? "exists" : null;
 	if(!empty(serviceResponse.paySubscriptionCreateReply) && !empty(serviceResponse.paySubscriptionCreateReply.subscriptionID)){
@@ -55,7 +55,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo)
 	if(null !== serviceResponse.ccAuthReply){
 		responseObject["AuthorizationAmount"] = serviceResponse.ccAuthReply.amount;
 		responseObject["AuthorizationCode"] = serviceResponse.ccAuthReply.authorizationCode;
-		responseObject["AuthorizationReasonCode"] = serviceResponse.ccAuthReply.reasonCode.get();
+		responseObject["AuthorizationReasonCode"] = Number(serviceResponse.ccAuthReply.reasonCode);
 	}	
 	
 	/**********************************************/
@@ -68,7 +68,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo)
 		responseObject["InvalidFieldsArray"] = serviceResponse.invalidField;
 	}	
 	if(null !== serviceResponse.davReply){
-		responseObject["DAVReasonCode"] = serviceResponse.davReply.reasonCode.get();
+		responseObject["DAVReasonCode"] = Number(serviceResponse.davReply.reasonCode);
 		
 		if( !empty(serviceResponse.davReply.standardizedAddress1) ) {
 			var stdAddress  = {};
@@ -99,7 +99,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo)
 	/* End of DAV response processing */
 	
 	var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, serviceResponse.reasonCode.get(), serviceResponse.decision);
+	CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, Number(serviceResponse.reasonCode), serviceResponse.decision);
 	
 	return {success:true, responseObject:responseObject};
 }

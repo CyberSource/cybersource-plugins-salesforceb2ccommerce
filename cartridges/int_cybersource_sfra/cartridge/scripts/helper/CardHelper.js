@@ -46,7 +46,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     var responseObject = {};
     responseObject.RequestID = serviceResponse.requestID;
     responseObject.RequestToken = serviceResponse.requestToken;
-    responseObject.ReasonCode = serviceResponse.reasonCode.get();
+    responseObject.ReasonCode = Number(serviceResponse.reasonCode);
     responseObject.Decision = serviceResponse.decision;
     responseObject.ccAuthReply = (serviceResponse.ccAuthReply !== null) ? 'exists' : null;
     // eslint-disable-next-line
@@ -57,7 +57,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     if (serviceResponse.ccAuthReply !== null) {
         responseObject.AuthorizationAmount = serviceResponse.ccAuthReply.amount;
         responseObject.AuthorizationCode = serviceResponse.ccAuthReply.authorizationCode;
-        responseObject.AuthorizationReasonCode = serviceResponse.ccAuthReply.reasonCode.get();
+        responseObject.AuthorizationReasonCode = Number(serviceResponse.ccAuthReply.reasonCode);
     }
 
     /** ******************************************* */
@@ -72,7 +72,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
         responseObject.InvalidFieldsArray = serviceResponse.invalidField;
     }
     if (serviceResponse.davReply !== null) {
-        responseObject.DAVReasonCode = serviceResponse.davReply.reasonCode.get();
+        responseObject.DAVReasonCode = Number(serviceResponse.davReply.reasonCode);
 
         var updateShipAddress = Site.getCurrent().getCustomPreferenceValue('CsCorrectShipAddress');
         // eslint-disable-next-line
@@ -92,7 +92,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
     /* End of DAV response processing */
 
     var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, serviceResponse.reasonCode.get(), serviceResponse.decision);
+    CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, Number(serviceResponse.reasonCode), serviceResponse.decision);
 
     return { success: true, responseObject: responseObject };
 }

@@ -1,12 +1,16 @@
 ## <ins>Release History
 
+**Version 22.1.2 (September 02, 2022)**
+•	We have updated the file name songbird.isml to songBird.isml
+•	We have updated the cartridge to make it compatible with Salesforce B2C Commerce release 22.7.
+•	We have fixed the issue where payment details were updated with undefined.
+
 **Version 22.1.1 (July 14, 2022)**
 •	We fixed an issue in PayPal where non-english characters was not returned in the Cybersource response.
 •	We added bin detection in 3ds flow.  
 
 **Version 22.1.0 (May 15, 2022)**
 •	We have added paymentFlowMode configuration for Klarna payment.
-•	We have added support for SCA changes for Irish processor.
 •	We have updated the payment method Id for PayPal Credit to support PayPal payment for Salesforce Order Management.  
 •	We have added Transaction Type and Transaction Id for PayPal payment to support PayPal payment for Salesforce Order Management.
 •	We have fixed a Decision Manager issue for Visa Click to Pay. 

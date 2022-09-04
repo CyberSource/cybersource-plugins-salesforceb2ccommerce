@@ -148,13 +148,13 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     var response = klarnaFacade.klarnaInitSessionService(sessionObject);
 
     // return the response as per decision and reason code
-    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100 && !empty(response.apSessionsReply.processorToken)) {
+    if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100 && !empty(response.apSessionsReply.processorToken)) {
         // set the processor token into session variable
         session.privacy.processorToken = response.apSessionsReply.processorToken;
         session.privacy.requestID = response.requestID;
         returnObject.error = false;
         returnObject.decision = response.decision;
-        returnObject.reasonCode = response.reasonCode.get();
+        returnObject.reasonCode = Number(response.reasonCode);
         returnObject.sessionToken = response.apSessionsReply.processorToken;
         //  Save token to session in case customer leaves billing page and goes back.
         session.privacy.klarnaSessionToken = response.apSessionsReply.processorToken;
@@ -162,7 +162,7 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     } else {
         returnObject.error = true;
         returnObject.decision = response.decision;
-        returnObject.reasonCode = response.reasonCode.get();
+        returnObject.reasonCode = Number(response.reasonCode);
     }
 
     res.cacheExpiration(0);
@@ -227,11 +227,11 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
     var returnObject = {};
 
     // return the response as per decision and reason code
-    if (response.decision === 'ACCEPT' && response.reasonCode.get() === 100) {
+    if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100) {
         // set the processor token into session variable
         returnObject.error = false;
         returnObject.decision = response.decision;
-        returnObject.reasonCode = response.reasonCode.get();
+        returnObject.reasonCode = Number(response.reasonCode);
         returnObject.sessionToken = response.apSessionsReply.processorToken;
         //  Save token to session in case customer leaves billing page and goes back.
         session.privacy.klarnaSessionToken = response.apSessionsReply.processorToken;
@@ -239,7 +239,7 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
     } else {
         returnObject.error = true;
         returnObject.decision = response.decision;
-        returnObject.reasonCode = response.reasonCode.get();
+        returnObject.reasonCode = Number(response.reasonCode);
     }
 
     res.cacheExpiration(0);

@@ -73,7 +73,7 @@ function ProcessResponse(response, serviceReply, heading) {
 
     if (!empty(response.object.requestToken)) { responseObject.RequestToken = response.object.requestToken; }
 
-    if (!empty(response.object.reasonCode)) { responseObject.ReasonCode = response.object.reasonCode.get(); }
+    if (!empty(response.object.reasonCode)) { responseObject.ReasonCode = Number(response.object.reasonCode); }
 
     if (!empty(response.object.decision)) { responseObject.Decision = response.object.decision; }
 
@@ -101,7 +101,7 @@ function ProcessResponse(response, serviceReply, heading) {
             responseObject.AmountCaptured = response.object[serviceReply].amount;
         }
         if ('reasonCode' in response.object[serviceReply]) {
-            responseObject.ServiceReplyReasonCode = response.object[serviceReply].reasonCode.get();
+            responseObject.ServiceReplyReasonCode = Number(response.object[serviceReply].reasonCode);
         }
     }
     // eslint-disable-next-line
@@ -201,7 +201,7 @@ function TestCCAuth(billTo, shipTo, card, purchaseTotals) {
     responseObject.ccAuthReply = (serviceResponse.object.ccAuthReply !== null) ? 'exists' : null;
     if (serviceResponse.object.ccAuthReply !== null) {
         responseObject.AuthorizationAmount = serviceResponse.object.ccAuthReply.amount;
-        responseObject.AuthorizationReasonCode = serviceResponse.object.ccAuthReply.reasonCode.get();
+        responseObject.AuthorizationReasonCode = Number(serviceResponse.object.ccAuthReply.reasonCode);
         responseObject.AuthorizationCode = serviceResponse.object.ccAuthReply.authorizationCode;
         responseObject.AVSCode = serviceResponse.object.ccAuthReply.avsCode;
         responseObject.AVSCodeRaw = serviceResponse.object.ccAuthReply.avsCodeRaw;
@@ -297,7 +297,7 @@ function TestDAVRequest(billTo, shipTo) {
     }
     responseObject.davReply = (serviceResponse.object.davReply !== null) ? 'exists' : null;
     if (serviceResponse.object.davReply !== null) {
-        responseObject.DAVReasonCode = serviceResponse.object.davReply.reasonCode.get();
+        responseObject.DAVReasonCode = Number(serviceResponse.object.davReply.reasonCode);
         // eslint-disable-next-line
         if (!empty(serviceResponse.object.davReply.standardizedAddress1)) {
             var stdAddress = {};
@@ -432,7 +432,7 @@ function TestPayerAuthEnrollCheck(CreditCard) {
     var responseObject = {};
     responseObject.PARequestID = serviceResponse.requestID;
     responseObject.PARequestToken = serviceResponse.requestToken;
-    responseObject.PAReasonCode = serviceResponse.reasonCode.get();
+    responseObject.PAReasonCode = Number(serviceResponse.reasonCode);
     responseObject.PADecision = serviceResponse.decision;
     responseObject.payerAuthEnrollReply = serviceResponse.payerAuthEnrollReply != null ? 'exists' : null;
     if (serviceResponse.payerAuthEnrollReply != null) {
@@ -477,7 +477,7 @@ function TestPayerAuthValidation(PaRes, CreditCard) {
     var responseObject = {};
     responseObject.PAVRequestID = serviceResponse.requestID;
     responseObject.PAVRequestToken = serviceResponse.requestToken;
-    responseObject.PAVReasonCode = serviceResponse.reasonCode.get();
+    responseObject.PAVReasonCode = Number(serviceResponse.reasonCode);
     responseObject.PAVDecision = serviceResponse.decision;
     responseObject.payerAuthValidateReply = serviceResponse.payerAuthValidateReply != null ? 'exists' : null;
     if (serviceResponse.payerAuthValidateReply != null) {
@@ -554,7 +554,7 @@ function TestTax(cart) {
         var responseObject = {};
         responseObject.RequestID = serviceResponse.requestID;
         responseObject.RequestToken = serviceResponse.requestToken;
-        responseObject.ReasonCode = serviceResponse.reasonCode.get();
+        responseObject.ReasonCode = Number(serviceResponse.reasonCode);
         responseObject.Decision = serviceResponse.decision;
         responseObject.DAVReasonCode = DAVReasonCode;
         responseObject.CybersourceShipTo = cart.defaultShipment.shippingAddress;
