@@ -25,12 +25,24 @@
 				var payPal_Credit = dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL_CREDIT);
 				var isPPLApplicable = (!empty(pdict.applicablePaymentMethods) && payPal_Credit && 
 					pdict.applicablePaymentMethods.contains(payPal_Credit)) ? true : false;
+			    var client_Id = dw.system.Site.getCurrent().getCustomPreferenceValue('CsPaypalClientID');
 			</isscript>
 			<isif condition="${isPPLApplicable}">
 				<div class="col-sm-4">
 					<div id="paypal-credit-container"></div>
 				</div>
 			</isif>
-		</div>
+		</div> 
+		<script
+            src="https://www.paypal.com/sdk/js?client-id=${client_Id}&components=messages"
+            data-namespace="PayPalSDK">
+        </script>
+        <div 
+            data-pp-message
+            data-pp-style-layout="flex"
+            data-pp-style-ratio="20x1"
+            data-pp-style-color="blue"
+            data-pp-amount="${pdict.order.priceTotal.substring(1)}">
+        </div>  
 	</div>
 </div>
