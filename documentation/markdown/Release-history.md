@@ -1,5 +1,10 @@
 ## <ins>Release History
 
+**Version 22.1.3 (December 30, 2022)**
+•	We have upgraded the cartridge to support SFRA v6.2.
+•	We have mapped requestID to transactionID in Klarna payment method.
+•	We have added PayPal Pay Later message in the PayPal widget. 
+
 **Version 22.1.2 (September 02, 2022)**
 •	We have updated the file name songbird.isml to songBird.isml
 •	We have updated the cartridge to make it compatible with Salesforce B2C Commerce release 22.7.

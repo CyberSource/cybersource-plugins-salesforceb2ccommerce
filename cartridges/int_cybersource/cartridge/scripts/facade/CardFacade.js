@@ -295,6 +295,18 @@ function PayerAuthEnrollCheck(LineItemCtnrObj : dw.order.LineItemCtnr,Amount : d
 	responseObject["RequestID"] = serviceResponse.requestID;
 	responseObject["RequestToken"] = serviceResponse.requestToken;
 	responseObject["ReasonCode"] = Number(serviceResponse.reasonCode);
+	responseObject.AuthorizationReasonCode = Number(serviceResponse.reasonCode);
+    
+    if (!empty(serviceResponse.ccAuthReply)) {
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.authorizationCode)) {
+            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.authorizationCode;
+        }
+        // eslint-disable-next-line
+        if (!empty(serviceResponse.ccAuthReply.amount)) {
+            responseObject.AuthorizationAmount = serviceResponse.ccAuthReply.amount;
+        }
+    }
 	responseObject["Decision"] = serviceResponse.decision;
 	responseObject.DAVReasonCode = Number(serviceResponse.reasonCode);
 	responseObject["payerAuthEnrollReply"] = (null !== serviceResponse.payerAuthEnrollReply) ? "exists" : null;
@@ -421,7 +433,7 @@ function PayerAuthValidation(PaRes : String,Amount : dw.value.Money,OrderNo : St
         }
         // eslint-disable-next-line
         if (!empty(serviceResponse.ccAuthReply.amount)) {
-            responseObject.AuthorizationCode = serviceResponse.ccAuthReply.amount;
+            responseObject.AuthorizationAmount = serviceResponse.ccAuthReply.amount;
         }
     }
 	responseObject["payerAuthValidateReply"] = (null !== serviceResponse.payerAuthValidateReply) ? "exists" : null;

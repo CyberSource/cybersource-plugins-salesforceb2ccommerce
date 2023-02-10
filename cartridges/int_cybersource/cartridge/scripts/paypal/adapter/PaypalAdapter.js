@@ -53,7 +53,7 @@ function setShippingMethod(lineItemCntr){
     var shipment = lineItemCntr.getDefaultShipment();
     var ShippingMgr = require('dw/order/ShippingMgr');
     if(!empty(session.forms.singleshipping.shippingAddress.shippingMethodID.value)){
-    	  shippingMethods = ShippingMgr.getShipmentShippingModel(shipment).getApplicableShippingMethods();
+    	  var shippingMethods = ShippingMgr.getShipmentShippingModel(shipment).getApplicableShippingMethods();
           // Tries to set the shipment shipping method to the passed one.
           for (var i = 0; i < shippingMethods.length; i++) {
               var method = shippingMethods[i];

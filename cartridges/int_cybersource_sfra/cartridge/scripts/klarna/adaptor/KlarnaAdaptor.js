@@ -59,6 +59,7 @@ function AuthorizeKlarnaOrderUpdate(order, responseObject) {
         var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
         // set transaction level object with custom values after getting response of sale service
         if (paymentInstrument != null && responseObject !== null) {
+            paymentInstrument.paymentTransaction.transactionID = responseObject.requestID;
             paymentInstrument.paymentTransaction.custom.approvalStatus = Number(responseObject.reasonCode);
             paymentInstrument.paymentTransaction.custom.requestId = responseObject.requestID;
             paymentInstrument.paymentTransaction.custom.requestToken = responseObject.requestToken;

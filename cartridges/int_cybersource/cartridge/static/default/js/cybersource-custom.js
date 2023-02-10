@@ -133,26 +133,15 @@ $(document).ready(function () {
 		            isPayPalCredit: isPayPalCredit
 		        };
 		        
-		        
-		        if($('#paypal-button-container').length>0) {	
-		        	$('#requestId').val(requestId);
-			        $('#billingAgreementFlag').val(billingAgreementFlag);
-			        $('#paymentID').val(data.paymentID);
-			        $('#payerID').val(data.payerID);
-			        $('#isPayPalCredit').val(isPayPalCredit);
-			        $('.checkout-billing').submit();
-		        }
-		        else {
-				        var form = $('<form action="' + Urls.paypalcallback + '" method="post">' +
-			    		          '<input type="hidden" name="requestId" value="' + requestId + '" />' +
-			    		          '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />' +
-			    		          '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />' +
-			    		          '<input type="hidden" name="payerID" value="' + data.payerID + '" />' +
-			    		          '<input type="hidden" name="isPayPalCredit" value="' +isPayPalCredit + '" />' +
-			    		          '</form>');
-			        	  $('body').append(form);
-			        	  form.submit();
-		        } 
+				var form = $('<form action="' + Urls.paypalcallback + '" method="post">' +
+			    		    '<input type="hidden" name="requestId" value="' + requestId + '" />' +
+			    		    '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />' +
+			    		    '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />' +
+			    		    '<input type="hidden" name="payerID" value="' + data.payerID + '" />' +
+			    		    '<input type="hidden" name="isPayPalCredit" value="' +isPayPalCredit + '" />' +
+			    		    '</form>');
+			        $('body').append(form);
+			        form.submit(); 
 		    },
 		    validate: function(actions) {
 		    	if($('.checkout-billing').length>0){
