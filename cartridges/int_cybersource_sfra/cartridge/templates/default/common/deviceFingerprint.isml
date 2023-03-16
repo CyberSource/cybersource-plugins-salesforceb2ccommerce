@@ -1,0 +1,4 @@
+
+<isif condition="${pdict.getDeviceFingerprint}">
+    <script src="${pdict.url}"></script>
+</isif>

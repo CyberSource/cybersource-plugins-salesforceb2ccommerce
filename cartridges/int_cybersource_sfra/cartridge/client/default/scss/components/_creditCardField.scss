@@ -1,0 +1,18 @@
+.card-number-wrapper {
+    &[data-type="maestro"]::after {
+        background-image: url("../../images/payment-types.png");
+        background-size: auto;
+        background-position: -95px -156px;
+    }
+
+    &[data-type="jcb"]::after {
+        background-image: url("../../images/JCB.png");
+        background-size: contain;
+    }
+
+    &[data-type="diners"]::after {
+        background-image: url('../../images/payment-types.png');
+        background-size: auto;
+        background-position: -230px -206.5px;
+    }
+}

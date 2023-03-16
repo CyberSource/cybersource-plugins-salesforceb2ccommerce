@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+    <body>
+
+        <link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+        
+        <h2 class="main-title">${Resource.msg('services_label_testsuite','cybersource','')}</h2><br/><br/>
+        
+        <a href="${URLUtils.https('CYBServicesTesting-TestCCAuth')}"�>${Resource.msg('services_label_testccauth','cybersource','')}</a><br/>
+        <a href="${URLUtils.https('CYBServicesTesting-TestTax')}"�>${Resource.msg('services_label_testtax','cybersource','')}</a><br/>
+        <a href="${URLUtils.https('CYBServicesTesting-TestCaptureService')}" >${Resource.msg('services_label_testCaptureService','cybersource','')}</a><br/>
+        <a href="${URLUtils.https('CYBServicesTesting-TestCreditService')}" >${Resource.msg('services_label_testCreditService','cybersource','')}</a><br/>
+        <a href="${URLUtils.https('CYBServicesTesting-TestAuthReversal')}" >${Resource.msg('services_label_testAuthReversalService','cybersource','')}</a><br/>
+    </body>
+</html>

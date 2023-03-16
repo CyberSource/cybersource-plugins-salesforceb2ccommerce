@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <field formid="shippingAddressUseAsBillingAddress" label="profile.billingSameAsShipping" type="boolean"
+           binding="shippingAddressUseAsBillingAddress" checked="true" />
+    
+	<include formid="addressFields" name="address"/>
+	<include formid="paypalBillingFields" name="paypalBillingFields"/>
+				
+	<field formid="bicNumber" label="payment.bicnumber" type="string" mandatory="false" 
+				missing-error="payment.bicnumbererror" value-error="payment.bicnumbererror" />
+
+    <field formid="paymentMethod" type="string" mandatory="true" />
+    
+	<include formid="contactInfoFields" name="contactInfo"/>
+	
+    <include formid="creditCardFields" name="creditCard"/>
+
+    <field formid="subscribe" type="boolean" checked="false" default-value="false" mandatory="false" />
+
+    
+     <!-- BANK TRANSFER-->
+     <field formid="bankListSelection" label="payment.bankselection" type="string" mandatory="false" 
+				missing-error="payment.bankselectionerorr" value-error="payment.bankselectionerorr" />
+				
+	<field formid="klarnaEmail" label="payment.klarnaemail" type="string" binding="email"
+           max-length="254" missing-error="error.card.info.missing.email" />
+</form>

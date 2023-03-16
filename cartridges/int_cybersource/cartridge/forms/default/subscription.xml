@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="subscriptionID" type="string" mandatory="false" label="Subscription ID:"/>
+	<field formid="authorizationID" type="string" mandatory="false" label="Authorization ID:"/>
+	<field formid="title" type="string" mandatory="false" label="Title:">
+		<options>
+			<option optionid="MR" 		label="Mr."	value="Mr."/>
+			<option optionid="MRS" 		label="Mrs."	value="Mrs."/>
+			<option optionid="MS" 		label="Ms."	value="Ms."/>
+			<option optionid="MISS" 	label="Miss"	value="Miss"/>
+			<option optionid="DR" 		label="Dr."	value="Dr."/>
+		</options>
+	</field>
+	<field formid="firstName" type="string" mandatory="false" label="First Name:"/>
+	<field formid="lastName" type="string" mandatory="false" label="Last Name:"/>
+	<field formid="street1" type="string" mandatory="false" label="Street1:"/>
+	<field formid="city" type="string" mandatory="false" label="City:"/>
+	<field formid="state" type="string" mandatory="false" label="State:">
+		<options>	
+			<option optionid="" 	label="forms.select" 	value=""/>
+			<option optionid="CA" 	label="state.us.california" 	value="CA"/>
+			<option optionid="MA" 	label="state.us.massachusetts" 	value="MA"/>
+			<option optionid="NH" 	label="state.us.newhampshire" 	value="NH"/>
+			<option optionid="NY" 	label="state.us.newyork" 	value="NY"/>
+		</options>
+	</field>
+	<field formid="postalCode" type="string" mandatory="false" label="Postal Code:"/>
+	<field formid="country" type="string" mandatory="false" label="Country:">
+		<options>
+			<option optionid="US" label="country.unitedstates" value="US" />
+			<option optionid="CA" label="country.canada" value="CA" />
+		</options>
+	</field>
+	<field formid="phoneNumber" type="string" mandatory="false" label="Phone Number:"/>
+	<field formid="email" type="string" mandatory="false" label="eMail:"/>
+	<field formid="ipAddress" type="string" mandatory="false" label="ip Address:"/>
+	<field formid="dateOfBirth" type="string" mandatory="false" label="DOB:"/>
+	
+	
+	
+	
+	
+	<field formid="accountNumber" type="string" mandatory="false" label="Account No:"/>
+	<field formid="cardType" type="string" mandatory="false" label="Card Type:">
+		<options>	
+			<option optionid="VISA" label="VISA" value="Visa"/>
+			<option optionid="Master Card" label="Master Card" value="MasterCard"/>
+			<option optionid="AMEX" label="AMEX" value="Amex"/>
+			<option optionid="DISCOVER" label="DISCOVER" value="Discover"/>
+			<option optionid="Maestro" label="Maestro" value="Maestro"/>
+		</options>	
+	</field>
+	<field formid="expiryMonth" type="string" mandatory="false" label="Expiry Month:">
+		<options>	
+			<option optionid="1" label="1" value="1"/>
+			<option optionid="2" label="2" value="2"/>
+			<option optionid="3" label="3" value="3"/>
+			<option optionid="4" label="4" value="4"/>
+			<option optionid="5" label="5" value="5"/>
+			<option optionid="6" label="6" value="6"/>
+			<option optionid="7" label="7" value="7"/>
+			<option optionid="8" label="8" value="8"/>
+			<option optionid="9" label="9" value="9"/>
+			<option optionid="10" label="10" value="10"/>
+			<option optionid="11" label="11" value="11"/>
+			<option optionid="12" label="12" value="12"/>
+		</options>
+	</field>
+	<field formid="expiryYear" type="string" mandatory="false" label="Expiry Year:">
+		<options>	
+			<option optionid="2012" label="2012" value="2012"/>
+			<option optionid="2013" label="2013" value="2013"/>
+			<option optionid="2014" label="2014" value="2014"/>
+			<option optionid="2015" label="2015" value="2015"/>
+			<option optionid="2016" label="2016" value="2016"/>
+			<option optionid="2017" label="2017" value="2017"/>
+			<option optionid="2018" label="2018" value="2018"/>
+			<option optionid="2019" label="2019" value="2019"/>
+		</options>
+	</field>
+	<field formid="cvnNumber" type="string" mandatory="false" label="CVN:"/>
+	
+	
+	<field formid="currency" type="string" mandatory="false" label="Currency:">
+		<options>	
+			<option optionid="USD" label="USD" value="USD"/>
+		</options>
+	</field>
+	<field formid="amount" type="string" mandatory="false" label="Amount:"/>
+	
+	
+	<action formid="submit" label="forms.find" valid-form="true"/>
+	<action formid="reset" label="forms.find" valid-form="false"/>
+</form>

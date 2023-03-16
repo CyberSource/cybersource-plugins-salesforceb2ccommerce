@@ -1,0 +1,16 @@
+<isset name="CsSaType" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAType').value}" scope="page" />
+<isset name="CsSaUrl" value=false scope="page"/>
+<isif condition="${CsSaType == 'SA_SILENTPOST'}">
+	<isset name="CsSaUrl" value="${URLUtils.https('CYBSecureAcceptance-GetRequestDataForSilentPost')}" scope="page" />
+</isif>
+
+<li class="nav-item" data-method-id="${paymentOption.ID}" ${CsSaType ? 'data-sa-type=' + CsSaType : ''} ${CsSaUrl ? 'data-sa-url=' + CsSaUrl : ''} >
+    <a class="nav-link credit-card-tab ${pdict.selectedPayment != 'PAYPAL' ? 'active' : ''}" data-toggle="tab" href="#credit-card-content" role="tab">
+        <img class="credit-card-option"
+                src="${URLUtils.staticURL('/images/credit.png')}"
+                height="32"
+                alt="${paymentOption.name}"
+                title="${paymentOption.name}"
+        >
+    </a>
+</li>

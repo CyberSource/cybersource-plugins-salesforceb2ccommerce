@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	This template will populate the result of on demand subscription
+</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="view-subscription">
+<label><strong>${Resource.msg('test.cybdecision','cybersource',null)}</strong></label><isprint value="${pdict.response.Decision}"><br>
+<label><strong>${Resource.msg('test.cybreasoncode','cybersource',null)}</strong></label><isprint value="${pdict.response.ReasonCode}"><br>
+<label><strong>${Resource.msg('test.cybrequestid','cybersource',null)}</strong></label><isprint value="${pdict.response.RequestID}"><br>
+<label><strong>${Resource.msg('test.cybrequesttoken','cybersource',null)}</strong></label><isprint value="${pdict.response.RequestToken}"><br/>
+<label><strong>${Resource.msg('cybamount','cybersource',null)}</strong></label><isprint value="${pdict.response.amount}"><br/>
+<label><strong>${Resource.msg('test.cybAuthorizationCode','cybersource',null)}</strong></label><isprint value="${pdict.response.authorizationCode}"><br/>
+<label><strong>${Resource.msg('test.cybprocessorresponse','cybersource',null)}</strong></label><isprint value="${pdict.response.processorResponse}"><br/><br/><br/>
+<label><strong>${Resource.msg('test.cybinvalidfieldresponse','cybersource',null)}</strong></label>
+<isloop items="${pdict.response.invalidField}" alias="invalidField">									
+	<isprint value="${invalidField}">,
+</isloop>
+<br>
+<label><strong>${Resource.msg('test.cybresponsemissingfiled','cybersource',null)}CyberSource Response for Missing Field :</strong></label>
+<isloop items="${pdict.response.missingField}" alias="missingField">									
+	<isprint value="${missingField}">,
+</isloop>
+<br>
+
+<strong>${Resource.msg('test.cybsubscriptiondetails','cybersource',null)}</strong><br/>
+<a href="https://ebctest.cybersource.com/ebctest/subscriptions/SecureStorageSearchLoad.do" target="_blank">${Resource.msg('test.cybtestaccount','cybersource',null)}</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="${URLUtils.https('CYBServicesTesting-OnDemandPayment')}" >${Resource.msg('test.cybbackbutton','cybersource',null)}</a>
+</div>
+</body></html>

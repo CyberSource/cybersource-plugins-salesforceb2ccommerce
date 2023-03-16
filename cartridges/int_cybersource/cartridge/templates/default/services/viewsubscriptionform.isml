@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	This template will populate the input fields of view subscription
+</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<isinclude template="util/modules"/>
+<h2 class="main-title">
+	<isif condition=${pdict.deletesubscription}>${Resource.msg('test.cybdeletesubstestpage','cybersource',null)}
+	<iselse>${Resource.msg('test.cybviewsubstestpage','cybersource',null)}</isif></h2><br/><br/>
+<div class="sample-card-form">
+<form action="${pdict.subscriptionaction}" method="post" id="${pdict.CurrentForms.subscription.htmlName}">
+	<isinputfield formfield="${pdict.CurrentForms.subscription.subscriptionID}" type="input"/>
+	<div class="form-row form-row-button">
+		<button type="submit" name="${pdict.CurrentForms.subscription.submit.htmlName}" value="${Resource.msg('global.submit','locale',null)}">
+			${Resource.msg('global.submit','locale',null)}
+		</button>
+	</div>
+</form>
+</div>
+</body></html>

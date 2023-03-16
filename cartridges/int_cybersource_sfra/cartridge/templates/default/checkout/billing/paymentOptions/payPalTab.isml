@@ -1,0 +1,5 @@
+<li class="nav-item ${pdict.selectedPayment == 'PAYPAL' ? 'activepaypal' : ''}" data-method-id="${paymentOption.ID}" data-auth="${pdict.paidWithPayPal ? 'no-auth' : 're-auth'}">
+    <a class="nav-link paypal-tab ${pdict.selectedPayment == 'PAYPAL' ? 'active' : ''} " data-toggle="tab" href="#paypal-content" role="tab">
+        ${paymentOption.name}
+    </a>
+</li>

@@ -1,0 +1,14 @@
+<div class="paypal-method-name">
+        ${dw.order.PaymentMgr.getPaymentMethod(payment.paymentMethod).getName()}
+</div>
+<div class="credit-card-type">
+    <span>
+	    ${Resource.msg('msg.payment.type.credit', 'confirmation', null)}
+	    ${payment.type}
+    </span>
+</div>
+<div class="credit-card-number">
+	<isif condition="${!empty(payment.maskedCreditCardNumber)}" > 
+		<isprint value="${payment.maskedCreditCardNumber}" />
+	</isif>
+</div>

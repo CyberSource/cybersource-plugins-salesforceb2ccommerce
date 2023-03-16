@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+       This template will populate hyperlink for all cybersource services.
+</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<h2 class="main-title">${Resource.msg('services_label_testsuite','cybersource','')}</h2><br/><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestCCAuth')}" >${Resource.msg('services_label_testccauth','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestTax')}" >${Resource.msg('services_label_testtax','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestFingerprint')}" >${Resource.msg('services_label_testfingerprint','cybersource','')}</a><br/> 
+<a href="${URLUtils.https('CYBServicesTesting-TestPA')}" >${Resource.msg('services_label_testpa','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestAlipayInitiateService')}" >${Resource.msg('services_label_testalipayinitiateservice','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestDAVCheck')}" >${Resource.msg('services_label_testdavcheck','cybersource','')}</a><br/> 
+<a href="${URLUtils.https('CYBServicesTesting-StartPOS')}" >${Resource.msg('services_label_teststartpos','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-CreateSubscription')}" >${Resource.msg('subscription_label_create','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-ViewSubscription')}">${Resource.msg('subscription_label_view','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-UpdateSubscription')}">${Resource.msg('subscription_label_update','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-DeleteSubscription')}">${Resource.msg('subscription_label_delete','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestSATokenCreate')}" >${Resource.msg('services_label_testsatokencreate','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-OnDemandPayment')}" >${Resource.msg('services_label_testOndemandpayment','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestSaleService')}" >${Resource.msg('services_label_saleService','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestAuthorizeService')}" >${Resource.msg('services_label_testPayPalAuthorizeService','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestRefundService')}" >${Resource.msg('services_label_testRefundService','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestCancelService')}" >${Resource.msg('services_label_testCancelService','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestCaptureService')}" >${Resource.msg('services_label_testCaptureService','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestAuthReversalService')}" >${Resource.msg('services_label_testAuthReversalService','cybersource','')}</a><br/>
+<a href="${URLUtils.https('CYBServicesTesting-TestCheckStatusService')}" >${Resource.msg('services_label_checkstatusService','cybersource','')}</a><br/>
+</body></html> 

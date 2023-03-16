@@ -1,0 +1,92 @@
+.title-center{
+	font-family: arial;
+	text-align: center;
+}
+.main-title {
+	text-align: center;
+	text-decoration: underline;
+	font-weight: bold;
+}
+.border-gray {border:0.063rem solid gray;}
+
+.sample-card-form p, .update-subscription p {
+	text-decoration: underline;
+}
+.sample-card-form label {
+	width: 9.375rem;
+	float: left;
+}
+.sample-card-form td, .delete-subscription td, .view-subscription td, .update-subscription td {
+	border-width: medium;
+	border-style: outset;
+}
+.sample-card-form .header {
+	font-weight: bold;
+}
+.sample-card-form .error, .sample-card-form .required-indicator {
+	color: red;
+}
+.reversal-result label, .delete-subscription label, .view-subscription label {
+	width: 18.75rem;
+	float: left;
+}
+.update-subscription label {
+	width: 6.25rem;
+	float: left;
+}
+.cyb_paymentmethods {
+       display:none;
+}
+.cyb_secureacceptance_iframe {
+       display:none;
+}
+.cyb_visa_button_display {
+       display:block;
+       float:none;
+}
+.visaCheckoutDecrypt {
+       display:none; 
+}
+.secure_acceptance_iframe_request {
+       display:none; 
+}
+
+#cardNumber-container {
+	border: 0.063rem solid #aaa;
+	box-sizing: border-box;
+	height: 2rem; 
+	padding: 0.7em 0.5em; 
+	text-indent: 0;
+	width: 100%;
+}
+
+.number-invalid-feedback {
+	color:#990000;
+	background-color: #faeded;
+}
+
+#securityCode-container {
+	border: 0.063rem solid #aaa;
+	box-sizing: border-box;
+	height: 2rem;
+	padding: 0.7em 0.5em; 
+	text-indent: 0;
+	width: 100%;
+}
+
+.securityCode-invalid-feedback {
+	color:#990000;
+	background-color: #faeded;
+}
+
+.payment-method payment-method-expanded payment-method-options-addons {
+	margin-left: 30%;
+	width: 100%";
+}
+
+.bic-section {
+	display: none;	
+}
+#PAFrame {
+	border: none;
+}

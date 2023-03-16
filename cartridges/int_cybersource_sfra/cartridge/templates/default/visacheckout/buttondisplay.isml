@@ -1,0 +1,24 @@
+<iscomment>TEMPLATENAME: buttonDisplay.isml</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="v-checkout-wrapper">
+	<isif condition="${pdict.buttonsource!=null && pdict.buttonsource.equals('minicart')}" >
+		<div class="visaCheckoutMiniCartButton">
+			<isif condition="${(session.privacy.cyb_CurrentPage!=null) && ( session.privacy.cyb_CurrentPage.equals('CybCart') || session.privacy.cyb_CurrentPage.equals('CybBilling'))}" >		
+				<img class="v-button" alt="Visa Checkout" role="button" tabindex="0" src="${pdict.VisaCheckoutButtonQueryString}" />
+			<iselse>
+				<img class="v-button" alt="Visa Checkout" role="button" tabindex="0" src="${pdict.VisaCheckoutButtonQueryString}" />
+			</isif>
+    <iselse>
+		<div class="visaCheckoutCartButton">
+			<img class="v-button" alt="Visa Checkout" role="button" tabindex="0" src="${pdict.VisaCheckoutButtonQueryString}" />
+    </isif>
+
+    <isif condition="${pdict.VisaCheckoutTellMeMoreActive && pdict.buttonsource == null}">
+	    <div>
+	        <a class="v-learn v-learn-default" href="#" data-locale="en_US" class="cyb_visa_button_display">${Resource.msg('cyb.visacheckout.tellmemore.label','cybersource',null)}</a>
+	    </div>
+    </isif>
+	</div>
+</div>
+
+<isset name="cyb_CurrentPage" value="${''}" scope="session"/>

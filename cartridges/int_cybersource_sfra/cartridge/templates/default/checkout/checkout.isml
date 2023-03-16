@@ -1,0 +1,185 @@
+<isdecorate template="common/layout/checkout">
+
+    <!----------------------------------------------------------------------------------->
+    <!-- Load Static Assets -->
+    <!----------------------------------------------------------------------------------->
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/checkout.js');
+		assets.addCss('/css/checkout/checkout.css');
+    </isscript>
+
+    <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
+        <isinclude template="reporting/reportingUrls" />
+    </isif>
+
+    <h1 class="page-title">
+        ${Resource.msg('title.checkout','checkout',null)}
+    </h1>
+    <div id="checkout-main" class="container data-checkout-stage <isif condition=" ${pdict.order.usingMultiShipping && pdict.order.shipping.length>
+    1}">multi-ship</isif>" data-customer-type="${pdict.customer.registeredUser ? 'registered' : 'guest'}" data-checkout-stage="${pdict.currentStage}"
+        data-checkout-get-url="${URLUtils.https('CheckoutServices-Get')}">
+        <!----------------------------------------------------------------------------------->
+        <!-- Help and Phone -->
+        <!----------------------------------------------------------------------------------->
+        <div class="row hidden-xs-down">
+            <div class="col-12 col-sm-5 offset-sm-7 col-md-5 offset-md-7">
+                <div class="text-center">
+                    <span>${Resource.msg('info.need.help','cart',null)}</span>
+                    <span>
+                        <a href="tel:${Resource.msg('info.phone.number','common',null)}">${Resource.msg('info.phone.number','common',null)}</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row d-sm-none">
+            <div class="col-12">
+                <span class="grand-total-label">${Resource.msgf('label.number.items.in.cart','cart', null, pdict.order.items.totalQuantity)}</span>
+                <span class="grand-total-price">${pdict.order.totals.subTotal}</span>
+            </div>
+        </div>
+        <div class="row  ${pdict.paidWithPayPal ? 'paid-with-paypal' : ''}">
+            <div class="col-sm-7">
+
+                <!----------------------------------------------------------------------------------->
+                <!-- Checkout Forms: Shipping, Payment, Coupons, Billing, etc -->
+                <!----------------------------------------------------------------------------------->
+
+                <div class="alert alert-danger error-message" role="alert">
+                    <p class="error-message-text"></p>
+                </div>
+
+				<iscomment>Secure Acceptance Error Display </iscomment>
+				<isif condition="${pdict.CurrentHttpParameterMap.SecureAcceptanceError != null && (pdict.CurrentHttpParameterMap.SecureAcceptanceError.stringValue == '476')}">
+					<div class="alert alert-danger PlaceOrderError">${Resource.msg('error.payment.not.valid', 'checkout', null)}</div>
+				<iselseif condition="${pdict.CurrentHttpParameterMap.SecureAcceptanceError != null && !empty(pdict.CurrentHttpParameterMap.SecureAcceptanceError.stringValue)}">
+					<div class="alert alert-danger PlaceOrderError">${Resource.msg('error.technical','checkout',null)}</div>
+				<iselseif condition="${pdict.PlaceOrderError != null}">
+					<div class="alert alert-danger PlaceOrderError">${Resource.msg(pdict.PlaceOrderError.code,'checkout',null)}</div>
+			    </iselseif>
+                </isif>
+
+                <iscomment>Place Order Error Display </iscomment>
+                <isif condition="${'PlaceOrderError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.PlaceOrderError.stringValue !== null}">
+					<div class="alert alert-danger PlaceOrderError"><isprint value="${pdict.CurrentHttpParameterMap.PlaceOrderError}"/></div>
+				</isif>
+				
+				<iscomment>Payer Auth Error Display </iscomment>
+                <isif condition="${'payerAuthError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.payerAuthError.stringValue !== null}">
+					<div class="alert alert-danger payerAuth"><isprint value="${pdict.CurrentHttpParameterMap.payerAuthError}"/></div>
+				</isif>
+				
+				<iscomment>Order Error Display </iscomment>
+				<isif condition="${'placeOrderError' in pdict.CurrentHttpParameterMap && pdict.CurrentHttpParameterMap.placeOrderError.stringValue !== null}">
+					<div class="alert alert-danger payerAuth"><isprint value="${pdict.CurrentHttpParameterMap.placeOrderError}"/></div>
+				</isif>
+				
+                <!-- Step 1: Customer -->
+                <iscomment>We only allow edits for non-registered customers</iscomment>
+                <isif condition="${!pdict.customer.registeredUser}">
+                    <isinclude template="checkout/customer/customer" />
+                </isif>
+                 <div class="card customer-summary">
+                    <div class="card-header clearfix">
+                        <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>
+                        <isif condition="${!pdict.customer.registeredUser}">
+                            <button class="edit-button pull-right" aria-label="${Resource.msg('action.edit.step.msg.customer', 'checkout', null)}">${Resource.msg('action.edit.step', 'checkout', null)}</button>
+                        </isif>
+                    </div>
+                    <div class="card-body">
+                        <isinclude template="checkout/customer/customerSummary" />
+                    </div>
+                </div>
+                
+                <!-- Step 1: Shipping -->
+                <isinclude template="checkout/shipping/shipping" />
+                <div class="card shipping-summary">
+                    <div class="card-header clearfix">
+                        <h4 class="pull-left">${Resource.msg('heading.checkout.shipping', 'checkout', null)}</h4>
+                        <span class="edit-button pull-right">${Resource.msg('action.edit.step', 'checkout', null)}</span>
+                    </div>
+                    <div class="card-body">
+                        <isinclude template="checkout/shipping/shippingSummary" />
+                    </div>
+                </div>
+
+                <!-- Step 2: Payment and Billing-->
+                <isinclude template="checkout/billing/billing" />
+                <isif condition="${dw.order.PaymentMgr.getPaymentMethod('VISA_CHECKOUT').isActive()}">
+					<isinclude template="visacheckout/launch"/>
+                </isif>
+                <div class="card payment-summary">
+                    <div class="card-header clearfix">
+                        <h4 class="pull-left">${Resource.msg('heading.payment', 'checkout', null)}</h4>
+                        <span class="edit-button pull-right">${Resource.msg('action.edit.step', 'checkout', null)}</span>
+                    </div>
+
+                    <div class="card-body">
+                        <isinclude template="checkout/billing/billingSummary" />
+                    </div>
+                </div>
+                
+                <!----------------------------------------------------------------------------------->
+                <!-- Checkout Workflow Buttons -->
+                <!----------------------------------------------------------------------------------->
+                <div class="row">
+                    <div class="col-12 next-step-button">
+                        <div>
+                            <button class="btn btn-primary btn-block submit-shipping" data-dav='${dw.system.Site.current.preferences.custom.CsDavEnable.value}' data-url="${URLUtils.url('CYBAddressVerification-VerifyAddress')}" type="submit" name="submit" value="submit-shipping" <isif condition="${pdict.order.usingMultiShipping && !pdict.order.shippable}">disabled</isif>> ${Resource.msg('button.next.payment', 'checkout', null)}
+                            </button>
+
+                           	<button class="btn btn-primary btn-block submit-payment" type="submit" name="submit" value="submit-payment">
+                               	${Resource.msg('button.next.place.order', 'checkout', null)}
+                           	</button>
+                            
+                            <!-- secure acceptance silent post response -->
+                            <div id="secureAcceptancePost">
+							</div>	
+							<!-- secure acceptance iframe response -->
+							<div class="card secure-acceptance-iframe">
+			                    <div id="secureAcceptanceIframe">
+								</div>
+                			</div>
+                			<input type="hidden" id="is_Cartridge_Enabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled')}">
+                            <button id="submit-order" class="btn btn-primary btn-block ${pdict.paymentClass}" data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}"
+                               data-payerauth="${URLUtils.url('CheckoutServices-InitPayerAuth')}" type="submit" name="submit" value="place-order">${Resource.msg('button.place.order', 'checkout', null)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!----------------------------------------------------------------------------------->
+            <!-- Order Totals, Details and Summary -->
+            <!----------------------------------------------------------------------------------->
+            <div class="col-sm-5">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>${Resource.msg('heading.order.summary', 'checkout', null)}</h4>
+                    </div>
+                    <div class="card-body order-total-summary">
+                        <isinclude template="checkout/orderTotalSummary" />
+                    </div>
+                </div>
+
+                <isinclude template="checkout/orderProductSummary" />
+            </div>
+        </div>
+    </div>
+    <isinclude template="checkout/shipping/shippingAddressTemplate" />
+    
+    <div class="DAVModalResourceStrings" 
+	     data-modalheader="${Resource.msg('dav.modalheader','cybersource',null)}"
+	     data-originaladdress="${Resource.msg('dav.originaladdress','cybersource',null)}" 
+	     data-useoriginaladdress="${Resource.msg('dav.useoriginaladdress','cybersource',null)}"
+	     data-standardaddress="${Resource.msg('dav.standardaddress','cybersource',null)}" 
+	     data-usestandardaddress="${Resource.msg('dav.usestandardaddress','cybersource',null)}"
+	     data-addressnotverified="${Resource.msg('dav.addressnotverified','cybersource',null)}"
+	     data-continuewithaddress="${Resource.msg('dav.continuewithaddress','cybersource',null)}">
+     </div>
+    
+
+</isdecorate>

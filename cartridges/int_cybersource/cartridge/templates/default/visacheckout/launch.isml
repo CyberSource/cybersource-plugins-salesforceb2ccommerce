@@ -1,0 +1,49 @@
+<iscomment>TEMPLATENAME: launch.isml</iscomment>
+<isscript>
+var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+</isscript>
+
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive()}">
+	<isif condition="${!empty(pdict.VInitFormattedString)}">
+		<script type="text/javascript">
+			var visaCheckoutSettings = <isprint value="${pdict.VInitFormattedString}" encoding="off" />;			
+			function onVisaCheckoutReady(){
+				if(null === visaCheckoutSettings || visaCheckoutSettings === undefined || visaCheckoutSettings.apikey === undefined || visaCheckoutSettings.apikey === ""){
+					return false;
+				}
+			 	V.init(
+					<isprint value="${pdict.VInitFormattedString}" encoding="off" />
+				);
+				V.on("payment.success", function(payment) {
+					$("#dwfrm_visacheckout_callId").val(payment['callid']);
+					$("#dwfrm_visacheckout_encryptedPaymentWrappedKey").val(payment['encKey']);
+					$("#dwfrm_visacheckout_encryptedPaymentData").val(payment['encPaymentData']);
+					if (payment['partialShippingAddress'] != null) {
+						$("#dwfrm_visacheckout_countryCode").val(payment['partialShippingAddress']['countryCode']);
+						$("#dwfrm_visacheckout_postalCode").val(payment['partialShippingAddress']['postalCode']);
+					}
+					if (${pdict.Basket != null}) {
+						$("#dwfrm_visacheckout_basketUUID").val('${pdict.Signature}');
+					}
+					$(".visaCheckoutDecrypt").submit();
+				}
+				);
+				V.on("payment.cancel", function(payment) { /* do nothing */});
+				V.on("payment.error", function(payment, error) {
+					window.location = '${dw.web.URLUtils.https("CYBVisaCheckout-Error")}';
+				});
+			}
+		</script>
+	</isif>
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+	<form action="${dw.web.URLUtils.https('CYBVisaCheckout-Decrypt')}" method="post" id="${pdict.CurrentForms.visacheckout.htmlName}" class="visaCheckoutDecrypt">
+		<isinputfield formfield="${pdict.CurrentForms.visacheckout.callId}" type="hidden" />
+		<isinputfield formfield="${pdict.CurrentForms.visacheckout.encryptedPaymentWrappedKey}" type="hidden" />
+		<isinputfield formfield="${pdict.CurrentForms.visacheckout.encryptedPaymentData}" type="hidden" />
+		<isinputfield formfield="${pdict.CurrentForms.visacheckout.countryCode}" type="hidden" rowClass="visacheckout_countryCode" />
+		<isinputfield formfield="${pdict.CurrentForms.visacheckout.postalCode}" type="hidden" rowClass="visacheckout_postalCode" />
+		<isinputfield formfield="${pdict.CurrentForms.visacheckout.basketUUID}" type="hidden" rowClass="visacheckout_basketUUID" />
+	</form>
+	<isset name="visaJavascriptSDK" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('cybVisaSdkJsLibrary')}" scope="page"/>
+	<script type="text/javascript" src="${visaJavascriptSDK}"></script>
+</isif>

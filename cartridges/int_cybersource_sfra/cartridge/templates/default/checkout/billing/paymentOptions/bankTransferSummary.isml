@@ -1,0 +1,3 @@
+<div class="paypal-method-name">
+        ${dw.order.PaymentMgr.getPaymentMethod(payment.paymentMethod).getName()}
+</div>

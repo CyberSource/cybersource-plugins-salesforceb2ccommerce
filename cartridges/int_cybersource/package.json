@@ -1,0 +1,5 @@
+{
+   "init": [
+      "./cartridge/scripts/init/SoapServiceInit.js"
+   ]
+}

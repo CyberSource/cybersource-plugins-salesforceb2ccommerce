@@ -1,0 +1,17 @@
+<!--- TEMPLATENAME: wechatRedirect.isml --->
+<isdecorate template="checkout/pt_checkout">
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div id="WeChatRedirectDiv">
+   <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value == 'Production'}">
+        <img name="WeChatFrame" id="PAFrame" width="300" height="300" src="${pdict.formAction}"></img>
+        <iselse>
+        <label>Simulator Mode</label>
+        </iselse>
+        </isif>
+	<input type="hidden" name="noOfCalls" id="noOfCalls" value="${pdict.noOfCalls}"/>
+	<input type="hidden" name="serviceCallInterval" id="serviceCallInterval" value="${pdict.serviceCallInterval}"/>
+	<p>${Resource.msg('wechat.message','cybersource',null)} <a href="#" name="checkStatus">${Resource.msg('clickhere','cybersource',null)}</a></p>
+</div>
+</isdecorate>
+
+

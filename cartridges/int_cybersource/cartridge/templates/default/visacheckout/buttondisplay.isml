@@ -1,0 +1,33 @@
+<iscomment>TEMPLATENAME: buttonDisplay.isml</iscomment>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="v-checkout-wrapper">
+<isif condition="${pdict.buttonsource!=null && pdict.buttonsource.equals('minicart')}" >
+		<div class="visaCheckoutMiniCartButton">
+			<isif condition="${(session.privacy.cyb_CurrentPage!=null) && ( session.privacy.cyb_CurrentPage.equals('CybCart') || session.privacy.cyb_CurrentPage.equals('CybBilling'))}" >		
+				<img class="v-button"
+					  alt="Visa Checkout" role="button" tabindex="0"
+					  src="${pdict.VisaCheckoutButtonQueryString}" />
+			<iselse>
+				<a href="${URLUtils.https('Cart-Show', 'visacheckout', 'true')}"><img class="v-button"
+					  alt="Visa Checkout" role="button" tabindex="0"
+					  src="${pdict.VisaCheckoutButtonQueryString}" /></a>
+			</isif>	  
+	<iselse>
+		<div class="visaCheckoutCartButton">
+			<img class="v-button"
+				  alt="Visa Checkout" role="button" tabindex="0"
+				  src="${pdict.VisaCheckoutButtonQueryString}" />
+	</isif>
+	<isif condition="${pdict.VisaCheckoutTellMeMoreActive}">
+  		<a class="v-learn v-learn-default" href="#" data-locale="en_US" class="cyb_visa_button_display">${Resource.msg('cyb.visacheckout.tellmemore.label','cybersource',null)}</a>
+  	</isif>
+  </div>
+</div>
+<isif condition="${!empty(pdict.CurrentHttpParameterMap.visacheckout.value) && pdict.CurrentHttpParameterMap.visacheckout.value}" >
+<script type="text/javascript">
+	window.onload = function() {
+		$(".visaCheckoutCartButton").find("img").trigger("click");
+	};
+</script>
+</isif>
+<isset name="cyb_CurrentPage" value="${''}" scope="session"/>

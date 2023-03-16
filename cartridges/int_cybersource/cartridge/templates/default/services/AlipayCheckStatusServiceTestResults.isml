@@ -1,0 +1,33 @@
+<!--- TEMPLATENAME: AlipayCheckStatusServiceTestResults.isml --->
+<iscomment>
+	This template will populate the Unit Test result of Alipay Check Status Service
+</iscomment>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head>
+<body>
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.ReasonCode}"><br>
+
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.Decision}"><br>
+
+${Resource.msg('test.requestid','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.RequestID}"><br>
+
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.RequestToken}"><br>
+
+${Resource.msg('test.reconciliationid','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.ReconciliationID}"><br>
+
+${Resource.msg('test.paymentstatus','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.PaymentStatus}"><br>
+
+${Resource.msg('test.transactionid','cybersource',null)}
+<isprint value="${pdict.alipayCheckResponse.ProcessorTransactionId}"><br>
+
+</body></html>

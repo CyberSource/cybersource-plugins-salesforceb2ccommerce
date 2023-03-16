@@ -1,0 +1,11 @@
+<div class="cart-and-ipay">
+    <input type="hidden" class="add-to-cart-url" value="${pdict.addToCartUrl}">
+    <button class="add-to-cart-global btn btn-primary" data-pid="${product.id}"
+        ${!product.readyToOrder || !product.available ? "disabled": ""}>
+            <i class="fa fa-shopping-bag"></i>
+            ${Resource.msg('button.addtocart', 'common', null)}
+    </button>
+    <isif condition="${product.available && product.readyToOrder}">
+        <isapplepay class="apple-pay-pdp btn" sku="${product.id}"></isapplepay>
+    </isif>
+</div>

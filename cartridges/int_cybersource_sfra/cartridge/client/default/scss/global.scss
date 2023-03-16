@@ -1,0 +1,13 @@
+@charset "UTF-8";
+@import "~base/global";
+@import "components/applePay";
+
+.info-icon {
+    &:hover .tooltip {
+        display: block;
+    }
+
+    .tooltip {
+        display: none;
+    }
+}

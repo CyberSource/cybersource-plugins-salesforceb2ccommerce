@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<iscomment>
+	TEMPLATENAME: TestDAVCheckResults.isml
+	This template will populate the Unit Test result of DAV
+</iscomment>
+
+<isset name="addressObj" value="${pdict.billto}" scope="pdict" />
+<h1>${Resource.msg('test.testDAVresult','cybersource',null)}</h1>
+
+<h2>${Resource.msg('test.inpshipaddress','cybersource',null)}</h2>
+	<p><isinclude template="services/responseaddressdetails" /></p>
+	
+<h2>${Resource.msg('test.inpbillingaddress','cybersource',null)}</h2>
+	<p><isinclude template="services/responseaddressdetails" /></p>
+
+<h2>${Resource.msg('test.result','cybersource',null)}</h2>
+	<p>${pdict.davResponse.Result}</p>
+
+<h2>${Resource.msg('test.davreasoncode','cybersource',null)}</h2>
+	<p>${pdict.davResponse.DAVReasonCode}</p>
+
+<isif condition="${!empty(pdict.davResponse.MissingFieldsArray)}">
+	<h2>${Resource.msg('test.missingfields','cybersource',null)}</h2>
+	<p><isloop items="${pdict.davResponse.MissingFieldsArray}" var="MissingField" status="loopStat">
+		${MissingField}<isif condition="${!loopStat.last}">, </isif></isloop>
+	</p>
+</isif>
+
+<isif condition="${!empty(pdict.davResponse.InvalidFieldsArray)}">
+	<h2>${Resource.msg('test.invalidfields','cybersource',null)}</h2>
+	<p><isloop items="${pdict.davResponse.InvalidFieldsArray}" var="InvalidField" status="loopStat">
+		${InvalidField}<isif condition="${!loopStat.last}">, </isif></isloop>
+	</p>
+</isif>
+
+<isif condition="${!empty(pdict.davResponse.StandardizedAddress)}">
+	<h2>${Resource.msg('test.correctshipaddress','cybersource',null)}</h2>
+	<p><isinclude template="services/StandardizedAddress" /></p>
+</isif>
+
+<isif condition="${!empty(pdict.ScriptLog)}" >
+	<h2>${Resource.msg('test.scriptlog','cybersource',null)}</h2>
+		<p>${pdict.ScriptLog}</p>
+</isif>
+
+</body></html>

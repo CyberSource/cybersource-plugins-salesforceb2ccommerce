@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('test.unittestpagetitle','cybersource',null)}</title>
+</head><body>
+<!--- TEMPLATENAME: AlipayInitiateServiceTestResults.isml --->
+<iscomment>
+	This template will populate the Unit Test result of Paypal Capture Service call
+</iscomment>
+${Resource.msg('test.reasoncode','cybersource',null)}
+<isprint value="${pdict.ReasonCode}"><br>
+
+${Resource.msg('test.decision','cybersource',null)}
+<isprint value="${pdict.Decision}"><br>
+
+${Resource.msg('test.requestid','cybersource',null)}
+<isprint value="${pdict.RequestID}"><br>
+
+${Resource.msg('test.requesttoken','cybersource',null)}
+<isprint value="${pdict.RequestToken}"><br>
+
+${Resource.msg('test.AuthorizationID','cybersource',null)}
+<isprint value="${pdict.AuthorizationId}"><br>
+
+${Resource.msg('test.CaptureAmount','cybersource',null)}
+<isprint value="${pdict.CaptureAmount}"><br>
+
+${Resource.msg('test.CaptureReasonCode','cybersource',null)}
+<isprint value="${pdict.CaptureReasonCode}"><br>
+
+${Resource.msg('test.CaptureTransactionID','cybersource',null)}
+<isprint value="${pdict.CaptureTransactionID}"><br>
+
+${Resource.msg('test.ParentTransactionID','cybersource',null)}
+<isprint value="${pdict.ParentTransactionId}"><br>
+
+${Resource.msg('test.paymentstatus','cybersource',null)}
+<isprint value="${pdict.PaymentStatus}"><br>
+
+${Resource.msg('test.CaptureCorrelationID','cybersource',null)}
+<isprint value="${pdict.CaptureCorrelationID}"><br>
+
+${Resource.msg('test.CaptureFeeAmount','cybersource',null)}
+<isprint value="${pdict.CaptureFeeAmount}"><br>
+
+</body></html>

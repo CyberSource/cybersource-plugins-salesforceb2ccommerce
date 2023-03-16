@@ -1,0 +1,51 @@
+<!--- TEMPLATENAME: sondbird.isml --->
+<input type="hidden" id="jwtToken" value="${pdict.jwtToken}" />     
+<input type="hidden" id="order" value="${pdict.order}"/>
+<isif condition="${'CardinalCruiseApiPath' in dw.system.Site.current.preferences.custom && !empty(dw.system.Site.current.preferences.custom.CardinalCruiseApiPath)}">
+    <script src="${dw.system.Site.current.preferences.custom.CardinalCruiseApiPath}"></script>
+</isif>
+<script type="text/javascript">  
+      Cardinal.configure({ 
+            logging:{
+                level: 'on'
+            },
+            timeout: 4000,
+            maxRequestRetries: 2    
+      });     
+      var orderObject = JSON.parse(document.getElementById("order").value);   
+      var submitOrderElements = document.getElementsByName('submit');
+        if (submitOrderElements && submitOrderElements[0]){
+            submitOrderElements[0].disabled = true;
+        }   
+      Cardinal.setup("init", {
+            jwt: document.getElementById("jwtToken").value,
+            order: orderObject
+      });     
+      Cardinal.on('payments.setupComplete', function(setupCompleteData){
+          Cardinal.trigger("bin.process", orderObject.Consumer.Account.AccountNumber); 
+          var submitOrderElements = document.getElementsByName('submit');
+            if (submitOrderElements){
+                submitOrderElements[0].disabled = false;
+            }
+           document.getElementById("DFReferenceId").value=setupCompleteData.sessionId;
+      });  
+      Cardinal.on("payments.validated", function (data, jwt) {  
+             if(data.ActionCode && data.ActionCode === "ERROR")    
+             {
+                 var error = document.getElementById("errormsg");
+                 var errorformdiv = document.getElementsByClassName("error-form")
+                 if(errorformdiv)
+                 {
+                     errorformdiv.innerText = "${Resource.msg('confirm.error.technical','checkout',null)}";
+                 }
+                 else
+                 {
+                     var d = document.createElement("div");
+                     d.className = "error-form";
+                     d.innerText = "${Resource.msg('confirm.error.technical','checkout',null)}";
+                     error.appendChild(d);
+                 }      
+             }
+      });
+      
+</script>

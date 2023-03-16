@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <field formid="paypalEmail" label="label.input.email.profile" type="string" mandatory="true" binding="email"
+           max-length="254" missing-error="error.card.info.missing.email" />
+
+    <field formid="paypalPhone" label="profile.phone" description="address.phone.example" type="string" mandatory="true"
+           binding="phone" max-length="20" missing-error="error.card.info.missing.phone" />
+
+</form>
