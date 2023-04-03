@@ -1,3 +1,5 @@
+:warning: Original [fork parent](https://github.com/SalesforceCommerceCloud/link_cybersource) of this repo is no longer available. Instead, use [App Exchange repo](https://github.com/CyberSource/cybersource-plugins-salesforceb2ccommerce) as fork parent for updates. :warning:
+
 ### CyberSource Storefront Reference Architecture ###
 ### LINK Cartridge Developer Guide ###
 
