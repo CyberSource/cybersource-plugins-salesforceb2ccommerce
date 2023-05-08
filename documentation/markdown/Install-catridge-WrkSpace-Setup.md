@@ -1,7 +1,7 @@
 ## <ins>Install the Cartridge and Setup Workspace
 
 ### Step 1: Install the Cartridge
-Cybersource's Storefront Reference Architecture Cartridge can be installed from Salesforce Commerce Cloud's marketplace [link](https://www.salesforce.com/products/commerce-cloud/partner-marketplace/partners/cybersource/)
+Cybersource's Storefront Reference Architecture Cartridge can be installed from Salesforce Commerce Cloud's marketplace [link](https://appexchange.salesforce.com/listingDetail?listingId=a0N3u00000RZaiQEAT&tab=e)
 
 ### Step 2: Workspace Preparation
 1. Create a folder “CyberSource” in your workspace and place the cartridge (int_cybersource_sfra)downloaded from Marketplace. 

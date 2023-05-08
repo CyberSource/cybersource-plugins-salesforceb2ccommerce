@@ -1,7 +1,13 @@
 ## <ins>Release History
 
-**Version 22.1.3 (December 30, 2022)**
-•	We have upgraded the cartridge to support SFRA v6.2.
+**Version 23.1.0 (April 19, 2023)**
+⦁	Implemented Sale for Credit Card, Google Pay, Visa Checkout and Apple Pay
+⦁	We have extended the fix for other address fields in PayPal where non-english characters were not returned in the Cybersource response.
+⦁	Fixed incorrect unit product price in line items in Business center.
+
+
+**Version 22.1.3 (February 10, 2023)**
+•	We have upgraded the cartridge to support SFRA v6.3.
 •	We have mapped requestID to transactionID in Klarna payment method.
 •	We have added PayPal Pay Later message in the PayPal widget. 
 
@@ -16,7 +22,6 @@
 
 **Version 22.1.0 (May 15, 2022)**
 •	We have added paymentFlowMode configuration for Klarna payment.
-•	We have added support for SCA changes for Irish processor.
 •	We have updated the payment method Id for PayPal Credit to support PayPal payment for Salesforce Order Management.  
 •	We have added Transaction Type and Transaction Id for PayPal payment to support PayPal payment for Salesforce Order Management.
 •	We have fixed a Decision Manager issue for Visa Click to Pay. 

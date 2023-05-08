@@ -175,7 +175,7 @@ function setClientData(request, refCode, fingerprint) {
         request.developerID = developerID;
     }
     request.clientLibrary = 'Salesforce Commerce Cloud';
-    request.clientLibraryVersion = '22.1.0';
+    request.clientLibraryVersion = '23.1.0';
     request.clientEnvironment = 'Linux';
     request.partnerSDKversion = Resource.msg('global.version.number', 'version', null);
     request.clientApplicationVersion = 'SFRA';
@@ -222,7 +222,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'BC9LEGMV';
+        return 'Y3A17Z9V';
     },
 
     getDeveloperID: function () {
@@ -427,6 +427,18 @@ var CybersourceHelper = {
     getServiceCallInterval: function () {
         return Site.getCurrent().getCustomPreferenceValue('CheckStatusServiceInterval');
     },
+    getCsTransactionType: function () {
+        return Site.getCurrent().getCustomPreferenceValue('CsTransactionType');
+    },
+    getVisaTransactionType: function () {
+        return Site.getCurrent().getCustomPreferenceValue('cybVisaTransactionType');
+    },
+    getGooglePayTransactionType: function () {
+        return Site.getCurrent().getCustomPreferenceValue('googlePayTransactionType');
+    },
+    getApplePayTransactionType: function () {
+        return Site.getCurrent().getCustomPreferenceValue('ApplePayTransactionType');
+    },
     /** ***************************************************************************
      * Name: getNexus
      * Description: Returns the Nexus site preference.
@@ -567,6 +579,10 @@ var CybersourceHelper = {
     addCCAuthRequestInfo: function (request, billTo, shipTo, purchase, card, refCode, enableDeviceFingerprint, itemsCybersource) {
         request.merchantID = CybersourceHelper.getMerchantID();
         var fingerprint = null;
+        var OrderMgr = require('dw/order/OrderMgr');
+        var order = OrderMgr.getOrder(refCode);
+        var paymentMethod = order.paymentInstruments[0].paymentMethod;
+        
         if (enableDeviceFingerprint) {
             fingerprint = session.sessionID;
         }
@@ -629,7 +645,21 @@ var CybersourceHelper = {
         if (session.custom.SCA === true) {
             request.ccAuthService.paChallengeCode = '04';
         }
-        request.ccAuthService.run = true;
+        request.ccAuthService.run = true;    
+        //Sale Transaction
+        if (paymentMethod === 'CREDIT_CARD' && CybersourceHelper.getCsTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }else if (paymentMethod === 'VISA_CHECKOUT' && CybersourceHelper.getVisaTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }else if (paymentMethod === 'DW_GOOGLE_PAY' && CybersourceHelper.getGooglePayTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }else if (paymentMethod === 'DW_APPLE_PAY' && CybersourceHelper.getApplePayTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }
     },
 
     /** ***************************************************************************

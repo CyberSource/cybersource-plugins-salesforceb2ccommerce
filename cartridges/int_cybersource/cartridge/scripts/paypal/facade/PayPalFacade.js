@@ -166,12 +166,9 @@ function checkStatusService(lineItemCntr,requestId){
 	var result ={};
 	result.checkStatusResponse = payPalSerivceInterface(request);
 	result.isBillingAgreement = isBillingAgreement;
-	var translatedObject = CommonHelper.decodeObj({
-        street1: result.checkStatusResponse.shipTo.street1,
-        city: result.checkStatusResponse.shipTo.city
-        });
-    result.checkStatusResponse.shipTo.street1 = translatedObject.street1;
-    result.checkStatusResponse.shipTo.city = translatedObject.city;
+	var encodedObj = CommonHelper.createEncodeObject(result);
+    var translatedObject = CommonHelper.decodeObj(encodedObj);
+    result = CommonHelper.updatePaypalAddressFields(result, translatedObject);
 	return result;
 }
 	 

@@ -64,6 +64,7 @@
  | CsSAOverrideBillingAddress  | CyberSource Secure Acceptance Override Billing Address  |
  | CsSAOverrideShippingAddress | CyberSource Secure Acceptance Override Shipping Address |
  | CsCvnDeclineFlags           | CyberSource Ignore CVN Result (CVN)                     |
+ | CsTransactionType           | Select Sale/Auth Transaction Type                       |
 
 #### <ins>1.2. To Setup Secure Acceptance Redirect
  Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
@@ -80,6 +81,7 @@
  | CsSAOverrideBillingAddress  | CyberSource Secure Acceptance Override Billing Address.  |
  | CsSAOverrideShippingAddress | CyberSource Secure Acceptance Override Shipping Address. |
  | CsCvnDeclineFlags           | CyberSource Ignore CVN Result (CVN).                     |
+ | CsTransactionType           | Select Sale/Auth Transaction Type                       |
 
 #### <ins>1.3. To Setup Secure Acceptance Checkout API
  Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
@@ -97,6 +99,7 @@
  | CsSAOverrideBillingAddress              | CyberSource Secure Acceptance Override Billing Address.  |
  | CsSAOverrideShippingAddress             | CyberSource Secure Acceptance Override Shipping Address. |
  | CsCvnDeclineFlags                       | CyberSource Ignore CVN Result (CVN).                     |
+ | CsTransactionType           | Select Sale/Auth Transaction Type                       |
 
 #### <ins>1.4. To Setup Secure Acceptance Flex MicroForm
 
@@ -117,6 +120,8 @@
  | SA_Flex_KeyID        | Flex Microform Key ID. Follow [link](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) to generate keys. |
  | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                           |
 
+ | CsTransactionType    | Select Sale/Auth Transaction Type                       |
+
  Step 4: Navigate to ‘**Administration > Global Preferences >  Locales**’ and ensure the local ‘en_US’ is present. If not present, create a new local with the following information:
  - Language Code: en 
  - Country Code: US
@@ -133,9 +138,10 @@
 
  Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
 
- | Field    | Description            | Value to Set |
+ | Field                          | Description                 | Value to Set |
  | -------- | ---------------------- | ------------ |
- | CsSAType | Secure Acceptance Type | **None**     |
+ | CsSAType |                 Secure Acceptance Type |            **None**     |
+ | CsTransactionType|         Select Sale/Auth Transaction Type                       |
 
 ---
 
@@ -160,15 +166,27 @@
  | CruiseOrgUnitId        | GUID to identify the merchant organization within Cardinal systems                                                                                                                                                   |
  | CardinalCruiseApiPath  | Songbird.js script API path. Refer the section *CDN* in this [link](https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js) to get API path.                                                     |
 
+
  Step 3: Go to **Merchant Tools > Ordering > Payment Methods**, select 'Credit/Debit cards' and check the payer authentication checkbox on any credit card types you want to support Payer Authentication.
 
 ###### Upgrade to 3DS2.0
 If you are currently using CYBS cartridge and would like to upgrade to 3DS2.0, please refer below doc:
 [3DS2.x Dev Guide for SFRA](CyberSource/documentation/markdown/3DS2x-Dev-Guide-for-SFRA.md)
 
----
+------------------------------------------------------------------
+
+###### Strong Customer Authentication 
+
+If response code 478 is received, the issuer is declining the authorisation request but advising that if the card holder gets SCA’d, the issuer will approve the authorisation.
+Proposed Approach
+To enable SCA follow the below path 
+
+ Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource_PayerAuthentication and set values for the following parameters:
+|Field	       |       | Description                           |
+| IsSCAEnabled	 |       | Enable Strong Customer Authentication |
 
 
+---------------------------------------------------
 ### **2. Apple Pay**
 
 #### <ins>Step 1: Create a merchant identifier in Apple portal:
@@ -263,6 +281,18 @@ If you are currently using CYBS cartridge and would like to upgrade to 3DS2.0, p
    1. In the Business Manager, go to **Merchant Tools > Ordering > Payment Methods** and select **DW_APPLE_PAY**. And in **DW_APPLE_PAY details**, double check if **Payment Processor** = **"CYBERSOURCE_CREDIT"**
 
 
+    #### <ins>Site Preferences:
+   Step 1: Upload Cybersource metadata in Business Manager. If not follow "Step 2: Upload metadata" or import **"metadata/sfra_meta/meta/ApplePay.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+
+   Step 3: Go to **Merchant Tools > Custom Preferences > Apple Pay**
+   and set values for the following parameters:
+
+   Field | Description
+   ------------ | -------------
+   ApplePayTransactionType | Select Sale/Auth transaction type
+
+
+
 
 ----
 
@@ -341,7 +371,7 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_GooglePay** an
 | enableGooglePay            | Enable or Disable Google Pay Service |
 | googlePayMerchantID        | Cybersource Merchant account ID      |
 | googlePaygatewayMerchantId | Matching setting on Google Account   |
-
+| googlePayTransactionType   |  Select Sale/Auth transaction Type   |
 ### **5. Visa Checkout**
 
 ##### Implementation
@@ -371,7 +401,8 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_VisaCheckout**
 | cybVisaSecretKey                | The secret key specified VISA Checkout account profile                                                                                                                                                                                                                                      |
 | cybVisaAPIKey                   | The Visa Checkout account API key specified in cyberSource business center                                                                                                                                                                                                                  |
 | cybVisaThreeDSActive            | Whether Verified by Visa (VbV) is active for this transaction. If Verified by Visa is configured, you can use threeDSActive to deactivate it for the transaction; otherwise, VbV will be active if it has been configured                                                                   |
-| cybVisaButtonOnCart             | CyberSource Visa Button display on minicart and cart                                                                                                                                                                                                                                        |
+| cybVisaButtonOnCart             | CyberSource Visa Button display on minicart and cart|
+| cybVisaCheckoutTransactionType  | Visa SRC Transaction Type        |
 
 ### **6. Bank Transfer**
 
