@@ -34,7 +34,7 @@ function CreateCybersourcePurchaseTotalsObject(Basket : dw.order.LineItemCtnr) {
 	}
 	purchaseObject.setCurrency(amount.currencyCode);
 	//set the discount amount for Klarna
-	setKlarnaDiscountAmount(processor,purchaseObject,basket,locale);
+	//setKlarnaDiscountAmount(processor,purchaseObject,basket,locale);
 	purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value,"000000.00",locale));
 	
 	return {success:true, purchaseTotals: purchaseObject};
@@ -342,13 +342,19 @@ function CreateCybersourceItemObject(Basket : dw.order.LineItemCtnr)
 		var itemObject = new Item_Object();
 		if(lineItem instanceof dw.order.ProductLineItem)
 		{
-			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.proratedPrice.value,"000000.00",locale));
+			itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value,"000000.00",locale));
 			itemObject.setQuantity(lineItem.quantityValue);
 			itemObject.setProductCode("default");
 			itemObject.setProductName(lineItem.productName);
 			itemObject.setProductSKU(lineItem.productID);
 			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00",locale));
 			setTotalAmount(processor,itemObject,lineItem.adjustedGrossPrice.value,locale);
+
+			if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0){
+                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value/lineItem.quantityValue, '000000.00', locale);
+				setTotalAmount(processor,itemObject,lineItem.proratedPrice.value,locale);
+            }
+
 			itemObject.setId(count);
 		}
 		else if(lineItem instanceof dw.order.GiftCertificateLineItem)
@@ -385,12 +391,25 @@ function CreateCybersourceItemObject(Basket : dw.order.LineItemCtnr)
 			itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value,"000000.00",locale));
 			setTotalAmount(processor,itemObject,lineItem.adjustedGrossPrice.value,locale);
 			itemObject.setId(count);
-		}
-		if(!(lineItem instanceof dw.order.PriceAdjustment))
+		} 
+		else if (lineItem instanceof dw.order.PriceAdjustment) 
 		{
-			count = count+1;
-			itemObjects.add(itemObject);	
-		}
+            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setQuantity(lineItem.quantity);
+            itemObject.setProductCode('PRICE_ADJUSTMENT');
+            itemObject.setProductName('PRICE_ADJUSTMENT');
+            itemObject.setProductSKU('PRICE_ADJUSTMENT');
+            itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.tax.value, '000000.00', locale));
+            setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
+            itemObject.setId(count);
+        } 
+		else 
+		{
+            continue;
+        }
+
+		count = count+1;
+		itemObjects.add(itemObject);	
 	}
 	
     return {success:true, items:itemObjects};
@@ -417,6 +436,18 @@ function setTotalAmount(processor,itemObject,lineItemValue,locale){
 		itemObject.setTotalAmount(StringUtils.formatNumber(lineItemValue,"000000.00",locale));
 	}
 	return;
+}
+
+function setKlarnaTotalAmount(itemObject, totalAmount, taxvalue, locale) {
+    /* set the total amount based on tax policy */
+     if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
+        // set totalamount for net taxation policy
+        itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount+taxvalue, '000000.00', locale));
+    } else {
+        // set totalamount for gross taxation policy
+        itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount, '000000.00', locale));
+    }
+
 }
 
 /**
@@ -450,6 +481,12 @@ function CreateKlarnaItemObject(Basket : dw.order.LineItemCtnr)
 			itemObject.setProductSKU(lineItem.productID);
 			setKlarnaTaxAmount(itemObject,lineItem.tax.value,locale);
 			setTotalAmount(processor,itemObject,lineItem.grossPrice.value,locale);
+
+			if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0){
+                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value/lineItem.quantityValue, '000000.00', locale);;
+                setKlarnaTotalAmount(itemObject, lineItem.proratedPrice.value, lineItem.tax.value, locale);
+            }
+
 			itemObject.setId(count);
 		}
 		else if(lineItem instanceof dw.order.ShippingLineItem)
@@ -476,11 +513,24 @@ function CreateKlarnaItemObject(Basket : dw.order.LineItemCtnr)
 			setTotalAmount(processor,itemObject,lineItem.grossPrice.value,locale);
 			itemObject.setId(count);
 		}
-		if(!(lineItem instanceof dw.order.PriceAdjustment))
+		else if (lineItem instanceof dw.order.PriceAdjustment) 
 		{
-			count = count+1;
-			itemObjects.add(itemObject);	
-		}
+            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setQuantity(lineItem.quantity);
+            itemObject.setProductCode('PRICE_ADJUSTMENT');
+            itemObject.setProductName('PRICE_ADJUSTMENT');
+            itemObject.setProductSKU('PRICE_ADJUSTMENT');
+            setKlarnaTaxAmount(itemObject, lineItem.tax.value, locale);
+            setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
+            itemObject.setId(count);
+        } 
+		else 
+		{
+            continue;
+        }
+		
+		count = count+1;
+		itemObjects.add(itemObject);	
 	}
 	
     return {success:true, items:itemObjects};
@@ -1260,11 +1310,23 @@ function getItemObject(typeofService, basket){
 		{
 			continue;
 		}
-		if(!(lineItem instanceof dw.order.PriceAdjustment) && lineItem.adjustedPrice.value > 0)
+		else if (lineItem instanceof dw.order.PriceAdjustment) 
 		{
-			count = count+1;
-			itemObjects.push(itemObject);	
-		}
+            itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value), '#.00', locale));
+            itemObject.setQuantity(lineItem.quantity);
+            itemObject.setProductCode('PRICE_ADJUSTMENT');
+            itemObject.setProductName('PRICE_ADJUSTMENT');
+            itemObject.setProductSKU('PRICE_ADJUSTMENT');
+            itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.tax.value), '#.00', locale));
+            itemObject.setId(count);
+        } 
+		else 
+		{
+            continue;
+        }
+		
+		count = count+1;
+		itemObjects.push(itemObject);	
 	}
 	return itemObjects;
 }
@@ -1533,6 +1595,65 @@ function reCreateBasket() {
     }
 }
 
+function createEncodeObject(result){
+    var encodedObj = {};
+    if (!empty(result.checkStatusResponse.billTo.street1)) {
+        encodedObj.billTo_street1 = result.checkStatusResponse.billTo.street1;
+    }
+    if (!empty(result.checkStatusResponse.billTo.street2)) {
+        encodedObj.billTo_street2 = result.checkStatusResponse.billTo.street2;
+    }
+    if (!empty(result.checkStatusResponse.billTo.city)) {
+        encodedObj.billTo_city = result.checkStatusResponse.billTo.city;
+    }
+    if (!empty(result.checkStatusResponse.billTo.state)) {
+        encodedObj.billTo_state = result.checkStatusResponse.billTo.state;
+    }
+    if (!empty(result.checkStatusResponse.shipTo.street1)) {
+        encodedObj.shipTo_street1 = result.checkStatusResponse.shipTo.street1;
+    }
+    if (!empty(result.checkStatusResponse.shipTo.street2)) {
+        encodedObj.shipTo_street2 = result.checkStatusResponse.shipTo.street2;
+    }
+    if (!empty(result.checkStatusResponse.shipTo.city)) {
+        encodedObj.shipTo_city = result.checkStatusResponse.shipTo.city;
+    }
+    if (!empty(result.checkStatusResponse.shipTo.state)) {
+        encodedObj.shipTo_state = result.checkStatusResponse.shipTo.state;
+    }
+
+    return encodedObj;
+}
+
+function updatePaypalAddressFields(result, translatedObject) {
+    if (!empty(translatedObject.billTo_street1)) {
+        result.checkStatusResponse.billTo.street1 = translatedObject.billTo_street1;
+    }
+    if (!empty(translatedObject.billTo_street2)) {
+        result.checkStatusResponse.billTo.street2 = translatedObject.billTo_street2;
+    }
+    if (!empty(translatedObject.billTo_city)) {
+        result.checkStatusResponse.billTo.city = translatedObject.billTo_city;
+    }
+    if (!empty(translatedObject.billTo_state)) {
+        result.checkStatusResponse.billTo.state = translatedObject.billTo_state;
+    }
+    if (!empty(translatedObject.shipTo_street1)) {
+        result.checkStatusResponse.shipTo.street1 = translatedObject.shipTo_street1;
+    }
+    if (!empty(translatedObject.shipTo_street2)) {
+        result.checkStatusResponse.shipTo.street2 = translatedObject.shipTo_street2;
+    }
+    if (!empty(translatedObject.shipTo_city)) {
+        result.checkStatusResponse.shipTo.city = translatedObject.shipTo_city;
+    }
+    if (!empty(translatedObject.shipTo_state)) { 
+        result.checkStatusResponse.shipTo.state = translatedObject.shipTo_state;
+    }
+
+    return result;
+}
+
 function decodeObj(encodedObj) {
     var attrs = Object.keys(encodedObj);
     var decodedObj = {};
@@ -1599,5 +1720,7 @@ module.exports = {
 	sendMail: sendMail,
 	CalculateNonGiftCertificateAmount: calculateNonGiftCertificateAmount,
 	reCreateBasket: reCreateBasket,
+	createEncodeObject: createEncodeObject,
+    updatePaypalAddressFields: updatePaypalAddressFields,
 	decodeObj: decodeObj
 };

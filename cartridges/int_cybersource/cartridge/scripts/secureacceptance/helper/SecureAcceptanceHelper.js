@@ -197,13 +197,15 @@ try{
 	var paymentMethod = paymentInstrument.paymentMethod;
 	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 	var card_cvn = session.forms.billing.paymentMethods.creditCard.cvn.value;
-	
+	var Site = require('dw/system/Site');
+	var CsTransactionType = Site.getCurrent().getCustomPreferenceValue('CsTransactionType').value;
+
 	/*Region BM Setting START: request setting for based on BM configuration*/
 	if( null !== sitePreferenceData){
 		var ignore_avs : Boolean = false;
 		var ignore_cvn : Boolean = false;
 		var authIndicatorRes, providerVal;
-		transaction_type = "authorization";	
+		transaction_type = CsTransactionType;	
 		switch(paymentMethod){
 			case CybersourceConstants.METHOD_SA_REDIRECT:
 				providerVal = 'saredirect';
@@ -284,7 +286,7 @@ try{
 				requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
 			break;
 			default:
-					transaction_type = "authorization";
+					transaction_type = "CsTransactionType";
 					break;
 		}
 	}	

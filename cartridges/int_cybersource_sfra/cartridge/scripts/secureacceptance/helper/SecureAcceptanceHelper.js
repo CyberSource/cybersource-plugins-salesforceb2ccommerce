@@ -445,6 +445,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
         var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
         var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', subscriptionToken);
+        var CsTransactionType = Site.getCurrent().getCustomPreferenceValue('CsTransactionType').value;
         // eslint-disable-next-line
         session.privacy.order_id = lineItemCtnr.orderNo;
 
@@ -454,7 +455,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
             var ignoreCvn = false;
             var authIndicatorRes;
             var providerVal;
-            transactionType = 'authorization';
+            transactionType = CsTransactionType;
             switch (CsSAType) {
                 case CybersourceConstants.METHOD_SA_REDIRECT:
                     providerVal = 'saredirect';
@@ -466,7 +467,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     if (sitePreferenceData.CsSubscriptionTokenizationEnable === 'YES') {
                         // eslint-disable-next-line
                         if (!empty(subscriptionToken)) {
-                            transactionType = 'authorization';
+                            transactionType = CsTransactionType;
                             signedFieldNames += ',payment_token';
                             requestMap.put('payment_token', subscriptionToken);
                             signedFieldNames += ',allow_payment_token_update';
@@ -543,7 +544,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
                     break;
                 default:
-                    transactionType = 'authorization';
+                    transactionType = CsTransactionType;
                     break;
             }
         }

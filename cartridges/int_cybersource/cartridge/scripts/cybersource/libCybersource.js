@@ -49,7 +49,7 @@ var CybersourceHelper = {
 	},
 
 	getPartnerSolutionID : function () {
-		return "Q5FY4BNS";
+		return "9SLT1LFD";
 	},
 
 	getDeveloperID : function () {
@@ -247,6 +247,15 @@ var CybersourceHelper = {
      getServiceCallInterval : function () {
     	return Site.getCurrent().getCustomPreferenceValue("CheckStatusServiceInterval");
     },
+	 getCsTransactionType : function () {
+        return Site.getCurrent().getCustomPreferenceValue("CsTransactionType");
+    },
+	getVisaTransactionType : function () {
+        return Site.getCurrent().getCustomPreferenceValue("cybVisaTransactionType");
+    },
+	getApplePayTransactionType : function () {
+        return Site.getCurrent().getCustomPreferenceValue("cybApplePayTransactionType");
+    },
 	/*****************************************************************************
 	 * Name: getNexus
 	 * Description: Returns the Nexus site preference.
@@ -404,7 +413,12 @@ var CybersourceHelper = {
 	{
 
 		request.merchantID = CybersourceHelper.getMerchantID();
+		var OrderMgr = require('dw/order/OrderMgr');
+        var order = OrderMgr.getOrder(refCode);
+        var paymentMethod = order.paymentInstruments[0].paymentMethod;
 		var fingerprint : String  = null;
+		var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+		
 		if (enableDeviceFingerprint) {
 		  fingerprint =  session.sessionID;
 		}
@@ -480,6 +494,20 @@ var CybersourceHelper = {
 			request.ccAuthService.paChallengeCode = '04';
 		}
 		request.ccAuthService.run = true;
+		
+		var CybersourceConstants = require('../utils/CybersourceConstants');
+
+		//Sale Transaction
+        if ((paymentMethod === 'CREDIT_CARD'|| paymentMethod === 'SA_FLEX' || paymentMethod === 'SA_SILENTPOST') && CybersourceHelper.getCsTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }else if(paymentMethod === 'VISA_CHECKOUT' && CybersourceHelper.getVisaTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }else if(paymentMethod === 'DW_APPLE_PAY' && CybersourceHelper.getVisaTransactionType().value === 'sale') {
+            request.ccCaptureService = new CybersourceHelper.csReference.CCCaptureService();
+            request.ccCaptureService.run = true;
+        }
 	},
 
 
