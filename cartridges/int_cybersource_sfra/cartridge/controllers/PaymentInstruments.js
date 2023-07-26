@@ -106,7 +106,7 @@ function savePaymentInstrument(params) {
     var creditCardFields = params.CreditCardFields;
     paymentInstrument.setCreditCardHolder(creditCardFields.name);
     paymentInstrument.setCreditCardNumber(creditCardFields.cardNumber);
-    paymentInstrument.setCreditCardType(creditCardFields.cardType);
+    paymentInstrument.setCreditCardType(CardHelper.getCardType(creditCardFields.cardType));
     paymentInstrument.setCreditCardExpirationMonth(creditCardFields.expirationMonth);
     paymentInstrument.setCreditCardExpirationYear(creditCardFields.expirationYear);
 }
@@ -220,7 +220,8 @@ if (IsCartridgeEnabled) {
         var paymentForm = server.forms.getForm('creditCard');
         var result = getDetailsObject(paymentForm);
 
-        if (paymentForm.valid && !verifyCard(result, paymentForm)) {
+        var billingForm = server.forms.getForm('billing');
+        if (!empty(billingForm.creditCardFields.flexresponse.value)) {
             res.setViewData(result);
             this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
                 var URLUtils = require('dw/web/URLUtils');

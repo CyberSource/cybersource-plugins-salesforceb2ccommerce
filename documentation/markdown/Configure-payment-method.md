@@ -106,8 +106,8 @@
  **Prerequisites:** You will also need to create an [API Key and API Shared Secret Key](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) that you can use to authenticate requests to our sandbox. Follow same steps to generate Production key and shared secret.
 
  Step 1: In Business Manager, go to Administration > Customization > Services and click on the ‘cybersourceflextoken’ Credentials.  Ensure the appropriate URL is set for the environment you are configuring.
-	-   Test: https://apitest.cybersource.com/flex/v1/keys
-    -	Production: https://api.cybersource.com/flex/v1/keys   
+	-   Test: https://apitest.cybersource.com/flex/v1/keys?format=JWT
+    -	Production: https://api.cybersource.com/flex/v1/keys?format=JWT   
 
  Step 2: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 

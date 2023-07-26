@@ -463,7 +463,14 @@ function removeDuplicates(creditCardFields) {
     var paymentInstruments = wallet.getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD).toArray().sort(function (a, b) {
         return b.getCreationDate() - a.getCreationDate();
     });
-    var ccNumber = creditCardFields.cardNumber;
+    // var ccNumber = creditCardFields.cardNumber;
+    var ccNumber;
+    if (!creditCardFields.CreditCardFields) {
+        ccNumber = creditCardFields.cardNumber;
+    }
+    else {
+        ccNumber = creditCardFields.CreditCardFields.cardNumber;
+    }
     var isDuplicateCard = false;
     var oldCard;
 
