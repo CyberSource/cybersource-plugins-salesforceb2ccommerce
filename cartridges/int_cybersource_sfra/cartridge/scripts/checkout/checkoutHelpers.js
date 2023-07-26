@@ -92,8 +92,6 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
         if (CsSAType != null && CsSAType === Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
             // eslint-disable-next-line
             var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
-            var flexString = JSON.parse(flexResponse);
-            storedPaymentInstrument.setCreditCardToken(flexString.token);
         }
     }
 

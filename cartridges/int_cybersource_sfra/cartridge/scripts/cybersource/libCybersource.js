@@ -594,7 +594,16 @@ var CybersourceHelper = {
         request.shipTo = copyShipTo(shipTo);
         request.purchaseTotals = copyPurchaseTotals(purchase);
 
-        if (!empty(card)) {
+        var server = require('server');
+        var form = server.forms.getForm('billing');
+        var transientToken = form.creditCardFields.flexresponse.value;
+        // check here for transient token and assign
+        if (transientToken) {
+            if (!request.recurringSubscriptionInfo.subscriptionID) {
+                request.tokenSource = new CybersourceHelper.csReference.TokenSource();
+                request.tokenSource.transientToken = transientToken;
+            }
+        } else if (!empty(card)) {
             if (empty(card.getCreditCardToken())) {
                 request.card = copyCreditCard(card);
             } else {
@@ -713,8 +722,15 @@ var CybersourceHelper = {
             request.billTo = copyBillTo(billTo);
         }
         request.purchaseTotals = copyPurchaseTotals(purchase);
-        if (card !== null) {
-            request.card = copyCreditCard(card);
+        var server = require('server');
+        var form = server.forms.getForm('billing');
+        var transientToken = form.creditCardFields.flexresponse.value;
+        // check here for transient token and assign
+        if (transientToken) {
+            request.tokenSource = new CybersourceHelper.csReference.TokenSource();
+            request.tokenSource.transientToken = transientToken;
+        } else if (card !== null) {
+            request.card = copyCreditCard( card );
         }
         request.cardTypeSelectionIndicator = '1';
         request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
@@ -865,9 +881,12 @@ var CybersourceHelper = {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (creditCardForm !== null) {
-            CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-        }
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
+			CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
+		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+			serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
+			serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+		}
         serviceRequest.payerAuthEnrollService = new CybersourceHelper.csReference.PayerAuthEnrollService();
         serviceRequest.purchaseTotals = new CybersourceHelper.csReference.PurchaseTotals();
         serviceRequest.purchaseTotals.currency = amount.currencyCode;
@@ -968,13 +987,16 @@ var CybersourceHelper = {
 
         setClientData(request, orderNo);
 
-        if (!empty(subscriptionToken)) {
+        if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (creditCardForm !== null) {
-            CybersourceHelper.addCardInfo(request, creditCardForm);
-        }
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
+			CybersourceHelper.addCardInfo(request, creditCardForm);
+		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+			request.tokenSource = new CybersourceHelper.csReference.TokenSource();
+			request.tokenSource.transientToken = creditCardForm.flexresponse.value;
+		}
 
         if (billTo !== null) {
             request.billTo = copyBillTo(billTo);

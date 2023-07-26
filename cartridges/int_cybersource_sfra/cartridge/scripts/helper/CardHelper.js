@@ -248,6 +248,8 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
             cvnNumber = session.forms.billing.creditCardFields.securityCode.value;
             if (SubscriptionID && !empty(SubscriptionID)) {
                 subscriptionToken = SubscriptionID;
+            }else {
+                subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.creditCard.selectedCardID.value, customer);
             }
             break;
         case 'paymentinstruments':

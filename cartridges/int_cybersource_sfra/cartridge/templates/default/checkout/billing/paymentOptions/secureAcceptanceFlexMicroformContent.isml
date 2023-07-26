@@ -8,6 +8,21 @@
                 <div class="invalid-feedback"></div>
             </div>
            <isif condition="${pdict.flexTokenResult == null}"> 
+               <div class="alert alert-danger">${flexError}</div>
+            </isif>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+       <div class="form-group securityCode" data-cardNumber="${Resource.msg('securityCode.placeholder','cybersource',null)}">
+            <label class="form-control-label" for="securityCode">${Resource.msg('field.credit.card.security.code','creditCard',null)}</label>
+            <div class="security-code-wrapper">
+                <div id="securityCode-container" class="form-control"></div>
+                <div class="invalid-feedback"></div>
+            </div>
+           <isif condition="${pdict.flexTokenResult == null}"> 
             	<div class="alert alert-danger">${flexError}</div>
            </isif>
         </div>
@@ -17,7 +32,7 @@
 <isif condition="${pdict.flexTokenResult != null}" > 
 	<isset name="flextoken" value="${JSON.parse(pdict.flexTokenResult)}" scope="page" />
 	<input type="hidden" value="${JSON.stringify(flextoken)}" name="flextokenRespose" id="flextokenRespose"/>
-	<input type="hidden" value="${JSON.stringify(flextoken.jwk)}" name="flextokenObj" id="flextokenObj"/>	
+	<input type="hidden" value="${JSON.stringify(flextoken.jwk)}" name="flextokenObj" id="flextokenObj"/> 
 </isif>
 
 <iscomment>Secure Acceptance Flex MicroForm </iscomment>
@@ -35,8 +50,8 @@
 <iscomment>Secure Acceptance Flex Microform Scripts </iscomment>
 	
 <isif condition="${dw.system.System.getInstanceType()!= 2}">
-	<script src="https://testflex.cybersource.com/cybersource/assets/microform/0.4.0/flex-microform.min.js"></script>
+	<script src="https://testflex.cybersource.com/cybersource/assets/microform/0.11.0/flex-microform.min.js"></script>
 <iselse>
-	<script src="https://flex.cybersource.com/cybersource/assets/microform/0.4.0/flex-microform.min.js"></script>
+	<script src="https://flex.cybersource.com/cybersource/assets/microform/0.11.0/flex-microform.min.js"></script>
     </iselse>
 </isif>

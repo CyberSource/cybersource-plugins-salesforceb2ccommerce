@@ -320,7 +320,7 @@ function saveCreditCard() {
                 newCreditCard.setCreditCardNumber(session.forms.billing.creditCardFields.cardNumber.value);
                 newCreditCard.setCreditCardExpirationMonth(session.forms.billing.creditCardFields.expirationMonth.value);
                 newCreditCard.setCreditCardExpirationYear(session.forms.billing.creditCardFields.expirationYear.value);
-                newCreditCard.setCreditCardType(session.forms.billing.creditCardFields.cardType.value);
+                newCreditCard.setCreditCardType(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
                 if (!empty(subscriptionID)) {
                     newCreditCard.setCreditCardToken(subscriptionID);
                     if (!empty(payInstrument) && empty(payInstrument.getCreditCardToken())) {

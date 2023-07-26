@@ -1,5 +1,8 @@
 ## <ins>Release History
 
+**Version 23.1.1 (July, 2023)**
+•	We have upgraded Flex microform from v0.4.0 to v0.11.0.
+
 **Version 23.1.0 (April 19, 2023)**
 ⦁	Implemented Sale for Credit Card, Google Pay, Visa Checkout and Apple Pay
 ⦁	We have extended the fix for other address fields in PayPal where non-english characters were not returned in the Cybersource response.

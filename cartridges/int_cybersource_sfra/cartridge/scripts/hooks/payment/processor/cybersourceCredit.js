@@ -137,10 +137,8 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
                 paymentInstrument.setCreditCardType(CardHelper.getCardType(cardType));
                 // eslint-disable-next-line
                 var flexResponse = session.forms.billing.creditCardFields.flexresponse.value;
-                var flexString = JSON.parse(flexResponse);
-                var flexToken = flexString.token;
-                paymentInstrument.setCreditCardToken(flexToken);
-            } else {
+            }
+            else {
                 paymentInstrument.setCreditCardType(cardType);
                 paymentInstrument.setCreditCardToken(paymentInformation.creditCardToken);
             }
