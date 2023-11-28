@@ -96,7 +96,7 @@ function fillModalElement(verifyAddressUrl) {
         standardAddress: $('.DAVModalResourceStrings').attr('data-standardaddress'),
         useStandardAddress: $('.DAVModalResourceStrings').attr('data-usestandardaddress'),
         addressNotVerified: $('.DAVModalResourceStrings').attr('data-addressnotverified'),
-        continueWithAddress: $('.DAVModalResourceStrings').attr('data-continuewithaddress')
+        // continueWithAddress: $('.DAVModalResourceStrings').attr('data-continuewithaddress')
     };
 
     // var algorithm = 'aes-256-cbc';
@@ -155,7 +155,7 @@ function fillModalElement(verifyAddressUrl) {
             } else {
                 $('#deliveryAddressVerificationModal .modal-body').empty().append('<p><p>').text(params.addressNotVerified + ' ' + data.serviceResponse.reasonMessage);
                 if (data.onFailure === 'APPROVE') {
-                    $('#deliveryAddressVerificationModal .modal-body').append('<button class="btn btn-primary btn-block useOrigAddress continueWithThisAddress">' + params.continueWithAddress + '</button>');
+                    $('#deliveryAddressVerificationModal .modal-body').append('<button class="btn btn-primary btn-block useOrigAddress continueWithThisAddress">continueWithThisAddress</button>');
                 }
             }
             // var enteredStdAddress = false;

@@ -111,7 +111,7 @@ function CreateFlexKey() {
     var digestString = '{\n  "encryptionType": "RsaOaep256",\n  "targetOrigin": "' + targetOrigin + '"\n}';
     signedHeaders.put('host', host);
     signedHeaders.put('date', getTime());
-    signedHeaders.put('(request-target)', 'post /flex/v1/keys');
+    signedHeaders.put('request-target', 'post /flex/v1/keys?format=JWT');
     signedHeaders.put('digest', getDigest(digestString));
     signedHeaders.put('v-c-merchant-id', merchantId);
     signature = generateSignature(signedHeaders, keyID, sharedSecret);
@@ -132,7 +132,7 @@ function CreateFlexKey() {
     });
     signaturefields = signaturefields.slice(0, signaturefields.length - 2);
     signedHeaders.put('signature', signaturefields);
-    signedHeaders.remove('(request-target)');
+    signedHeaders.remove('request-target');
     var service = CRServices.CyberSourceFlexTokenService;
     var serviceResponse = service.call(signedHeaders, digestString);
     // var tokenResponse = serviceResponse.object;

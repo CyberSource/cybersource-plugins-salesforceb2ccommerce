@@ -128,10 +128,6 @@ if (IsCartridgeEnabled) {
         if (CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null) && !req.form.storedPaymentUUID) {
             if (paymentForm.creditCardFields.flexresponse.value) {
                 var flexResponse = paymentForm.creditCardFields.flexresponse.value;
-                var flexString = JSON.parse(flexResponse);
-                var keyId = flexString.keyId;
-                paymentForm.creditCardFields.cardNumber.value = flexString.maskedPan;
-                paymentForm.creditCardFields.cardType.value = flexString.cardType;
             } else {
                 logger.info('Flex response has no value when submitting payment');
             }
@@ -164,8 +160,7 @@ if (IsCartridgeEnabled) {
         if (!req.form.storedPaymentUUID) {
             if (paymentMethodID == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
                         && (CsSAType == null
-                        || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)
-                        || CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null))) {
+                        || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null))) {
                 // verify credit card form data
                 creditCardErrors = COHelpers.validateCreditCard(paymentForm);
             } else if ((paymentMethodID == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
@@ -880,6 +875,7 @@ server.get('PayerAuthentication', server.middleware.https, function (req, res, n
 
     var orderstring = JSON.stringify(OrderObject);
     // var auth = session.privacy.authenticationTransactionID;
+    res.setContentType('application/json;charset=utf-8');
     res.render('cart/cardinalPayerAuthentication', {
         AcsURL: AcsURL,
         PAReq: PAReq,
@@ -939,7 +935,7 @@ server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
         jwtToken = jwtUtil.generateTokenWithKey();
         var OrderObject = cardinalUtil.getOrderObject(currentBasket);
         orderObject = JSON.stringify(OrderObject);
-
+        res.setContentType('application/json;charset=utf-8');
         res.render('payerauthentication/songBird', {
             order: orderObject,
             jwtToken: jwtToken,

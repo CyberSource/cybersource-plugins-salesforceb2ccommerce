@@ -35,7 +35,11 @@ function weChatCheckStatus(serviceCalls, enforceError) {
             } else if (data.pending) {
                 if (serviceCalls < noOfCalls) {
                     totalServiceCalls += 1;
-                    setTimeout(function () { weChatCheckStatus(totalServiceCalls); }, serviceCallInterval * 1000);
+                    if (delayTime === 'Long') {
+                        setTimeout(function () { weChatCheckStatus(totalServiceCalls); }, serviceCallInterval * 5000);
+                    } else if (delayTime === 'Short') {
+                        setTimeout(function () { weChatCheckStatus(totalServiceCalls); }, serviceCallInterval * 1000);
+                    }
                 } else {
                     $('.modal').spinner().stop();
                     window.location.href = data.redirectUrl;

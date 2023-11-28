@@ -37,6 +37,8 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     // var Site = require('dw/system/Site');
     // var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 
+    var serviceRequest = new csReference.RequestMessage();
+
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // Objects to set in the Service Request inside facade
     var billTo; var shipTo; var purchaseObject; var
@@ -45,9 +47,17 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     billTo = result.billTo;
     result = CommonHelper.CreateCybersourceShipToObject(basket);
     shipTo = result.shipTo;
-
+    // var server = require('server');
+    // var form = server.forms.getForm('billing');
+//    serviceRequest.tokenSource.transientToken = form.creditCardFields.flexresponse.value;
+    // if (empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST && ))) {
     result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
     cardObject = result.card;
+    // }
+    // else{
+    //     serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
+	// 	serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+    // }
 
     result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
     purchaseObject = result.purchaseTotals;
@@ -59,7 +69,7 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     //* *************************************************************************//
     // var csReference = webreferences2.CyberSourceTransaction;
 
-    var serviceRequest = new csReference.RequestMessage();
+    // var serviceRequest = new csReference.RequestMessage();
     //* *************************************************************************//
     // the request object holds the input parameter for the OnDemand Subscription request
     //* *************************************************************************//

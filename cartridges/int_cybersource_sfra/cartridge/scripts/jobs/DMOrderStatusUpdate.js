@@ -130,7 +130,7 @@ function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId,
         // var headerString = '';
         signatureString = signatureString + 'host: ' + host + '\n';
         signatureString = signatureString + 'date: ' + date + '\n';
-        signatureString = signatureString + '(request-target): get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId + '\n';
+        signatureString = signatureString + 'request-target: get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId + '\n';
         signatureString = signatureString + 'v-c-merchant-id: ' + merchantId;
 
         var signatureDigest = encryptor.digest(new Bytes(signatureString.toString(), 'UTF-8'), secret);
@@ -210,7 +210,7 @@ function orderStatusUpdate(jobParams) {
         var targetOrigin = 'https://' + host;
         signedHeaders.put('host', host);
         signedHeaders.put('date', getTime());
-        signedHeaders.put('(request-target)', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
+        signedHeaders.put('request-target', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
         signedHeaders.put('v-c-merchant-id', merchantId);
 
         var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time);
@@ -226,10 +226,10 @@ function orderStatusUpdate(jobParams) {
         signatureMap.put('signature', signature);
         var signaturefields = '';
 
-        signaturefields = 'keyid="' + signatureMap.get('keyid') + '", algorithm="HmacSHA256", headers="host date (request-target) v-c-merchant-id", signature="' + signatureMap.get('signature') + '"';
+        signaturefields = 'keyid="' + signatureMap.get('keyid') + '", algorithm="HmacSHA256", headers="host date request-target v-c-merchant-id", signature="' + signatureMap.get('signature') + '"';
 
         signedHeaders.put('Signature', signaturefields);
-        signedHeaders.remove('(request-target)');
+        signedHeaders.remove('request-target');
 
         var service = CRServices.CyberSourceDMService;
         responseObj = service.call(signedHeaders, time.start, time.end, merchantId);

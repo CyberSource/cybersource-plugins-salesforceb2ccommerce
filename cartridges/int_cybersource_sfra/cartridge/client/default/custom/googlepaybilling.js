@@ -148,7 +148,7 @@ function onGooglePaymentButtonClicked() {
         })
         .catch(function (err) {
         // show error in developer console for debugging
-            console.error(err); // eslint-disable-line
+            console.on("error",err); // eslint-disable-line no-console
         });
 }
 
@@ -183,7 +183,7 @@ function processPayment(paymentData) {
             $('*[name=' + attr + ']', parentSelector)
                 .addClass('is-invalid')
                 .siblings('.invalid-feedback')
-                .html(fieldErrors[attr]);
+                .text(fieldErrors[attr]);
         });
     }
 

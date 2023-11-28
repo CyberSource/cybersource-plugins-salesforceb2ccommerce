@@ -58,8 +58,9 @@ $(document).ready(function () {
 	if($("div").hasClass("SecureAcceptance_IFRAME"))
 	{	
 		var url_loc = document.getElementById("sa_iframeURL").value;
-		$(".SecureAcceptance_IFRAME").append('<iframe src='+url_loc+'  name="hss_iframe"  width="78%" height="630px" scrolling="no" />');
-		
+		if(url_loc){
+			$(".SecureAcceptance_IFRAME").append('<iframe src='+url_loc+'  name="hss_iframe"  width="78%" height="630px" scrolling="no" />');
+		}
 	}	
 	// For Secure Acceptance Iframe 
 	if($("body").hasClass("sa_iframe_request_form"))

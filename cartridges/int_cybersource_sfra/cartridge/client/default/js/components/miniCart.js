@@ -6,7 +6,7 @@
 module.exports = function () {
     // cart();
     $('.minicart').on('count:update', function (event, count) {
-        if (count && $.isNumeric(count.quantityTotal)) {
+        if (count && !Number.isNaN(count.quantityTotal)) {
             $('.minicart .minicart-quantity').text(count.quantityTotal);
         }
     });
@@ -21,8 +21,12 @@ module.exports = function () {
             $('.minicart .popover').addClass('show');
             $('.minicart .popover').spinner().start();
             $.get(url, function (data) {
-                $('.minicart .popover').empty();
-                $('.minicart .popover').append(data);
+                if (data) {
+                    var dataDiv = document.createElement('div');
+                    dataDiv.innerHTML = data;
+                    $('.minicart .popover').empty();
+                    $('.minicart .popover').append(dataDiv);
+                }
 
                 var isPaypalEnabled = !!($('#paypal_enabled').length > 0 && document.getElementById('paypal_enabled').value === 'true');
                 var isGooglePayEnabled = !!($('#isGooglePayEnabled').length > 0 && $('#isGooglePayEnabled').val() === 'true');
