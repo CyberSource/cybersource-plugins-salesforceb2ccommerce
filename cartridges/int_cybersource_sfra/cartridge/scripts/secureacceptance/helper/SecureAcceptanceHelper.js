@@ -904,6 +904,11 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
         // eslint-disable-next-line
         result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields);
+        serviceResponse = result.serviceResponse;
+        if(serviceResponse.ReasonCode === 478 && session.custom.enroll == true){
+            session.custom.enroll = false;
+            return {sca: true};
+        }
         if (result.error) {
             return result;
         }
@@ -926,6 +931,7 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
             session.privacy.PAReq = serviceResponse.PAReq;
             session.privacy.PAXID = serviceResponse.PAXID;
             session.privacy.order_id = orderNo;
+            session.privacy.stepUpUrl = serviceResponse.stepUpUrl;
             session.privacy.authenticationTransactionID = serviceResponse.authenticationTransactionID;
             return { payerauthentication: true, serviceResponse: serviceResponse };
         }
@@ -1033,9 +1039,13 @@ function AuthorizeCreditCard(args) {
         // eslint-disable-next-line
         session.privacy.process3DRequestParent = true;
         var handle3DResponse = {
-            process3DRedirection: true
+            process3DRedirection: true,
+            jwt: result.serviceResponse.jwt
         };
         return handle3DResponse;
+    }
+    if(result.sca){
+        return {sca:true};
     }
     if (paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) && !result.success) {
         return result;

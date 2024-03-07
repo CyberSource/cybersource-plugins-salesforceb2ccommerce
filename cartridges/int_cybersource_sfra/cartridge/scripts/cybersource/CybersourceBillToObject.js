@@ -35,6 +35,8 @@ function BillToObject() {
     this.httpBrowserType = '';
     this.httpBrowserEmail = '';
     this.httpBrowserCookiesAccepted = true;
+    this.httpBrowserScreenHeight = '';
+    this.httpBrowserScreenWidth = '';
     this.nif = '';
     this.personalID = '';
     this.language = '';
@@ -221,6 +223,18 @@ BillToObject.prototype = {
     },
     getHttpBrowserCookiesAccepted: function () {
         return this.httpBrowserCookiesAccepted;
+    },
+    getHttpBrowserScreenHeight : function() {
+        return this.httpBrowserScreenHeight;
+    },
+    setHttpBrowserScreenHeight: function (value) {
+        this.httpBrowserScreenHeight = value;
+    },
+    getHttpBrowserScreenWidth : function() {
+        return this.httpBrowserScreenWidth;
+    },
+    setHttpBrowserScreenWidth: function (value) {
+        this.httpBrowserScreenWidth = value;
     },
     setNif: function (value) {
         this.nif = value;

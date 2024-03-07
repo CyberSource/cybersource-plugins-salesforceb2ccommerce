@@ -648,10 +648,6 @@ var CybersourceHelper = {
         // CMCIC
         request.cardTypeSelectionIndicator = '1';
         request.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
-        // eslint-disable-next-line
-        if (session.custom.SCA === true) {
-            request.ccAuthService.paChallengeCode = '04';
-        }
         request.ccAuthService.run = true;    
         //Sale Transaction
         if (paymentMethod === 'CREDIT_CARD' && CybersourceHelper.getCsTransactionType().value === 'sale') {
@@ -730,6 +726,7 @@ var CybersourceHelper = {
         } else if (card !== null) {
             request.card = copyCreditCard( card );
         }
+        session.custom.isScaEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('IsSCAEnabled');
         request.cardTypeSelectionIndicator = '1';
         request.recurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
         request.recurringSubscriptionInfo.frequency = 'on-demand';
@@ -865,6 +862,26 @@ var CybersourceHelper = {
         }
     },
 
+    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken){
+        var serviceRequest = serviceRequestObj;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+
+        setClientData(serviceRequest, orderNo);
+
+        if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
+            var requestRecurringSubscriptionInfo = new CybersourceHelper.csReference.RecurringSubscriptionInfo();
+            requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
+            serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
+			CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
+		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+			serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
+			serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+		}
+        serviceRequest.payerAuthSetupService = new CybersourceHelper.csReference.PayerAuthSetupService();
+        serviceRequest.payerAuthSetupService.run = true;
+    },
+
     addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, paymentMethodID) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
@@ -872,6 +889,10 @@ var CybersourceHelper = {
         setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
+            if(session.privacy.screenHeight && session.privacy.screenWidth){
+                billTo.setHttpBrowserScreenHeight(session.privacy.screenHeight);
+                billTo.setHttpBrowserScreenWidth(session.privacy.screenWidth);
+            }
             serviceRequest.billTo = copyBillTo(billTo);
         }
 
@@ -897,6 +918,11 @@ var CybersourceHelper = {
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
         serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
+        if(session.custom.enroll == false || session.custom.SCA == false || session.custom.isScaEnabled == true){
+            serviceRequest.payerAuthEnrollService.challengeCode = '04';
+            }
+            var URLUtils = require('dw/web/URLUtils');
+            serviceRequest.payerAuthEnrollService.returnURL =URLUtils.https('COPlaceOrder-Submit','provider','card').toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);

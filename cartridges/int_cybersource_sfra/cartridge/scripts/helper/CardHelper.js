@@ -126,6 +126,9 @@ function HandleCardResponse(ResponseObject) {
         case 480:
             return { review: true };
 
+        case 478:
+            return {sca : true};
+    
         default:
             return { error: true, declined: true };
     }
@@ -371,7 +374,7 @@ function getCardType(cardTypeValue) {
             cardType = 'JCB';
             break;
         default:
-            cardType = '';
+            cardType = cardTypeValue;
     }
     return cardType;
 }
