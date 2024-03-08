@@ -10,7 +10,7 @@
  2. [Apple Pay](Configure-payment-method.md#2-apple-pay)
  3. [PayPal](Configure-payment-method.md#3-PayPal)
  4. [Google Pay](Configure-payment-method.md#4-Google-Pay)
- 5. [Visa SRC](Configure-payment-method.md#5-Visa-SRC)
+ 5. [Visa Checkout](Configure-payment-method.md#5-Visa-Checkout)
  6. [Bank Transfer](Configure-payment-method.md#6-Bank-Transfer)
  7. [Alipay](Configure-payment-method.md#7-Alipay)
  8. [Klarna](Configure-payment-method.md#8-Klarna)
@@ -50,9 +50,9 @@
  In the Business Manager, go to **Merchant Tools > Ordering > Payment Methods** and select **CREDIT_CARD**. And in **CREDIT_CARD details**, double check if **Payment Processor** = **"CYBERSOURCE_CREDIT"**
 
 #### <ins>1.1. To Setup Secure Acceptance Hosted Checkout – iFrame
- Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+ Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
- Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
+ Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
 
  | Field                       | Description                                             | Value to Set  |
  | --------------------------- | ------------------------------------------------------- | ------------- |
@@ -64,12 +64,11 @@
  | CsSAOverrideBillingAddress  | CyberSource Secure Acceptance Override Billing Address  |
  | CsSAOverrideShippingAddress | CyberSource Secure Acceptance Override Shipping Address |
  | CsCvnDeclineFlags           | CyberSource Ignore CVN Result (CVN)                     |
- | CsTransactionType           | Select Sale/Auth Transaction Type                       |
 
 #### <ins>1.2. To Setup Secure Acceptance Redirect
- Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+ Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
- Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
+ Step 2: Go to **Merchant Tools >  Site Preferences > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
 
  | Field                       | Description                                              | Value to Set    |
  | --------------------------- | -------------------------------------------------------- | --------------- |
@@ -81,12 +80,11 @@
  | CsSAOverrideBillingAddress  | CyberSource Secure Acceptance Override Billing Address.  |
  | CsSAOverrideShippingAddress | CyberSource Secure Acceptance Override Shipping Address. |
  | CsCvnDeclineFlags           | CyberSource Ignore CVN Result (CVN).                     |
- | CsTransactionType           | Select Sale/Auth Transaction Type                       |
 
 #### <ins>1.3. To Setup Secure Acceptance Checkout API
- Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+ Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
- Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
+ Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
 
  | Field                                   | Description                                              | Value to Set      |
  | --------------------------------------- | -------------------------------------------------------- | ----------------- |
@@ -99,28 +97,25 @@
  | CsSAOverrideBillingAddress              | CyberSource Secure Acceptance Override Billing Address.  |
  | CsSAOverrideShippingAddress             | CyberSource Secure Acceptance Override Shipping Address. |
  | CsCvnDeclineFlags                       | CyberSource Ignore CVN Result (CVN).                     |
- | CsTransactionType           | Select Sale/Auth Transaction Type                       |
 
 #### <ins>1.4. To Setup Secure Acceptance Flex MicroForm
 
  **Prerequisites:** You will also need to create an [API Key and API Shared Secret Key](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) that you can use to authenticate requests to our sandbox. Follow same steps to generate Production key and shared secret.
 
- Step 1: In Business Manager, go to Administration > Customization > Services and click on the ‘cybersourceflextoken’ Credentials.  Ensure the appropriate URL is set for the environment you are configuring.
-	-   Test: https://apitest.cybersource.com/flex/v1/keys
-    -	Production: https://api.cybersource.com/flex/v1/keys   
+ Step 1: In Business Manager, go to Administration > Operations > Services and click on the ‘CybersourceFlexToken’ Credentials.  Ensure the appropriate URL is set for the environment you are configuring.
+	-   Test: https://apitest.cybersource.com/flex/v1/keys?format=JWT
+    -	Production: https://api.cybersource.com/flex/v1/keys?format=JWT   
 
- Step 2: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+ Step 2: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
- Step 3: Go to **Merchant Tools > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
+ Step 3: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
 
  | Field                | Description                                                                                                                                                            | Value to Set |
  | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
  | CsSAType             | Secure Acceptance Type                                                                                                                                                 | **SA_FLEX**  |
- | SA_Flex_HostName     | Test: testflex.cybersource.com<br>Production: flex.cybersource.com.com                                                                                                       |
+ | SA_Flex_HostName     | Test: apitest.cybersource.com<br>Production: api.cybersource.com.com                                                                                                       |
  | SA_Flex_KeyID        | Flex Microform Key ID. Follow [link](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) to generate keys. |
- | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                           |
-
- | CsTransactionType    | Select Sale/Auth Transaction Type                       |
+ | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                           |                     |
 
  Step 4: Navigate to ‘**Administration > Global Preferences >  Locales**’ and ensure the local ‘en_US’ is present. If not present, create a new local with the following information:
  - Language Code: en 
@@ -134,14 +129,13 @@
 
 #### <ins>1.5. To Setup Direct Cybersource SOAP API
 
- Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+ Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
- Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
+ Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_SecureAcceptance** and set values for the parameter:
 
  | Field                          | Description                 | Value to Set |
  | -------- | ---------------------- | ------------ |
  | CsSAType |                 Secure Acceptance Type |            **None**     |
- | CsTransactionType|         Select Sale/Auth Transaction Type                       |
 
 ---
 
@@ -150,41 +144,30 @@
 **Prerequisite**
  - Please contact your Cybersource Representative to sign up and receive your Payer Authentication credentials.
   
- Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/PayerAuthentication.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
-
- Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_PayerAuthentication**
- and set values for the following parameters:
-
- | Field                  | Description                                                                                                                                                                                                          |
- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
- | CS PA Merchant ID      | Payer Auth merchant ID                                                                                                                                                                                               |
- | CS PA Save Proof.xml   | To enable/disable saving of proof.xml in order object                                                                                                                                                                |
- | CS PA Save ParesStatus | Default False.<br>Save ParesStatus received as response from Pa Authenticate request and send it as param in ccAuth request call. This field should be enabled after verifying cybersource merchant account settings |
- | CruiseApiKey           | A shared secret value between the merchant and Cardinal. This value should never be exposed to the public.                                                                                                           |
- | CruiseApiIdentifier    | GUID used to identify the specific API Key                                                                                                                                                                           |
- | CruiseMerchantName     | Merchant Name                                                                                                                                                                                                        |
- | CruiseOrgUnitId        | GUID to identify the merchant organization within Cardinal systems                                                                                                                                                   |
- | CardinalCruiseApiPath  | Songbird.js script API path. Refer the section *CDN* in this [link](https://cardinaldocs.atlassian.net/wiki/spaces/CC/pages/557065/Songbird.js) to get API path.                                                     |
-
-
- Step 3: Go to **Merchant Tools > Ordering > Payment Methods**, select 'Credit/Debit cards' and check the payer authentication checkbox on any credit card types you want to support Payer Authentication.
+ - Go to **Merchant Tools > Ordering > Payment Methods**, select 'Credit/Debit cards' and check the payer authentication checkbox on any credit card types you want to support Payer Authentication.
 
 ###### Upgrade to 3DS2.0
 If you are currently using CYBS cartridge and would like to upgrade to 3DS2.0, please refer below doc:
-[3DS2.x Dev Guide for SFRA](CyberSource/documentation/markdown/3DS2x-Dev-Guide-for-SFRA.md)
+[3DS2.x Dev Guide for SFRA](3DS2x-Dev-Guide-for-SFRA.md)
 
 ------------------------------------------------------------------
 
 ###### Strong Customer Authentication 
 
 If response code 478 is received, the issuer is declining the authorisation request but advising that if the card holder gets SCA’d, the issuer will approve the authorisation.
-Proposed Approach
-To enable SCA follow the below path 
 
- Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource_PayerAuthentication and set values for the following parameters:
-|Field	       |       | Description                           |
-| IsSCAEnabled	 |       | Enable Strong Customer Authentication |
+Proposed Approach:
+Automatically retry the transaction adding Payer Auth Mandate Challenge (code 04) to force cardholder SCA challenge. This flow should appear seamless to the card holder
 
+Site Preferences:
+
+  Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/PayerAuthentication.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+
+  Step 2: Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource_PayerAuthentication and set values for the following parameters:
+  |Field	       |       | Description                           |
+  | IsSCAEnabled	 |       | Enable Strong Customer Authentication |
+
+Set the value for IsSCAEnabled to yes to use Strong Customer Authentication feature.
 
 ---------------------------------------------------
 ### **2. Apple Pay**
@@ -282,9 +265,9 @@ To enable SCA follow the below path
 
 
     #### <ins>Site Preferences:
-   Step 1: Upload Cybersource metadata in Business Manager. If not follow "Step 2: Upload metadata" or import **"metadata/sfra_meta/meta/ApplePay.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
+   Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/ApplePay.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
-   Step 3: Go to **Merchant Tools > Custom Preferences > Apple Pay**
+   Step 3: Go to **Merchant Tools > Site Preferences > Custom Preferences > Apple Pay**
    and set values for the following parameters:
 
    Field | Description
@@ -312,21 +295,21 @@ Prior to development phase, there are a generic set of configurations that a dev
 
 2) [PayPal sandbox account](https://developer.paypal.com/docs/api-basics/sandbox/accounts/)
 Screenshot of the detailed set of configurations for #1 & #2
-![](CyberSource/documentation/markdown/Images/PayPal.png)
+![](Images/PayPal.png)
 
 3) Linking developer and sandbox account. On creating a PayPal developer account, get in touch with the CyberSource team, share the developer account details and get the developers’ details configured on CyberSource (BackOffice Configuration tool).
 Share the following keys with Cybersource:
-•	ClientID (paypalgateway_client_key) - Follow this [link](o%09https:/www.paypal.com/us/smarthelp/article/how-do-i-create-rest-api-credentials-ts1949) to generate.
-•	Secret (paypalgateway_secret_phrase) - Follow this [link](o%09https:/www.paypal.com/us/smarthelp/article/how-do-i-create-rest-api-credentials-ts1949) to generate.
+•	ClientID (paypalgateway_client_key) - Follow this [link](https:/www.paypal.com/us/smarthelp/article/how-do-i-create-rest-api-credentials-ts1949) to generate.
+•	Secret (paypalgateway_secret_phrase) - Follow this [link](https:/www.paypal.com/us/smarthelp/article/how-do-i-create-rest-api-credentials-ts1949) to generate.
 •	Merchant Account ID (paypalgateway_mid) – Follow this [link](https://www.paypal.com/us/smarthelp/article/FAQ3850) to generate.
 •	Merchant email (paypalgateway_merchant_email) - Follow this [link](https://www.paypal.com/us/smarthelp/article/FAQ3850) to generate.
 
 
 #### <ins>a. To setup PayPal Express
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
 
 | FIeld                 | Description                                                                                                                        |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
@@ -335,24 +318,35 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Paypal** and s
 
 #### <ins>b. To setup PayPal Credit
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (Administration > Site Development > Import & Export).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (Administration > Site Development > Import & Export).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
 
 | Field             | Description                                                                                                                        |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | Paypal Order Type | The type of authorization to follow for PayPal orders. Select STANDARD for Authorize & Capture or select CUSTOM for just Authorize |
+|Paypal Address Override |	If this set to true , then address of buyer will be override by the shipping address provided in shipping page |
 
-#### <ins>b. To setup PayPal Billing Agreement
+#### <ins>c. To setup PayPal Billing Agreement
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
 
 | Field             | Description                                                                                                                        |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | Billing Agreement | Effectively enables or disables the PayPal Billing Agreement.                                                                      |
 | Paypal Order Type | The type of authorization to follow for PayPal orders. Select STANDARD for Authorize & Capture or select CUSTOM for just Authorize |
+
+#### <ins>d. To setup Decision Manager for PayPal 
+
+Refer to this [link](https://www.cybersource.com/en-us/solutions/fraud-and-risk-management/decision-manager.html) if you want to setup Decision Manager feature for PayPal transactions.
+Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource: Decision Manager Configuration and set values for the parameter:
+
+| Field                              | Description                                                                  |
+| ---------------------------------- | ---------------------------------------------------------------------------- |
+| Decision Manager Enable for Paypal | Enable or disable Decision Manager for PayPal transactions.                  |
+
 
 ### **4. Google Pay**
 
@@ -362,9 +356,9 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Paypal** and s
 
 Before proceeding to BM configuration, a Merchant Account needs to be created with Google. Please follow the [link](https://support.google.com/paymentscenter/answer/7161426?hl=en) to create the merchant account with google.
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_GooglePay.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_GooglePay.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_GooglePay** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_GooglePay** and set values for the parameter:
 
 | Field                      | Description                          |
 | -------------------------- | ------------------------------------ |
@@ -372,6 +366,7 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_GooglePay** an
 | googlePayMerchantID        | Cybersource Merchant account ID      |
 | googlePaygatewayMerchantId | Matching setting on Google Account   |
 | googlePayTransactionType   |  Select Sale/Auth transaction Type   |
+
 ### **5. Visa Checkout**
 
 ##### Implementation
@@ -382,18 +377,18 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_GooglePay** an
 2. Click profile tab and add profile, configure all the mandatory settings, also use API Key from Setting Tab.
 3. Create Secret key from ‘**Account Management > Client Integration Management > Payment Configuration > Key Management**’. Click Generate key and select shared secret.
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_VisaCheckout.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_VisaCheckout.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_VisaCheckout** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_VisaCheckout** and set values for the parameter:
 
-| FIeld                           | Description                                                                                                                                                                                                                                                                                 |
+| Field                           | Description                                                                                                                                                                                                                                                                                 |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | cybVisaSdkJsLibrary             | Sandbox: https://sandbox-assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js <br>LIVE: https://assets.secure.checkout.visa.com/checkout-widget/resources/js/integration/v1/sdk.js                                                                            |
 | cybVisaTellMeMoreLinkActive     | Indicate whether Tell Me More Link to be displayed with VISA button true (default) false                                                                                                                                                                                                    |
 | cybVisaButtonColor              | The color of the Visa Checkout button. standard or neutral.                                                                                                                                                                                                                                 |
 | cybVisaButtonSize               | The size of the Visa Checkout button                                                                                                                                                                                                                                                        |
 | cybVisaButtonHeight             | The height of the Visa Checkout button in pixels.                                                                                                                                                                                                                                           |
-| cybVisaButtonImgUrl             | Sandbox: https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png <br> LIVE: https://secure.checkout.visa.com/wallet-services-web/xo/button.png                                                                                                                           |
+| cybVisaButtonImgUrl             | Sandbox: https://sandbox.secure.checkout.visa.com/wallet-services-web/xo/button.png <br> LIVE: https://secure.checkout.visa.com/wallet-services-web/xo/button.png                                        |
 | cybVisaCardBrands               | Brands associated with card art to be displayed                                                                                                                                                                                                                                             |
 | cybVisaButtonWidth              | The width of the Visa Checkout button in pixels.                                                                                                                                                                                                                                            |
 | cybVisaThreeDSSuppressChallenge | Whether a Verified by Visa (VbV) consumer authentication prompt is suppressed for this transaction. If true, VbV authentication is performed only when it is possible to do so without the consumer prompt.<br> true - Do not display a consumer prompt <br>false - Allow a consumer prompt |
@@ -402,13 +397,22 @@ Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_VisaCheckout**
 | cybVisaAPIKey                   | The Visa Checkout account API key specified in cyberSource business center                                                                                                                                                                                                                  |
 | cybVisaThreeDSActive            | Whether Verified by Visa (VbV) is active for this transaction. If Verified by Visa is configured, you can use threeDSActive to deactivate it for the transaction; otherwise, VbV will be active if it has been configured                                                                   |
 | cybVisaButtonOnCart             | CyberSource Visa Button display on minicart and cart|
-| cybVisaCheckoutTransactionType  | Visa SRC Transaction Type        |
+| cybVisaTransactionType          | Select Sale/Auth transaction type      |
+
+To setup Decision Manager for Visa Checkout:
+
+Refer to this [link](https://www.cybersource.com/en-us/solutions/fraud-and-risk-management/decision-manager.html) if you want to setup Decision Manager feature for ”Visa Checkout” transactions.
+
+Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource: Decision Manager Configuration and set values for the parameter:
+| Field	                     | Description                                                          |
+| CS Decision Manager Enable  |	Enable or disable Decision Manager for Visa Checkout transactions. |
+
 
 ### **6. Bank Transfer**
 
 ##### Implementation
 
-Bank Transfer supports 5 types of Payment methods 
+Bank Transfer supports 3 types of Payment methods 
 •	SOFORT
 •	BANCONTACT
 •	IDEAL
@@ -435,9 +439,9 @@ SFRA makes the call to CyberSource Sale service to authorize the purchase amount
 
 **Implementations**
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_BankTransfer.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_BankTransfer.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_BankTransfer** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_BankTransfer** and set values for the parameter:
 
 | Field                                                         | Description                     |
 | ------------------------------------------------------------- | ------------------------------- |
@@ -455,13 +459,21 @@ Step 3: Go to Merchant Tools > Ordering > Payments Methods > Bank_Transfer and s
 | --------------------------- | ------------------------------------------------------------------------------------------ |
 | isSupportedBankListRequired | Attribute to check if bank list is required for IDEAL to display on billing page           |
 
+To setup Decision Manager for Bank Transfer 
+Refer to this [link](https://www.cybersource.com/en-us/solutions/fraud-and-risk-management/decision-manager.html) if you want to setup Decision Manager feature for Bank Transfer transactions.
+Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource: Decision Manager Configuration and set values for the parameter:
+| Field	                                   | Description                                                       |
+| ----------------------------------------- | ----------------------------------------------------------------- |
+| Decision Manager Enable for Bank Transfer | Enable or disable Decision Manager for Bank Transfer transactions.|
+
+
 ### **7. Alipay**
 
 ##### Implementation
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Alipay.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Alipay.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_Alipay** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Alipay** and set values for the parameter:
 
 | Field                  | Description                                                       |
 | ---------------------- | ----------------------------------------------------------------- |
@@ -481,17 +493,17 @@ Step 1: Merchant Id/Key could be configured at **Merchant Tools -> Ordering -> P
 
 Step 2: On the Payment Methods page, Select the locale (language) you want to set up, then select the Klarna payment method.
 
-![](CyberSource/documentation/markdown/Images/Klarna_Payment_Methods.png)
+![](Images/Klarna_Payment_Methods.png)
 
 Step 3: Enter the merchantID and merchantKey field in CyberSource Credentials section of payment method.  If you leave these empty, the service will fall back to the values you entered in the CS core site preferences. 
 
 Step 4: Select the appropriate bill-to language setting under the ‘Klarna’ custom attribute group.
 
-![](CyberSource/documentation/markdown/Images/Klarna_Details.png)
+![](Images/Klarna_Details.png)
 
-Step 5: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Klarna.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 5: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Klarna.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 6: Go to **Merchant Tools > Custom Preferences > Cybersource_Klarna** and set values for the parameter:
+Step 6: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Klarna** and set values for the parameter:
 
 | Field                            | Description                        |
 | -------------------------------- | ---------------------------------- |
@@ -502,9 +514,9 @@ Step 6: Go to **Merchant Tools > Custom Preferences > Cybersource_Klarna** and s
 
 ##### Implementation
 
-Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](CyberSource/documentation/markdown/Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_WeChat.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_WeChat.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
-Step 2: Go to **Merchant Tools > Custom Preferences > Cybersource_WeChat** and set values for the parameter:
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_WeChat** and set values for the parameter:
 
 | FIeld                                 | Description                                                                   |
 | ------------------------------------- | ----------------------------------------------------------------------------- |

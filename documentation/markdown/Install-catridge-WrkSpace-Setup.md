@@ -7,7 +7,7 @@ Cybersource's Storefront Reference Architecture Cartridge can be installed from 
 1. Create a folder “CyberSource” in your workspace and place the cartridge (int_cybersource_sfra)downloaded from Marketplace. 
 2. If you have a different project set-up, you will need to open the file ‘/package.json’ and modify the paths.base value to point to your ‘app_storefront_base’ cartridge. This path is used by the JS and SCSS build scripts. 
 
-![](CyberSource/documentation/markdown/Images/Workspace_Preparation.png)
+![](Images/Workspace_Preparation.png)
 
 3. If using VSCode, install the extension Prophet Debugger [link]((https://marketplace.visualstudio.com/items?itemName=SqrTT.prophet)) or any other SFCC extension and include below in dw.json (). 
 ``` JSON
