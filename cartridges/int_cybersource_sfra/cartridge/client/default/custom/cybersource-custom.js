@@ -1,6 +1,18 @@
 /* eslint-disable */
 
 var init = {
+    verifyUrl : function(url){
+            try {
+                if(url != null){
+                new URL(url); 
+                return true; 
+                } else {
+                    return false;
+                }
+            } catch (err) {
+                return false;
+            }
+    },
     initConfig: function () {
         var requestId; var billingAgreementFlag; // A Flag to show whether user has opted for Billing Agreement or not
         var billingAgreementButton; // The Billing Agreement Checkbox
@@ -52,16 +64,18 @@ var init = {
                 };
 
                 var paypalcallback = document.getElementById('paypal_callback').value;
-                var form = $('<form action="' + paypalcallback + '" method="post">'
-                + '<input type="hidden" name="requestId" value="' + requestId + '" />'
-                + '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />'
-                + '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />'
-                + '<input type="hidden" name="payerID" value="' + data.payerID + '" />'
-                + '<input type="hidden" name="isPayPalCredit" value="' + isPayPalCredit + '" />'
-                + '</form>');
-                $('body').append(form);
-                form.submit();
-            }
+                if(init.verifyUrl(paypalcallback)){
+                    var form = $('<form action="' + paypalcallback + '" method="post">'
+                    + '<input type="hidden" name="requestId" value="' + requestId + '" />'
+                    + '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />'
+                    + '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />'
+                    + '<input type="hidden" name="payerID" value="' + data.payerID + '" />'
+                    + '<input type="hidden" name="isPayPalCredit" value="' + isPayPalCredit + '" />'
+                    + '</form>');
+                    $('body').append(form);
+                    form.submit();
+                }
+        }
         };
         return config;
     },
@@ -112,9 +126,11 @@ var init = {
         $(document).on('click', '.dw_google_pay, .paypal, .paypal_credit, .wechat', function (e) {
             e.stopImmediatePropagation();
             var formaction = $(this).attr('data-action');
-            setTimeout(function () {
-                window.location.href = formaction;
-            }, 500);
+            if(formaction){
+                setTimeout(function () {
+                    window.location.href = formaction;
+                }, 500);
+            }
         });
 
         // for Alipay Intermediate
@@ -128,7 +144,9 @@ var init = {
         // For FingerPrint Unit testing
         if ($('body').hasClass('cyb_testfingerprintRedirect')) {
             var url_loc = document.getElementById('URl_redirect').value;
-            setTimeout(function () { location.href = url_loc; }, 1000);
+            if(url_loc){
+                setTimeout(function () { location.href = url_loc; }, 1000);
+            }
         }
         // For Payerauth during checkout
         if ($('div').hasClass('payerauth')) {
@@ -148,13 +166,15 @@ var init = {
         }
         // For Secure Acceptance Redirect
         if ($('body').hasClass('cyb_sa_redirect')) {
-            var url_loc = document.getElementById('redirect_url_sa').value;
-            window.top.location.replace(url_loc);
+            var url_loc = document.getElementById('redirect_url_sa');
+            window.top.location.replace(url_loc.value);
         }
         // For Secure Acceptance Iframe
         if ($('div').hasClass('SecureAcceptance_IFRAME')) {
             var url_loc = document.getElementById('sa_iframeURL').value;
-            $('.SecureAcceptance_IFRAME').append('<iframe src=' + url_loc + '  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
+            if(init.verifyUrl(url_loc)){
+                $('.SecureAcceptance_IFRAME').append('<iframe src=' + url_loc + '  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
+           }
         }
         // For Secure Acceptance Iframe
         if ($('body').hasClass('sa_iframe_request_form')) {
@@ -183,10 +203,12 @@ var init = {
         $(document).on('click', '.billingAgreementExpressCheckout', function (e) {
             e.preventDefault();
             var paypalcallback = document.getElementById('paypal_callback').value;
-            var form = $('<form action="' + paypalcallback + '" method="post">'
-                    + '</form>');
-            $('body').append(form);
-            form.submit();
+            if(init.verifyUrl(paypalcallback)){
+                var form = $('<form action="' + paypalcallback + '" method="post">'
+                        + '</form>');
+                $('body').append(form);
+                form.submit();
+            }
         });
 
         $(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .sof, .mch, .idl , .klarna, .wechat', function (e) {
@@ -216,6 +238,7 @@ var init = {
                 $.ajax({
                     url: formaction,
                     type: 'POST',
+                    contentType : 'text/html',
                     success: function (xhr, data) {
                         if (xhr) {
                             if (xhr.error == true) {

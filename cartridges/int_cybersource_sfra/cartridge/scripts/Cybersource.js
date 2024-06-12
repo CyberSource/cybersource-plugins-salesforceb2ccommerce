@@ -163,8 +163,8 @@ function Process3DRequestParent(args) {
         }
         if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_VISA_CHECKOUT) {
             var PAResponsePARes = request.httpParameterMap.PaRes.value;
-            var PAXID = request.httpParameterMap.PAXID.value;
-            var transactionId = request.httpParameterMap.processorTransactionId.value != null ? request.httpParameterMap.processorTransactionId.value : '';
+            var PAXID = session.privacy.PAXID;
+            var transactionId = request.httpParameterMap.TransactionId.value != null ? request.httpParameterMap.TransactionId.value : '';
             var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
             var payerAuthbillTo = CommonHelper.CreateCyberSourceBillToObject(order, true);
             var payerAuthshipTo= CommonHelper.CreateCybersourceShipToObject(order);
@@ -172,13 +172,8 @@ function Process3DRequestParent(args) {
             var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(order);
             var items = payerAuthsitems.items;
             var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(), transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);
-
-            var scaEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('IsSCAEnabled');
-            if(scaEnabled && result.serviceResponse.ReasonCode === 478 && session.custom.SCA === false){
-                session.custom.SCA = true ;
-                result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(), transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);  
-            }
-            if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode == '480') && (!empty(PAXID) ? PAXID === result.serviceResponse.PAVXID : true)) {
+          
+            if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode == '480' || result.serviceResponse.ReasonCode === 478) && (!empty(PAXID) ? PAXID === result.serviceResponse.PAVXID : true)) {
                 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
                 result = secureAcceptanceHelper.HookIn3DRequest({
                     Order: order, payerValidationResponse: result.serviceResponse, paymentInstrument: paymentInstrument, SubscriptionID: paymentInstrument.getCreditCardToken()
@@ -188,6 +183,10 @@ function Process3DRequestParent(args) {
                 }
                 if (result.review) {
                     return { review: true };
+                }
+                if(result.sca && session.custom.SCA == true){
+                    session.custom.SCA = false;
+                    return {sca:true};
                 }
             }
             var Status = require('dw/system/Status');
@@ -289,6 +288,10 @@ function saveCreditCard() {
     if (!empty(customer) && customer.authenticated && session.forms.billing.creditCardFields.saveCard.value
         && session.forms.billing.paymentMethod.value.equals(PaymentInstrument.METHOD_CREDIT_CARD)|| CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST) ) {
         subscriptionID = CommonHelper.GetSubscriptionToken(session.forms.billing.creditCardFields.selectedCardID.value, customer);
+        if(session.privacy.subscriptionID != null){
+            subscriptionID = session.privacy.subscriptionID;
+            session.privacy.subscriptionID = '';
+        }
         if (empty(subscriptionID)) {
             var createSubscriptionBillingResult = createSubscriptionBilling({ Basket: basket });
             subscriptionID = createSubscriptionBillingResult.subscriptionID;

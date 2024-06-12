@@ -147,11 +147,11 @@ base.selectSavedPaymentInstrument = function () {
         $('.saved-payment-instrument.selected-payment '
             + '.security-code-input').removeClass('checkout-hidden');
         $('#selectedCardID').val($('.saved-payment-instrument.selected-payment').data('uuid'));
-        $('input[name="dwfrm_billing_creditCardFields_cardNumber"]').val($.trim($('.saved-payment-instrument.selected-payment .saved-credit-card-number').text()));
-        var cardType = $.trim($('.saved-payment-instrument.selected-payment .saved-credit-card-type').text()).replace(/\s{2,}/g, ' ').split(' ');
+        $('input[name="dwfrm_billing_creditCardFields_cardNumber"]').val(($('.saved-payment-instrument.selected-payment .saved-credit-card-number').text()).trim());
+        var cardType = ($('.saved-payment-instrument.selected-payment .saved-credit-card-type').text()).trim().replace(/\s{2,}/g, ' ').split(' ');
         $('input[name="dwfrm_billing_creditCardFields_cardType"]').val(cardType[1]);
-        var expiryDate = $.trim($('.saved-payment-instrument.selected-payment .saved-credit-card-expiration-date').text()).replace(/[a-zA-Z\s]+/, '').split('/');
-        $('input[name="dwfrm_billing_creditCardFields_securityCode"]').val($.trim($('.saved-payment-instrument.selected-payment #saved-payment-security-code').val()));
+        var expiryDate = ($('.saved-payment-instrument.selected-payment .saved-credit-card-expiration-date').text()).trim().replace(/[a-zA-Z\s]+/, '').split('/');
+        $('input[name="dwfrm_billing_creditCardFields_securityCode"]').val($('.saved-payment-instrument.selected-payment #saved-payment-security-code').val().trim());
         $('#expirationMonth').val(expiryDate[0]);
         $('#expirationYear').val(expiryDate[1]);
     });
@@ -232,14 +232,14 @@ base.onBillingAddressUpdate = function () {
             var state = $('select[name$=_billing_addressFields_states_stateCode]').val();
             var country = $('select[name$=_billing_addressFields_country]').val();
 
-            firstName = $.trim(firstName);
-            lastName = $.trim(lastName);
-            add1 = $.trim(add1);
+            firstName = firstName.trim();
+            lastName = lastName.trim();
+            add1 = add1.trim();
             // add2 = $.trim(add2);
-            city = $.trim(city);
-            postalCode = $.trim(postalCode);
-            state = $.trim(state);
-            country = $.trim(country);
+            city = city.trim();
+            postalCode = postalCode.trim();
+            state = state.trim();
+            country = country.trim();
             if (firstName && lastName && add1 && city && postalCode && state && country) {
                 saveBillingAddress();
             }

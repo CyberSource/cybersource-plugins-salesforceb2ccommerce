@@ -11,6 +11,8 @@ var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 
 var IsCartridgeEnabled = Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled');
 
+var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+
 server.extend(page);
 
 function verifyCard(card, form) {

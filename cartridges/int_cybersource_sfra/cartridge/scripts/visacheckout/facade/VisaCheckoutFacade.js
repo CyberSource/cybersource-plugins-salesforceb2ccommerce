@@ -277,6 +277,46 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     return { success: true, serviceResponse: responseObject };
 }
 
+function PayerAuthSetup(orderNo){
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    var csReference = webreferences2.CyberSourceTransaction;
+    var serviceRequest = new csReference.RequestMessage();
+    CybersourceHelper.addVCOrderID(serviceRequest, session.forms.visaCheckout.callId.value);
+    serviceRequest.paymentSolution= 'visacheckout';
+    CybersourceHelper.addPayerAuthSetupInfo(serviceRequest, null, orderNo, null);
+    var serviceResponse = null;
+
+    // send request
+    try {
+        var service = CSServices.CyberSourceTransactionService;
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+        var requestWrapper = {};
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
+    } catch (e) {
+        Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthSetUp request ( {0} )', e.message);
+        return { error: true, errorMsg: e.message };
+    }
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        Logger.error('[VisaCheckoutFacade.js] response in PayerAuthSetUp response ( {0} )', serviceResponse);
+        return { error: true, errorMsg: 'empty or error in PayerAuthSetUp response: ' + serviceResponse };
+    }
+    serviceResponse = serviceResponse.object;
+    // set response values in local variables
+    var responseObject = {};
+    if (serviceResponse.payerAuthSetupReply !== null) {
+    responseObject.accessToken = serviceResponse.payerAuthSetupReply.accessToken;
+    responseObject.deviceDataCollectionURL = serviceResponse.payerAuthSetupReply.deviceDataCollectionURL;
+    responseObject.referenceID = serviceResponse.payerAuthSetupReply.referenceID;    
+    }
+    return responseObject;
+}
+
+
 /**
  * This method is called when payer authorization is required along with CC validation.Service response is send to the calling method.
  * @param {dw.order.LineItemCtnr} LineItemCtnrObj contains object of basket or order
@@ -393,6 +433,8 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
         responseObject.PAReq = serviceResponse.payerAuthEnrollReply.paReq;
         responseObject.ProxyPAN = serviceResponse.payerAuthEnrollReply.proxyPAN;
         responseObject.authenticationTransactionID = serviceResponse.payerAuthEnrollReply.authenticationTransactionID;
+        responseObject.jwt = serviceResponse.payerAuthEnrollReply.accessToken;
+        responseObject.stepUpUrl = serviceResponse.payerAuthEnrollReply.stepUpUrl;
     }
     return { success: true, serviceResponse: responseObject };
 }
@@ -736,6 +778,7 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
 
 module.exports = {
     VCDecryptRequest: VCDecryptRequest,
+    PayerAuthSetup: PayerAuthSetup,
     PayerAuthValidationCCAuthRequest: PayerAuthValidationCCAuthRequest,
     PayerAuthEnrollCCAuthRequest: PayerAuthEnrollCCAuthRequest,
     CCAuthRequest: CCAuthRequest,

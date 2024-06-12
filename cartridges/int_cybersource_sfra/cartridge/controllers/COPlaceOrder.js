@@ -207,6 +207,9 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 return next();
             } if (providerResult.cancelfail) {
                 var ReasonCode = request.httpParameterMap.SecureAcceptanceError.stringValue;
+                if (!ReasonCode) {
+                    ReasonCode = request.httpParameterMap.reason_code.stringValue;
+                }
                 res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'SecureAcceptanceError', ReasonCode));
                 return next();
             } if (providerResult.carterror) {
@@ -221,7 +224,14 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 res.redirect(providerResult.location);
                 return next();
             }
-        } else {
+        } 
+        if (providerResult.sca) {
+            session.privacy.paSetup = true;
+            session.privacy.orderNo = order.orderNo;
+            res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
+            return next();
+        }
+        else {
             // do nothing
         }
     } else if (!empty(paymentInstrument) && paymentInstrument.paymentMethod === 'DW_APPLE_PAY') {

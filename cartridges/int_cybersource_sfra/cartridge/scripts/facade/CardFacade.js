@@ -4,6 +4,7 @@
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var Cybersource = require('*/cartridge/scripts/Cybersource');
 // eslint-disable-next-line
 var csReference = webreferences2.CyberSourceTransaction;
 
@@ -47,14 +48,17 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     billTo = result.billTo;
     result = CommonHelper.CreateCybersourceShipToObject(basket);
     shipTo = result.shipTo;
-    if (empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST)) && empty(CreditCardForm.flexresponse.value)) {
-        result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
-        cardObject = result.card;
-    }
-    else{
-        serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
-		serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
-    }
+    // var server = require('server');
+    // var form = server.forms.getForm('billing');
+//    serviceRequest.tokenSource.transientToken = form.creditCardFields.flexresponse.value;
+    // if (empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_SA_SILENTPOST && ))) {
+    result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
+    cardObject = result.card;
+    // }
+    // else{
+    //     serviceRequest.tokenSource = new CybersourceHelper.csReference.TokenSource();
+	// 	serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+    // }
 
     result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
     purchaseObject = result.purchaseTotals;
@@ -160,6 +164,11 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     }
     serviceResponse = serviceResponse.object;
     CardHelper.protocolResponse(serviceResponse);
+    if (serviceResponse.paySubscriptionCreateReply != null) {
+        // eslint-disable-next-line
+        session.privacy.subscriptionID = serviceResponse.paySubscriptionCreateReply.subscriptionID;
+        Cybersource.SaveCreditCard();
+    }
     //* *************************************************************************//
     // Process Response
     //* *************************************************************************//
@@ -229,6 +238,64 @@ function DAVRequest(Basket, billTo, shipTo) {
 }
 
 /**
+ * Payer Auth setup call
+ * @param {*} paymentInstrument paymentIntrument
+ * @param {*} OrderNo Order number of the order
+ * @param {*} CreditCardForm CreditCardForm
+ * @returns {*} obj
+ */
+function PayerAuthSetup(paymentInstrument, OrderNo, CreditCardForm) {
+    var creditCardForm = CreditCardForm;
+    var orderNo = OrderNo;
+    var paymentInstrument = paymentInstrument;
+    // eslint-disable-next-line
+    session.privacy.paSetup= false;
+
+    if (creditCardForm === null) {
+        Logger.error('[CardFacade.js] Please provide the credit card form element!');
+        return { error: true };
+    }
+
+    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    var serviceRequest = new csReference.RequestMessage();
+    var SubscriptionID = paymentInstrument.getCreditCardToken();
+    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
+    var cardObject = result.card;
+    CybersourceHelper.addPayerAuthSetupInfo(serviceRequest, creditCardForm, orderNo, paymentInstrument.getCreditCardToken());
+    var serviceResponse = null;
+    // send request
+    try {
+        var service = CSServices.CyberSourceTransactionService;
+        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
+        var requestWrapper = {};
+        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        requestWrapper.request = serviceRequest;
+        requestWrapper.merchantCredentials = merchantCrdentials;
+        serviceResponse = service.call(requestWrapper);
+    } catch (e) {
+        Logger.error('[CardFacade.js] Error in PayerAuthSetUp request ( {0} )', e.message);
+        return { error: true, errorMsg: e.message };
+    }
+    // eslint-disable-next-line
+    if (empty(serviceResponse) || serviceResponse.status !== 'OK') {
+        Logger.error('[CardFacade.js] response in PayerAuthSetUp response ( {0} )', serviceResponse);
+        return { error: true, errorMsg: 'empty or error in PayerAuthSetUp response: ' + serviceResponse };
+    }
+    serviceResponse = serviceResponse.object;
+    // set response values in local variables
+    var responseObject = {};
+    if (serviceResponse.payerAuthSetupReply !== null) {
+    responseObject.accessToken = serviceResponse.payerAuthSetupReply.accessToken;
+    responseObject.deviceDataCollectionURL = serviceResponse.payerAuthSetupReply.deviceDataCollectionURL;
+    responseObject.referenceID = serviceResponse.payerAuthSetupReply.referenceID;    
+    }
+    return responseObject;
+}
+
+/**
  * Payer Auth call is made to cybersource and response if send back.
  * @param {*} LineItemCtnrObj contains object of basket or order
  * @param {*} Amount order total
@@ -293,8 +360,6 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
     } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
     }
-    // eslint-disable-next-line
-    session.custom.SCA = false ;
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
     /** ***************************** */
     /* DAV-related WebService setup */
@@ -379,6 +444,8 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
         responseObject.ParesStatus = serviceResponse.payerAuthEnrollReply.paresStatus;
         responseObject.ECIRaw = serviceResponse.payerAuthEnrollReply.eciRaw;
         responseObject.challengeCancelCode = serviceResponse.payerAuthEnrollReply.challengeCancelCode;
+        responseObject.jwt = serviceResponse.payerAuthEnrollReply.accessToken;
+        responseObject.stepUpUrl = serviceResponse.payerAuthEnrollReply.stepUpUrl;
         // eslint-disable-next-line
         responseObject.authenticationStatusReason = (!empty(serviceResponse.payerAuthEnrollReply.authenticationStatusReason)) && ((serviceResponse.payerAuthEnrollReply.authenticationStatusReason).toString().length === 1) ? '0' + serviceResponse.payerAuthEnrollReply.authenticationStatusReason : serviceResponse.payerAuthEnrollReply.authenticationStatusReason;
     }
@@ -785,6 +852,7 @@ function decisionManager(Basket, OrderNo, ReadFromBasket) {
 }
 
 module.exports = {
+    PayerAuthSetup: PayerAuthSetup,
     PayerAuthEnrollCheck: PayerAuthEnrollCheck,
     PayerAuthValidation: PayerAuthValidation,
     CCAuthRequest: CCAuthRequest,

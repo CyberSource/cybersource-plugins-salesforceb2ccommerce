@@ -142,6 +142,7 @@ server.post('SetBillingAddress', csrfProtection.generateToken, server.middleware
             billingAddress.setCountryCode(paymentForm.addressFields.country.value);
         }
     });
+    // res.set('Content-Security-Policy', "script-src 'self'");
     res.json({
         error: false
     });

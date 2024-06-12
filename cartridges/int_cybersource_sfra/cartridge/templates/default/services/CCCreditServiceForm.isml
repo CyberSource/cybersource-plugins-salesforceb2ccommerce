@@ -1,4 +1,5 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="components/modules"/>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -10,11 +11,11 @@
 </head>
 <body>
 <iscomment>
-	Auth Reversal service form
+	Credit service form
 </iscomment>
-<div id="SaleForm" class="sale_form container" >
-	<h1>${Resource.msg('test.authreversalserviceform','cybersource',null)}</h1>
-	<form class="sale_form" action="${URLUtils.https('CYBServicesTesting-CCAuthReversalService','service','true')}" method="post" id="generic-form-submit">
+<div id="CreditForm" class="credit_form container" >
+	<h1>${Resource.msg('test.cccreditserviceform','cybersource',null)}</h1>
+	<form class="credit_form" action="${pdict.continueUrl}" method="post" id="generic-form-submit">
 			<fieldset>
 				<div id="saleform" class="saleform">
 					<div class="row">
@@ -24,7 +25,7 @@
 					            <div class="merchantReferenceCode-wrapper">
 					                <input type="text" class="form-control" id="merchantReferenceCode"
 					                    value=""
-					                    <isprint value=${pdict.authreversalform.merchantReferenceCode.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.merchantReferenceCode.attributes} encoding="off"/>
 					                >
 					            </div>
 					        </div>
@@ -35,7 +36,7 @@
 					            <div class="authRequestID-wrapper">
 					                <input type="text" class="form-control" id="authRequestID"
 					                    value=""
-					                    <isprint value=${pdict.authreversalform.authRequestID.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.authRequestID.attributes} encoding="htmlsinglequote"/>
 					                >
 					            </div>
 					        </div>
@@ -46,7 +47,7 @@
 					            <div class="currency-wrapper">
 					                <input type="text" class="form-control" id="currency"
 					                    value=""
-					                    <isprint value=${pdict.authreversalform.currency.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.currency.attributes} encoding="off"/>
 					                >
 					            </div>
 					        </div>
@@ -57,17 +58,17 @@
 					            <div class="grandtotalamount-wrapper">
 					                <input type="text" class="form-control" id="grandtotalamount"
 					                    value=""
-					                    <isprint value=${pdict.authreversalform.grandtotalamount.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.grandtotalamount.attributes} encoding="htmlsinglequote"/>
 					                >
 					            </div>
 					        </div>
 					    </div>
 					    <div class="col-md-8">
 					        <div class="form-group">
-					            <label class="form-control-label" for="authreversalpaymenttype">${Resource.msg('saleservice_paymentmethod','cybersource',null)}</label>
-					            <select class="form-control authreversalpaymenttype custom-select" id="authreversalpaymenttype"
-					            <isprint value=${pdict.authreversalform.authreversalpaymenttype.attributes} encoding="off"/> >
-					                <isloop items=${pdict.authreversalform.authreversalpaymenttype.options} var="paymentType">
+					            <label class="form-control-label" for="refundpaymenttype">${Resource.msg('saleservice_paymentmethod','cybersource',null)}</label>
+					            <select class="form-control refundpaymenttype custom-select" id="refundpaymenttype"
+					            <isprint value=${pdict.creditServiceForm.refundpaymenttype.attributes} encoding="htmlsinglequote"/> >
+					                <isloop items=${pdict.creditServiceForm.refundpaymenttype.options} var="paymentType">
 					                    <option id="${paymentType.id}" value="${paymentType.htmlValue}">
 						                    ${paymentType.label}
 					                    </option>
@@ -81,7 +82,7 @@
 					            <div class="orderRequestID-wrapper">
 					                <input type="text" class="form-control" id="orderRequestID"
 					                    value=""
-					                    <isprint value=${pdict.authreversalform.orderRequestID.attributes} encoding="off"/>
+					                    <isprint value=${pdict.creditServiceForm.orderRequestID.attributes} encoding="htmlsinglequote"/>
 					                >
 					            </div>
 					        </div>
@@ -90,13 +91,13 @@
 				</div>
 				<fieldset>	 
 			<div class="actions clearfix">
-				<button id="dialogApplyBtn" name="${pdict.authreversalform.submit}" type="submit" value="${Resource.msg('test.submit','cybersource',null)}"><span>${Resource.msg('test.submit','cybersource',null)}</span></button>
+				<button id="dialogApplyBtn" name="${pdict.creditServiceForm.submit}" type="submit" value="${Resource.msg('test.submit','cybersource',null)}"><span>${Resource.msg('test.submit','cybersource',null)}</span></button>
 			</div>
 	</form>
 </div>
 <script type="text/javascript">
 	window.onload = function() {
-		if($('#authreversalpaymenttype').val() == 'visacheckout') {
+		if($('#capturepaymenttype').val() == 'visacheckout') {
 			$('#orderRequestID').attr('required','required');
 			$('.orderRequestID').removeClass('hidden').addClass('show');
 		} else {

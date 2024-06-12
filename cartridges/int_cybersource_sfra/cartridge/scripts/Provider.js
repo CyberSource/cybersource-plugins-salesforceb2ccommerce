@@ -251,6 +251,9 @@ function card(args) {
             return { pending: true, Order: order };
         } if (process3DResult.home) {
             return { carterror: true, Order: order };
+        } 
+        if(process3DResult.sca){
+            return { sca: true, Order: order };
         }
     }
     /* eslint-enable */

@@ -1,5 +1,16 @@
 ## <ins>Release History
 
+**Version 24.1.0 (March, 2024)**
+•	Implemented Direct API for Payer Authentication with Payer Auth Setup and Device Data Collection.
+•	We have included the 3DS browser mandatory fields.
+•	Implemented SCA and handling 478 reason code.
+•   Implemented subscription creation in authorization call.
+
+**Version 23.1.2 (November, 2023)**
+•	We have updated Flex microform from v0.11.0 to v0.11.
+•	We have updated API header in Http Signature Authentication.
+•	Bug fix for release 23.1.1 
+
 **Version 23.1.1 (July, 2023)**
 •	We have upgraded Flex microform from v0.4.0 to v0.11.0.
 

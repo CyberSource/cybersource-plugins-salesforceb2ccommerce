@@ -418,7 +418,7 @@ function payerAuthValidation(lineItemCtnrObj, paymentInstrument) {
     var PAResponsePARes = request.httpParameterMap.PaRes.value;
     // var PAXID = request.httpParameterMap.PAXID.value;
     // eslint-disable-next-line
-    var transactionId = request.httpParameterMap.processorTransactionId.value != null ? request.httpParameterMap.processorTransactionId.value : '';
+    var transactionId = request.httpParameterMap.TransactionId.value != null ? request.httpParameterMap.TransactionId.value : '';
 
     var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/facade/VisaCheckoutFacade');
     var result = VisaCheckoutFacade.PayerAuthValidationCCAuthRequest(lineItemCtnrObj, PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, transactionId);
@@ -469,6 +469,7 @@ function payerAuthEnroll(lineItemCtnrObj, paymentInstrument, orderNo) {
         session.privacy.PAReq = serviceResponse.PAReq;
         session.privacy.PAXID = serviceResponse.PAXID;
         session.privacy.order_id = orderNo;
+        session.privacy.stepUpUrl = serviceResponse.stepUpUrl;
         session.privacy.authenticationTransactionID = serviceResponse.authenticationTransactionID;
         return { payerauthentication: true, serviceResponse: serviceResponse };
     }

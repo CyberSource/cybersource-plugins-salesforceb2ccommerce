@@ -50,8 +50,8 @@
 <iscomment>Secure Acceptance Flex Microform Scripts </iscomment>
 	
 <isif condition="${dw.system.System.getInstanceType()!= 2}">
-	<script src="https://testflex.cybersource.com/cybersource/assets/microform/0.11.0/flex-microform.min.js"></script>
+	<script src="https://testflex.cybersource.com/cybersource/assets/microform/0.11/flex-microform.min.js"></script>
 <iselse>
-	<script src="https://flex.cybersource.com/cybersource/assets/microform/0.11.0/flex-microform.min.js"></script>
+	<script src="https://flex.cybersource.com/cybersource/assets/microform/0.11/flex-microform.min.js"></script>
     </iselse>
 </isif>
