@@ -46,6 +46,7 @@ server.append('Confirm', function (req, res, next) {
     viewData = {
         order: orderModel
     };
+    session.privacy.orderId = '';
     res.setViewData(viewData);
     next();
 });

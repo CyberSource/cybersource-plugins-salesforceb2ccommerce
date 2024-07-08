@@ -4,7 +4,7 @@
 var Logger = require('dw/system/Logger');
 var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
 var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
-var Cybersource = require('*/cartridge/scripts/Cybersource');
+var Cybersource = require('~/cartridge/scripts/Cybersource');
 // eslint-disable-next-line
 var csReference = webreferences2.CyberSourceTransaction;
 
@@ -163,12 +163,12 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
         return { error: true, errorMsg: 'empty or error in test CCAuthRequest response: ' + serviceResponse };
     }
     serviceResponse = serviceResponse.object;
-    CardHelper.protocolResponse(serviceResponse);
     if (serviceResponse.paySubscriptionCreateReply != null) {
         // eslint-disable-next-line
         session.privacy.subscriptionID = serviceResponse.paySubscriptionCreateReply.subscriptionID;
         Cybersource.SaveCreditCard();
     }
+    CardHelper.protocolResponse(serviceResponse);
     //* *************************************************************************//
     // Process Response
     //* *************************************************************************//
@@ -346,12 +346,6 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
         if (!empty(modifiedServiceRequest)) {
             serviceRequest = modifiedServiceRequest;
         }
-    }
-    // eslint-disable-next-line
-    if (!empty(SubscriptionID)) {
-        CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
-    } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
-        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
     }
 
     // eslint-disable-next-line

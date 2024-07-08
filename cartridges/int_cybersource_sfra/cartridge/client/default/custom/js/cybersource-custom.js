@@ -50,8 +50,8 @@ var init = {
                     isPayPalCredit: isPayPalCredit
                 };
 
-                var paypalcallback = document.getElementById('paypal_callback').value;
-                var form = $('<form action="' + paypalcallback + '" method="post">'
+                var paypalcallback = encodeURIComponent(document.getElementById('paypal_callback').value);
+                var form = $('<form action="' + decodeURIComponent(paypalcallback) + '" method="post">'
                 + '<input type="hidden" name="requestId" value="' + requestId + '" />'
                 + '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />'
                 + '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />'
@@ -111,6 +111,7 @@ var init = {
         $(document).on('click', '.dw_google_pay, .paypal, .paypal_credit, .wechat', function (e) {
             e.stopImmediatePropagation();
             var formaction = $(this).attr('data-action');
+            formaction = DOMPurify.sanitize(formaction);
             setTimeout(function () {
                 window.location.href = formaction;
             }, 500);
@@ -127,7 +128,7 @@ var init = {
         // For FingerPrint Unit testing
         if ($('body').hasClass('cyb_testfingerprintRedirect')) {
             var url_loc = document.getElementById('URl_redirect').value;
-            setTimeout(function () { location.href = url_loc; }, 1000);
+            setTimeout(function () { location.href = DOMPurify.sanitize(url_loc); }, 1000);
         }
         // For Payerauth during checkout
         if ($('div').hasClass('payerauth')) {
@@ -148,12 +149,12 @@ var init = {
         // For Secure Acceptance Redirect
         if ($('body').hasClass('cyb_sa_redirect')) {
             var url_loc = document.getElementById('redirect_url_sa').value;
-            window.top.location.replace(url_loc);
+            window.top.location.replace(DOMPurify.sanitize(url_loc));
         }
         // For Secure Acceptance Iframe
         if ($('div').hasClass('SecureAcceptance_IFRAME')) {
             var url_loc = document.getElementById('sa_iframeURL').value;
-            $('.SecureAcceptance_IFRAME').append('<iframe src=' + url_loc + '  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
+            $('.SecureAcceptance_IFRAME').append('<iframe src=' + DOMPurify.sanitize(url_loc) + '  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
         }
         // For Secure Acceptance Iframe
         if ($('body').hasClass('sa_iframe_request_form')) {
@@ -181,8 +182,8 @@ var init = {
     */
         $(document).on('click', '.billingAgreementExpressCheckout', function (e) {
             e.preventDefault();
-            var paypalcallback = document.getElementById('paypal_callback').value;
-            var form = $('<form action="' + paypalcallback + '" method="post">'
+            var paypalcallback = document.getElementById('paypal_callback').textContent.value;
+            var form = $('<form action="' + DOMPurify.sanitize(paypalcallback) + '" method="post">'
                     + '</form>');
             $('body').append(form);
             form.submit();
@@ -197,7 +198,7 @@ var init = {
             if ((CsSaType != 'CREDIT_CARD' && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
                 var formaction = $(this).attr('data-action');
                 setTimeout(function () {
-                    window.location.href = formaction;
+                    window.location.href = DOMPurify.sanitize(formaction);
                 }, 500);
             }
         });
@@ -216,6 +217,7 @@ var init = {
                     url: formaction,
                     type: 'POST',
                     success: function (xhr, data) {
+                        xhr = DOMPurify.sanitize(xhr)
                         if (xhr) {
                             if (xhr.error == true) {
                                 $('#saspCardError').html(xhr.errorMsg);
@@ -339,6 +341,7 @@ var paypalvalidator = {
     }
 };
 
+var DOMPurify = require('dompurify');
 var $ = require('jquery');
 
 $(document).ready(function () {

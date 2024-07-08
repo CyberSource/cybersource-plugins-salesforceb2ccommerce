@@ -3,6 +3,7 @@
 var formValidation = require('base/components/formValidation');
 var base = require('base/paymentInstruments/paymentInstruments');
 var cleave = require('../components/cleave');
+var DOMPurify = require('dompurify');
 
 var url;
 
@@ -12,7 +13,7 @@ base.removePayment = function () {
         url = $(this).data('url') + '?UUID=' + $(this).data('id');
         $('.payment-to-remove').empty().append($(this).data('card'));
 
-        $('.delete-confirmation-btn').unbind('click').click(function (f) {
+        $('.delete-confirmation-btn').off('click').click(function (f) {
             f.preventDefault();
             $('.remove-payment').trigger('payment:remove', f);
             $.ajax({
@@ -53,7 +54,7 @@ base.submitPayment = function () {
             url: url,
             type: 'post',
             dataType: 'json',
-            data: formData,
+            data: DOMPurify.sanitize(formData),
             success: function (data) {
                 $form.spinner().stop();
                 if (!data.success) {

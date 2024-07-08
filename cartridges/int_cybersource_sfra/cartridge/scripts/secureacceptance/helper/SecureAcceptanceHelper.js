@@ -75,6 +75,7 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
             // eslint-disable-next-line
             if (!empty(cardToken)) {
                 paymentInstrument.setCreditCardToken(cardToken);
+                paymentInstrument.custom.isCSToken = true;
             }
             // }
             return { success: true };
@@ -912,7 +913,6 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         if (result.error) {
             return result;
         }
-        serviceResponse = result.serviceResponse;
         if (CybersourceHelper.getProofXMLEnabled()) {
             var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
             PaymentInstrumentUtils.UpdatePaymentTransactionWithProofXML(paymentInstrument, serviceResponse.ProofXML);

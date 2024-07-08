@@ -1,5 +1,7 @@
 'use strict';
 
+var DOMPurify = require('dompurify');
+
 /* eslint-disable no-undef */
 var totalServiceCalls = 1;
 
@@ -25,7 +27,7 @@ function weChatCheckStatus(serviceCalls, enforceError) {
         success: function (data) {
             if (enforceError && !data.submit && weChatRedirectUrl) {
                 $('.modal').spinner().stop();
-                window.location.href = weChatRedirectUrl;
+                window.location.href = DOMPurify.sanitize(weChatRedirectUrl);
                 return;
             }
 

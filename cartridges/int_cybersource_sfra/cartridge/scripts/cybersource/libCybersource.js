@@ -582,9 +582,11 @@ var CybersourceHelper = {
         var OrderMgr = require('dw/order/OrderMgr');
         var order = OrderMgr.getOrder(refCode);
         var paymentMethod = order.paymentInstruments[0].paymentMethod;
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+
         
-        if (enableDeviceFingerprint) {
-            fingerprint = session.sessionID;
+        if (enableDeviceFingerprint && CybersourceHelper.getCardDecisionManagerEnable()) {
+            fingerprint = session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS);
         }
 
         setClientData(request, refCode, fingerprint);
@@ -674,10 +676,10 @@ var CybersourceHelper = {
      **************************************************************************** */
     addPOSAuthRequestInfo: function (request, location, purchase, card, refCode, enableDeviceFingerprint, pos) {
         request.merchantID = CybersourceHelper.getPosMerchantID(location);
-
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
         var fingerprint = null;
         if (enableDeviceFingerprint) {
-            fingerprint = session.sessionID;
+            fingerprint = session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS);
         }
 
         setClientData(request, refCode, fingerprint);
@@ -810,8 +812,9 @@ var CybersourceHelper = {
     ) {
         request.merchantID = CybersourceHelper.getMerchantID();
         var fingerprint = null;
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
         if (CybersourceHelper.getDigitalFingerprintEnabled()) {
-            fingerprint = session.sessionID;
+            fingerprint = session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS);
         }
 
         setClientData(request, refCode, fingerprint);
@@ -919,10 +922,10 @@ var CybersourceHelper = {
         serviceRequest.payerAuthEnrollService.run = true;
         serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
         if(session.custom.enroll == false || session.custom.SCA == false || session.custom.isScaEnabled == true){
-            serviceRequest.payerAuthEnrollService.challengeCode = '04';
-            }
-            var URLUtils = require('dw/web/URLUtils');
-            serviceRequest.payerAuthEnrollService.returnURL =URLUtils.https('COPlaceOrder-Submit','provider','card').toString();
+        serviceRequest.payerAuthEnrollService.challengeCode = '04';
+        }
+        var URLUtils = require('dw/web/URLUtils');
+        serviceRequest.payerAuthEnrollService.returnURL =URLUtils.https('COPlaceOrder-Submit','provider','card').toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
@@ -1511,7 +1514,7 @@ var CybersourceHelper = {
             request.merchantID = CybersourceHelper.getMerchantID();
             var fingerprint = null;
             if (enableDeviceFingerprint) {
-                fingerprint = session.sessionID;
+                fingerprint = session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS);
             }
 
             setClientData(request, refCode, fingerprint);

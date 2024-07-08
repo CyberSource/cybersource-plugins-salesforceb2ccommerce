@@ -65,7 +65,8 @@ var init = {
 
                 var paypalcallback = document.getElementById('paypal_callback').value;
                 if(init.verifyUrl(paypalcallback)){
-                    var form = $('<form action="' + paypalcallback + '" method="post">'
+                    var paypalcallback_encode = encodeURIComponent(paypalcallback);
+                    var form = $('<form action="' +  decodeURIComponent(paypalcallback_encode) + '" method="post">'
                     + '<input type="hidden" name="requestId" value="' + requestId + '" />'
                     + '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />'
                     + '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />'
@@ -144,7 +145,7 @@ var init = {
         // For FingerPrint Unit testing
         if ($('body').hasClass('cyb_testfingerprintRedirect')) {
             var url_loc = document.getElementById('URl_redirect').value;
-            if(url_loc){
+            if(init.verifyUrl(url_loc)){
                 setTimeout(function () { location.href = url_loc; }, 1000);
             }
         }
@@ -167,7 +168,8 @@ var init = {
         // For Secure Acceptance Redirect
         if ($('body').hasClass('cyb_sa_redirect')) {
             var url_loc = document.getElementById('redirect_url_sa');
-            window.top.location.replace(url_loc.value);
+            var Encoded_url_loc = encodeURIComponent(url_loc.value)
+            window.top.location.replace(decodeURIComponent(Encoded_url_loc));
         }
         // For Secure Acceptance Iframe
         if ($('div').hasClass('SecureAcceptance_IFRAME')) {
@@ -363,6 +365,7 @@ var paypalvalidator = {
         $('.billing-information').on('change', handler);
     }
 };
+
 
 $(document).ready(function () {
     init.initConfig();

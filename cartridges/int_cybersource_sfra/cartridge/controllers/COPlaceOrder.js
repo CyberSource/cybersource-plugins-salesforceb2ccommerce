@@ -224,14 +224,13 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 res.redirect(providerResult.location);
                 return next();
             }
-        } 
-        if (providerResult.sca) {
-            session.privacy.paSetup = true;
-            session.privacy.orderNo = order.orderNo;
-            res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
-            return next();
-        }
-        else {
+            if (providerResult.sca) {
+                session.privacy.paSetup = true;
+                session.privacy.orderId = order.orderNo;
+                res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
+                return next();
+            }
+        } else {
             // do nothing
         }
     } else if (!empty(paymentInstrument) && paymentInstrument.paymentMethod === 'DW_APPLE_PAY') {
