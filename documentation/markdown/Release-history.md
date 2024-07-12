@@ -1,5 +1,10 @@
 ## <ins>Release History
 
+**Version 24.1.1 (July, 2024)**
+•	Upgraded the cartridge to support SFRA v7.0.
+•	Fixed card duplication in tokenization flow.
+•	Fixed Checkmarx issues.
+
 **Version 24.1.0 (March, 2024)**
 •	Implemented Direct API for Payer Authentication with Payer Auth Setup and Device Data Collection.
 •	We have included the 3DS browser mandatory fields.
