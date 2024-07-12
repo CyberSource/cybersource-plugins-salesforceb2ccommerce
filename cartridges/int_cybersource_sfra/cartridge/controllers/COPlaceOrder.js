@@ -230,8 +230,6 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
                 return next();
             }
-        } else {
-            // do nothing
         }
     } else if (!empty(paymentInstrument) && paymentInstrument.paymentMethod === 'DW_APPLE_PAY') {
         submitApplePayOrder(order, req, res, next);
