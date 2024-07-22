@@ -277,6 +277,7 @@ function createSubscriptionBilling(args) {
  */
 function saveCreditCard() {
     var subscriptionID;
+    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
     var BasketMgr = require('dw/order/BasketMgr');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     var basket = BasketMgr.getCurrentOrNewBasket();
@@ -285,10 +286,11 @@ function saveCreditCard() {
     if (!empty(basket.getPaymentInstruments(CybersourceConstants.METHOD_PAYPAL))) {
         return true;
     }
+
     if (!empty(customer) && customer.authenticated && session.forms.billing.creditCardFields.saveCard.value
-        && session.forms.billing.paymentMethod.value.equals(PaymentInstrument.METHOD_CREDIT_CARD)|| CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST) ) {
+        && session.forms.billing.paymentMethod.value.equals(PaymentInstrument.METHOD_CREDIT_CARD) || (CsSAType && CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST))) {
         subscriptionID = CommonHelper.GetSubscriptionToken(session.forms.billing.creditCardFields.selectedCardID.value, customer);
-        if(session.privacy.subscriptionID != null){
+        if (session.privacy.subscriptionID != null) {
             subscriptionID = session.privacy.subscriptionID;
             session.privacy.subscriptionID = '';
         }
@@ -298,37 +300,26 @@ function saveCreditCard() {
         }
         var creditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-        
+
         var payInstrument = CardHelper.getNonGCPaymemtInstument(basket);
         Transaction.wrap(function () {
-        	var newCreditCard = null;
-            var isDuplicateCard = false;
+            var newCreditCard = null;
 
-            var ccNumber = session.forms.billing.creditCardFields.cardNumber.value;
-            for (var i = 0; i < creditCards.length; i++) {
-                var creditcard = creditCards[i];
-                var creditcardNo = creditcard.getCreditCardNumber();
-                if (creditcard.creditCardExpirationMonth === session.forms.billing.creditCardFields.expirationMonth.value && creditcard.creditCardExpirationYear === session.forms.billing.creditCardFields.expirationYear.value && creditcard.creditCardType === session.forms.billing.creditCardFields.cardType.value && creditcardNo.toString().substring(creditcardNo.length-4).equals(ccNumber.substring(ccNumber.length-4))) {
-                    isDuplicateCard = true;
-                    break;
-                }
-            }
-            if (!isDuplicateCard) {
-                var wallet = customer.getProfile().getWallet();
-                newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+            var wallet = customer.getProfile().getWallet();
+            newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
-                // copy the credit card details to the payment instrument
-                var cardOwner = session.forms.billing.addressFields.firstName.value + ' ' + session.forms.billing.addressFields.lastName.value;
-                newCreditCard.setCreditCardHolder(cardOwner);
-                newCreditCard.setCreditCardNumber(session.forms.billing.creditCardFields.cardNumber.value);
-                newCreditCard.setCreditCardExpirationMonth(session.forms.billing.creditCardFields.expirationMonth.value);
-                newCreditCard.setCreditCardExpirationYear(session.forms.billing.creditCardFields.expirationYear.value);
-                newCreditCard.setCreditCardType(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
-                if (!empty(subscriptionID)) {
-                    newCreditCard.setCreditCardToken(subscriptionID);
-                    if (!empty(payInstrument) && empty(payInstrument.getCreditCardToken())) {
-                        payInstrument.setCreditCardToken(subscriptionID);
-                    }
+            // copy the credit card details to the payment instrument
+            var cardOwner = session.forms.billing.addressFields.firstName.value + ' ' + session.forms.billing.addressFields.lastName.value;
+            newCreditCard.setCreditCardHolder(cardOwner);
+            newCreditCard.setCreditCardNumber(session.forms.billing.creditCardFields.cardNumber.value);
+            newCreditCard.setCreditCardExpirationMonth(session.forms.billing.creditCardFields.expirationMonth.value);
+            newCreditCard.setCreditCardExpirationYear(session.forms.billing.creditCardFields.expirationYear.value);
+            newCreditCard.setCreditCardType(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
+            if (!empty(subscriptionID)) {
+                newCreditCard.setCreditCardToken(subscriptionID);
+                newCreditCard.custom.isCSToken = true;
+                if (!empty(payInstrument) && empty(payInstrument.getCreditCardToken())) {
+                    payInstrument.setCreditCardToken(subscriptionID);
                 }
             }
         });

@@ -242,8 +242,6 @@ if (IsCartridgeEnabled) {
                     tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'account');
                 }
 
-                PaymentInstrumentUtils.removeDuplicates(formInfo);
-
                 if (!tokenizationResult.error) {
                     var wallet = customer.getProfile().getWallet();
                     Transaction.begin();

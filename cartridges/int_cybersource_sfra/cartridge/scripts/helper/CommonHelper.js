@@ -1329,9 +1329,9 @@ function getItemObject(typeofService, basket) {
                 // eslint-disable-next-line
                 continue;
             } else {
-                itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(lineItem.adjustedPrice.value), '#.00', locale));
+                itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(lineItem.adjustedPrice.value), '0.00', locale));
                 itemObject.setQuantity(1);
-                itemObject.setProductCode(lineItem.ID);
+                itemObject.setProductCode('shipping_and_handling');
                 itemObject.setProductName(lineItem.ID);
                 itemObject.setProductSKU(lineItem.ID);
 
@@ -1348,7 +1348,7 @@ function getItemObject(typeofService, basket) {
             // eslint-disable-next-line
             continue;
         } else if (lineItem instanceof dw.order.PriceAdjustment) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value), '#.00', locale));
+            itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value), '0.00', locale));
             itemObject.setQuantity(lineItem.quantity);
             itemObject.setProductCode('PRICE_ADJUSTMENT');
             itemObject.setProductName('PRICE_ADJUSTMENT');

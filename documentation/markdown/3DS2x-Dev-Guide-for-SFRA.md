@@ -44,7 +44,7 @@ After following the above steps, the LINK_cybersource cartridge should be upload
 1.	In Business Manager, navigate to ‘Administration >  Sites >  Manage Sites > Your Site’ and select the ‘Settings’ tab.  
 2.	Add ‘LINK_cybersource:’ to the left side of the cartridge path, before ‘app_storefront_base’
 
-![](CyberSource/documentation/markdown/Images/3DS2.x_Dev_Guide_for_SFRA_1.png)
+![](Images/3DS2.x_Dev_Guide_for_SFRA_1.png)
 
 3.	Navigate to ‘Administration >  Site Development >  Import & Export’.
 4.	Upload and import the meta data file:
@@ -57,7 +57,7 @@ The CyberSource LINK Cartridge 19.3.0 provides support for the latest 3D Secure 
 
 The following is a high level architectural diagram of how the Payer Authentication integration works:
 
-![](CyberSource/documentation/markdown/Images/3DS2.x_Dev_Guide_for_SFRA_2.png)
+![](Images/3DS2.x_Dev_Guide_for_SFRA_2.png)
 
 ###### Implementation for upgrade to 3DS2.x ######
 To enable Payer Authentication services on SFRA, ensure you have followed all steps in the "Cartridge Installation" guide above.  A CyberSource Merchant ID, CyberSource Merchant Key and CyberSource PA Merchant ID are required for CyberSource Payer Authentication Enrollment and Payer Authentication Validate. Along with these, the Cruise credentials ApiIdentifier, ApiKey, OrgUnitID and Merchant Name are needed.   Enter these values in the corresponding Site Preferences under the "CyberSource: Core" group and work with CyberSource to ensure required credit card types are configured on your account.
@@ -76,15 +76,6 @@ CS PA Merchant ID | Payer Auth merchant ID
 CS PA Save Proof.xml | To enable/disable saving of proof.xml in order object
 CS PA Save ParesStatus | Default False <br> Save ParesStatus received as response from Pa Authenticate request and send it as param in ccAuth request call. This field should be enabled after verifying cybersource merchant account settings
 
-Site Preference Group: CruiseCredentials
-Preference Name | Usage
------------- | -------------
-CruiseApiKey | A shared secret value between the merchant and Cardinal. This value should never be exposed to the public.
-CruiseApiIdentifier | GUID used to identify the specific API Key
-CruiseMerchantName | Merchant Name
-CruiseOrgUnitId | GUID to identify the merchant organization within Cardinal systems
-CardinalCruiseApiPath | Songbird.js script API path
-
-[SFRA ChangeLog](CyberSource/documentation/markdown/SFRA-ChangeLog.xlsx)
+[SFRA ChangeLog](SFRA-ChangeLog.xlsx)
 
 

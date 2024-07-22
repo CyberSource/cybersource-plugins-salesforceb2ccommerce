@@ -257,7 +257,7 @@ function authorizeService(lineItemCntr, paymentInstrument) {
     createBasicRequest('authorizeService', serviceRequest, lineItemCntr);    
     CybersourceHelper.apDecisionManagerService(paymentInstrument.paymentMethod, serviceRequest);
     if (serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()) {
-        libCybersource.setClientData(serviceRequest, lineItemCntr.orderNo, session.sessionID);
+        libCybersource.setClientData(serviceRequest, lineItemCntr.orderNo, session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS));
     } else {
         libCybersource.setClientData(serviceRequest, lineItemCntr.orderNo);
     }
@@ -283,7 +283,7 @@ function saleService(lineItemCntr, paymentInstrument) {
     createBasicRequest('saleService', serviceRequest, lineItemCntr);
     addDecisionManager(serviceRequest);
     if (serviceRequest.decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()) {
-        libCybersource.setClientData(serviceRequest, lineItemCntr.orderNo, session.sessionID);
+        libCybersource.setClientData(serviceRequest, lineItemCntr.orderNo, session.sessionID.replace(/[+/=]/g,CybersourceConstants.SPECIALCHARS));
     } else {
         libCybersource.setClientData(serviceRequest, lineItemCntr.orderNo);
     }

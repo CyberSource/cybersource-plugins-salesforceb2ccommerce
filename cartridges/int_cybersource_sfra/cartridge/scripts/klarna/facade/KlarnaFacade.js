@@ -166,6 +166,7 @@ function klarnaAuthorizationService(authorizationObject) {
     var request = new csReference.RequestMessage();
     // declare helper variable
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
     // set merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
 
@@ -197,7 +198,7 @@ function klarnaAuthorizationService(authorizationObject) {
     // set client data
     if (decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()) {
         // eslint-disable-next-line
-        libCybersource.setClientData(request, authorizationObject.orderNo, session.sessionID);
+        libCybersource.setClientData(request, authorizationObject.orderNo, session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS));
     } else {
         libCybersource.setClientData(request, authorizationObject.orderNo);
     }

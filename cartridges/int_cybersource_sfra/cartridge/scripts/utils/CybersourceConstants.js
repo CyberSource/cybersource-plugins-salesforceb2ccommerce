@@ -66,6 +66,7 @@ CybersourceConstants.SOFORT_PAYMENT_TYPE = 'SOF';
 CybersourceConstants.IDEAL_PAYMENT_TYPE = 'IDL';
 var reasonCodeList = [101, 102, 150, 203, 204, 233];
 CybersourceConstants.REASONCODES = reasonCodeList;
+CybersourceConstants.SPECIALCHARS = 'SF';
 
 //  Secure Acceptance Related Constants
 CybersourceConstants.HANDLE = 'Handle';
