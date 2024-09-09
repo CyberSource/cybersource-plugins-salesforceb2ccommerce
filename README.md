@@ -10,12 +10,12 @@ This version can be found on the Master branch of the SFRA repository at commit 
 ----
 
 ### Installation Guide ###
-1. [Install the Cartridge and Setup Workspace](Cybersource/documentation/markdown/Install-catridge-WrkSpace-Setup.md)
-2. [Configure the Cartridge](Cybersource/documentation/markdown/Configure-cartridge.md)
-3. [Configure the Payment Method](Cybersource/documentation/markdown/Configure-payment-method.md)
-4. [Configure features (OPTIONAL)](Cybersource/documentation/markdown/Configure-features.md)
-5. [Test and Go Live](Cybersource/documentation/markdown/Test-golive.md)
-6. [Release History](Cybersource/documentation/markdown/Release-history.md)
+1. [Install the Cartridge and Setup Workspace](documentation/markdown/Install-catridge-WrkSpace-Setup.md)
+2. [Configure the Cartridge](documentation/markdown/Configure-cartridge.md)
+3. [Configure the Payment Method](documentation/markdown/Configure-payment-method.md)
+4. [Configure features (OPTIONAL)](documentation/markdown/Configure-features.md)
+5. [Test and Go Live](documentation/markdown/Test-golive.md)
+6. [Release History](documentation/markdown/Release-history.md)
 
 ### Contact ###
 * Global Partner Solutions - CS: <GlobalPartnerSolutionsCS@visa.com>
