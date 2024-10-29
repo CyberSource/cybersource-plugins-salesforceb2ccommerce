@@ -19,7 +19,7 @@ function addProductAndSubmitPayment(creditCard) {
 	var myRequest = {
 		url: config.baseUrl + addProd,
 		method: 'POST',
-		rejectUnauthorized: false,
+		rejectUnauthorized: true,
 		resolveWithFullResponse: true,
 		jar: cookieJar,
 		headers: {
