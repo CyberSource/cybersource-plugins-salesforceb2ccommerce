@@ -129,7 +129,7 @@ var init = {
             var formaction = $(this).attr('data-action');
             if(formaction){
                 setTimeout(function () {
-                    window.location.href = formaction;
+                    window.location.href = DOMPurify.sanitize(formaction);
                 }, 500);
             }
         });
@@ -146,6 +146,7 @@ var init = {
         if ($('body').hasClass('cyb_testfingerprintRedirect')) {
             var url_loc = document.getElementById('URl_redirect').value;
             if(init.verifyUrl(url_loc)){
+                url_loc = DOMPurify.sanitize(url_loc);
                 setTimeout(function () { location.href = url_loc; }, 1000);
             }
         }
@@ -174,6 +175,7 @@ var init = {
         // For Secure Acceptance Iframe
         if ($('div').hasClass('SecureAcceptance_IFRAME')) {
             var url_loc = document.getElementById('sa_iframeURL').value;
+            url_loc = DOMPurify.sanitize(url_loc);
             if(init.verifyUrl(url_loc)){
                 $('.SecureAcceptance_IFRAME').append('<iframe src=' + url_loc + '  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
            }
@@ -206,6 +208,7 @@ var init = {
             e.preventDefault();
             var paypalcallback = document.getElementById('paypal_callback').value;
             if(init.verifyUrl(paypalcallback)){
+                paypalcallback =  DOMPurify.sanitize(paypalcallback);
                 var form = $('<form action="' + paypalcallback + '" method="post">'
                         + '</form>');
                 $('body').append(form);
@@ -222,7 +225,7 @@ var init = {
             if ((CsSaType != 'CREDIT_CARD' && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
                 var formaction = $(this).attr('data-action');
                 setTimeout(function () {
-                    window.location.href = formaction;
+                    window.location.href = DOMPurify.sanitize(formaction);
                 }, 500);
             }
         });
@@ -365,8 +368,7 @@ var paypalvalidator = {
         $('.billing-information').on('change', handler);
     }
 };
-
-
+var DOMPurify = require('dompurify');
 $(document).ready(function () {
     init.initConfig();
     init.initPayPalButtons();
