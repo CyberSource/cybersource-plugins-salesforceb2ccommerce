@@ -1,3 +1,4 @@
+/* eslint-disable */
 $(document).ready(function () {
 	
 	$("#generic-form-submit").on('submit',function(e){
@@ -21,7 +22,9 @@ $(document).ready(function () {
 // For FingerPrint Unit testing 
 	if($("body").hasClass("cyb_testfingerprintRedirect"))
 	{
+		var DOMPurify = require('dompurify');
 		var url_loc = document.getElementById("URl_redirect").value;
+		url_loc = DOMPurify.sanitize(url_loc)
 		setTimeout(function(){location.href=url_loc} , 1000); 
 	}
 	
@@ -119,6 +122,8 @@ $(document).ready(function () {
 		        	//Append a parameter to URL when PayPal Credit is used
 		        	CREATE_URL = CREATE_URL + "?isPayPalCredit=true";
 		        }
+				var DOMPurify = require('dompurify');
+				CREATE_URL = DOMPurify.sanitize(CREATE_URL);
 		        return paypal.request.post(CREATE_URL)
 		            .then(function(res) {
 		            	requestId=res.requestID;
