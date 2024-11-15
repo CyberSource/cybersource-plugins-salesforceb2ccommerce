@@ -6,7 +6,7 @@
 
 <isif condition="${CsSaType && isCartridgeEnabled && CsSaType == 'SA_FLEX'}">
 	<script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-3.7.1.min.js')}" type="text/javascript"></script>
-    <script src="${URLUtils.staticURL('/custom/js/flexMicroform.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/custom/flexMicroform.js')}" type="text/javascript"></script>
 	<isinclude url="${URLUtils.url('CYBSecureAcceptance-CreateFlexToken')}"/>
 </isif>
 <!--- Hidden input for credit card type --->
