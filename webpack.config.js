@@ -25,10 +25,6 @@ module.exports = [{
                     from: path.resolve('./cartridges/int_cybersource_sfra/cartridge/client/default/custom'),
                     to: path.resolve('./cartridges/int_cybersource_sfra/cartridge/static/default/custom')
                 },
-                {
-                    from: path.resolve('./cartridges/int_cybersource_sfra/cartridge/client/default/custom/lib'),
-                    to: path.resolve('./cartridges/int_cybersource_sfra/cartridge/static/default/custom/lib')
-                },
             ],
         })
     ]
