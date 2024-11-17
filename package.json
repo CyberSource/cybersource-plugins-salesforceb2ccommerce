@@ -20,7 +20,7 @@
     "copy-webpack-plugin": "^11.0.0",
     "dompurify": "^3.1.5",
     "eslint-plugin-sitegenesis": "^1.0.0",
-    "jquery": "^3.5.1",
+    "jquery": "^3.7.1",
     "request-promise": "^4.2.6",
     "webdriver": "^7.33.0"
   },

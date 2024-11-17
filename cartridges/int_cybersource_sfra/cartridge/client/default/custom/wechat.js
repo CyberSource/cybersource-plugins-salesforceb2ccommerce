@@ -1,6 +1,5 @@
-'use strict';
 
-var DOMPurify = require('dompurify');
+'use strict';
 
 /* eslint-disable no-undef */
 var totalServiceCalls = 1;
@@ -17,9 +16,10 @@ function weChatCheckStatus(serviceCalls, enforceError) {
     var weChatRedirectUrl = document.getElementById('weChatRedirectUrl').value;
     var noOfCalls = document.getElementById('noOfCalls').value;
     var serviceCallInterval = document.getElementById('serviceCallInterval').value;
-
+    weChatUrl = encodeURIComponent(weChatUrl);
+    weChatRedirectUrl = encodeURIComponent(weChatRedirectUrl);
     $.ajax({
-        url: DOMPurify.sanitize(weChatUrl),
+        url: decodeURIComponent(weChatUrl),
         method: 'POST',
         data: request,
         async: false,
@@ -27,7 +27,7 @@ function weChatCheckStatus(serviceCalls, enforceError) {
         success: function (data) {
             if (enforceError && !data.submit) {
                 $('.modal').spinner().stop();
-                window.location.href = DOMPurify.sanitize(weChatRedirectUrl);
+                window.location.href = decodeURIComponent(weChatRedirectUrl);
                 return;
             }
 
