@@ -1,5 +1,11 @@
 ## <ins>Release History
 
+**Version 24.1.2 (December, 2024)**
+•	Upgraded the cartridge to support jQuery v3.7.1.
+•	Addresses security findings.
+•	Bug Fix: Removed security code input field from bank transfer payment methods when CsSAType is set to SA_FLEX. 
+•	Changed the authentication mechanism for the SOAP Toolkit to p12 authentication. 
+
 **Version 24.1.1 (July, 2024)**
 •	Upgraded the cartridge to support SFRA v7.0.
 •	Fixed card duplication in tokenization flow.

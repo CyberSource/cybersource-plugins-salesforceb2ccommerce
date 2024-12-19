@@ -71,11 +71,10 @@ function CreateKlarnaSecureKey(basket) {
     var sessionId = session.sessionID;
     var paymentType = CybersourceConstants.KLARNA_PAYMENT_TYPE;
     var merchantId = CybersourceHelper.getMerchantID();
-    var merchantKey = CybersourceHelper.getSoapSecurityKey();
     var amount = basket.totalGrossPrice.value;
     var token = sessionId + paymentType + merchantId + amount;
     // call method of common helper to create a signature
-    var signature = CommonHelper.signedDataUsingHMAC256(token, merchantKey);
+    var signature = CommonHelper.signedDataUsingHMAC256(token, null, paymentType);
     // return the signature
     return signature;
 }

@@ -159,11 +159,9 @@ function BanktransferRefundService(requestID, merchantRefCode, paymentType, amou
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.BANK_TRANSFER_PAYMENT_METHOD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[BankTransferFacade.js] Error in BankTransferRefundService request ( {0} )', e.message);

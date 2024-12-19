@@ -302,27 +302,27 @@ function saveCreditCard() {
         var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
 
         var payInstrument = CardHelper.getNonGCPaymemtInstument(basket);
-        Transaction.wrap(function () {
-            var newCreditCard = null;
+        if (!empty(subscriptionID)) {
+            Transaction.wrap(function () {
+                var newCreditCard = null;
 
-            var wallet = customer.getProfile().getWallet();
-            newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
+                var wallet = customer.getProfile().getWallet();
+                newCreditCard = customer.getProfile().getWallet().createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
-            // copy the credit card details to the payment instrument
-            var cardOwner = session.forms.billing.addressFields.firstName.value + ' ' + session.forms.billing.addressFields.lastName.value;
-            newCreditCard.setCreditCardHolder(cardOwner);
-            newCreditCard.setCreditCardNumber(session.forms.billing.creditCardFields.cardNumber.value);
-            newCreditCard.setCreditCardExpirationMonth(session.forms.billing.creditCardFields.expirationMonth.value);
-            newCreditCard.setCreditCardExpirationYear(session.forms.billing.creditCardFields.expirationYear.value);
-            newCreditCard.setCreditCardType(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
-            if (!empty(subscriptionID)) {
+                // copy the credit card details to the payment instrument
+                var cardOwner = session.forms.billing.addressFields.firstName.value + ' ' + session.forms.billing.addressFields.lastName.value;
+                newCreditCard.setCreditCardHolder(cardOwner);
+                newCreditCard.setCreditCardNumber(session.forms.billing.creditCardFields.cardNumber.value);
+                newCreditCard.setCreditCardExpirationMonth(session.forms.billing.creditCardFields.expirationMonth.value);
+                newCreditCard.setCreditCardExpirationYear(session.forms.billing.creditCardFields.expirationYear.value);
+                newCreditCard.setCreditCardType(CardHelper.getCardType(session.forms.billing.creditCardFields.cardType.value));
                 newCreditCard.setCreditCardToken(subscriptionID);
                 newCreditCard.custom.isCSToken = true;
                 if (!empty(payInstrument) && empty(payInstrument.getCreditCardToken())) {
                     payInstrument.setCreditCardToken(subscriptionID);
                 }
-            }
-        });
+            });
+        }
     }
     return true;
 }

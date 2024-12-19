@@ -25,11 +25,9 @@ function payPalSerivceInterface(request) {
 
         var paymentMethod = session.forms.billing.paymentMethod.value;
         // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(paymentMethod);
         var requestWrapper = {};
-        request.merchantID = merchantCrdentials.merchantID;
+        request.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = request;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         // call the service based on input
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
@@ -331,11 +329,9 @@ function PayPalRefundService(requestID, merchantRefCode, paymentType, amount, cu
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_PAYPAL);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         // var err = e;
@@ -386,11 +382,9 @@ function PayPalReversalService(requestID, merchantRefCode, paymentType, purchase
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_PAYPAL);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[PayPalFacade.js] Error in PayPalReversalService request ( {0} )', e.message);
@@ -442,11 +436,9 @@ function PayPalCaptureService(requestID, merchantRefCode, paymentType, purchaseT
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_PAYPAL);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[PayPalFacade.js] Error in PayPalCaptureService request ( {0} )', e.message);

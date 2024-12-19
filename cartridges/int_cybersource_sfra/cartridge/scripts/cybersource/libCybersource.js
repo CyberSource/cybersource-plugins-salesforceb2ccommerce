@@ -190,27 +190,17 @@ var CybersourceHelper = {
     getMerchantID: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
     },
-    getMerhcantCredentials: function (paymentMethodObj) {
-        var paymentMethod = paymentMethodObj;
-        var PaymentMgr = require('dw/order/PaymentMgr');
-        var merchantCredentials = {};
-        if (!empty(paymentMethod)) {
-            paymentMethod = PaymentMgr.getPaymentMethod(paymentMethod);
-            if (!empty(paymentMethod.custom.merchantID) && !empty(paymentMethod.custom.merchantKey)) {
-                merchantCredentials.merchantID = paymentMethod.custom.merchantID;
-                merchantCredentials.merchantKey = paymentMethod.custom.merchantKey;
-            } else {
-                merchantCredentials.merchantID = Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
-                merchantCredentials.merchantKey = Site.getCurrent().getCustomPreferenceValue('CsSecurityKey');
-            }
-        } else {
-            merchantCredentials.merchantID = Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
-            merchantCredentials.merchantKey = Site.getCurrent().getCustomPreferenceValue('CsSecurityKey');
-        }
-        return merchantCredentials;
+
+    getP12Password: function () {
+        return Site.getCurrent().getCustomPreferenceValue('CsP12_Password');
     },
-    getSoapSecurityKey: function () {
-        return Site.getCurrent().getCustomPreferenceValue('CsSecurityKey');
+
+    getP12UserName: function () {
+        return Site.getCurrent().getCustomPreferenceValue('CsP12_UserName');
+    },
+
+    getklarnaPrivateKeyAlias: function() {
+        return Site.getCurrent().getCustomPreferenceValue('klarnaPrivateKeyAlias');
     },
 
     getEndpoint: function () {

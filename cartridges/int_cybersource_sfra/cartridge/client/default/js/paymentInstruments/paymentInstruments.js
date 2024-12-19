@@ -21,6 +21,7 @@ base.removePayment = function () {
                 type: 'get',
                 dataType: 'json',
                 success: function (data) {
+                    DOMPurify.sanitize(data);
                     $('#uuid-' + data.UUID).remove();
                     if (data.message) {
                         var toInsert = '<div><h3>'

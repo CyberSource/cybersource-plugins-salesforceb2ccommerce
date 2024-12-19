@@ -271,6 +271,7 @@ function saveCreditCard() {
         var CardHelper = require(CybersourceConstants.CS_CORE+'/cartridge/scripts/helper/CardHelper');
         
         var payInstrument = CardHelper.getNonGCPaymemtInstument(cart.object);
+		if (!empty(subscriptionID)) {
         Transaction.wrap(function () {
         	var newCreditCard = null;
         	var wallet = customer.getProfile().getWallet();
@@ -282,15 +283,13 @@ function saveCreditCard() {
             newCreditCard.setCreditCardExpirationMonth(app.getForm('billing').object.paymentMethods.creditCard.expiration.month.value);
             newCreditCard.setCreditCardExpirationYear(app.getForm('billing').object.paymentMethods.creditCard.expiration.year.value);
             newCreditCard.setCreditCardType(app.getForm('billing').object.paymentMethods.creditCard.type.value);
-        	if (!empty(subscriptionID)) {
-        		newCreditCard.setCreditCardToken(subscriptionID);
-        		if (empty(payInstrument.getCreditCardToken())) {
-        			payInstrument.setCreditCardToken(subscriptionID);
-        		}
+        	newCreditCard.setCreditCardToken(subscriptionID);
+        	if (empty(payInstrument.getCreditCardToken())) {
+        		payInstrument.setCreditCardToken(subscriptionID);
         	}
         	
-        	  var isDuplicateCard = false;
-              var oldCard;
+        	var isDuplicateCard = false;
+            var oldCard;
         	
             var ccNumber = newCreditCard.getCreditCardNumber();
             for (i = 0; i < creditCards.length; i++) {
@@ -307,6 +306,7 @@ function saveCreditCard() {
                 wallet.removePaymentInstrument(oldCard);
             }
         });
+	}
 
     }
     return true;

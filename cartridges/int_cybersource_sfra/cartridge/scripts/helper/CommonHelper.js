@@ -1200,11 +1200,16 @@ function GetSubscriptionToken(cardUUID, CustomerObj) {
  * @param secretKey : secretKey of the payment method defined in cybersource.
  */
 
-function signedDataUsingHMAC256(dataToSign, secretKey) {
+function signedDataUsingHMAC256(dataToSign, secretKey, paymentType) {
     var signature;
+    var KeyRef = require('dw/crypto/KeyRef');
     var mac = new dw.crypto.Mac(dw.crypto.Mac.HMAC_SHA_256);
-
-    if (!empty(dataToSign) && !empty(secretKey)) {
+    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var CybersourceHelper = libCybersource.getCybersourceHelper(); 
+    if(paymentType === 'KLI'){
+        var privateKey = new KeyRef(CybersourceHelper.getklarnaPrivateKeyAlias());
+        signature = dw.crypto.Encoding.toBase64(mac.digest(dataToSign, privateKey));
+    }else{
         signature = dw.crypto.Encoding.toBase64(mac.digest(dataToSign, new dw.util.Bytes(secretKey, 'UTF-8')));
     }
     return signature;

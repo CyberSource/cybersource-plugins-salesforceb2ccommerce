@@ -314,7 +314,7 @@ function CreateKlarnaSecureKey(Basket) {
     var amount = Basket.totalGrossPrice.value;
     var token = sessionId + paymentType + merchantId + amount;
     // call method of common helper to create a signature
-    var signature = CommonHelper.signedDataUsingHMAC256(token, merchantKey);
+    var signature = CommonHelper.signedDataUsingHMAC256(token, null, paymentType);
     // return the signature
     return signature;
 }

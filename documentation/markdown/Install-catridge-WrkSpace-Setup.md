@@ -23,9 +23,14 @@ Cybersource's Storefront Reference Architecture Cartridge can be installed from 
  ]
 }
 ```
+
+### Step 3: Create a p12 file for authentication
+ Create a p12 file that you can use to authenticate requests. 
+ Place the file generated in the webreferences2 folder in the same cartridge as the WSDL file and name of the p12 file must be the same as the WSDL file and the file extension must be that of the type jks or pkcs12. 
+
 **NOTE**: If you are using different IDE, refer respective developer guide to setup the workspace. 
 
-### Step 2: Build and Upload the code
+### Step 4: Build and Upload the code
 Prerequisite: install node under "Cybersource" folder.
 #### Install sgmf-scripts and copy-webpack-plugin
 Install sgmf-scripts with following command 
