@@ -487,21 +487,19 @@ Step 3: Under '**Merchant Tools >  Ordering >  Payment Methods**' Make sure the 
 
 ##### Implementation
 
-Different countries and specific currencies could be configured to run Klarna with different Merchant Id/Key specific to different sites. Functional flows would be similar on different sites.
-
-Step 1: Merchant Id/Key could be configured at **Merchant Tools -> Ordering -> Payment Methods -> Klarna**. In this release, Klarna has been supported for US, UK and Germany with different sites and corresponding Merchant Ids/Key.
+Step 1:  Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Klarna.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
 
 Step 2: On the Payment Methods page, Select the locale (language) you want to set up, then select the Klarna payment method.
 
-![](Images/Klarna_Payment_Methods.png)
+![](Images/Klarna_Payment_Methods.png) 
 
-Step 3: Enter the merchantID and merchantKey field in CyberSource Credentials section of payment method.  If you leave these empty, the service will fall back to the values you entered in the CS core site preferences. 
-
-Step 4: Select the appropriate bill-to language setting under the ‘Klarna’ custom attribute group.
+Step 3: Select the appropriate bill-to language setting under the ‘Klarna’ custom attribute group.
 
 ![](Images/Klarna_Details.png)
 
-Step 5: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Klarna.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+Step 4: Step 4 : Generate a p12 file by following the steps in doc .
+
+Step 5:  Navigate to Administration > Operations > Private Keys and Certificates and upload the file generated in step 4 (Add a alias and password used to create p12 file) 
 
 Step 6: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Klarna** and set values for the parameter:
 
@@ -509,6 +507,7 @@ Step 6: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cyberso
 | -------------------------------- | ---------------------------------- |
 | Klarna Decision Manager Required | Enable or Disable Decision Manager |
 | Klarna JS API Path               | Klarna JS API Library Path         |
+| klarnaPrivateKeyAlias            | Private Key Alias of imported Key in Private Keys and Certificates |
 
 ### **9. WeChat Pay**
 

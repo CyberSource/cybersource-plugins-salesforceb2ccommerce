@@ -132,10 +132,8 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     var serviceResponse = null;
     try {
         var service = CSServices.CyberSourceTransactionService;
-        // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         if (paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay) {
             serviceRequest.paymentSolution = '012';
             // var csReference = webreferences2.CyberSourceTransaction;
@@ -147,7 +145,6 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
 
         requestWrapper.request = serviceRequest;
 
-        requestWrapper.merchantCredentials = merchantCrdentials;
 
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
@@ -207,11 +204,9 @@ function DAVRequest(Basket, billTo, shipTo) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in DAV request ( {0} )', e.message);
@@ -269,11 +264,9 @@ function PayerAuthSetup(paymentInstrument, OrderNo, CreditCardForm) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in PayerAuthSetUp request ( {0} )', e.message);
@@ -383,11 +376,9 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in PayerAuthEnrollCheck request ( {0} )', e.message);
@@ -530,11 +521,9 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in PayerAuthValidation request ( {0} )', e.message);
@@ -630,11 +619,9 @@ function CCAuthReversalService(requestID, merchantRefCode, paymentType, currency
         // create request,make service call and store returned response
         var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in CCAuthReversalService: {0}', e.message);
@@ -691,11 +678,9 @@ function CCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in CCCaptureRequest request ( {0} )', e.message);
@@ -750,11 +735,9 @@ function CCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in CCCaptureRequest request ( {0} )', e.message);
@@ -825,11 +808,9 @@ function decisionManager(Basket, OrderNo, ReadFromBasket) {
     try {
         var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in DM service( {0} )', e.message);

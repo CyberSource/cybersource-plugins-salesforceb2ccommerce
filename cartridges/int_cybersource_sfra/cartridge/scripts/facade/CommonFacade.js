@@ -20,14 +20,10 @@ function CallCYBService(paymentMethod, request) {
     try {
         // var dwsvc = require('dw/svc');
         var service = CSServices.CyberSourceTransactionService;
-        // get the merchant credentials from helper method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(paymentMethod);
         var requestWrapper = {};
         // set merchant id into request
-        request.merchantID = merchantCrdentials.merchantID;
+        request.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = request;
-        // set merchant credentials into wrapper
-        requestWrapper.merchantCredentials = merchantCrdentials;
         // call service method
         serviceResponse = service.call(requestWrapper);
     } catch (e) {

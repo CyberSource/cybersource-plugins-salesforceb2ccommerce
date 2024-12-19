@@ -84,7 +84,7 @@ base.paymentTabs = function () {
         formHelpers.clearPreviousErrors('.payment-form');
 
         if (paymentMethod) {
-            $('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode, .form-group.cardNumber,.bankTransfer').hide();
+            $('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode, .form-group.cardNumber, .form-group.securityCode, .bankTransfer').hide();
             $('#credit-card-content .user-payment-instruments.container').addClass('checkout-hidden');
             $('.credit-card-form').removeClass('checkout-hidden');
             $('.btn.btn-block.cancel-new-payment, .save-credit-card.custom-control.custom-checkbox ').hide();
@@ -96,18 +96,18 @@ base.paymentTabs = function () {
             $('.next-step-button .submit-payment').attr('id', 'showSubmitPayment');
         } else if (methodID === 'CREDIT_CARD') {
             if ($(this).data('sa-type') === 'SA_IFRAME' || $(this).data('sa-type') === 'SA_REDIRECT') {
-                $('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode, .form-group.cardNumber,.bankTransfer').hide();
+                $('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode, .form-group.cardNumber, .form-group.securityCode, .bankTransfer').hide();
             } else {
-                $('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode, .form-group.cardNumber').show();
+                $('.dwfrm_billing_creditCardFields_cardNumber,.dwfrm_billing_creditCardFields_expirationMonth, .dwfrm_billing_creditCardFields_expirationYear, .dwfrm_billing_creditCardFields_securityCode, .form-group.cardNumber, .form-group.securityCode').show();
             }
             if ($('.data-checkout-stage').data('customer-type') === 'guest') {
                 $('#credit-card-content .user-payment-instruments.container').addClass('checkout-hidden');
                 $('.btn.btn-block.cancel-new-payment, .save-credit-card.custom-control.custom-checkbox ').hide();
                 $('.credit-card-form').removeClass('checkout-hidden');
             } else if ($('.data-checkout-stage').data('customer-type') === 'registered') {
-                $('#credit-card-content .user-payment-instruments.container').removeClass('checkout-hidden');
+                $('#credit-card-content .user-payment-instruments.container');
                 $('.btn.btn-block.cancel-new-payment, .save-credit-card.custom-control.custom-checkbox ').show();
-                $('.credit-card-form').addClass('checkout-hidden');
+                $('.credit-card-form');
             }
             $('.bankTransfer').hide();
             $('.next-step-button .submit-payment').attr('id', 'showSubmitPayment');

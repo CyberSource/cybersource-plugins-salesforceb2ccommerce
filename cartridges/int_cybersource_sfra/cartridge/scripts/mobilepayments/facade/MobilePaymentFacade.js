@@ -147,12 +147,10 @@ function createMobilePaymentAuthRequest(authRequestParams) {
     try {
         var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(authRequestParams.MobilePaymentType);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         serviceRequest.merchantReferenceCode = authRequestParams.orderNo;
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[MobilePaymentFacade.js] Error in MobilePaymentAPIObjectAuthRequest ( {0} )', e.message);
@@ -235,11 +233,9 @@ function GPCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[CardFacade.js] Error in CCCaptureRequest request ( {0} )', e.message);
@@ -292,11 +288,9 @@ function GPAuthReversalService(requestID, merchantRefCode, paymentType, currency
         // create request,make service call and store returned response
         var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('Error in CCAuthReversalService: {0}', e.message);
@@ -351,11 +345,9 @@ function GPCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_GooglePay);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('Error in CCCaptureRequest request ( {0} )', e.message);

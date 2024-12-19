@@ -38,7 +38,6 @@
     "mini-css-extract-plugin": "^2.7.6",
     "mocha": "^10.0.0",
     "node-polyfill-webpack-plugin": "^3.0.0",
-    "node-sass": "^9.0.0",
     "nyc": "^15.1.0",
     "postcss-loader": "^7.0.0",
     "proxyquire": "1.7.4",
