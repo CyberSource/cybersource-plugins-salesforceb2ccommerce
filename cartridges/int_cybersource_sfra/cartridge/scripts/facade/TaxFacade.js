@@ -196,11 +196,9 @@ function TaxationRequest(cart) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials();
         var requestWrapper = {};
         var i;
         requestWrapper.request = taxRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         taxationResponse = service.call(requestWrapper);
         // eslint-disable-next-line
         if (empty(taxationResponse) || taxationResponse.status !== 'OK') {

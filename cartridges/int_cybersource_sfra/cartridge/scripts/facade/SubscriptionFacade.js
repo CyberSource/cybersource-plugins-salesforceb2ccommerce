@@ -30,11 +30,9 @@ function CreateSubscription(billTo, card, purchaseTotals) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[subscriptionFacade.js] Error in subscription request ( {0} )', e.message);
@@ -77,11 +75,9 @@ function DeleteSubscription(subscriptionID) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[libCybersource.js] Error in subscription request ( {0} )', e.message);
@@ -130,11 +126,9 @@ function UpdateSubscription(billTo, card, purchaseTotals, storedSubscriptionID) 
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[UpdateSubscription.js] Error in Service Call', e.message);
@@ -181,11 +175,9 @@ function ViewSubscription(subscriptionID) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[libCybersource.js] Error in subscription request ( {0} )', e.message);

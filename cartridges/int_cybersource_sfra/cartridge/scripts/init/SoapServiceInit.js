@@ -130,21 +130,38 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     */
 
     execute: function (svc, parameter) {
-        var userName = parameter.merchantCredentials.merchantID;
-        var password = parameter.merchantCredentials.merchantKey;
+        var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+        var CybersourceHelper = libCybersource.getCybersourceHelper();
+        var password = CybersourceHelper.getP12Password();
+        var userName = CybersourceHelper.getP12UserName();
+
         var secretsMap = new HashMap();
         secretsMap.put(userName, password);
+
         var requestCfg = new HashMap();
-        requestCfg.put(WSUtil.WS_ACTION, WSUtil.WS_USERNAME_TOKEN);
-        requestCfg.put(WSUtil.WS_USER, userName);
+        requestCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP + " " + WSUtil.WS_SIGNATURE);
+
+        requestCfg.put(WSUtil.WS_SIGNATURE_USER, userName);
         requestCfg.put(WSUtil.WS_PASSWORD_TYPE, WSUtil.WS_PW_TEXT);
+        requestCfg.put(WSUtil.WS_SIG_DIGEST_ALGO, "http://www.w3.org/2001/04/xmlenc#sha256");
+
+        // define signature properties
+        // the keystore file has the basename of the WSDL file and the 
+        // file extension based on the keystore type (for example, HelloWorld.pkcs12).
+        // The keystore file has to be placed beside the WSDL file.
+        requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_TYPE, "pkcs12");
+        requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_PW, password);
+        requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_ALIAS, userName);
+        requestCfg.put(WSUtil.WS_SIGNATURE_PARTS, "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body");
+        requestCfg.put(WSUtil.WS_SIG_KEY_ID, WSUtil.KEY_ID_TYPE_DIRECT_REFERENCE);
+
         requestCfg.put(WSUtil.WS_SECRETS_MAP, secretsMap);
 
+        //response-config--------------------------
         var responseCfg = new HashMap();
         responseCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP);
 
         WSUtil.setWSSecurityConfig(svc.serviceClient, requestCfg, responseCfg); // Setting WS security
-
         return svc.serviceClient.runTransaction(parameter.request);
     },
     /**

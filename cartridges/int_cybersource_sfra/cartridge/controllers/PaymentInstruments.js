@@ -245,13 +245,15 @@ if (IsCartridgeEnabled) {
                 if (!tokenizationResult.error) {
                     var wallet = customer.getProfile().getWallet();
                     Transaction.begin();
-                    if (verifyDuplicates) {
-                        PaymentInstrumentUtils.removeDuplicates(formInfo);
-                    }
-                    var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
-                    savePaymentInstrument({ PaymentInstrument: paymentInstrument, CreditCardFields: formInfo });
 
                     if (!empty(tokenizationResult.subscriptionID)) {
+
+                        if (verifyDuplicates) {
+                            PaymentInstrumentUtils.removeDuplicates(formInfo);
+                        }
+                        var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
+                        savePaymentInstrument({ PaymentInstrument: paymentInstrument, CreditCardFields: formInfo });
+    
                         paymentInstrument.custom.isCSToken = true;
                         paymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
                     }

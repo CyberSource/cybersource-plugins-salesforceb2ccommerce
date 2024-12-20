@@ -70,11 +70,9 @@ function AliPayRefundService(requestID, merchantRefCode, paymentType, amount, cu
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_ALIPAY);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID =CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[AliPayFacade.js] Error in AliPayRefundService request ( {0} )', e.message);

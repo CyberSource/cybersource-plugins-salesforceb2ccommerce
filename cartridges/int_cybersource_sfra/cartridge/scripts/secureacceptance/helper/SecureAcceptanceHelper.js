@@ -771,7 +771,7 @@ function validateSAMerchantPostRequest(httpParameterMap) {
         }
         // prepare signature and send match result
         var dataToSign = buildDataFromResponse(httpParameterMap);
-        var signature = CommonHelper.signedDataUsingHMAC256(dataToSign, result.secretkey);
+        var signature = CommonHelper.signedDataUsingHMAC256(dataToSign, result.secretkey, null);
         if (signature.toString() === httpParameterMap.signature.stringValue) {
             // signature got Authorize
             return true;

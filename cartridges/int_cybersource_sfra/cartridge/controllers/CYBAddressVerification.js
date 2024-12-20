@@ -217,14 +217,12 @@ function getServiceResponse(request, paymentMethod) {
     var collections = require('*/cartridge/scripts/util/collections');
     var service = CSServices.CyberSourceTransactionService;
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(paymentMethod);
     var requestWrapper = {};
     var responseObject = {};
 
-    request.merchantID = merchantCrdentials.merchantID;
+    request.merchantID = CybersourceHelper.getMerchantID();
     requestWrapper.request = request;
-    requestWrapper.merchantCredentials = merchantCrdentials;
-
+    
     //  Call the service.
     var serviceResponse = service.call(requestWrapper);
 

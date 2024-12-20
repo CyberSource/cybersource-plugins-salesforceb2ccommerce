@@ -230,7 +230,7 @@ function getButtonInitializeSettings(cart, requireDeliveryAddress) {
             }
             var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
             // eslint-disable-next-line
-            var signature = CommonHelper.signedDataUsingHMAC256(cart.getUUID(), dw.system.Site.getCurrent().getCustomPreferenceValue('cybVisaSecretKey'));
+            var signature = CommonHelper.signedDataUsingHMAC256(cart.getUUID(), dw.system.Site.getCurrent().getCustomPreferenceValue('cybVisaSecretKey'), null);
             return { success: true, signature: signature, VInitFormattedString: convertObjectToString(vinitObject, '', 0) };
         }
         return { error: true, errorMsg: 'vinit string formation error : empty basket found' };

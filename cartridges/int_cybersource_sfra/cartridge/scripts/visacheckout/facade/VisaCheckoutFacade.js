@@ -100,11 +100,9 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
     var serviceResponse = null;
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in CCAuthRequest ( {0} )', e.message);
@@ -152,11 +150,9 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in VCDecryptRequest request ( {0} )', e.message);
@@ -290,11 +286,9 @@ function PayerAuthSetup(orderNo){
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthSetUp request ( {0} )', e.message);
@@ -399,11 +393,9 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthEnrollCheck request ( {0} )', e.message);
@@ -502,11 +494,9 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj, PaRes, Amount, OrderN
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in PayerAuthValidation request ( {0} )', e.message);
@@ -611,11 +601,9 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in VCCaptureRequest request ( {0} )', e.message);
@@ -682,11 +670,9 @@ function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency
         // create request,make service call and store returned response
         var service = CSServices.CyberSourceTransactionService;
         // getting merchant id and key for specific payment method
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_VISA_CHECKOUT);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in VCAuthReversalService: {0}', e.message);
@@ -756,11 +742,9 @@ function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal,
     // send request
     try {
         var service = CSServices.CyberSourceTransactionService;
-        var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(CybersourceConstants.METHOD_CREDIT_CARD);
         var requestWrapper = {};
-        serviceRequest.merchantID = merchantCrdentials.merchantID;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         requestWrapper.request = serviceRequest;
-        requestWrapper.merchantCredentials = merchantCrdentials;
         serviceResponse = service.call(requestWrapper);
     } catch (e) {
         Logger.error('[VisaCheckoutFacade.js] Error in VCCreditRequest request ( {0} )', e.message);

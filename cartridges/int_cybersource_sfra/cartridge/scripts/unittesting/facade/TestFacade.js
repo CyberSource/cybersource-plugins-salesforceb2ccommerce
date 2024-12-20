@@ -117,13 +117,11 @@ function ProcessResponse(response, serviceReply, heading) {
  */
 function getServiceResponse(request, paymentMethod) {
     var service = CSServices.CyberSourceTransactionService;
-    var merchantCrdentials = CybersourceHelper.getMerhcantCredentials(paymentMethod);
     var requestWrapper = {};
     var response = {};
 
-    request.merchantID = merchantCrdentials.merchantID;
+    request.merchantID = CybersourceHelper.getMerchantID();
     requestWrapper.request = request;
-    requestWrapper.merchantCredentials = merchantCrdentials;
     // call the service based on input
     response = service.call(requestWrapper);
 
