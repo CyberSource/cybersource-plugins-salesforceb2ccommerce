@@ -3,9 +3,9 @@
 var Logger = require('dw/system/Logger');
 // var dwsvc = require('dw/svc');
 var UUIDUtils = require('dw/util/UUIDUtils');
-var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * This function creates subscription on basis of billto,card object,amount and currency of the order.
@@ -21,7 +21,7 @@ function CreateSubscription(billTo, card, purchaseTotals) {
 
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billToObject, purchaseObject, cardObject, UUIDUtils.createUUID());
@@ -66,7 +66,7 @@ function CreateSubscription(billTo, card, purchaseTotals) {
 function DeleteSubscription(subscriptionID) {
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addPaySubscriptionDeleteService(serviceRequest, UUIDUtils.createUUID(), subscriptionID);
@@ -117,7 +117,7 @@ function UpdateSubscription(billTo, card, purchaseTotals, storedSubscriptionID) 
     var subscriptionObject = {};
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addSubscriptionUpdateInfo(serviceRequest, billToObject, purchaseObject, cardObject, storedSubscriptionID);
@@ -166,7 +166,7 @@ function ViewSubscription(subscriptionID) {
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
 
     CybersourceHelper.addPaySubscriptionRetrieveService(serviceRequest, UUIDUtils.createUUID(), subscriptionID);

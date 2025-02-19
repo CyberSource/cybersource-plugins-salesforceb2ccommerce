@@ -11,7 +11,7 @@ var Logger = require('dw/system/Logger');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Resource = require('dw/web/Resource');
 var Cipher = require('dw/crypto/Cipher');
-var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
 
 var resources = {
     missingFirstName: Resource.msg('dav.missingfirstname', 'cybersource', null),
@@ -52,7 +52,7 @@ function createShipToObject(params) {
         throw new Error(resources.missingState);
     }
     //  Build ship to object.
-    var ShipToObject = require('~/cartridge/scripts/cybersource/CybersourceShipToObject');
+    var ShipToObject = require('*/cartridge/scripts/cybersource/CybersourceShipToObject');
     var shipToObject = new ShipToObject();
     shipToObject.setFirstName(params.firstName);
     shipToObject.setLastName(params.lastName);
@@ -99,7 +99,7 @@ function createBillToObject(params) {
         throw new Error(resources.missingCountryCode);
     }
     //  Build ship to object.
-    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billToObject = new BillToObject();
     billToObject.setFirstName(params.firstName);
     billToObject.setLastName(params.lastName);
@@ -213,7 +213,7 @@ function getReasonMessage(reasonCode, missingFields, invalidFields) {
  * @returns {*} obj
  */
 function getServiceResponse(request, paymentMethod) {
-    var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+    var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
     var collections = require('*/cartridge/scripts/util/collections');
     var service = CSServices.CyberSourceTransactionService;
     var CybersourceHelper = libCybersource.getCybersourceHelper();
@@ -307,7 +307,7 @@ server.get('VerifyAddress', function (req, res, next) {
             //  Although not utilized by CS in the DAV call, they do require the presence of a billToAddress.
             var billToAddress = createBillToObject(params);
             //  Build DAV request.
-            var csReference = webreferences2.CyberSourceTransaction;
+            var csReference =  new CybersourceHelper.getcsReference();
             var serviceRequest = new csReference.RequestMessage();
             CybersourceHelper.addDAVRequestInfo(serviceRequest, billToAddress, shipToAddress, false, 'AddressVerification');
 

@@ -6,9 +6,8 @@
 *
 */
 
-// var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var WeChatAdaptor = require('~/cartridge/scripts/wechat/adapter/WeChatAdaptor');
-var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+var WeChatAdaptor = require('*/cartridge/scripts/wechat/adapter/WeChatAdaptor');
+var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
 
 /**
  * Handle

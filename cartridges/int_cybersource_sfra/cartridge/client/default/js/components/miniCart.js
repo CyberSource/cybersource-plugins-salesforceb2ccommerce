@@ -6,7 +6,7 @@
 module.exports = function () {
     // cart();
     $('.minicart').on('count:update', function (event, count) {
-        if (count && !Number.isNaN(count.quantityTotal)) {
+        if (count && !Number.isNaN(Number(count.quantityTotal))) {
             $('.minicart .minicart-quantity').text(count.quantityTotal);
         }
     });

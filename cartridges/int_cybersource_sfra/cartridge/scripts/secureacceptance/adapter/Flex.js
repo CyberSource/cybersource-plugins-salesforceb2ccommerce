@@ -83,12 +83,9 @@ function generateSignature(signedHeaders, keyID, sharedSecret) {
  */
 function CreateFlexKey() {
     var HashMap = require('dw/util/HashMap');
-    // var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     var collections = require('*/cartridge/scripts/util/collections');
-    // var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var CRServices = require('~/cartridge/scripts/init/RestServiceInit');
+    var CRServices = require('*/cartridge/scripts/init/RestServiceInit');
     var signedHeaders = new HashMap();
-    // var ArrayList = require('dw/util/ArrayList');
     var Site = require('dw/system/Site');
 
     var sharedSecret = Site.getCurrent().getCustomPreferenceValue('SA_Flex_SharedSecret');
@@ -108,10 +105,36 @@ function CreateFlexKey() {
         // eslint-disable-next-line
         targetOrigin = 'http://' + request.httpHost;
     }
-    var digestString = '{\n  "encryptionType": "RsaOaep256",\n  "targetOrigin": "' + targetOrigin + '"\n}';
+
+    var allowedCNetworks = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_AllowedCardNetworks');
+    var list = [];
+    if (empty(allowedCNetworks)) {
+        list.push('VISA');
+    } else {
+        for (let i = 0; allowedCNetworks[i] != null; i++) {
+            list.push(allowedCNetworks[i].value);
+        }
+    }
+
+    var digest = {
+        'targetOrigins': [
+            targetOrigin
+        ],
+        'allowedCardNetworks': list,
+        'clientVersion': "v2"
+    };
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+
+    digest.clientReferenceInformation = {};
+    digest.clientReferenceInformation.applicationName = CybersourceConstants.APPLICATION_NAME;
+    digest.clientReferenceInformation.applicationVersion = CybersourceConstants.APPLICATION_VERSION;
+
+    var digestString = JSON.stringify(digest);
+
     signedHeaders.put('host', host);
     signedHeaders.put('date', getTime());
-    signedHeaders.put('request-target', 'post /flex/v1/keys?format=JWT');
+    signedHeaders.put('request-target', 'post /microform/v2/sessions?format=JWT');
+
     signedHeaders.put('digest', getDigest(digestString));
     signedHeaders.put('v-c-merchant-id', merchantId);
     signature = generateSignature(signedHeaders, keyID, sharedSecret);
@@ -135,8 +158,101 @@ function CreateFlexKey() {
     signedHeaders.remove('request-target');
     var service = CRServices.CyberSourceFlexTokenService;
     var serviceResponse = service.call(signedHeaders, digestString);
-    // var tokenResponse = serviceResponse.object;
     return serviceResponse.object;
+}
+
+function jwtDecode(jwt) {
+
+    var response = jwt;
+    var Logger = require('dw/system/Logger');
+    var Encoding = require('dw/crypto/Encoding');
+
+    var encodedHeader = response.split('.')[0];
+    var kid = JSON.parse(Encoding.fromBase64(encodedHeader)).kid;
+    var alg = JSON.parse(Encoding.fromBase64(encodedHeader)).alg;
+
+    var encodedPayload = response.split('.')[1];
+    var decodedPayload = Encoding.fromBase64(encodedPayload).toString();
+
+    var parsedPayload = JSON.parse(decodedPayload);
+
+    // return parsedPayload;
+    var decodedJwt = null;
+
+    var jwtSignature = response.split('.')[2];
+
+    var pKid = getPublicKey(kid);
+    var pkey = require('../../helper/publicKey');
+    if (!empty(pKid.n) && !empty(pKid.e)) {
+        var RSApublickey = pkey.getRSAPublicKey(pKid.n, pKid.e);
+
+        var JWTAlgoToSFCCMapping = {
+            RS256: "SHA256withRSA",
+            RS512: "SHA512withRSA",
+            RS384: "SHA384withRSA",
+        };
+
+        var Signature = require('dw/crypto/Signature');
+        var apiSig = new Signature();
+        var Bytes = require('dw/util/Bytes');
+
+        var jwtSignatureInBytes = new Encoding.fromBase64(jwtSignature);
+
+        var contentToVerify = encodedHeader + '.' + encodedPayload;
+        contentToVerify = new Bytes(contentToVerify);
+
+        var isValid = apiSig.verifyBytesSignature(jwtSignatureInBytes, contentToVerify, new Bytes(RSApublickey), JWTAlgoToSFCCMapping[alg]);
+        if (isValid) {
+            decodedJwt = parsedPayload;
+        }
+    }
+    return decodedJwt;
+}
+
+
+function getPublicKey(kid) {
+
+    var HashMap = require('dw/util/HashMap');
+    var collections = require('*/cartridge/scripts/util/collections');
+    var CRServices = require('*/cartridge/scripts/init/RestServiceInit');
+    var signedHeaders = new HashMap();
+    var Site = require('dw/system/Site');
+
+    var sharedSecret = Site.getCurrent().getCustomPreferenceValue('SA_Flex_SharedSecret');
+    var keyID = Site.getCurrent().getCustomPreferenceValue('SA_Flex_KeyID');
+    // eslint-disable-next-line
+    var host = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_HostName');
+    var signature;
+    var targetOrigin;
+    // eslint-disable-next-line
+    var merchantId = dw.system.Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
+
+    signedHeaders.put('host', host);
+    signedHeaders.put('User-Agent', 'Mozilla/5.0');
+    signedHeaders.put('date', getTime());
+    signedHeaders.put('request-target', 'get /flex/v2/public-keys/' + kid);
+
+    signedHeaders.put('v-c-merchant-id', merchantId);
+    signature = generateSignature(signedHeaders, keyID, sharedSecret);
+    var headerString = '';
+    collections.forEach(signedHeaders.keySet(), function (key) {
+        headerString = headerString + ' ' + key;
+    });
+    var signatureMap = new HashMap();
+    signatureMap.put('keyid', keyID);
+    signatureMap.put('algorithm', 'HmacSHA256');
+    signatureMap.put('headers', headerString);
+    signatureMap.put('signature', signature);
+    var signaturefields = '';
+    collections.forEach(signatureMap.keySet(), function (key) {
+        signaturefields = signaturefields + key + '="' + signatureMap.get(key) + '", ';
+    });
+    signaturefields = signaturefields.slice(0, signaturefields.length - 2);
+    signedHeaders.put('signature', signaturefields);
+    signedHeaders.remove('request-target');
+    var service = CRServices.CyberSourceAssymentricKeyManagement;
+    var serviceResponse = service.call(signedHeaders, kid);
+    return JSON.parse(serviceResponse.object);
 }
 
 /** Exported functions * */
@@ -144,5 +260,6 @@ module.exports = {
     CreateFlexKey: CreateFlexKey,
     getDigest: getDigest,
     getTime: getTime,
-    generateSignature: generateSignature
+    generateSignature: generateSignature,
+    jwtDecode: jwtDecode
 };

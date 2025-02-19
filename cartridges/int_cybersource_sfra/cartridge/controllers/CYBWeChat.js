@@ -6,14 +6,10 @@ var HookMgr = require('dw/system/HookMgr');
 var URLUtils = require('dw/web/URLUtils');
 var Resource = require('dw/web/Resource');
 var OrderMgr = require('dw/order/OrderMgr');
-// var BasketMgr = require('dw/order/BasketMgr');
 var Transaction = require('dw/system/Transaction');
-// var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-// var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var COHelpers = require('~/cartridge/scripts/checkout/checkoutHelpers');
-var WeChatAdaptor = require('~/cartridge/scripts/wechat/adapter/WeChatAdaptor');
-// var OrderModel = require('*/cartridge/models/order');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+var WeChatAdaptor = require('*/cartridge/scripts/wechat/adapter/WeChatAdaptor');
 var collections = require('*/cartridge/scripts/util/collections');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
@@ -24,7 +20,6 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
     var pi;
     // Iterate on All Payment Instruments and select PayPal
     collections.forEach(paymentInstruments, function (paymentInstrument) {
-        // for each(var paymentInstrument in paymentInstruments) {
         if (paymentInstrument.paymentMethod.equals(CybersourceConstants.WECHAT_PAYMENT_METHOD)) {
             pi = paymentInstrument;
         }
@@ -39,8 +34,6 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
             order.setPaymentStatus(dw.order.Order.PAYMENT_STATUS_PAID);
             pi.paymentTransaction.custom.AmountPaid = Number(order.totalGrossPrice);
         });
-
-        // var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
 
         session.privacy.paypalShippingIncomplete = '';
         session.privacy.paypalBillingIncomplete = '';

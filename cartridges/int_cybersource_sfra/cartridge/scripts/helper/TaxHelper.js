@@ -54,7 +54,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
     // END adjust order level promos
 
     var StringUtils = require('dw/util/StringUtils');
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var adjustedLineItemFinalPrice;
 
@@ -62,7 +62,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
     while (lineItems.hasNext()) {
         var actualQuantity = 0;
         var lineItem = lineItems.next();
-        var item = new CybersourceHelper.csReference.Item();
+        var item = new CybersourceHelper.getcsReference().Item();
 
         if (lineItem instanceof dw.order.ProductLineItem) {
             itemMap.put(idcount.toString(), lineItem);
@@ -129,7 +129,7 @@ function CreateCybersourceTaxationItemsObject(Basket) {
             var lineItem = basketPriceAdjustments.next();
             itemMap.put(idcount.toString(), lineItem);
 
-            var item = new CybersourceHelper.csReference.Item();
+            var item = new CybersourceHelper.getcsReference().Item();
             item.unitPrice = StringUtils.formatNumber(Math.abs(lineItem.basePrice.value), '#####0.00', 'en_US');
             item.quantity = 1;
             item.productCode = '';
@@ -194,7 +194,7 @@ function getOrderLevelAdjustedLineItemPrice(lineItemPrice, orderLevelAdjustmentP
 function CreateCybersourceTaxationPurchaseTotalsObject(Basket) {
     var basket = Basket;
 
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
     // var amount = basket.totalGrossPrice;
     purchaseObject.setCurrency(basket.getCurrencyCode());
@@ -207,9 +207,9 @@ function CreateCybersourceTaxationPurchaseTotalsObject(Basket) {
  * @returns {*} obj
  */
 function CreateCyberSourceTaxRequestObject() {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var TaxServiceObject = require('~/cartridge/scripts/cybersource/CybersourceTaxRequestObject');
+    var TaxServiceObject = require('*/cartridge/scripts/cybersource/CybersourceTaxRequestObject');
     var taxServiceObject = new TaxServiceObject();
 
     taxServiceObject.setOrderAcceptanceCity(CybersourceHelper.getPOACity());

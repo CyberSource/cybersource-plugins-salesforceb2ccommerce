@@ -21,7 +21,7 @@
 				</isif>
 			</div>
 			<isscript>
-				var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+				var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 				var payPal_Credit = dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL_CREDIT);
 				var isPPLApplicable = (!empty(pdict.applicablePaymentMethods) && payPal_Credit && 
 					pdict.applicablePaymentMethods.contains(payPal_Credit)) ? true : false;

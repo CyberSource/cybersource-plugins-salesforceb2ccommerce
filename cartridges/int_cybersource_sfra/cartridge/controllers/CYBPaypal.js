@@ -9,7 +9,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
  *
  * @module controllers/CYBPaypal
  */
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 server.post(
     'SessionCallback',
@@ -25,8 +25,7 @@ server.post(
         var paymentId = request.httpParameterMap.paymentID.stringValue;
         var payerID = request.httpParameterMap.payerID.stringValue;
         var requestID = request.httpParameterMap.requestId.stringValue;
-        // var shippingAddressMissing = false;
-        // var billingAddressMissing = false;
+
         // Flag to check if PayPal Credit is used
         var isPayPalCredit = request.httpParameterMap.isPayPalCredit.booleanValue;
         var billingAgreementFlag = request.httpParameterMap.billingAgreementFlag.booleanValue;

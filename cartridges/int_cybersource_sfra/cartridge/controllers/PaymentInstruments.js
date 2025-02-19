@@ -122,7 +122,7 @@ function cardSaveLimit(Profile) {
     // var Site = require('dw/system/Site');
     var Transaction = require('dw/system/Transaction');
     var Logger = require('dw/system/Logger');
-    var cyberSourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+    var cyberSourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 
     var LimitSavedCardRateEnabled = !empty(cyberSourceHelper.getLimitSavedCardRate()) ? cyberSourceHelper.getLimitSavedCardRate() : false;
 
@@ -218,7 +218,7 @@ if (IsCartridgeEnabled) {
         var dwOrderPaymentInstrument = require('dw/order/PaymentInstrument');
         var verifyDuplicates = false;
         var tokenizationResult = { subscriptionID: '', error: '' };
-        var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+        var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
         var paymentForm = server.forms.getForm('creditCard');
         var result = getDetailsObject(paymentForm);
 

@@ -1,6 +1,6 @@
 <iscomment>TEMPLATENAME: launch.isml</iscomment>
 <isscript>
-	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+	var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 </isscript>
 
 <isif condition="${(session.privacy.cyb_CurrentPage!=null) && (session.privacy.cyb_CurrentPage.equals('CybCart'))}" >

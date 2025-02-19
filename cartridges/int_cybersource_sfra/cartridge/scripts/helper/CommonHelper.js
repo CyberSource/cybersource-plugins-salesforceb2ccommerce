@@ -5,7 +5,7 @@
 var Logger = require('dw/system/Logger').getLogger('Cybersource');
 var Site = require('dw/system/Site');
 var StringUtils = require('dw/util/StringUtils');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 /**
 * Get request locale in format en-US basically replace _ with -
@@ -74,7 +74,7 @@ function CreateCybersourcePurchaseTotalsObject(Basket) {
         Logger.error('Please provide a Basket!');
         return { error: true };
     }
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
     var Money = require('dw/value/Money');
     var amount = new Money(0, basket.currencyCode);
@@ -115,7 +115,7 @@ function GetIPAddress() {
  */
 
 function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
-    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billToObject = new BillToObject();
     var paymentInstruments = Basket.getPaymentInstruments();
     var language = GetRequestLocale();
@@ -274,7 +274,7 @@ function CreateCyberSourceBillToObjectUserData(formType) {
             ipAddress = GetIPAddress();
             break;
     }
-    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billToObject = new BillToObject();
     billToObject.setTitle(title);
     billToObject.setFirstName(firstName);
@@ -373,7 +373,7 @@ function CreateCybersourceItemObject(Basket) {
     var count = 1;
     while (lineItems.hasNext()) {
         var lineItem = lineItems.next();
-        var ItemObject = require('~/cartridge/scripts/cybersource/CybersourceItemObject');
+        var ItemObject = require('*/cartridge/scripts/cybersource/CybersourceItemObject');
         var itemObject = new ItemObject();
         if (lineItem instanceof dw.order.ProductLineItem) {
             itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value, '000000.00', locale));
@@ -481,7 +481,7 @@ function CreateKlarnaItemObject(Basket) {
     while (lineItems.hasNext()) {
         // set the different items into item level object
         var lineItem = lineItems.next();
-        var ItemObject = require('~/cartridge/scripts/cybersource/CybersourceItemObject');
+        var ItemObject = require('*/cartridge/scripts/cybersource/CybersourceItemObject');
         var itemObject = new ItemObject();
         if (lineItem instanceof dw.order.ProductLineItem) {
             // set product line item
@@ -548,7 +548,7 @@ function CreateKlarnaItemObject(Basket) {
 function CreateCyberSourcePurchaseTotalsObjectUserData(Currency, Amount) {
     var currency = Currency;
     var locale = GetRequestLocale();
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
     if (empty(currency)) { currency = Site.getCurrent().getDefaultCurrency(); }
 
@@ -572,7 +572,7 @@ function CreateCyberSourcePurchaseTotalsObjectUserData(Currency, Amount) {
  */
 
 function CreateCybersourceShipFromObject() {
-    var ShipFromObject = require('~/cartridge/scripts/cybersource/CybersourceShipFromObject');
+    var ShipFromObject = require('*/cartridge/scripts/cybersource/CybersourceShipFromObject');
     var shipFrom = new ShipFromObject();
 
     shipFrom.setCity(Site.getCurrent().getCustomPreferenceValue('CsShipFromCity'));
@@ -591,7 +591,7 @@ function CreateCybersourceShipFromObject() {
 function CreateCybersourceShipToObject(Basket) {
     var basket = Basket;
 
-    var ShipToObject = require('~/cartridge/scripts/cybersource/CybersourceShipToObject');
+    var ShipToObject = require('*/cartridge/scripts/cybersource/CybersourceShipToObject');
     var shipToObject = new ShipToObject();
     var shippingAddress = basket.defaultShipment.shippingAddress;
     var shippingMethod = basket.defaultShipment.shippingMethod;
@@ -1044,7 +1044,7 @@ function calculateNonGiftCertificateAmountPayPal(lineItemCtnr) {
 
 function calculatePurchaseTotal(lineItemCtnr, paypal) {
     var locale = GetRequestLocale();
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
     // var shippingAmount;
     purchaseObject.setCurrency(lineItemCtnr.currencyCode);
@@ -1204,7 +1204,7 @@ function signedDataUsingHMAC256(dataToSign, secretKey, paymentType) {
     var signature;
     var KeyRef = require('dw/crypto/KeyRef');
     var mac = new dw.crypto.Mac(dw.crypto.Mac.HMAC_SHA_256);
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper(); 
     if(paymentType === 'KLI'){
         var privateKey = new KeyRef(CybersourceHelper.getklarnaPrivateKeyAlias());
@@ -1262,7 +1262,7 @@ function getOrderLevelAdjustedLineItemPrice(lineItem) {
 */
 function getItemObject(typeofService, basket) {
     var Money = require('dw/value/Money');
-    var ItemObject = require('~/cartridge/scripts/cybersource/CybersourceItemObject');
+    var ItemObject = require('*/cartridge/scripts/cybersource/CybersourceItemObject');
     var lineItems = basket.allLineItems.iterator();
     var itemObjects = [];
     var count = 1;
@@ -1518,13 +1518,12 @@ function CheckStatusServiceRequest(order) {
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     var collections = require('*/cartridge/scripts/util/collections');
     collections.forEach(Order.paymentInstruments, function (paymentInstrument) {
-        // for each(var paymentInstrument in Order.paymentInstruments){
         if (!paymentInstrument.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {
             paymentType = paymentInstrument.paymentTransaction.custom.apPaymentType;
         }
     });
-    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
-    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+    var commonFacade = require('*/cartridge/scripts/facade/CommonFacade');
+    var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 
     var response = commonFacade.CheckPaymentStatusRequest(Order);
     if (!empty(response)) {

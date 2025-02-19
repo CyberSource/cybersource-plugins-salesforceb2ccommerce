@@ -10,7 +10,7 @@
 var server = require('server');
 var System = require('dw/system/System');
 var URLUtils = require('dw/web/URLUtils');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
 var TestHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/helper/TestHelper');
@@ -210,18 +210,18 @@ server.post('CaptureService', function (req, res, next) {
         captureReplyTitle;
     // capture the refund service response from test facade
     if (paymentType === 'CC') {
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         captureReplyTitle = 'Credit card Capture Reply';
         captureReply = 'ccCaptureReply';
     } else if (paymentType === 'visacheckout') {
         var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
         captureReplyTitle = 'VisaCheckout Capture Reply';
         captureReply = 'ccCaptureReply';
     } else if (paymentType === 'KLI' || paymentType === 'PPL') {
-        var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+        var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         if (paymentType === 'PPL') {
             captureReplyTitle = 'PayPal Capture Reply';
@@ -233,7 +233,7 @@ server.post('CaptureService', function (req, res, next) {
         
     } else if (paymentType === 'googlepay') {
         // var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
-        var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
+        var MobileCheckoutFacade = require('*/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         captureReplyTitle = 'GooglePay Capture Reply';
     }
@@ -290,27 +290,27 @@ server.post('CreditService', function (req, res, next) {
     var currency = session.forms.genericTestInterfaceForm.currency.value;
     var serviceResponse; var refundReply; var
         creditReplyTitle;
-    var AliPayFacade = require('~/cartridge/scripts/alipay/facade/AlipayFacade');
+    var AliPayFacade = require('*/cartridge/scripts/alipay/facade/AlipayFacade');
     var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
 
     if (paymentType === 'CC') {
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         creditReplyTitle = 'Credit card Credit/Refund Reply';
         refundReply = 'ccCreditReply';
     } else if (paymentType === 'visacheckout') {
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
         creditReplyTitle = 'VisaCheckout Credit/Refund Reply';
         refundReply = 'ccCreditReply';
     } else if (paymentType === 'KLI' || paymentType === 'PPL') {
-        var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+        var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         creditReplyTitle = 'PayPal Credit/Refund Reply';
         refundReply = 'apRefundReply';
         creditReplyTitle = 'VisaCheckout Credit Reply';
     } else if (paymentType === 'googlepay') {
-        var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
+        var MobileCheckoutFacade = require('*/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
         creditReplyTitle = 'GooglePay Credit Reply';
     } else if (paymentType === 'APY') {
@@ -318,7 +318,7 @@ server.post('CreditService', function (req, res, next) {
         reversalReplyTitle = 'AliPay Credit/Refund Reply';
         refundReply = 'apRefundReply';
     } else if (paymentType === 'MCH' || paymentType === 'IDL' || paymentType === 'SOF') {
-        var BanktransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
+        var BanktransferFacade = require('*/cartridge/scripts/banktransfer/facade/BankTransferFacade');
         serviceResponse = BanktransferFacade.BanktransferRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         creditReplyTitle = 'Banktransfer Credit/Refund Reply';
         refundReply = 'apRefundReply';
@@ -383,17 +383,17 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
     var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
     // capture the refund service response from test facade
     if (paymentType === 'CC') {
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
         reversalReplyTitle = 'Credit card Reversal Reply';
         reversalReply = 'ccAuthReversalReply';
     } else if (paymentType === 'visacheckout') {
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid);
         reversalReplyTitle = 'VisaCheckout Reversal Reply';
         reversalReply = 'ccAuthReversalReply';
     } else if (paymentType === 'KLI' || paymentType === 'PPL') {
-        var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+        var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalReversalService(requestID, merchantRefCode, paymentType, amount, currency);
         if (paymentType === 'PPL') {
             reversalReplyTitle = 'PayPal Reversal Reply';
@@ -403,7 +403,7 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
         }
         reversalReply = 'apAuthReversalReply';
     } else if (paymentType === 'googlepay') {
-        var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
+        var MobileCheckoutFacade = require('*/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
         reversalReplyTitle = 'Googlepay Reversal Reply';
     }
@@ -477,7 +477,7 @@ server.post('CheckStatusService', server.middleware.https, function (req, res, n
         });
         return next();
     }
-    var CommonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var CommonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     serviceResponse = CommonFacade.CheckPaymentStatusRequest(Order);
     apCheckStatusTitle = 'Check payment Status';
     apCheckStatusReply = 'apCheckStatusReply';
@@ -503,8 +503,8 @@ server.post('Generate', csrfProtection.generateToken, function (req, res, next) 
 });
 
 server.get('DMStandalone', server.middleware.https, function (req, res, next) {
-    var bankTransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var bankTransferFacade = require('*/cartridge/scripts/banktransfer/facade/BankTransferFacade');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var OrderMgr = require('dw/order/OrderMgr');
 
     var Order = OrderMgr.getOrder('00000202');

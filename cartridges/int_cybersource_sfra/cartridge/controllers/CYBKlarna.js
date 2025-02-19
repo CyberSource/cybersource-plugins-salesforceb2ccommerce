@@ -5,10 +5,10 @@ var server = require('server');
 var BasketMgr = require('dw/order/BasketMgr');
 var Transaction = require('dw/system/Transaction');
 
-var klarnaFacade = require('~/cartridge/scripts/klarna/facade/KlarnaFacade');
-var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var klarnaFacade = require('*/cartridge/scripts/klarna/facade/KlarnaFacade');
+var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
@@ -53,7 +53,7 @@ function updateBillingAddress(basket) {
  * @param {*} basket basket
  */
 function setKlarnaPaymentMethod(basket) {
-    var Cart = require('~/cartridge/models/cart');
+    var Cart = require('*/cartridge/models/cart');
     var currentCart = new Cart(basket);
     Transaction.wrap(function () {
         CommonHelper.removeExistingPaymentInstruments(basket);
@@ -121,7 +121,7 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     var UUID = basket.UUID;
 
     // Create billto, shipto, item and purchase total object
-    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billTo = new BillToObject();
     // create billto, item and purchase total object
     billTo.setCountry(basket.billingAddress.countryCode);

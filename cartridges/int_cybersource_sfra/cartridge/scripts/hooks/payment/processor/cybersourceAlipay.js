@@ -6,7 +6,7 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 /**
  * This is where current implementation simply creates a payment method and returns 'success'.
 */

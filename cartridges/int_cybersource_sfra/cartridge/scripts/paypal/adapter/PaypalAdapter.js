@@ -11,10 +11,7 @@
  */
 var Logger = require('dw/system/Logger').getLogger('Cybersource');
 var Transaction = require('dw/system/Transaction');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-// var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-
-// var csReference = webreferences2.CyberSourceTransaction;
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 /**
  * Initialize call to CyberSource Init Session service
@@ -106,13 +103,11 @@ function orderService(order, pi) {
 function billingAgreementService(requestId, order) {
     var result = {};
     var collections = require('*/cartridge/scripts/util/collections');
-    // var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var paypalFacade = require('../facade/PayPalFacade'); var response;
+   var paypalFacade = require('../facade/PayPalFacade'); var response;
     response = paypalFacade.BillingAgreement(requestId, order.UUID);
     if (!empty(response) && Number(response.reasonCode) === 100) {
         var paymentInstruments = order.paymentInstruments; var pi;
         collections.forEach(paymentInstruments, function (paymentInstrument) {
-            // for each(var paymentInstrument in paymentInstruments ){
             if (paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_PAYPAL)) {
                 // eslint-disable-next-line
                 pi = paymentInstrument;
@@ -154,8 +149,8 @@ function initSessionCallback(lineItemCntr, args) {
             }
         }
         var paypalFacade = require('../facade/PayPalFacade');
-        var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-        var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+        var commonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+        var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
         var skipShipAddressValidation;
         var checkStatusResult = paypalFacade.CheckStatusService(lineItemCntr, requestID);
         result.shippingAddressMissing = false;

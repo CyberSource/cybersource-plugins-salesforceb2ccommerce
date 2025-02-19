@@ -15,4 +15,10 @@
         background-size: auto;
         background-position: -230px -206.5px;
     }
+    
+    &[data-type="dinersclub"]::after {
+        background-image: url('../../images/payment-types.png');
+        background-size: auto;
+        background-position: -230px -206.5px;
+    }
 }

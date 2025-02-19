@@ -60,9 +60,9 @@ function WeChatSetProductParameters(Order) {
 
 /* API includes */
 var PaymentMgr = require('dw/order/PaymentMgr');
-var WeChatFacade = require('~/cartridge/scripts/wechat/facade/WeChatFacade');
-var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var WeChatFacade = require('*/cartridge/scripts/wechat/facade/WeChatFacade');
+var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 /**
  * This method set the request object along with other inputs to call session
@@ -77,7 +77,7 @@ function CreateSaleServiceRequest(Basket) {
     var collections = require('*/cartridge/scripts/util/collections');
     var Transaction = require('dw/system/Transaction');
     var successURL = URLUtils.https('COSummary-Start').toString();
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
     var wechatPaymentType = CybersourceConstants.WECHAT_PAYMENT_TYPE;
     // set basket UUID
     var UUID = Basket.UUID;

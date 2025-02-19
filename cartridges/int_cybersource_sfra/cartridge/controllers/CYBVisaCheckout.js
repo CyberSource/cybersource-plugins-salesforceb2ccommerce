@@ -11,7 +11,7 @@ var server = require('server');
 var logger = dw.system.Logger.getLogger('Cybersource');
 var Transaction = require('dw/system/Transaction');
 // var Resource = require('dw/web/Resource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
@@ -138,7 +138,7 @@ server.post('Decrypt', csrfProtection.generateToken, function (req, res, next) {
 server.get('InitializeVisaToken', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
-    var VisaCheckout = require('~/cartridge/scripts/visacheckout/helper/VisaCheckoutHelper');
+    var VisaCheckout = require('*/cartridge/scripts/visacheckout/helper/VisaCheckoutHelper');
     var visaCheckoutForm = server.forms.getForm('visaCheckout');
     var VInitFormattedString = '';
     var signature = '';

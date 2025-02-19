@@ -77,7 +77,7 @@ function CreateCSPurchaseTotalForAlipay(Order) {
     // get the order from pipeline dictionary
     var order = Order;
     var collections = require('*/cartridge/scripts/util/collections');
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
     var Money = require('dw/value/Money');
     var amount = new Money(0, order.currencyCode);
@@ -114,14 +114,14 @@ function CreateCSPurchaseTotalForAlipay(Order) {
 // eslint-disable-next-line
 function handleAlipayInitiatePaymentResponse(order, alipayReturnUrl, alipayResponse) {
     // var Site = require('dw/system/Site');
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // set alipay payment type to pass it as input in request
     var alipayPaymentType = CybersourceHelper.getAlipayPaymentType();
     switch (alipayResponse.decision) {
         case 'ACCEPT':
             if (Number(alipayResponse.reasonCode) === 100) {
-                var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+                var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
                 PaymentInstrumentUtils.authorizeAlipayOrderUpdate(order, alipayResponse, alipayPaymentType.value);
                 // eslint-disable-next-line
                 session.privacy.order_id = order.orderNo;
@@ -184,7 +184,7 @@ function AuthorizeAlipay(args) {
     alipayRequest.purchaseTotals = result.purchaseTotals;
     alipayRequest.productObject = result.productObject;
     // call Alipay initiate service
-    var alipayFacade = require('~/cartridge/scripts/alipay/facade/AlipayFacade');
+    var alipayFacade = require('*/cartridge/scripts/alipay/facade/AlipayFacade');
     var authResponse = alipayFacade.AlipayInitiatePaymentRequest(alipayRequest);
     if (authResponse !== null) {
         // handle Alipay response

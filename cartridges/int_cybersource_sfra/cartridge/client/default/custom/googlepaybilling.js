@@ -148,7 +148,7 @@ function onGooglePaymentButtonClicked() {
         })
         .catch(function (err) {
         // show error in developer console for debugging
-            console.on("error",err); // eslint-disable-line no-console
+            console.error(err); // eslint-disable-line no-console
         });
 }
 

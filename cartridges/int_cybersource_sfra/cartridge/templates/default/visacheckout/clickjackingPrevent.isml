@@ -6,7 +6,7 @@
 </iscomment>
 
 <isscript>
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 </isscript>
 
 <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive() && (undefined !== pdict.summarypage)}">

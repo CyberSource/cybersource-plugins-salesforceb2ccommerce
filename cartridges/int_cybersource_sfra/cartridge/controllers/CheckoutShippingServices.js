@@ -43,7 +43,7 @@ server.append('SubmitShipping', function (req, res, next) {
         taxError = true;
     }
     var selectedPayment;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
     if (!empty(currentBasket.getPaymentInstruments())) {

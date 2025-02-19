@@ -1,8 +1,11 @@
 'use strict';
 
 var Logger = require('dw/system/Logger');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
+var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+var CybersourceHelper = libCybersource.getCybersourceHelper();
+var csReference = new CybersourceHelper.getcsReference();
 
 /**
  * This method create the input for the cybersource visa checkout payment method, It validates the data and the card details.
@@ -22,13 +25,12 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
     var data = session.forms.visaCheckout.encryptedPaymentData.value;
     var callID = session.forms.visaCheckout.callId.value;
     /* eslint-enable */
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     //* *************************************************************************//
     // Set WebReference & Stub
     //* *************************************************************************//
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     //* *************************************************************************//
@@ -42,7 +44,7 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
     // Objects to set in the Service Request inside facade
     var shipTo; var billTo; var
         purchaseObject;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var result = CommonHelper.CreateCyberSourceBillToObject(basket);
     billTo = result.billTo;
     result = CommonHelper.CreateCybersourceShipToObject(basket);
@@ -91,7 +93,7 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
 
     CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
     /* End of AVS Service setup */
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     CardHelper.writeOutDebugLog(serviceRequest, orderNo);
 
     //* *************************************************************************//
@@ -135,11 +137,10 @@ function CCAuthRequest(Basket, OrderNo, IPAddress) {
  * @returns {Object} obj
  */
 function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     CybersourceHelper.addVCDecryptRequestInfo(serviceRequest, orderNo, wrappedKey, data);
     CybersourceHelper.addVCOrderID(serviceRequest, callID);
@@ -274,9 +275,8 @@ function VCDecryptRequest(orderNo, wrappedKey, data, callID) {
 }
 
 function PayerAuthSetup(orderNo){
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     CybersourceHelper.addVCOrderID(serviceRequest, session.forms.visaCheckout.callId.value);
     serviceRequest.paymentSolution= 'visacheckout';
@@ -332,11 +332,10 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     var wrappedKey = session.forms.visaCheckout.encryptedPaymentWrappedKey.value;
     var data = session.forms.visaCheckout.encryptedPaymentData.value;
     var callID = session.forms.visaCheckout.callId.value;
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var deviceType = CommonHelper.getDeviceType(request);
     /* eslint-enable */
     var paymentMethodID = lineItemCtnrObj.paymentInstrument.paymentMethod;
@@ -409,7 +408,7 @@ function PayerAuthEnrollCCAuthRequest(LineItemCtnrObj, Amount, OrderNo) {
     serviceResponse = serviceResponse.object;
     // set response values in local variables
     var responseObject = {};
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
     responseObject = result.responseObject;
     // eslint-disable-next-line
@@ -451,14 +450,13 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj, PaRes, Amount, OrderN
     //* *************************************************************************//
     // Set WebReference & Stub
     //* *************************************************************************//
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     /* eslint-disable */
     var wrappedKey = session.forms.visaCheckout.encryptedPaymentWrappedKey.value;
     var data = session.forms.visaCheckout.encryptedPaymentData.value;
     var callID = session.forms.visaCheckout.callId.value;
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     /* eslint-enable */
 
@@ -467,7 +465,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj, PaRes, Amount, OrderN
     // Objects to set in the Service Request inside facade
     var shipTo; var billTo; var
         purchaseObject;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var result = CommonHelper.CreateCybersourceShipToObject(lineItemCtnrObj);
     shipTo = result.shipTo;
     result = CommonHelper.CreateCyberSourceBillToObject(lineItemCtnrObj, true);
@@ -511,7 +509,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj, PaRes, Amount, OrderN
     serviceResponse = serviceResponse.object;
     // set response values in local variables
     var responseObject = {};
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     result = CardHelper.ProcessCardAuthResponse(serviceResponse, shipTo, billTo);
     responseObject = result.responseObject;
     // eslint-disable-next-line
@@ -561,13 +559,12 @@ function ButtonDisplay() {
  * @returns {Object} obj
  */
 function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal, currency, orderid) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);
@@ -630,12 +627,11 @@ function VCCaptureRequest(requestID, merchantRefCode, paymentType, purchaseTotal
  * @returns {Object} obj
  */
 function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
     var purchaseTotals = CardHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);
     purchaseTotals = libCybersource.copyPurchaseTotals(purchaseTotals.purchaseTotals);
@@ -702,13 +698,12 @@ function VCAuthReversalService(requestID, merchantRefCode, paymentType, currency
  * @returns {Object} serviceResponse
  */
 function VCCreditRequest(requestID, merchantRefCode, paymentType, purchaseTotal, currency, orderid) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, purchaseTotal);

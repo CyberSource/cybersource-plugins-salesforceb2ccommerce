@@ -5,11 +5,12 @@
  * @param Basket : dw.order.LineItemCtnr contains object of basket or order
  *
  */
-var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
 
 var CybersourceHelper = libCybersource.getCybersourceHelper();
-var taxHelper = require('~/cartridge/scripts/helper/TaxHelper');
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var csReference = new CybersourceHelper.getcsReference();
+var taxHelper = require('*/cartridge/scripts/helper/TaxHelper');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * updateCartTotal
@@ -74,7 +75,7 @@ function updateCartTotal(cart, itemMap, taxationResponse) {
  */
 function copyTaxService(taxService) {
     // eslint-disable-next-line
-    var requestTaxService = new webreferences2.CyberSourceTransaction.TaxService();
+    var requestTaxService = csReference.TaxService();
     var value;
     Object.keys(taxService).forEach(function (name) {
         if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
@@ -94,7 +95,7 @@ function copyTaxService(taxService) {
  */
 function copyShipFrom(shipFrom) {
     // eslint-disable-next-line
-    var requestShipFrom = new webreferences2.CyberSourceTransaction.ShipFrom();
+    var requestShipFrom = csReference.ShipFrom();
     var value;
     Object.keys(shipFrom).forEach(function (name) {
         if (name.indexOf('set') === -1 && name.indexOf('get') === -1) {
@@ -114,13 +115,8 @@ function copyShipFrom(shipFrom) {
  * @returns {*} obj
  */
 function addTaxRequest(lineItemCtnr, items) {
-    // var billTo;
-    // var shipTo;
 
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    // var cardHelper = require('~/cartridge/scripts/helper/CardHelper');
-    // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     // create request body
     var taxationRequest = new csReference.RequestMessage();
     libCybersource.setClientData(taxationRequest, lineItemCtnr.UUID);

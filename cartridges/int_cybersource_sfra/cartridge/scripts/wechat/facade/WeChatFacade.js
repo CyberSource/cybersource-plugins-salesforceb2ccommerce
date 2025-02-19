@@ -9,8 +9,8 @@
  */
 function WeChatServiceInterface(request) {
     // calling the service by passing klarna request
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+    var commonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     var serviceResponse = commonFacade.CallCYBService(CybersourceConstants.WECHAT_PAYMENT_METHOD, request);
     // return response object
     return serviceResponse;
@@ -23,14 +23,15 @@ function WeChatServiceInterface(request) {
  * @returns {Object} response
  */
 function WeChatSaleService(sessionObject) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    // declare soap reference variable
-    // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
-    // create reference of request object
-    var request = new csReference.RequestMessage();
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     // declare helper variable
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // declare soap reference variable
+    // eslint-disable-next-line
+    var csReference = new CybersourceHelper.getcsReference();
+    // create reference of request object
+    var request = new csReference.RequestMessage();
+    
     // set the merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
     // set client data
@@ -40,7 +41,7 @@ function WeChatSaleService(sessionObject) {
     // set payment type
     request.apPaymentType = 'WQR';
     // set bill to and ship to objects
-    var apSaleService = new CybersourceHelper.csReference.APSaleService();
+    var apSaleService = new CybersourceHelper.getcsReference().APSaleService();
     if (sessionObject.billTo != null) {
         request.billTo = libCybersource.copyBillTo(sessionObject.billTo);
         request.shipTo = libCybersource.copyShipTo(sessionObject.shipTo);
@@ -77,10 +78,10 @@ function WeChatSaleService(sessionObject) {
  * @returns {Object} response
  */
 function WeChatCheckStatusService(requestId, paymentType, orderNo) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     // declare soap reference variable
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     // create reference of request object
     var request = new csReference.RequestMessage();
     // declare helper variable

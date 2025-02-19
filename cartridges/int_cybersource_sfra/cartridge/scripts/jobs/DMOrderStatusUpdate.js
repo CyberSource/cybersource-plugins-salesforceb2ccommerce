@@ -10,7 +10,7 @@ var Order = require('dw/order/Order');
 var OrderMgr = require('dw/order/OrderMgr');
 // var dwsvc = require('dw/svc');
 var Transaction = require('dw/system/Transaction');
-var CRServices = require('~/cartridge/scripts/init/RestServiceInit');
+var CRServices = require('*/cartridge/scripts/init/RestServiceInit');
 
 var logger = Logger.getLogger('CyberSource', 'ConversionDetailReport');
 

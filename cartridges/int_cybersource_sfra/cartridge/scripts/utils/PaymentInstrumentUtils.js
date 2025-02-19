@@ -1,8 +1,8 @@
 'use strict';
 
 var Transaction = require('dw/system/Transaction');
-var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 /**
  * Update the order payment instrument when card capture response arrived.
  * @param {Object} paymentInstrmt paymentInstrmt
@@ -425,7 +425,7 @@ function MobilePaymentOrderUpdate(order, serviceResponse) {
     UpdateMobilePaymentTransactionCardAuthorize(CardHelper.getNonGCPaymemtInstument(order), serviceResponse);
     var OrderMgr = require('dw/order/OrderMgr');
     var Status = require('dw/system/Status');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     if (serviceResponse.ServiceResponse.serviceResponse.StandardizedAddress && (serviceResponse.ServiceResponse.serviceResponse.ReasonCode === '100' || serviceResponse.ServiceResponse.serviceResponse.ReasonCode === '480')) {
         CommonHelper.UpdateOrderShippingAddress(serviceResponse.ServiceResponse.serviceResponse.StandardizedAddress, order, false);
     }
@@ -494,7 +494,7 @@ function removeDuplicates(creditCardFields) {
     }
     if (isDuplicateCard) {
         wallet.removePaymentInstrument(oldCard);
-        var Cybersource = require('~/cartridge/scripts/Cybersource');
+        var Cybersource = require('*/cartridge/scripts/Cybersource');
         Cybersource.DeleteSubscriptionAccount(oldCard.creditCardToken);
     }
 }

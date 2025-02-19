@@ -5,10 +5,10 @@
 * Integration.
 */
 /* API includes */
-var klarnaFacade = require('~/cartridge/scripts/klarna/facade/KlarnaFacade');
-var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var klarnaFacade = require('*/cartridge/scripts/klarna/facade/KlarnaFacade');
+var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 /* Script Modules */
 
 /**
@@ -54,7 +54,7 @@ function AuthorizeKlarnaOrderUpdate(order, responseObject) {
     // declare transaction
     var Transaction = require('dw/system/Transaction');
     Transaction.wrap(function () {
-        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
         // get payment instrument detail
         var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
         // set transaction level object with custom values after getting response of sale service
@@ -80,7 +80,6 @@ function AuthorizeKlarnaOrderUpdate(order, responseObject) {
  */
 function CheckStatusServiceRequest(Order) {
     // create helper variable
-    // var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
     // call check status service
     var response = CommonHelper.CheckStatusServiceRequest(Order);
     // return response
