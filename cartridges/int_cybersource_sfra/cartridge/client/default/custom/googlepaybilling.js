@@ -61,7 +61,7 @@ function onGooglePayLoaded() {
         })
         .catch(function (err) {
         // show error in developer console for debugging
-            console.error(err); // eslint-disable-line
+            //console.error(err); // eslint-disable-line
         });
 }
 
@@ -148,7 +148,7 @@ function onGooglePaymentButtonClicked() {
         })
         .catch(function (err) {
         // show error in developer console for debugging
-            console.error(err); // eslint-disable-line no-console
+            //console.error(err); // eslint-disable-line no-console
         });
 }
 
