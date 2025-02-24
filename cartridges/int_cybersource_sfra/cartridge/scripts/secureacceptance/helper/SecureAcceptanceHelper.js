@@ -61,6 +61,7 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
         }
         var Transaction = require('dw/system/Transaction');
         var status = Transaction.wrap(function () {
+        if (!empty(cardToken)) {
             // eslint-disable-next-line
             if (!empty(matchedPaymentInstrument)) {
                 wallet.removePaymentInstrument(matchedPaymentInstrument);
@@ -71,11 +72,9 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
             paymentInstrument.setCreditCardNumber(cardNumber);
             paymentInstrument.setCreditCardExpirationMonth(cardMonth);
             paymentInstrument.setCreditCardExpirationYear(cardYear);
-            paymentInstrument.setCreditCardType(cardType);
-            // eslint-disable-next-line
-            if (!empty(cardToken)) {
-                paymentInstrument.setCreditCardToken(cardToken);
-                paymentInstrument.custom.isCSToken = true;
+            paymentInstrument.setCreditCardType(cardType);            
+            paymentInstrument.setCreditCardToken(cardToken);
+            paymentInstrument.custom.isCSToken = true;
             }
             // }
             return { success: true };

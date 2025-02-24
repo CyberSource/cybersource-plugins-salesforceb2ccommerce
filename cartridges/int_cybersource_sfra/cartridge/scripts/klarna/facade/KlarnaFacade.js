@@ -40,13 +40,13 @@ function getPaymentFlowMode() {
 function klarnaInitSessionService(sessionObject) {
     // declare variables for libcybersource and helper
     var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    // declare helper variable
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
     // declare soap reference variable
     // eslint-disable-next-line
     var csReference = new CybersourceHelper.getcsReference();
     // create reference of request object
     var request = new csReference.RequestMessage();
-    // declare helper variable
-    var CybersourceHelper = libCybersource.getCybersourceHelper();
     // set the merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
     // set client data
@@ -97,13 +97,13 @@ function klarnaInitSessionService(sessionObject) {
 function klarnaUpdateSessionService(sessionObject) {
     // declare variables for libcybersource and helper
     var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    // declare helper variable
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
     // declare soap reference variable
     // eslint-disable-next-line
     var csReference = new CybersourceHelper.getcsReference();
     // create reference of request object
     var request = new csReference.RequestMessage();
-    // declare helper variable
-    var CybersourceHelper = libCybersource.getCybersourceHelper();
     // set the merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
     // set client data
@@ -158,13 +158,13 @@ function klarnaUpdateSessionService(sessionObject) {
 function klarnaAuthorizationService(authorizationObject) {
     // declare variables for libcybersource and helper
     var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    // declare helper variable
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
     // declare soap reference variable
     // eslint-disable-next-line
     var csReference = new CybersourceHelper.getcsReference();
     // create reference of request object
     var request = new csReference.RequestMessage();
-    // declare helper variable
-    var CybersourceHelper = libCybersource.getCybersourceHelper();
     // set merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
 

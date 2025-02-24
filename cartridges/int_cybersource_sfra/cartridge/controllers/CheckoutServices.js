@@ -561,16 +561,10 @@ if (IsCartridgeEnabled) {
             session.privacy.screenWidth = browserfields.screenWidth;
             session.privacy.screenHeight = browserfields.screenHeight;
         }
-        var orderNo = session.privacy.orderId;
-        if (!empty(orderNo)) {
-            var order = OrderMgr.getOrder(orderNo);
-            Transaction.wrap(function () {
-                currentBasket = BasketMgr.createBasketFromOrder(order);
-            });
-        }
-        else {
+
+        // Added this session so that it doesn't get into second time, it comes to PlaceOrder.
+        if (session.custom.flag == true) {
             currentBasket = BasketMgr.getCurrentBasket();
-        }
         if (!currentBasket) {
             if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
                 && 'orderID' in session.privacy && session.privacy.orderID !== null) {
@@ -665,23 +659,30 @@ if (IsCartridgeEnabled) {
             res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
             return next();
         }
-        var action = '';
 
+
+        // Creates a new order.
+            var order = COHelpers.createOrder(currentBasket);
+            session.privacy.orderId = order.orderNo;
+            if (!order) {
+                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
+            }
+        }
+        var action = '';
         if (CsSAType === 'SA_SILENTPOST') {
             action = URLUtils.url('CheckoutServices-SilentPostAuthorize');
-        } else if (!empty(currentBasket)) {
+        }
+        else if (!empty(currentBasket)) {
             action = URLUtils.url('CheckoutServices-PlaceOrder');
         }
 
-        // Creates a new order.
-        if (!orderNo) {
-            var order = COHelpers.createOrder(currentBasket);
-            session.privacy.orderId = order.orderNo;
+        session.custom.flag = false;
+
+        if (session.privacy.orderId) {
+            var order = OrderMgr.getOrder(session.privacy.orderId);
         }
-        if (!order) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
-            return next();
-        }
+
         var paymentInstrument = null;
         if (!empty(order.getPaymentInstruments())) {
             paymentInstrument = order.getPaymentInstruments()[0];
@@ -694,6 +695,10 @@ if (IsCartridgeEnabled) {
                 result = VisaCheckoutFacade.PayerAuthSetup(order.orderNo);
             } else {
                 result = CardFacade.PayerAuthSetup(paymentInstrument, order.orderNo, session.forms.billing.creditCardFields);
+            }
+            if (result.deviceDataCollectionURL == null) {
+                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
             }
             res.setContentType('application/json');
             res.render('payerauthentication/deviceDataCollection', {

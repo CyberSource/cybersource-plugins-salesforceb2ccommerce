@@ -130,6 +130,18 @@ $(document).ready(function () {
           case "jcb":
             correctCardType = "JCB";
             break;
+          case "cartesbancaires":
+            correctCardType = "CartesBancaires";
+            break;
+          case "elo":
+            correctCardType = "Elo";
+            break;
+          case "cup":
+            correctCardType = "China UnionPay";
+            break;
+          case "jcrew":
+            correctCardType = "JCrew";
+            break;
         }
         $("#cardType").val(correctCardType);
       }

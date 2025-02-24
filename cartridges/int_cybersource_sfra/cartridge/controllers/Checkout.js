@@ -24,6 +24,9 @@ server.append('Begin', function (req, res, next) {
         VInitFormattedString = result.VInitFormattedString;
         signature = result.signature;
     }
+    session.custom.flag = true;
+    session.custom.SCA = true;
+    session.custom.enroll = true;
     // TO handle the visa checkout click even on cart and billing page from mini cart
     session.privacy.cyb_CurrentPage = 'CybBilling';
     var usingMultiShipping = false; // Current integration support only single shpping
