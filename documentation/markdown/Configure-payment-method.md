@@ -102,9 +102,13 @@
 
  **Prerequisites:** You will also need to create an [API Key and API Shared Secret Key](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) that you can use to authenticate requests to our sandbox. Follow same steps to generate Production key and shared secret.
 
- Step 1: In Business Manager, go to Administration > Operations > Services and click on the ‘CybersourceFlexToken’ Credentials.  Ensure the appropriate URL is set for the environment you are configuring.
-	-   Test: https://apitest.cybersource.com/flex/v1/keys?format=JWT
-    -	Production: https://api.cybersource.com/flex/v1/keys?format=JWT   
+ Step 1 a: In Business Manager, go to Administration > Operations > Services and click on the ‘CybersourceFlexToken’ Credentials.  Ensure the appropriate URL is set for the environment you are configuring.
+	-   Test: https://apitest.cybersource.com/microform/v2/sessions?format=JWT 
+    -	Production: https://api.cybersource.com/microform/v2/sessions?format=JWT   
+
+ Step 1 b: Navigate to Administration > Operations > Services and click on the ‘AssymentricKeyManagement’  Credentials. Ensure the appropriate URL is set for the environment you are  configuring: 
+   Test: https://apitest.cybersource.com/flex/v2/public-keys 
+   Production: https://api.cybersource.com/flex/v2/public-keys 
 
  Step 2: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_SecureAcceptance.xml"** in Business Manager (**Administration > Site Development > Import & Export**)
 
@@ -115,7 +119,8 @@
  | CsSAType             | Secure Acceptance Type                                                                                                                                                 | **SA_FLEX**  |
  | SA_Flex_HostName     | Test: apitest.cybersource.com<br>Production: api.cybersource.com.com                                                                                                       |
  | SA_Flex_KeyID        | Flex Microform Key ID. Follow [link](https://developer.cybersource.com/api/developer-guides/dita-gettingstarted/authentication/createSharedKey.html) to generate keys. |
- | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                           |                     |
+ | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                      
+ SA_Flex_AllowedCardNetworks      |   Configure card types for Cybersource Flex Microform | VISA  MASTER DISCOVER  DINERSCLUB JCB MAESTRO AMEX CUP JCREW CARTESBANCAIRES ELO 
 
  Step 4: Navigate to ‘**Administration > Global Preferences >  Locales**’ and ensure the local ‘en_US’ is present. If not present, create a new local with the following information:
  - Language Code: en 
