@@ -3,8 +3,8 @@
 /* API includes */
 // eslint-disable-next-line
 var Logger = dw.system.Logger.getLogger('Cybersource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * This script call service to initiate payment for Alipay and set the response in response object
@@ -14,10 +14,10 @@ var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
  */
 function AlipayInitiatePaymentRequest(request) {
     // create service stubs
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
 
     // set alipay payment type to pass it as input in request
     var alipayPaymentType = CybersourceHelper.getAlipayPaymentType();
@@ -26,7 +26,7 @@ function AlipayInitiatePaymentRequest(request) {
     // call alipay initiate service by passing required input parameters
     CybersourceHelper.apInitiateService(serviceRequest, request.alipayReturnUrl, request.purchaseTotals, request.productObject.productName, request.productObject.productDescription, request.orderNo, alipayPaymentType.value);
     // get the response in response object
-    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var commonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     var serviceResponse = commonFacade.CallCYBService(CybersourceConstants.METHOD_ALIPAY, serviceRequest);
     return serviceResponse;
 }
@@ -41,12 +41,12 @@ function AlipayInitiatePaymentRequest(request) {
  * @returns {*} obj
  */
 function AliPayRefundService(requestID, merchantRefCode, paymentType, amount, currency) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);

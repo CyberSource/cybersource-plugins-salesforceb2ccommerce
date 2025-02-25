@@ -11,7 +11,7 @@
 
 var logger = require('dw/system/Logger');
 var Resource = require('dw/web/Resource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var VisaCheckoutFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/facade/VisaCheckoutFacade');
 var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
@@ -96,7 +96,7 @@ function UpdateShipping(decryptedPaymentData) {
  */
 function UpdateBilling(Basket, VisaCheckoutCallId, VisaCheckoutPaymentData) {
     var result = {};
-    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+    var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 
     try {
         // Retrieve the inputs
@@ -139,7 +139,7 @@ function removeExistingPaymentInstruments(basket, method) {
  * @returns {Object} result
  */
 function DecryptPayload() {
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var Site = require('dw/system/Site');
     var Transaction = require('dw/system/Transaction');
     var PaymentMgr = require('dw/order/PaymentMgr');

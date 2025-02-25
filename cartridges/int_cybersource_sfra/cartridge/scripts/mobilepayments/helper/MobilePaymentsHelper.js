@@ -18,7 +18,7 @@ var Resource = require('dw/web/Resource');
  */
 function validateMobilePaymentRequest(order) {
     // var Site = require('dw/system/Site');
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
     var headersMap = request.httpHeaders; // eslint
     var requestParam = request.httpParameterMap.requestBodyAsString;
@@ -157,7 +157,7 @@ function PrepareAuthRequestObjects(lineItemCtnr) {
         return { error: true, ERRORCODE: Resource.msg('cyb.mobilePayment.errorcode.ordernotfound', 'cybMobilePayments', null) };
     }
 
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     // Objects to set in the Service Request inside facade
     var billTo;
     var shipTo;

@@ -23,7 +23,7 @@ Cybersource cartridge installed from Market place comes with metadata to import.
 On successful import, it creates following metadata.
 
 - Site Preferences (Cybersource, Cybersource_SecureAcceptance, Cybersource_Paypal, Cybersource_GooglePay, Cybersource_Klarna, Cybersource_VisaCheckout, Cybersource_BankTransfer, Cybersource_PayerAuthentication, Cybersource_WeChat, Cybersource_Tokenization, Cybersource_DecisionManager, Cybersource_TaxConfiguration, Cybersource_DeliveryAddressVerification, Cybersource_DeviceFingerprint, Cybersource_Alipay)
-- Service (cybersource.conversiondetailreport, cybersource.soap.transactionprocessor.generic, cybersource.http.flextoken)
+- Service (cybersource.conversiondetailreport, cybersource.soap.transactionprocessor.generic, cybersource.http.flextoken,cybersource.assymentrickeymanagement)
 - Payment Processor (KLARNA_CREDIT, CYBERSOURCE_ALIPAY, BANK_TRANSFER, CYBERSOURCE_WECHAT)
 - Payment Method
 - Job (CyberSource: Decision Manager Order Update)
@@ -38,6 +38,7 @@ Field | Description
 ------------ | -------------
 Enable Cybersource Cartridge | Enable or disable Cyberdource Cartridge. If disabled none of the Cybersource services are invoked
 Cybersource Merchant ID | Cybersource Merchant ID
+CyberSource p12 Name | Name of the p12 file added in webreferences2 folder.
 CyberSource p12 UserName | friendly name of first certificate extracted from p12 file.
 CyberSource p12 Password | password added while creating p12 file.
 CyberSource Endpoint | Select Test(Test) or Production(Production)

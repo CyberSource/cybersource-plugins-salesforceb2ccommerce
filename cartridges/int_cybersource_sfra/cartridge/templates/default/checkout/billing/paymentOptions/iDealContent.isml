@@ -1,6 +1,6 @@
 <!--- TEMPLATENAME: bankTransferContent.isml --->
 <isscript>
-	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+	var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 	var bankTransferHelper = require(CybersourceConstants.CS_CORE_SCRIPT + '/banktransfer/helper/BankTransferHelper');
 	var paymentMethodType = dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.IDEAL_PAYMENT_TYPE);							
 	var bankList = bankTransferHelper.getBankListJson(paymentMethodType);

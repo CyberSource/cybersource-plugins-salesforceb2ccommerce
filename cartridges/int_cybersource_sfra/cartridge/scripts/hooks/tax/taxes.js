@@ -21,8 +21,8 @@ function calculateTax(cart) {
 
     if (IsCartridgeEnabled && EnableTaxation) {
         try {
-            var TaxHelper = require('~/cartridge/scripts/helper/TaxHelper');
-            var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+            var TaxHelper = require('*/cartridge/scripts/helper/TaxHelper');
+            var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
             var result;
             var cartStateString;
 
@@ -41,7 +41,7 @@ function calculateTax(cart) {
                     cartStateString = result.CartStateString;
                     // eslint-disable-next-line
                     if (((!empty(session.privacy.SkipTaxCalculation) || !session.privacy.SkipTaxCalculation)) && typeof session.privacy.SkipTaxCalculation !== 'undefined') {
-                        var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
+                        var TaxFacade = require('*/cartridge/scripts/facade/TaxFacade');
                         var taxationResponse = TaxFacade.TaxationRequest(cart);
                         status = new Status(Status.ERROR);
                         if (taxationResponse.success && taxationResponse.response !== null) {

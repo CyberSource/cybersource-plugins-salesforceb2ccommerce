@@ -36,7 +36,5 @@ if ((endpoint == "Test" && event.origin === "https://centinelapistag.cardinalcom
 	 document.payerAuthRedirect.submit();
     }
 }, false);
-setTimeout(function () {
-    document.payerAuthRedirect.submit();}, 10000);
 </script>
 </isdecorate>

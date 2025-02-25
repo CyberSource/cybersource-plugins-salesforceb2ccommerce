@@ -4,7 +4,7 @@
 var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 var Site = require('dw/system/Site');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 
@@ -17,7 +17,7 @@ function HandleRequest(additionalArgs) {
     var PaymentMethod = additionalArgs.PaymentMethod;
     var Transaction = require('dw/system/Transaction');
     var transStatus = Transaction.wrap(function () {
-        var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+        var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
         CommonHelper.removeExistingPaymentInstruments(cart);
         var amount = CommonHelper.CalculateNonGiftCertificateAmount(cart);
         cart.createPaymentInstrument(PaymentMethod, amount);
@@ -40,7 +40,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor, additionalA
     var order = OrderMgr.getOrder(orderNumber);
     // var paymentInstrument = paymentInstrument;
     // var paymentMethod = paymentInstrument.paymentMethod;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var subscriptionToken = CommonHelper.GetSubscriptionToken(additionalArgs.subscriptionToken, customer);
     if (CsSAType.equals(CybersourceConstants.METHOD_SA_REDIRECT)) {
         return secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, order, null, subscriptionToken);
@@ -51,7 +51,7 @@ function Authorize(orderNumber, paymentInstrument, paymentProcessor, additionalA
             order: order
         };
     } if (CsSAType.equals(CybersourceConstants.METHOD_SA_SILENTPOST)) {
-        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
         var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', subscriptionToken);
         var saSilentPostRequest = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, order, null, subscriptionToken);
         return {
@@ -87,7 +87,7 @@ function OpenIframe(currentOrderNo) {
         var cardUUID = server.forms.getForm('billing').creditCardFields.selectedCardID.htmlValue;
 
         if (order !== null && paymentInstrument !== null) {
-            var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+            var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
             var subscriptionToken = CommonHelper.GetSubscriptionToken(cardUUID, customer);
             saRequest = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, order, null, subscriptionToken);
             if (saRequest.success && saRequest.requestData !== null) {
@@ -106,7 +106,7 @@ function OpenIframe(currentOrderNo) {
 * Function to update the order and payment instrument and customer save card updates based on SA response
 */
 function updateSAResponse(responseParameterMap, order, paymentInstrument, customerObj) {
-    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+    var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
     var isOverrideShipping = dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAOverrideShippingAddress');
     var isOverrideBilling = dw.system.Site.getCurrent().getCustomPreferenceValue('CsSAOverrideBillingAddress');
     var responseObject = secureAcceptanceHelper.mapSecureAcceptanceResponse(responseParameterMap);
@@ -330,10 +330,8 @@ function SAResponse(currentRequestParameterMap) {
 }
 
 function SilentPostResponse() {
-    // var URLUtils = require('dw/web/URLUtils');
     var httpParameterMap = request.httpParameterMap;
     if ((httpParameterMap !== null) && (!empty(httpParameterMap.decision.stringValue))) {
-        // var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
         var OrderMgr = require('dw/order/OrderMgr');
         var order = OrderMgr.getOrder(httpParameterMap.req_reference_number.stringValue);
         var paymentInstrument = secureAcceptanceHelper.GetPaymemtInstument(order);
@@ -353,7 +351,7 @@ function SilentPostResponse() {
                         paymentInstrument.setCreditCardToken(paymentToken);
                     });
                 }
-                var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+                var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
                 Transaction.wrap(function () {
                     PaymentInstrumentUtils.updatePaymentInstumenSACard(paymentInstrument, httpParameterMap.req_card_expiry_date.stringValue,
                         httpParameterMap.req_card_number.stringValue, httpParameterMap.req_card_type.stringValue, paymentToken,

@@ -5,7 +5,7 @@
  * @returns {Object} obj
  */
 function CreateCyberSourceBillToObject() {
-    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billToObject = new BillToObject();
 
     billToObject.setTitle('This is the Title');
@@ -18,7 +18,7 @@ function CreateCyberSourceBillToObject() {
     billToObject.setCountry('US');
     billToObject.setPhoneNumber('777-777-7777');
     billToObject.setEmail('drivard@cybersource.com');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     billToObject.setIpAddress(CommonHelper.getIPAddress());
     billToObject.setDateOfBirth('19541217');
     billToObject.setSsn('000001234');
@@ -30,7 +30,7 @@ function CreateCyberSourceBillToObject() {
  * @returns {Object} Object
  */
 function CreateCyberSourceShipToObject() {
-    var ShipToObject = require('~/cartridge/scripts/cybersource/CybersourceShipToObject');
+    var ShipToObject = require('*/cartridge/scripts/cybersource/CybersourceShipToObject');
     var shipToObject = new ShipToObject();
     shipToObject.setTitle('This is the Title');
     shipToObject.setFirstName('Donald');
@@ -53,7 +53,7 @@ function CreateCyberSourceShipToObject() {
  * @returns {Object} Object
  */
 function CreateCyberSourcePurchaseTotalsObject(args) {
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
 
     /**
@@ -88,7 +88,7 @@ function CreateCyberSourcePurchaseTotalsObject(args) {
  * @returns {Object} Object
  */
 function CreateCyberSourcePurchaseTotalsObjectTax(args) {
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     var purchaseObject = new PurchaseTotalsObject();
 
     /**
@@ -108,7 +108,7 @@ function CreateCyberSourcePurchaseTotalsObjectTax(args) {
  * @returns {Object} Object
  */
 function CreateCyberSourcePaymentCardObject() {
-    var CardObject = require('~/cartridge/scripts/cybersource/CybersourceCardObject');
+    var CardObject = require('*/cartridge/scripts/cybersource/CybersourceCardObject');
     var cardObject = new CardObject();
     cardObject.setAccountNumber('4000000000000002');
     cardObject.setCardType('001');
@@ -127,7 +127,7 @@ function CreateCyberSourcePaymentCardObject() {
  * @returns {Object} Object
  */
 function CreateMockCybersourceBillToObject(InvalidFields, MissingFields) {
-    var BillToObject = require('~/cartridge/scripts/cybersource/CybersourceBillToObject');
+    var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billToObject = new BillToObject();
 
     billToObject.setFirstName('Peter');
@@ -151,7 +151,7 @@ function CreateMockCybersourceBillToObject(InvalidFields, MissingFields) {
     billToObject.setPhoneNumber('978-362-1553');
     billToObject.setEmail('ppritchard@cybersource.com');
 
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     billToObject.setIpAddress(CommonHelper.getIPAddress());
 
     return { success: true, billTo: billToObject };
@@ -164,7 +164,7 @@ function CreateMockCybersourceBillToObject(InvalidFields, MissingFields) {
  * @returns {Object} obj
  */
 function CreateMockCybersourceShipToObject(InvalidFields, MissingFields) {
-    var ShipToObject = require('~/cartridge/scripts/cybersource/CybersourceShipToObject');
+    var ShipToObject = require('*/cartridge/scripts/cybersource/CybersourceShipToObject');
     var shipToObject = new ShipToObject();
 
     shipToObject.setFirstName('Peter');
@@ -200,7 +200,7 @@ function CreateMockCybersourceShipToObject(InvalidFields, MissingFields) {
 function getLineItems() {
     var ArrayList = require('dw/util/ArrayList');
     var items = new ArrayList();
-    var MockLineItemObject = require('~/cartridge/scripts/cybersource/LineItemObject');
+    var MockLineItemObject = require('*/cartridge/scripts/cybersource/LineItemObject');
     var item = new MockLineItemObject();
     item.basePrice = '109.00';
     item.quantity = '5';
@@ -222,7 +222,7 @@ function CreateCybersourceTaxationItems() {
     var lineItems = getLineItems();
     var items = [];
     var idcount = 0;
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     while (lineItems.hasNext()) {
         var lineItem = lineItems.next();
@@ -307,7 +307,7 @@ function createTaxRequest() {
         defaultShipment.setShippingMethod(defaultShippingMethod);
         // eslint-disable-next-line
         dw.system.HookMgr.callHook('dw.order.calculate', 'calculate', basket);
-        var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
         var TaxFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
         responseObject = TaxFacade.TestTax(basket);
     });

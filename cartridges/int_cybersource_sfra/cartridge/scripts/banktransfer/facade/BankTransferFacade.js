@@ -1,6 +1,6 @@
 'use strict';
 
-var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
 var CybersourceHelper = libCybersource.getCybersourceHelper();
 
 /**
@@ -14,7 +14,7 @@ var CybersourceHelper = libCybersource.getCybersourceHelper();
 function BankTransferServiceInterface(paymentMethod, request) {
     // calling the service by passing Bank Transfer request
     // eslint-disable-next-line
-    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var commonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     var serviceResponse = commonFacade.CallCYBService(paymentMethod, request);
     // return response object
     return serviceResponse;
@@ -27,7 +27,7 @@ function BankTransferServiceInterface(paymentMethod, request) {
  */
 function buildRequestObject(saleObject, config) {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     // create reference of request object
     var request = new csReference.RequestMessage();
 
@@ -42,10 +42,10 @@ function buildRequestObject(saleObject, config) {
     request.purchaseTotals = libCybersource.copyPurchaseTotals(saleObject.purchaseObject);
     request.apPaymentType = saleObject.paymentType;
 
-    var invoiceHeader = new CybersourceHelper.csReference.InvoiceHeader();
+    var invoiceHeader = csReference.InvoiceHeader();
     // eslint-disable-next-line
     if (!empty(saleObject.bicNumber)) {
-        var bankInfo = new CybersourceHelper.csReference.BankInfo();
+        var bankInfo = csReference.BankInfo();
         bankInfo.swiftCode = saleObject.bicNumber;
         request.bankInfo = bankInfo;
     }
@@ -79,7 +79,7 @@ function buildRequestObject(saleObject, config) {
     if (empty(config.decision)) {
         CybersourceHelper.apDecisionManagerService(config.paymentMethod, request);
     } else {
-        request.decisionManager = new CybersourceHelper.csReference.DecisionManager();
+        request.decisionManager = new CybersourceHelper.getcsReference().DecisionManager();
         request.decisionManager.enabled = CybersourceHelper.getBankTransferDecisionManagerFlag();
     }
 
@@ -128,14 +128,12 @@ function BankTransferSaleService(saleObject, paymentMethod) {
 function BanktransferRefundService(requestID, merchantRefCode, paymentType, amount, currency) {
     // eslint-disable-next-line
     var Logger = dw.system.Logger.getLogger('Cybersource');
-    var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    // var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    // var CybersourceHelper = libCybersource.getCybersourceHelper();
+    var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
 
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
 
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount);

@@ -1,7 +1,7 @@
 'use strict';
 
 var Logger = require('dw/system/Logger');
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
 var collections = require('*/cartridge/scripts/util/collections');
 
 /**
@@ -14,11 +14,9 @@ var collections = require('*/cartridge/scripts/util/collections');
  */
 function CallCYBService(paymentMethod, request) {
     var serviceResponse = null;
-    // var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     try {
-        // var dwsvc = require('dw/svc');
         var service = CSServices.CyberSourceTransactionService;
         var requestWrapper = {};
         // set merchant id into request
@@ -41,7 +39,7 @@ function CallCYBService(paymentMethod, request) {
     }
     serviceResponse = serviceResponse.object;
     // logging the response object
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     CommonHelper.LogResponse(serviceResponse.merchantReferenceCode, serviceResponse.requestID, serviceResponse.requestToken, Number(serviceResponse.reasonCode), serviceResponse.decision);
 
     return serviceResponse;
@@ -68,10 +66,10 @@ function CheckPaymentStatusRequest(Order) {
         }
     });
     // create service stubs
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
 
     // set alipay payment type to pass it as input in request
     var request = new csReference.RequestMessage();

@@ -14,8 +14,8 @@ var Transaction = require('dw/system/Transaction');
 var SystemObjectMgr = require('dw/object/SystemObjectMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 var collections = require('*/cartridge/scripts/util/collections');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
 
 /**
  * This method will call APCheck payment status service

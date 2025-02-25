@@ -17,7 +17,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
  * @returns {*} obj
  */
 function failOrder(args) {
-    var Cybersource = require('~/cartridge/scripts/Cybersource');
+    var Cybersource = require('*/cartridge/scripts/Cybersource');
     var orderResult = Cybersource.GetOrder(args.Order);
     if (orderResult.error) {
         // eslint-disable-next-line

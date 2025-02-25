@@ -14,10 +14,9 @@
  * @returns {*} obj
  */
 function KlarnaServiceInterface(request) {
-    // var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
     // calling the service by passing klarna request
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+    var commonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     var serviceResponse = commonFacade.CallCYBService(CybersourceConstants.KLARNA_PAYMENT_METHOD, request);
     // return response object
     return serviceResponse;
@@ -40,14 +39,14 @@ function getPaymentFlowMode() {
  */
 function klarnaInitSessionService(sessionObject) {
     // declare variables for libcybersource and helper
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    // declare soap reference variable
-    // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
-    // create reference of request object
-    var request = new csReference.RequestMessage();
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     // declare helper variable
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // declare soap reference variable
+    // eslint-disable-next-line
+    var csReference = new CybersourceHelper.getcsReference();
+    // create reference of request object
+    var request = new csReference.RequestMessage();
     // set the merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
     // set client data
@@ -57,7 +56,7 @@ function klarnaInitSessionService(sessionObject) {
     // set payment type
     request.apPaymentType = sessionObject.klarnaPaymentType;
     // set bill to and ship to objects
-    var apSessionsService = new CybersourceHelper.csReference.APSessionsService();
+    var apSessionsService = new CybersourceHelper.getcsReference().APSessionsService();
     if (sessionObject.billTo != null) {
         request.billTo = libCybersource.copyBillTo(sessionObject.billTo);
     }
@@ -97,14 +96,14 @@ function klarnaInitSessionService(sessionObject) {
  */
 function klarnaUpdateSessionService(sessionObject) {
     // declare variables for libcybersource and helper
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    // declare soap reference variable
-    // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
-    // create reference of request object
-    var request = new csReference.RequestMessage();
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     // declare helper variable
     var CybersourceHelper = libCybersource.getCybersourceHelper();
+    // declare soap reference variable
+    // eslint-disable-next-line
+    var csReference = new CybersourceHelper.getcsReference();
+    // create reference of request object
+    var request = new csReference.RequestMessage();
     // set the merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
     // set client data
@@ -114,7 +113,7 @@ function klarnaUpdateSessionService(sessionObject) {
     // set payment type
     request.apPaymentType = sessionObject.klarnaPaymentType;
     // set bill to and ship to objects
-    var apSessionsService = new CybersourceHelper.csReference.APSessionsService();
+    var apSessionsService = new CybersourceHelper.getcsReference().APSessionsService();
     if (sessionObject.billTo != null && sessionObject.shipTo != null) {
         request.billTo = libCybersource.copyBillTo(sessionObject.billTo);
         request.shipTo = libCybersource.copyShipTo(sessionObject.shipTo);
@@ -158,15 +157,14 @@ function klarnaUpdateSessionService(sessionObject) {
  */
 function klarnaAuthorizationService(authorizationObject) {
     // declare variables for libcybersource and helper
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-    // declare soap reference variable
-    // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
-    // create reference of request object
-    var request = new csReference.RequestMessage();
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     // declare helper variable
     var CybersourceHelper = libCybersource.getCybersourceHelper();
-    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+    // declare soap reference variable
+    // eslint-disable-next-line
+    var csReference = new CybersourceHelper.getcsReference();
+    // create reference of request object
+    var request = new csReference.RequestMessage();
     // set merchant id
     request.merchantID = CybersourceHelper.getMerchantID();
 
@@ -174,9 +172,9 @@ function klarnaAuthorizationService(authorizationObject) {
     request.purchaseTotals = libCybersource.copyPurchaseTotals(authorizationObject.purchaseObject);
     // set payment type
     request.apPaymentType = authorizationObject.klarnaPaymentType;
-    var apAuthService = new CybersourceHelper.csReference.APAuthService();
+    var apAuthService = new CybersourceHelper.getcsReference().APAuthService();
     // decision manager changes
-    var decisionManager = new CybersourceHelper.csReference.DecisionManager();
+    var decisionManager = new CybersourceHelper.getcsReference().DecisionManager();
     // set bill to and ship to objects
     if (authorizationObject.billTo != null && authorizationObject.shipTo != null) {
         request.billTo = libCybersource.copyBillTo(authorizationObject.billTo);
@@ -198,7 +196,7 @@ function klarnaAuthorizationService(authorizationObject) {
     // set client data
     if (decisionManager.enabled && CybersourceHelper.getDigitalFingerprintEnabled()) {
         // eslint-disable-next-line
-        libCybersource.setClientData(request, authorizationObject.orderNo, session.sessionID.replace(/[+/=]/g, CybersourceConstants.SPECIALCHARS));
+        libCybersource.setClientData(request, authorizationObject.orderNo, libCybersource.replaceCharsInSessionID(session.sessionID));
     } else {
         libCybersource.setClientData(request, authorizationObject.orderNo);
     }

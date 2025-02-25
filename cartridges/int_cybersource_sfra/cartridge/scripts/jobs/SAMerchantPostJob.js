@@ -13,11 +13,11 @@ var CustomObjectMgr = require('dw/object/CustomObjectMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
-var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 
 /**
  * Remove all custom objects for already processed Order
@@ -51,7 +51,7 @@ function updateOrderStatus(order) {
         var MailTemplate = 'mail/orderconfirmation';
         var MailTo = order.customerEmail;
         if (!empty(MailFrom) && !empty(MailSubject) && !empty(MailTemplate) && !empty(MailTo)) {
-            var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+            var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
             CommonHelper.sendMail({
                 template: 'mail/orderconfirmation',
                 recipient: order.getCustomerEmail(),

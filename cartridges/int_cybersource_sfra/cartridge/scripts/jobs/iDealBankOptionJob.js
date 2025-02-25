@@ -1,6 +1,6 @@
 'use strict';
 
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
 
 var iDealBankOptionJob = (function () {
     var that = {};

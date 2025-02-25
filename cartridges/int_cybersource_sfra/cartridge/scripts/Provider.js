@@ -7,15 +7,15 @@
  */
 
 /* API Includes */
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-var Cybersource = require('~/cartridge/scripts/Cybersource');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var Cybersource = require('*/cartridge/scripts/Cybersource');
 
 /**
  * Process redirect url response of secure acceptance redirect
  */
 // eslint-disable-next-line
 function saredirect(args) {
-    var secureAcceptanceAdapter = require('~/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
+    var secureAcceptanceAdapter = require('*/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
     // eslint-disable-next-line
     var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
     var returnVariable;
@@ -56,7 +56,7 @@ function saredirect(args) {
  */
 // eslint-disable-next-line
 function saiframe(args) {
-    var secureAcceptanceAdapter = require('~/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
+    var secureAcceptanceAdapter = require('*/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter');
     // eslint-disable-next-line
     var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
     var returnVariable;
@@ -91,7 +91,7 @@ function saiframe(args) {
 // eslint-disable-next-line
 function alipay(Order) {
     var order = Order;
-    var commonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var commonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var orderResult = Cybersource.GetOrder(order);
     if (orderResult.error) {
         return { carterror: true };
@@ -117,7 +117,7 @@ function alipay(Order) {
 // eslint-disable-next-line
 function banktransfer(Order) {
     var order = Order;
-    var bankAdaptor = require('~/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
+    var bankAdaptor = require('*/cartridge/scripts/banktransfer/adaptor/BankTransferAdaptor');
     // get the order
     var orderResult = Cybersource.GetOrder(order);
     // check if payment method is not specific to bank transfer
@@ -147,7 +147,7 @@ function banktransfer(Order) {
  */
 function klarna(Order) {
     var order = Order;
-    var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
+    var klarnaAdaptor = require('*/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
     var collections = require('*/cartridge/scripts/util/collections');
     // get the order
@@ -163,7 +163,6 @@ function klarna(Order) {
      */
     var result;
     collections.forEach(order.paymentInstruments, function (paymentInstrument) {
-    // for each(var paymentInstrument in order.paymentInstruments) {
 
         if (!paymentInstrument.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {
             if (paymentInstrument.paymentTransaction.custom.apPaymentStatus !== null
@@ -202,7 +201,7 @@ function cancelfail(Order) {
     if (!request.httpParameterMap.cfk.booleanValue) {
         orderResult = Cybersource.GetOrder(order);
     } else {
-        var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
+        var klarnaAdaptor = require('*/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
         // eslint-disable-next-line
         orderResult = klarnaAdaptor.GetKlarnaOrder({ Order: args.Order });
     }

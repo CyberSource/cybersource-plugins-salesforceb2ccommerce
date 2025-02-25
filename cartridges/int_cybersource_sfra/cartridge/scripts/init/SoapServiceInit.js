@@ -106,11 +106,11 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
     */
     createRequest: function (svc, requestObj) {
         // eslint-disable-next-line
-        var csReference = webreferences2.CyberSourceTransaction;
-        var service = csReference.getDefaultService();
 
-        var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+        var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
         var CybersourceHelper = libCybersource.getCybersourceHelper();
+        var csReference = new CybersourceHelper.getcsReference();
+        var service = csReference.getDefaultService();
         CybersourceHelper.setEndpoint(service);
 
         // eslint-disable-next-line

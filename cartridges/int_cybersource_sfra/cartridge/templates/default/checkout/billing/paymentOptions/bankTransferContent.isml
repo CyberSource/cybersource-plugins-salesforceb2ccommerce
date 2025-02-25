@@ -1,7 +1,7 @@
 <!--- TEMPLATENAME: bankTransferContent.isml --->
 	<iscomment>link and script for BIC widget</iscomment>
 <isscript>
-	var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+	var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 	var bankTransferHelper = require(CybersourceConstants.CS_CORE_SCRIPT + '/banktransfer/helper/BankTransferHelper');
 	var paymentMethodType = dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_BANK_TRANSFER);							
 	var bankList = bankTransferHelper.getBankListJson(paymentMethodType);

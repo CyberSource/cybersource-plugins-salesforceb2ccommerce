@@ -5,9 +5,8 @@
 * Integration.
 */
 /* API includes */
-var bankTransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
-// var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var bankTransferFacade = require('*/cartridge/scripts/banktransfer/facade/BankTransferFacade');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var bankTransferHelper = require(CybersourceConstants.CS_CORE_SCRIPT + '/banktransfer/helper/BankTransferHelper');
 /* Script Modules */
@@ -42,7 +41,7 @@ function AuthorizeBankTransferOrderUpdate(order, responseObject, paymentType) {
     // declare transaction
     var Transaction = require('dw/system/Transaction');
     Transaction.wrap(function () {
-        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
         // get payment instrument detail
         var paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
         // set transaction level object with custom values after getting response of sale service
@@ -85,11 +84,9 @@ function GetCustomPreferencesForBT() {
  */
 function CreateSaleServiceRequest(Order, testMethod) {
     // declare variables
-    // var billingForm = session.forms.billing;
     // declare common helper variable to call its required methods
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    // var CybersourceHelper = libCybersource.getCybersourceHelper();
-    // var selectedPaymentMethod = session.forms.billing.paymentMethod.value;
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+
     var billTo; var purchaseObject; var
         paymentType;
     var URLUtils = require('dw/web/URLUtils');
@@ -176,7 +173,7 @@ function CreateSaleServiceRequest(Order, testMethod) {
  */
 function CheckStatusServiceRequest(Order) {
     // create helper variable
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper.js');
     // call check status service
     var response = CommonHelper.CheckStatusServiceRequest(Order);
     // return response
@@ -191,7 +188,7 @@ function CheckStatusServiceRequest(Order) {
  */
 function HandleRequest(Basket) {
     // create helper variable
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper.js');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper.js');
     // call handle request method
     var response = CommonHelper.HandleRequest(Basket);
     // return response

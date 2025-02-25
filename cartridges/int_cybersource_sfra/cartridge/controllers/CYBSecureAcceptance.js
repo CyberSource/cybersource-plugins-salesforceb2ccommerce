@@ -9,7 +9,7 @@ var server = require('server');
 
 /* API Includes */
 var Resource = require('dw/web/Resource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 /**
  * Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
@@ -61,10 +61,19 @@ server.get('MerchantPost', server.middleware.https, function (req, res, next) {
 server.get('CreateFlexToken', server.middleware.https, function (req, res, next) {
     var Flex = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/Flex');
     var flexResult = Flex.CreateFlexKey();
-    res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent', {
-        flexTokenResult: flexResult
-    });
-    next();
+    var parsedPayload = Flex.jwtDecode(flexResult);
+    if (parsedPayload != null) {
+        var clientLibrary = parsedPayload.ctx[0].data.clientLibrary;
+        var clientLibraryIntegrity = parsedPayload.ctx[0].data.clientLibraryIntegrity;
+        if(clientLibraryIntegrity && clientLibrary){
+            res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent', {
+                flexTokenResult: flexResult,
+                clientLibrary: clientLibrary,
+                clientLibraryIntegrity: clientLibraryIntegrity
+            });
+        }
+        next();
+    }
 });
 
 server.get('ReCreateBasket', server.middleware.https, function (req, res, next) {

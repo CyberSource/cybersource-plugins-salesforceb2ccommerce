@@ -2,7 +2,7 @@
 
 // eslint-disable-next-line
 var Logger = dw.system.Logger.getLogger('Cybersource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var collections = require('*/cartridge/scripts/util/collections');
 
 /**
@@ -36,15 +36,12 @@ function getOrderObject(Basket) {
         return { error: true };
     }
 
-    var OrderObject = require('~/cartridge/scripts/cardinal/OrderObject');
-    var ConsumerObject = require('~/cartridge/scripts/cardinal/ConsumerObject');
-    var AddressObject = require('~/cartridge/scripts/cardinal/BillingShippingAddressObject');
-    var AccountObject = require('~/cartridge/scripts/cardinal/AccountObject');
-    var TokenObject = require('~/cartridge/scripts/cardinal/TokenObject');
-    // var OrderDetailsObject = require('~/cartridge/scripts/cardinal/OrderDetailsObject');
-    var CartItemObject = require('~/cartridge/scripts/cardinal/CartItemObject');
-    // var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    // var app = require(CybersourceConstants.APP);
+    var OrderObject = require('*/cartridge/scripts/cardinal/OrderObject');
+    var ConsumerObject = require('*/cartridge/scripts/cardinal/ConsumerObject');
+    var AddressObject = require('*/cartridge/scripts/cardinal/BillingShippingAddressObject');
+    var AccountObject = require('*/cartridge/scripts/cardinal/AccountObject');
+    var TokenObject = require('*/cartridge/scripts/cardinal/TokenObject');
+    var CartItemObject = require('*/cartridge/scripts/cardinal/CartItemObject');
 
     var orderObject = new OrderObject();
     var consumerObject = new ConsumerObject();
@@ -190,7 +187,7 @@ function getOrderObject(Basket) {
  * @returns {*} obj
  */
 function getOrderDetailsObject(order, transactionId) {
-    var OrderDetailsObject = require('~/cartridge/scripts/cardinal/OrderDetailsObject');
+    var OrderDetailsObject = require('*/cartridge/scripts/cardinal/OrderDetailsObject');
     var orderdetailsObject = new OrderDetailsObject();
 
     orderdetailsObject.setOrderNumber(order.orderNo);

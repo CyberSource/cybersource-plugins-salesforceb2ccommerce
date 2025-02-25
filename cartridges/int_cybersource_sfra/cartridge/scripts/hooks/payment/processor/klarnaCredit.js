@@ -1,6 +1,6 @@
 'use strict';
 
-var klarnaAdaptor = require('~/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
+var klarnaAdaptor = require('*/cartridge/scripts/klarna/adaptor/KlarnaAdaptor');
 
 /**
 * Current implementation simply creates a payment method and returns 'success'.

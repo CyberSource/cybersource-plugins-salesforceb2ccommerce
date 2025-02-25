@@ -1,5 +1,16 @@
 ## <ins>Release History
 
+**Version 24.1.3 (February, 2025)**
+Enhancement: 
+•	Implemented support for multiple p12 files in p12 authentication.
+•	Upgraded Microform from v0.11 to v2. 
+•	Replaced ~ with * in require statements. 
+ 
+Bug Fixes: 
+•	Resolved the re-calculation issue of the basket when handling 478 scenarios.
+•	Added check for subscription id in TMS for SA_Redirect and SA_Iframe payment methods
+•	Added a check for DDC url before form submission.
+
 **Version 24.1.2 (December, 2024)**
 •	Upgraded the cartridge to support jQuery v3.7.1.
 •	Addresses security findings.

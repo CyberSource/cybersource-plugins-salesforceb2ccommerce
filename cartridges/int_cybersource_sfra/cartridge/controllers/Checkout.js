@@ -4,7 +4,7 @@
 var page = module.superModule;
 var server = require('server');
 var Site = require('dw/system/Site');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 server.extend(page);
@@ -15,7 +15,7 @@ server.append('Begin', function (req, res, next) {
     var Resource = require('dw/web/Resource');
     var OrderModel = require('*/cartridge/models/order');
     var currentBasket = BasketMgr.getCurrentBasket();
-    var VisaCheckout = require('~/cartridge/scripts/visacheckout/helper/VisaCheckoutHelper');
+    var VisaCheckout = require('*/cartridge/scripts/visacheckout/helper/VisaCheckoutHelper');
     var VInitFormattedString = '';
     var signature = '';
     var result = VisaCheckout.Initialize(false); // no delivery address in lightbox
@@ -24,6 +24,9 @@ server.append('Begin', function (req, res, next) {
         VInitFormattedString = result.VInitFormattedString;
         signature = result.signature;
     }
+    session.custom.flag = true;
+    session.custom.SCA = true;
+    session.custom.enroll = true;
     // TO handle the visa checkout click even on cart and billing page from mini cart
     session.privacy.cyb_CurrentPage = 'CybBilling';
     var usingMultiShipping = false; // Current integration support only single shpping
@@ -65,14 +68,14 @@ server.append('Begin', function (req, res, next) {
         basketModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
     }
 
-    var Countries = require('~/cartridge/scripts/utils/Countries');
+    var Countries = require('*/cartridge/scripts/utils/Countries');
     var countryCode = Countries.getCurrent({
         CurrentRequest: {
             locale: request.locale
         }
     }).countryCode;
     var PaymentMgr = require('dw/order/PaymentMgr');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var paymentAmount = CommonHelper.CalculateNonGiftCertificateAmount(currentBasket);
     var applicablePaymentMethods = PaymentMgr.getApplicablePaymentMethods(customer, countryCode, paymentAmount.value);

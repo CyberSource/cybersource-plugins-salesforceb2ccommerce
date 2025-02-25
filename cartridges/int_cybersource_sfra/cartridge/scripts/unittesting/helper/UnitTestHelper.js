@@ -1,7 +1,7 @@
 'use strict';
 
 /* API Includes */
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
 var TestHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/helper/TestHelper');
@@ -79,20 +79,20 @@ function TestCaptureService(requestID, merchantRefCode, paymentType, paymentTota
     var serviceResponse;
     // capture the refund service response from test facade
     if (paymentType === 'CC') {
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
         // captureReplyTitle = 'Credit card Capture Reply';
     } else if (paymentType === 'visacheckout') {
         // eslint-disable-next-line
         var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
     } else if (paymentType === 'PPL') {
-        var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+        var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalCaptureService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
     } else if (paymentType === 'googlepay') {
         // var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
-        var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
+        var MobileCheckoutFacade = require('*/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPCaptureRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
     }
     // eslint-disable-next-line
@@ -115,25 +115,25 @@ function TestCaptureService(requestID, merchantRefCode, paymentType, paymentTota
 function TestCreditService(requestID, merchantRefCode, paymentType, paymentTotal, currency) {
     var orderid;
     var serviceResponse;
-    var AliPayFacade = require('~/cartridge/scripts/alipay/facade/AlipayFacade');
+    var AliPayFacade = require('*/cartridge/scripts/alipay/facade/AlipayFacade');
     if (paymentType === 'CC') {
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency);
     } else if (paymentType === 'visacheckout') {
         // eslint-disable-next-line
         orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
     } else if (paymentType === 'PPL') {
-        var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+        var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
     } else if (paymentType === 'googlepay') {
-        var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
+        var MobileCheckoutFacade = require('*/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPCreditRequest(requestID, merchantRefCode, paymentType, paymentTotal, currency, orderid);
     } else if (paymentType === 'APY') {
         serviceResponse = AliPayFacade.AliPayRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
     } else if (paymentType === 'MCH' || paymentType === 'IDL' || paymentType === 'SOF') {
-        var BanktransferFacade = require('~/cartridge/scripts/banktransfer/facade/BankTransferFacade');
+        var BanktransferFacade = require('*/cartridge/scripts/banktransfer/facade/BankTransferFacade');
         serviceResponse = BanktransferFacade.BanktransferRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
     } else if (paymentType === 'APY') {
         serviceResponse = AliPayFacade.AliPayRefundService(requestID, merchantRefCode, paymentType, paymentTotal, currency);
@@ -162,16 +162,16 @@ function TestAuthReversal(requestID, merchantRefCode, paymentType, amount, curre
     var orderid = session.forms.genericTestInterfaceForm.orderRequestID.value;
     // capture the refund service response from test facade
     if (paymentType === 'CC') {
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         serviceResponse = CardFacade.CCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
     } else if (paymentType === 'visacheckout') {
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         serviceResponse = VisaCheckoutFacade.VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid);
     } else if (paymentType === 'PPL') {
-        var PayPalFacade = require('~/cartridge/scripts/paypal/facade/PayPalFacade');
+        var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalReversalService(requestID, merchantRefCode, paymentType, amount, currency);
     } else if (paymentType === 'googlepay') {
-        var MobileCheckoutFacade = require('~/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
+        var MobileCheckoutFacade = require('*/cartridge/scripts/mobilepayments/facade/MobilePaymentFacade');
         serviceResponse = MobileCheckoutFacade.GPAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount);
     }
 
@@ -214,7 +214,7 @@ function TestCheckStatusService(merchantReferenceCode) {
            return {success: true, "type": "CC Auth Reverse", response: serviceResponse};
 
        } */
-    var CommonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var CommonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     serviceResponse = CommonFacade.CheckPaymentStatusRequest(Order);
 
     // eslint-disable-next-line

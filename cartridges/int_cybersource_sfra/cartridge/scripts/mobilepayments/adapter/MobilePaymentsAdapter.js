@@ -21,7 +21,7 @@ function processPayment(order) {
     var ERRORMSG;
     var MobilePaymentHelper = require('../helper/MobilePaymentsHelper');
     var MobilePaymentFacade = require('../facade/MobilePaymentFacade');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var result = MobilePaymentHelper.validateMobilePaymentRequest(order);
     if (result.success) {
         var paymentAPIRequestParams = {
@@ -47,7 +47,7 @@ function processPayment(order) {
         if (result.ServiceResponse.error) {
             return result;
         }
-        var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+        var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
         var orderUpdateResult = PaymentInstrumentUtils.mobilePaymentOrderUpdate(result.order, result);
         if (!orderUpdateResult) {
             ERRORCODE = Resource.msg('cyb.applepay.errorcode.systemfailure', 'cybapplepay', null);
@@ -77,7 +77,7 @@ function processPaymentGP(order) {
     /* API Includes */
     var Resource = require('dw/web/Resource');
     var Logger = require('dw/system/Logger').getLogger('Cybersource');
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
     var MobilePaymentHelper = require('../helper/MobilePaymentsHelper');
     var result = MobilePaymentHelper.validateMobilePaymentRequest(order);
     /* Script Modules */
@@ -85,7 +85,7 @@ function processPaymentGP(order) {
     var ERRORCODE;
     var ERRORMSG;
     var MobilePaymentFacade = require('../facade/MobilePaymentFacade');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var paymentAPIRequestParams = {
         lineItemCtnr: order.order,
         orderNo: order.OrderNo,
@@ -103,7 +103,7 @@ function processPaymentGP(order) {
     if (result.ServiceResponse.error) {
         return result;
     }
-    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+    var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
     var orderUpdateResult = PaymentInstrumentUtils.mobilePaymentOrderUpdate(result.order, result);
     if (!orderUpdateResult) {
         ERRORCODE = Resource.msg('cyb.applepay.errorcode.systemfailure', 'cybapplepay', null);
@@ -173,15 +173,13 @@ function UpdateShipping(shippingDetails) {
  * @returns {Object} obj
  */
 function UpdateBilling(Basket, GPCheckoutPaymentData, email) {
-    // var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
-    // var Site = require('dw/system/Site');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var Transaction = require('dw/system/Transaction');
     var Resource = require('dw/web/Resource');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var BasketMgr = require('dw/order/BasketMgr');
     var result = {};
-    var PaymentInstrumentUtils = require('~/cartridge/scripts/utils/PaymentInstrumentUtils');
+    var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
     var logger = require('dw/system/Logger');
 
     try {

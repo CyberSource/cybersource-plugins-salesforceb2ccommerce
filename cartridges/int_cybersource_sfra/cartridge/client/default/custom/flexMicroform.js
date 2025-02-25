@@ -3,8 +3,7 @@
 'use strict';
 
 $(document).ready(function () {
-  if ($("#flextokenObj").length != 0) {
-    var captureContext = JSON.parse($("#flextokenRespose").val()).keyId;
+  var captureContext = $('#flextokenRespose').val();
     var flex = new Flex(captureContext); // eslint-disable-line no-undef
     var cardNumberplaceholder = $("#credit-card-content.cardNumber").attr(
       "data-cardNumber"
@@ -30,7 +29,7 @@ $(document).ready(function () {
         color: "#a94442",
       },
     };
-    var microform = flex.microform({
+    var microform = flex.microform("card",{
       styles: customStyles,
     });
     var number = microform.createField("number");
@@ -91,8 +90,8 @@ $(document).ready(function () {
 
         $("#flex-response").val(decodedJwt.jti);
 
-        $("#cardNumber").val(decodedJwt.data.number);
-        $('#cardType').val(decodedJwt.data.type);
+        $('#cardNumber').val(decodedJwt.content.paymentInformation.card.number.maskedValue);
+
         if ($(".submit-payment").length === 1) {
           $(".submit-payment").trigger("click");
         } else {
@@ -122,7 +121,7 @@ $(document).ready(function () {
           case "discover":
             correctCardType = "Discover";
             break;
-          case "diners-club":
+          case "dinersclub":
             correctCardType = "DinersClub";
             break;
           case "maestro":
@@ -130,6 +129,18 @@ $(document).ready(function () {
             break;
           case "jcb":
             correctCardType = "JCB";
+            break;
+          case "cartesbancaires":
+            correctCardType = "CartesBancaires";
+            break;
+          case "elo":
+            correctCardType = "Elo";
+            break;
+          case "cup":
+            correctCardType = "China UnionPay";
+            break;
+          case "jcrew":
+            correctCardType = "JCrew";
             break;
         }
         $("#cardType").val(correctCardType);
@@ -171,5 +182,4 @@ $(document).ready(function () {
         event.preventDefault();
       }
     });
-  }
 });

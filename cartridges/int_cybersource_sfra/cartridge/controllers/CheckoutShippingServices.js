@@ -20,8 +20,6 @@ server.append('SubmitShipping', function (req, res, next) {
     var viewData = res.getViewData();
     var paidWithPayPal = false;
     var usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
-    session.custom.SCA = true;
-    session.custom.enroll = true;
     if (usingMultiShipping === true && currentBasket.shipments.length < 2) {
         req.session.privacyCache.set('usingMultiShipping', false);
         usingMultiShipping = false;
@@ -43,7 +41,7 @@ server.append('SubmitShipping', function (req, res, next) {
         taxError = true;
     }
     var selectedPayment;
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
     var paymentInstrument = null;
     if (!empty(currentBasket.getPaymentInstruments())) {

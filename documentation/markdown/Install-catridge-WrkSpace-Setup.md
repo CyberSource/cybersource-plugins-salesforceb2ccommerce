@@ -26,7 +26,8 @@ Cybersource's Storefront Reference Architecture Cartridge can be installed from 
 
 ### Step 3: Create a p12 file for authentication
  Create a p12 file that you can use to authenticate requests. 
- Place the file generated in the webreferences2 folder in the same cartridge as the WSDL file and name of the p12 file must be the same as the WSDL file and the file extension must be that of the type jks or pkcs12. 
+ Place the file generated in the webreferences2 folder in the same cartridge as the WSDL file and the file extension must be that of the type jks or pkcs12. Duplicate the CyberSourceTransaction.wsdl file, CyberSourceTransaction.wsdl.properties file and rename them with the same name as your respective p12 files.  
+Repeat  the above step to use multiple p12 files as per requirements. 
 
 **NOTE**: If you are using different IDE, refer respective developer guide to setup the workspace. 
 

@@ -2,11 +2,11 @@
 
 var Logger = require('dw/system/Logger');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
-var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
-var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 var CybersourceHelper = libCybersource.getCybersourceHelper();
-var CSServices = require('~/cartridge/scripts/init/SoapServiceInit');
+var CSServices = require('*/cartridge/scripts/init/SoapServiceInit');
 
 /**
  * Function is used to test the Alipay Initial request with the request amount and currency
@@ -143,10 +143,10 @@ function TestCCAuth(billTo, shipTo, card, purchaseTotals) {
     var purchaseObject = purchaseTotals;
     var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
 
     var serviceRequest = new csReference.RequestMessage();
-    var ItemObject = require('~/cartridge/scripts/cybersource/CybersourceItemObject');
+    var ItemObject = require('*/cartridge/scripts/cybersource/CybersourceItemObject');
     var itemObject = new ItemObject();
     itemObject.setUnitPrice(10, '000000.00', 'en_US');
     itemObject.setId(1);
@@ -263,7 +263,7 @@ function TestCreateSubscription(billTo, card, purchaseTotals) {
 */
 function TestDAVRequest(billTo, shipTo) {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
     var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 
@@ -354,7 +354,7 @@ function TestDAVRequest(billTo, shipTo) {
  * @returns {Object} obj
  */
 function TestOnDemandSubscription() {
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     // eslint-disable-next-line
     var subscriptionID = session.forms.subscription.subscriptionID.htmlValue;
     // eslint-disable-next-line
@@ -364,12 +364,12 @@ function TestOnDemandSubscription() {
     var purchaseObject = CommonHelper.CreateCyberSourcePurchaseTotalsObject_UserData(currency, amount).purchaseTotals;
     // var purchaseObject = purchaseTotals;
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
     var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 
     CybersourceHelper.addOnDemandSubscriptionInfo(subscriptionID, serviceRequest, purchaseObject, 'test');
-    serviceRequest.ccAuthService = new CybersourceHelper.csReference.CCAuthService();
+    serviceRequest.ccAuthService = new CybersourceHelper.getcsReference().CCAuthService();
     serviceRequest.ccAuthService.run = true;
 
     var serviceResponse = {};
@@ -407,7 +407,7 @@ function TestOnDemandSubscription() {
  */
 function TestPayerAuthEnrollCheck(CreditCard) {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
     var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
 
@@ -456,7 +456,7 @@ function TestPayerAuthValidation(PaRes, CreditCard) {
     var paymentMethod = PaymentInstrument.METHOD_CREDIT_CARD;
     signedPaRes = signedPaRes.replace('/[^a-zA-Z0-9/+=]/g', '');
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var serviceRequest = new csReference.RequestMessage();
     CybersourceHelper.addTestPayerAuthValidateInfo(serviceRequest, signedPaRes, CreditCard);
     var serviceResponse = {};
@@ -499,7 +499,7 @@ function TestPayerAuthValidation(PaRes, CreditCard) {
  */
 function TestTax(cart) {
     var serviceResponse;
-    var TaxFacade = require('~/cartridge/scripts/facade/TaxFacade');
+    var TaxFacade = require('*/cartridge/scripts/facade/TaxFacade');
     serviceResponse = TaxFacade.TaxationRequest(cart);
 
     // eslint-disable-next-line
@@ -580,7 +580,7 @@ function TestSACreateToken(billToObject, shipToObject, purchaseObject) {
         var requestMap = new HashMap();
         var sitePreference = {};
         var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-        var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+        var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
 
         // eslint-disable-next-line
         sitePreference.access_key = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Redirect_AccessKey');
@@ -652,7 +652,7 @@ function getPaymentMethod(paymentType) {
  * @returns {Object} obj
  */
 function createPurchaseTotalObject(CurrentForms, request) {
-    var PurchaseTotalsObject = require('~/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
+    var PurchaseTotalsObject = require('*/cartridge/scripts/cybersource/CybersourcePurchaseTotalsObject');
     // create purhcase object for Credit Card and Klarna
     var purchaseObject = new PurchaseTotalsObject();
     // set the purchase total object for request
@@ -669,9 +669,9 @@ function createPurchaseTotalObject(CurrentForms, request) {
  * @returns {Object} obj
  */
 function TestSaleService() {
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
 
     /* eslint-disable */
     var requestID = session.forms.genericTestInterfaceForm.orderRequestID.htmlValue;
@@ -734,7 +734,7 @@ function TestSaleService() {
  */
 function TestAuthorizeService() {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var request = new csReference.RequestMessage();
     var response = {};
     var serviceReply = '';
@@ -750,7 +750,7 @@ function TestAuthorizeService() {
     // eslint-disable-next-line
     libCybersource.setClientData(request, session.forms.genericTestInterfaceForm.merchantReferenceCode.htmlValue);
 
-    var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     // eslint-disable-next-line
     var Order = dw.order.OrderMgr.getOrder(session.forms.genericTestInterfaceForm.merchantReferenceCode.value);
     var result = CommonHelper.CreateCyberSourceBillToObject(Order, true);
@@ -797,7 +797,7 @@ function TestAuthorizeService() {
  */
 function TestRefundService() {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
 
     var request = new csReference.RequestMessage();
     var response = {};
@@ -849,7 +849,7 @@ function TestRefundService() {
  */
 function TestCancelService() {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var request = new csReference.RequestMessage();
 
     var response = {};
@@ -902,7 +902,7 @@ function TestCancelService() {
  */
 function TestCaptureService() {
     /* eslint-disable */
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var request = new csReference.RequestMessage();
 
     var requestID = session.forms.genericTestInterfaceForm.authRequestID.htmlValue;
@@ -925,7 +925,7 @@ function TestCaptureService() {
 
     // Add VC field if Visa Checkout and handle the order ID from the form
     if (paymentType.equals('visacheckout')) {
-        var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
         // get the order object from OrderMgr class
         // eslint-disable-next-line
         var order = dw.order.OrderMgr.getOrder(merchantRefCode);
@@ -983,7 +983,7 @@ function TestCaptureService() {
  */
 function TestAuthReversalService() {
     // eslint-disable-next-line
-    var csReference = webreferences2.CyberSourceTransaction;
+    var csReference = new CybersourceHelper.getcsReference();
     var request = new csReference.RequestMessage();
 
     var response = {};
@@ -1004,7 +1004,7 @@ function TestAuthReversalService() {
         // create billto, shipto for Klarna only
         // eslint-disable-next-line
         var Order = dw.order.OrderMgr.getOrder(merchantRefCode);
-        var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+        var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
         if (Order != null) {
             var billTo = CommonHelper.CreateCyberSourceBillToObject(Order, true).billTo;
             var shipTo = CommonHelper.CreateCybersourceShipToObject(Order).shipTo;
@@ -1065,7 +1065,7 @@ function TestAuthReversalService() {
  * @returns {Object} obj
  */
 function TestCheckStatusService() {
-    var commonFacade = require('~/cartridge/scripts/facade/CommonFacade');
+    var commonFacade = require('*/cartridge/scripts/facade/CommonFacade');
     var Order = {};
     var heading = 'test.checkstatusserviceresult';
     var serviceReply = 'apCheckStatusReply';

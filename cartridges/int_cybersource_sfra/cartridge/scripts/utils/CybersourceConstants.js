@@ -13,6 +13,9 @@
 
 var CybersourceConstants = {};
 
+CybersourceConstants.APPLICATION_NAME = 'Salesforce B2C(SOAP)';
+CybersourceConstants.APPLICATION_VERSION = '24.1.3';
+
 CybersourceConstants.METHOD_ALIPAY = 'ALIPAY';
 CybersourceConstants.METHOD_ALIPAY_returnURLValue = 'alipay';
 CybersourceConstants.METHOD_PAYPAL = 'PAYPAL';
@@ -67,6 +70,7 @@ CybersourceConstants.IDEAL_PAYMENT_TYPE = 'IDL';
 var reasonCodeList = [101, 102, 150, 203, 204, 233];
 CybersourceConstants.REASONCODES = reasonCodeList;
 CybersourceConstants.SPECIALCHARS = 'SF';
+CybersourceConstants.CHARS_TO_REPLACE_FOR_SESSIONID = /[+/=]/g;
 
 //  Secure Acceptance Related Constants
 CybersourceConstants.HANDLE = 'Handle';

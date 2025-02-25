@@ -1,14 +1,17 @@
-<isset name="flexError" value="${pdict.flexTokenResult == null ? Resource.msg('flex.tokenerror','cybersource',null) : ''}" scope="page" />
+<isset name="flexError"
+    value="${pdict.flexTokenResult == null ? Resource.msg('flex.tokenerror', 'cybersource', null) : ''}" scope="page" />
 <div class="row">
     <div class="col-12">
-        <div class="form-group cardNumber" data-cardNumber="${Resource.msg('cardnumber.placeholder','cybersource',null)}">
-            <label class="form-control-label" for="cardNumber">${Resource.msg('field.credit.card.number','creditCard',null)}</label>
+        <div class="form-group cardNumber"
+            data-cardNumber="${Resource.msg('cardnumber.placeholder', 'cybersource', null)}">
+            <label class="form-control-label"
+                for="cardNumber">${Resource.msg('field.credit.card.number', 'creditCard', null)}</label>
             <div class="card-number-wrapper">
                 <div id="cardNumber-container" class="form-control"></div>
                 <div class="invalid-feedback"></div>
             </div>
-           <isif condition="${pdict.flexTokenResult == null}"> 
-               <div class="alert alert-danger">${flexError}</div>
+            <isif condition="${pdict.flexTokenResult == null}">
+                <div class="alert alert-danger">${flexError}</div>
             </isif>
         </div>
     </div>
@@ -16,23 +19,24 @@
 
 <div class="row">
     <div class="col-12">
-       <div class="form-group securityCode" data-cardNumber="${Resource.msg('securityCode.placeholder','cybersource',null)}">
-            <label class="form-control-label" for="securityCode">${Resource.msg('field.credit.card.security.code','creditCard',null)}</label>
+        <div class="form-group securityCode"
+            data-cardNumber="${Resource.msg('securityCode.placeholder', 'cybersource', null)}">
+            <label class="form-control-label"
+                for="securityCode">${Resource.msg('field.credit.card.security.code', 'creditCard', null)}</label>
             <div class="security-code-wrapper">
                 <div id="securityCode-container" class="form-control"></div>
                 <div class="invalid-feedback"></div>
             </div>
-           <isif condition="${pdict.flexTokenResult == null}"> 
-            	<div class="alert alert-danger">${flexError}</div>
-           </isif>
+            <isif condition="${pdict.flexTokenResult == null}">
+                <div class="alert alert-danger">${flexError}</div>
+            </isif>
         </div>
     </div>
 </div>
 
-<isif condition="${pdict.flexTokenResult != null}" > 
-	<isset name="flextoken" value="${JSON.parse(pdict.flexTokenResult)}" scope="page" />
-	<input type="hidden" value="${JSON.stringify(flextoken)}" name="flextokenRespose" id="flextokenRespose"/>
-	<input type="hidden" value="${JSON.stringify(flextoken.jwk)}" name="flextokenObj" id="flextokenObj"/> 
+<isif condition="${pdict.flexTokenResult != null}">
+    <isset name="flextoken" value="${pdict.flexTokenResult}" scope="page" />
+    <input type="hidden" value="${flextoken}" name="flextokenRespose" id="flextokenRespose" />
 </isif>
 
 <iscomment>Secure Acceptance Flex MicroForm </iscomment>
@@ -40,18 +44,13 @@
     <div class="col-12">
         <div class="form-group">
             <div class="flexresponse-wrapper">
-                <input type="hidden" class="form-control flex-response" id="flex-response"
-                    value="" name="dwfrm_billing_creditCardFields_flexresponse">
+                <input type="hidden" class="form-control flex-response" id="flex-response" value=""
+                    name="dwfrm_billing_creditCardFields_flexresponse">
             </div>
         </div>
     </div>
 </div>
 
 <iscomment>Secure Acceptance Flex Microform Scripts </iscomment>
-	
-<isif condition="${dw.system.System.getInstanceType()!= 2}">
-	<script src="https://testflex.cybersource.com/cybersource/assets/microform/0.11/flex-microform.min.js"></script>
-<iselse>
-	<script src="https://flex.cybersource.com/cybersource/assets/microform/0.11/flex-microform.min.js"></script>
-    </iselse>
-</isif>
+
+<script src='${pdict.clientLibrary}' integrity='${pdict.clientLibraryIntegrity}' crossorigin="anonymous"></script>

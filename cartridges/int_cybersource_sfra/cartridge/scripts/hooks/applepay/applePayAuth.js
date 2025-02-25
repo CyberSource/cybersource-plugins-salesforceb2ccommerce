@@ -3,7 +3,7 @@
 var Status = require('dw/system/Status');
 var server = require('server');
 var Transaction = require('dw/system/Transaction');
-var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
 
 var paymentMethodID = 'DW_APPLE_PAY';
 
@@ -67,7 +67,7 @@ exports.authorizeOrderPayment = function (order, responseData) {
         }
         paymentInstrument.paymentTransaction.paymentProcessor = paymentMethod.getPaymentProcessor();
     });
-    authResponseStatus = require('~/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter').processPayment(order);
+    authResponseStatus = require('*/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter').processPayment(order);
 
     if (CardHelper.HandleCardResponse(authResponseStatus.ServiceResponse.serviceResponse).authorized || CardHelper.HandleCardResponse(authResponseStatus.ServiceResponse.serviceResponse).review) {
         status = Status.OK;

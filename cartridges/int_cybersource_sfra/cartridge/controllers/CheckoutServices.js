@@ -284,7 +284,7 @@ if (IsCartridgeEnabled) {
                 billingForm.creditCardFields.securityCode.htmlValue = '';
 
                 Transaction.wrap(function () {
-                    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+                    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
                     if (!billingAddress) {
                         billingAddress = currentBasket.createBillingAddress();
                     }
@@ -542,13 +542,13 @@ if (IsCartridgeEnabled) {
         var URLUtils = require('dw/web/URLUtils');
         var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
         var Site = require('dw/system/Site');
-        var CybersourceHelper = require('~/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-        var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+        var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
         var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
         var paramMap = request.httpParameterMap;
         var DFReferenceId;
-        var CardFacade = require('~/cartridge/scripts/facade/CardFacade');
-        var VisaCheckoutFacade = require('~/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
         var currentBasket;
 
         if (request.httpParameterMap.DFReferenceId.submitted) {
@@ -561,16 +561,10 @@ if (IsCartridgeEnabled) {
             session.privacy.screenWidth = browserfields.screenWidth;
             session.privacy.screenHeight = browserfields.screenHeight;
         }
-        var orderNo = session.privacy.orderId;
-        if (!empty(orderNo)) {
-            var order = OrderMgr.getOrder(orderNo);
-            Transaction.wrap(function () {
-                currentBasket = BasketMgr.createBasketFromOrder(order);
-            });
-        }
-        else {
+
+        // Added this session so that it doesn't get into second time, it comes to PlaceOrder.
+        if (session.custom.flag == true) {
             currentBasket = BasketMgr.getCurrentBasket();
-        }
         if (!currentBasket) {
             if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
                 && 'orderID' in session.privacy && session.privacy.orderID !== null) {
@@ -665,23 +659,30 @@ if (IsCartridgeEnabled) {
             res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
             return next();
         }
-        var action = '';
 
+
+        // Creates a new order.
+            var order = COHelpers.createOrder(currentBasket);
+            session.privacy.orderId = order.orderNo;
+            if (!order) {
+                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
+            }
+        }
+        var action = '';
         if (CsSAType === 'SA_SILENTPOST') {
             action = URLUtils.url('CheckoutServices-SilentPostAuthorize');
-        } else if (!empty(currentBasket)) {
+        }
+        else if (!empty(currentBasket)) {
             action = URLUtils.url('CheckoutServices-PlaceOrder');
         }
 
-        // Creates a new order.
-        if (!orderNo) {
-            var order = COHelpers.createOrder(currentBasket);
-            session.privacy.orderId = order.orderNo;
+        session.custom.flag = false;
+
+        if (session.privacy.orderId) {
+            var order = OrderMgr.getOrder(session.privacy.orderId);
         }
-        if (!order) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
-            return next();
-        }
+
         var paymentInstrument = null;
         if (!empty(order.getPaymentInstruments())) {
             paymentInstrument = order.getPaymentInstruments()[0];
@@ -694,6 +695,10 @@ if (IsCartridgeEnabled) {
                 result = VisaCheckoutFacade.PayerAuthSetup(order.orderNo);
             } else {
                 result = CardFacade.PayerAuthSetup(paymentInstrument, order.orderNo, session.forms.billing.creditCardFields);
+            }
+            if (result.deviceDataCollectionURL == null) {
+                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
             }
             res.setContentType('application/json');
             res.render('payerauthentication/deviceDataCollection', {
@@ -946,7 +951,7 @@ server.get('PayerAuthentication', server.middleware.https, function (req, res, n
 });
 
 server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
-    var CardHelper = require('~/cartridge/scripts/helper/CardHelper');
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     var Resource = require('dw/web/Resource');
     var Site = require('dw/system/Site');
     var BasketMgr = require('dw/order/BasketMgr');
@@ -1145,8 +1150,7 @@ function shippingUpdate(cart, shippingdetails) {
  */
 function googlePayCheckoutError(req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
-    // var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
     var CommonHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'helper/CommonHelper');
     var Transaction = require('dw/system/Transaction');
     var URLUtils = require('dw/web/URLUtils');
@@ -1178,18 +1182,10 @@ function googlePayCheckoutError(req, res, next) {
 server.post('GetGooglePayToken', function (req, res, next) {
     var Encoding = require('dw/crypto/Encoding');
     var repsonse = JSON.parse(request.httpParameterMap.paymentData);
-
-    // var paymentForm = server.forms.getForm('billing');
-
     var BasketMgr = require('dw/order/BasketMgr');
     var cart = BasketMgr.getCurrentBasket();
     var shippingdetails = repsonse.shippingAddress;// add condition for only cart
-    // var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    // var URLUtils = require('dw/web/URLUtils');
-    // var BasketMgr = require('dw/order/BasketMgr');
-    // var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
     var mobileAdaptor = require('*/cartridge/scripts/mobilepayments/adapter/MobilePaymentsAdapter');
-    // var Transaction = require('dw/system/Transaction');
     var logger = require('dw/system/Logger');
     logger.error('Error in google Checkout payment: problem in billing details' + repsonse);
     var result = mobileAdaptor.UpdateBilling(cart, repsonse.cardInfo, repsonse.email);
@@ -1201,7 +1197,6 @@ server.post('GetGooglePayToken', function (req, res, next) {
             cart = BasketMgr.getCurrentBasket();
             // calculate cart and redirect to summary page
             COHelpers.recalculateBasket(cart);
-            // var StringUtils = require('dw/util/StringUtils');
             var GPtoken = repsonse.paymentMethodToken.token;
             session.privacy.encryptedDataGP = Encoding.toBase64(new dw.util.Bytes(GPtoken));
         } else {
@@ -1222,21 +1217,15 @@ server.post('GetGooglePayToken', function (req, res, next) {
 });
 
 server.post('SubmitPaymentGP', function (req, res, next) {
-    // var Site = require('dw/system/Site');
     var Encoding = require('dw/crypto/Encoding');
-    // var Resource = require('dw/web/Resource');
     var paymentForm = server.forms.getForm('billing');
     var paymentMethodID = server.forms.getForm('billing').paymentMethod.value;
-    // var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var billingFormErrors = {};
-    // var creditCardErrors = {};
     var viewData = {};
     var BasketMgr = require('dw/order/BasketMgr');
     var paymentData = JSON.parse(request.httpParameterMap.googletoken);
     var GPtoken = paymentData.paymentMethodToken.token;
     session.privacy.encryptedDataGP = Encoding.toBase64(new dw.util.Bytes(GPtoken));
-
-    // var cart = BasketMgr.getCurrentBasket();
 
     billingFormErrors = COHelpers.validateBillingForm(paymentForm.addressFields);
 
@@ -1280,16 +1269,9 @@ server.post('SubmitPaymentGP', function (req, res, next) {
         res.setViewData(viewData);
 
         this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
-            // var BasketMgr = require('dw/order/BasketMgr');
-            // var CustomerMgr = require('dw/customer/CustomerMgr');
-            // var HookMgr = require('dw/system/HookMgr');
-            // var Resource = require('dw/web/Resource');
-            // var PaymentMgr = require('dw/order/PaymentMgr');
+  
             var Transaction = require('dw/system/Transaction');
-            // var AccountModel = require('*/cartridge/models/account');
-            // var OrderModel = require('*/cartridge/models/order');
             var URLUtils = require('dw/web/URLUtils');
-            // var Locale = require('dw/util/Locale');
             var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
             var currentBasket = BasketMgr.getCurrentBasket();
             var billingData = res.getViewData();

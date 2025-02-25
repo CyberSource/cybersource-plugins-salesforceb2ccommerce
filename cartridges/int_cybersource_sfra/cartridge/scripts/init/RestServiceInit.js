@@ -54,13 +54,15 @@ var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersourc
                     return 'Message Missing';
                 }
                 var messageData = JSON.parse(msg);
-
                 var filteredData = {};
-                if (Object.keys(messageData).indexOf('encryptionType') >= 0) {
-                    filteredData.encryptionType = messageData.encryptionType;
+                if (Object.keys(messageData).indexOf('targetOrigins') >= 0) {
+                    filteredData.targetOrigins = messageData.targetOrigins;
                 }
-                if (Object.keys(messageData).indexOf('targetOrigin') >= 0) {
-                    filteredData.targetOrigin = messageData.targetOrigin;
+                if (Object.keys(messageData).indexOf('allowedCardNetworks') >= 0) {
+                    filteredData.allowedCardNetworks = messageData.allowedCardNetworks;
+                }
+                if (Object.keys(messageData).indexOf('clientVersion') >= 0) {
+                    filteredData.clientVersion = messageData.clientVersion;
                 }
 
                 var filteredMessage = 'PRODUCTION SYSTEM DETECTED.  RESPONSE HAS BEEN FILTERED : ';
@@ -78,6 +80,30 @@ var CyberSourceFlexTokenService = LocalServiceRegistry.createService('cybersourc
         }
     }
 });
+
+var CyberSourceAssymentricKeyManagement = LocalServiceRegistry.createService('cybersource.assymentrickeymanagement', {
+    createRequest: function (svc, requestObj, keyId) {
+        var collections = require('*/cartridge/scripts/util/collections');
+        svc.setRequestMethod('GET');
+        svc.addHeader('Accept', 'application/json');
+        svc.addHeader('Content-Type', 'application/json;charset=utf-8');
+        collections.forEach(requestObj.keySet(), function (key) {
+            //  for each (var key in requestObj.keySet()) {
+            svc.addHeader(key, requestObj.get(key));
+        });
+        // eslint-disable-next-line
+        svc.URL += "/" + keyId;
+    },
+    parseResponse: function (svc, client) {
+        return client.text;
+    },
+    filterLogMessage: function (msg) {
+        //  No need to filter logs.  No sensitive information.
+        return msg;
+    }
+});
+
+
 
 var CyberSourceDMService = LocalServiceRegistry.createService('cybersource.conversiondetailreport', {
     createRequest: function (svc, requestObj, starttime, endtime, merchantId) {
@@ -103,5 +129,6 @@ var CyberSourceDMService = LocalServiceRegistry.createService('cybersource.conve
 
 module.exports = {
     CyberSourceFlexTokenService: CyberSourceFlexTokenService,
-    CyberSourceDMService: CyberSourceDMService
+    CyberSourceDMService: CyberSourceDMService,
+    CyberSourceAssymentricKeyManagement: CyberSourceAssymentricKeyManagement
 };

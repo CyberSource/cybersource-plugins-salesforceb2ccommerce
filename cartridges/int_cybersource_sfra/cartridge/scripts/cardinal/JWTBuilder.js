@@ -42,7 +42,7 @@ function generatejti() {
  * @returns {*} obj
  */
 function generateTokenWithKey(orderObject) {
-    var libCybersource = require('~/cartridge/scripts/cybersource/libCybersource');
+    var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
 
     var PRIVATEKEY = CybersourceHelper.getCruiseCredentialsApiKey();
