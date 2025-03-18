@@ -14,7 +14,7 @@
 var CybersourceConstants = {};
 
 CybersourceConstants.APPLICATION_NAME = 'Salesforce B2C(SOAP)';
-CybersourceConstants.APPLICATION_VERSION = '24.1.3';
+CybersourceConstants.APPLICATION_VERSION = '25.1.0';
 
 CybersourceConstants.METHOD_ALIPAY = 'ALIPAY';
 CybersourceConstants.METHOD_ALIPAY_returnURLValue = 'alipay';
