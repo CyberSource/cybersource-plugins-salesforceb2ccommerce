@@ -597,3 +597,34 @@ Step 2: In the Business Manager, go to **Merchant Tools > Ordering > Payment Met
 ### **13. Supported Locales**
 
 Out of box cartridge supports most of the locales like English (United States), English (United Kingdom), French (FRANCE), English (Austria), German (GERMANY), Dutch (NETHERLANDS) and more. 
+
+
+
+### **14. Message-Level Encryption (MLE)**
+
+Step 1: Upload Cybersource metadata in Business Manager. Otherwise follow the steps mentioned in “4.2: Upload metadata” or import "metadata/sfra_meta/meta/Cybersource.xml" in Business Manager **Administration > Site Development > Import & Export** 
+
+Step 2: Create a p12 file [link](https://developer.cybersource.com/docs/cybs/en-us/platform/developer/all/rest/rest-getting-started/restgs-jwt-message-intro/restgs-security-p12-intro/restgs-security-P12.html) that you can use to authenticate requests. Convert the P12 file to JKS type by following **Cybersource B2C Commerce - SOAP Authentication Guide.pdf** under cartridge documentation folder. Place the file generated in webreferences2 folder of the same cartridge as the WSDL file and the file extension must be jks or pkcs12. Duplicate the CyberSourceTransaction.wsdl file, CyberSourceTransaction.wsdl.properties file and rename them with the same name as your respective keystore files.
+
+Repeat the above step to use multiple keystore files as per requirements.
+
+NOTE: If you choose to use MLE, it is mandatory to use JKS as the Keystore type. The JKS keystore can be used for Authentication and MLE.
+
+
+Step 3: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource** and set values for the parameter:
+
+Name | Description
+------------ | ------------- 
+CsKeystore_Name | Name of the keystore file added in webreferences2 folder.
+
+CsAuth_Alias | 1. If MLE is enabled, then extract the Alias of the client certificate in JKS file for Authentication (<Merchant_ID>). 2. If MLE is disabled and you are choosing to use PKCS12 keystore for Authentication, then extract Friendly name from p12 (run openssl pkcs12 -in CyberSourceTransaction.pkcs12 -info in terminal to extract friendly name of p12 key uploaded in webreferences2 folder.)
+
+CsKeystore_Password | Password of the keystore file.
+
+CsAuth_KeystoreType | Type of keystore for Authentication (PKCS12 or JKS). NOTE: Use only JKS type if MLE is enabled.
+
+CsMLE_Enabled | Enable or Disable Message-Level Encryption
+
+CsJKS_MLEAlias | Alias of the certificate in JKS file (cybersource_sjc_us)
+
+NOTE: Please refer to configuration example and JKS creation steps in Cybersource B2C Commerce - SOAP Authentication Guide.pdf under cartridge documentation folder.
