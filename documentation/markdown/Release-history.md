@@ -1,5 +1,10 @@
 ## <ins>Release History
 
+**Version 25.1.0 (April, 2025)**
+• Added Message-Level Encryption (MLE) feature.
+• Added support for JKS keystore type for P12 authentication.
+• Configuration changes to support both MLE and P12 authentication.
+
 **Version 24.1.3 (February, 2025)**
 Enhancement: 
 •	Implemented support for multiple p12 files in p12 authentication.
