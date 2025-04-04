@@ -235,7 +235,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'FN2YIPRU';
+        return 'HCBFKU34';
     },
 
     getDeveloperID: function () {
