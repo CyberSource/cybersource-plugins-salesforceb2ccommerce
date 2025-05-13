@@ -1,6 +1,6 @@
 {
   "name": "int_cybersource_sfra",
-  "version": "23.1.0",
+  "version": "25.2.0",
   "description": "New overlay cartridge",
   "main": "index.js",
   "scripts": {
