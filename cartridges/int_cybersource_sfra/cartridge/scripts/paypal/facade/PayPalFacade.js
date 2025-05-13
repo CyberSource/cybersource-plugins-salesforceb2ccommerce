@@ -142,8 +142,8 @@ function addBillingAgreementId(request, lineItemCntr) {
     });
 
     // checking if customer is authenticated
-    if (customer.authenticated && require('dw/system/Site').getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && !isPayPalCredit) {
-        /*
+    if ((!isPayPalCredit || require('dw/system/Site').getCurrent().getCustomPreferenceValue('payPalBillingAgreements')) && customer.authenticated  )  
+    /*
     * If Billing Agreement is not null then add it to service request instead of the
     * session request ID
     */

@@ -208,8 +208,8 @@ var init = {
         $(document).on('click', '.billingAgreementExpressCheckout', function (e) {
             e.preventDefault();
             var paypalcallback = document.getElementById('paypal_callback').value;
-            paypalcallback = encodeURIComponent(paypalcallback);
-            if(init.verifyUrl(decodeURIComponent(paypalcallback))){
+            var encodedePaypalcallback = encodeURIComponent(paypalcallback);
+            if(init.verifyUrl(decodeURIComponent(encodedePaypalcallback))){
                 var form = $('<form action="' + paypalcallback + '" method="post">'
                         + '</form>');
                 $('body').append(form);

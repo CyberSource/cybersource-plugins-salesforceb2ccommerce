@@ -151,7 +151,7 @@ function AuthorizationServiceRequest(Order, preApprovalToken) {
      merchant site for payment completion */
     if ((authResponse.decision === 'ACCEPT' && Number(authResponse.reasonCode) === 100) || (authResponse.decision === 'REVIEW' && Number(authResponse.reasonCode) === 480)) {
         // eslint-disable-next-line
-        session.privacy.order_id = Order.orderNo;
+        session.privacy.orderId = Order.orderNo;
         var isRedirectionRequired = true; // dw.system.Site.getCurrent().getCustomPreferenceValue('isKlarnaRedirectionRequired');
         // eslint-disable-next-line
         switch (authResponse.apAuthReply.paymentStatus) {
@@ -319,7 +319,7 @@ function CreateKlarnaSecureKey(Basket) {
 }
 
 /**
- * Retrive order based on session privacy order_id.
+ * Retrive order based on session privacy orderId.
  * @param {*} Order comment
  * @returns {*} obj
  */
@@ -328,13 +328,13 @@ function GetKlarnaOrder(Order) {
     // eslint-disable-next-line
     if (empty(order)) {
         // eslint-disable-next-line
-        if (!empty(session.privacy.order_id)) {
+        if (session.privacy.orderId !== null) {
             // GetOrder
             var OrderMgr = require('dw/order/OrderMgr');
             // eslint-disable-next-line
-            order = OrderMgr.getOrder(session.privacy.order_id);
+            order = OrderMgr.getOrder(session.privacy.orderId);
             // eslint-disable-next-line
-            session.privacy.order_id = '';
+            delete session.privacy.orderId;
         }
         var signature = CreateKlarnaSecureKey(order);
         // eslint-disable-next-line

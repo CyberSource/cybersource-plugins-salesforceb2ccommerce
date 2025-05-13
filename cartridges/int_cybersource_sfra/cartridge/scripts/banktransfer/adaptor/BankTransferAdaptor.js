@@ -147,7 +147,7 @@ function CreateSaleServiceRequest(Order, testMethod) {
     merchant site for payment completion */
     if (saleResponse.decision === 'ACCEPT' && Number(saleResponse.reasonCode) === 100) {
         // eslint-disable-next-line
-        session.privacy.order_id = Order.orderNo;
+        session.privacy.orderId = Order.orderNo;
         switch (saleResponse.apSaleReply.paymentStatus) {
             case 'pending':
                 return { redirection: true, redirectionURL: saleResponse.apSaleReply.merchantURL };
@@ -218,7 +218,7 @@ function AuthorizeRequest(orderNo, paymentInstrumentObj, testMethod) {
     // eslint-disable-next-line
     session.privacy.isPaymentRedirectInvoked = true;
     // eslint-disable-next-line
-    session.privacy.orderID = orderNo;
+    session.privacy.orderId = orderNo;
     return response;
 }
 

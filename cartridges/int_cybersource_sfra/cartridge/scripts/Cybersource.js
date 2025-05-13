@@ -151,7 +151,7 @@ function Process3DRequestParent(args) {
         var paymentInstrument;
         var orderNo = order.orderNo;
         var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
-        session.privacy.order_id = orderNo;
+        session.privacy.orderId = orderNo;
         paymentInstrument = CardHelper.getNonGCPaymemtInstument(order);
         if (empty(paymentInstrument.getCreditCardToken()) && !empty(session.forms.billing.creditCardFields.selectedCardID.value)) {
             var subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.billing.creditCardFields.selectedCardID.value, customer);
@@ -203,16 +203,16 @@ function Process3DRequestParent(args) {
 }
 
 /**
- * Retrive order based on session privacy order_id. Helps to authenticate the valid request during return URL from cybersource to merchant site
+ * Retrive order based on session privacy orderId. Helps to authenticate the valid request during return URL from cybersource to merchant site
  */
 function GetOrder(Order) {
     var order = Order;
     if (empty(order)) {
-        if (!empty(session.privacy.order_id)) {
+        if (session.privacy.orderId !== null) {
             // GetOrder
             var OrderMgr = require('dw/order/OrderMgr');
-            order = OrderMgr.getOrder(session.privacy.order_id);
-            session.privacy.order_id = '';
+            order = OrderMgr.getOrder(session.privacy.orderId);
+            delete session.privacy.orderId;
         }
         if (order && order.orderToken === request.httpParameterMap.order_token.value) {
             return { success: true, Order: order };

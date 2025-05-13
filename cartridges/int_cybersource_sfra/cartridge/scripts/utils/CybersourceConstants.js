@@ -14,12 +14,12 @@
 var CybersourceConstants = {};
 
 CybersourceConstants.APPLICATION_NAME = 'Salesforce B2C(SOAP)';
-CybersourceConstants.APPLICATION_VERSION = '25.1.0';
+CybersourceConstants.APPLICATION_VERSION = '25.2.0';
 
 CybersourceConstants.METHOD_ALIPAY = 'ALIPAY';
 CybersourceConstants.METHOD_ALIPAY_returnURLValue = 'alipay';
 CybersourceConstants.METHOD_PAYPAL = 'PAYPAL';
-CybersourceConstants.METHOD_PAYPAL_CREDIT = 'PayPal';
+CybersourceConstants.METHOD_PAYPAL_CREDIT = 'PAYPAL_CREDIT';
 CybersourceConstants.METHOD_SA_REDIRECT = 'SA_REDIRECT';
 CybersourceConstants.METHOD_SA_IFRAME = 'SA_IFRAME';
 CybersourceConstants.METHOD_SA_SILENTPOST = 'SA_SILENTPOST';

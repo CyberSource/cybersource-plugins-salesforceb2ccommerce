@@ -121,7 +121,10 @@ function CreateFlexKey() {
             targetOrigin
         ],
         'allowedCardNetworks': list,
-        'clientVersion': "v2"
+        'clientVersion': "v2",
+        'transientTokenResponseOptions':{
+            'includeCardPrefix':false
+        }
     };
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 

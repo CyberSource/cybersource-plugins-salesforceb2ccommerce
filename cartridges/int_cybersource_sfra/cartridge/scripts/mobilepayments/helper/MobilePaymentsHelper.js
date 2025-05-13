@@ -244,9 +244,45 @@ function createLineItemCtnrBillingAddress(lineItemCtnrAddress, billingInfo) {
     return { success: true, lineItemCtnrAddress: lineItemCtnrAddress };
 }
 
+//add CC details to orderModel for Gpay and Visa CTP
+function addToOrderModel(viewData) {
+    var OrderMgr = require('dw/order/OrderMgr');
+    var Resource = require('dw/web/Resource');
+
+    // Retrieve the orderModel from viewData set by the base controller
+    var orderModel = viewData.order;
+    var order = OrderMgr.getOrder(viewData.order.orderNumber);
+
+    //  lineItemCtnr.paymentInstrument field is deprecated. Get default payment method.
+    var paymentInstrument = null;
+    // eslint-disable-next-line
+    if (!empty(order.getPaymentInstruments())) {
+        paymentInstrument = order.getPaymentInstruments()[0];
+    }
+
+    // Google Pay Credit Card Details
+    if (paymentInstrument != null && paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
+        var cardType = paymentInstrument.creditCardType;
+        orderModel.billing.payment.selectedPaymentInstruments[0].type = cardType;
+        orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
+    }
+    // Visa Checkout Credit Card Details
+    if (paymentInstrument != null && paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)) {
+        orderModel.resources.cardType = '';
+        orderModel.resources.cardEnding = '';
+        orderModel.billing.payment.selectedPaymentInstruments[0].type = paymentInstrument.creditCardType;
+        orderModel.billing.payment.selectedPaymentInstruments[0].maskedCreditCardNumber = paymentInstrument.creditCardNumber;
+        orderModel.billing.payment.selectedPaymentInstruments[0].expirationMonth = paymentInstrument.creditCardExpirationMonth;
+        orderModel.billing.payment.selectedPaymentInstruments[0].expirationYear = paymentInstrument.creditCardExpirationYear;
+    }
+    viewData = { order: orderModel };
+    return viewData;
+}
+
 module.exports = {
     validateMobilePaymentRequest: validateMobilePaymentRequest,
     PrepareAuthRequestObjects: PrepareAuthRequestObjects,
     CreateLineItemCtnrShippingAddress: createLineItemCtnrShippingAddress,
-    CreateLineItemCtnrBillingAddress: createLineItemCtnrBillingAddress
+    CreateLineItemCtnrBillingAddress: createLineItemCtnrBillingAddress,
+    addToOrderModel: addToOrderModel
 };

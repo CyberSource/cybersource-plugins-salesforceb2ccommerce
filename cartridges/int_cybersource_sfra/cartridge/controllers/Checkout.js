@@ -163,16 +163,18 @@ server.prepend('Begin', function (req, res, next) {
     var currentStage = req.querystring.stage;
     var currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
-        if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked
-            && 'orderID' in session.privacy && session.privacy.orderID !== null) {
-            var order = OrderMgr.getOrder(session.privacy.orderID);
+        if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked !== null
+            && 'orderId' in session.privacy && session.privacy.orderId !== null) {
+            var order = OrderMgr.getOrder(session.privacy.orderId);
             var currentBasket = COHelpers.reCreateBasket(order);
+            delete session.privacy.orderId;
             res.redirect(URLUtils.url('Cart-Show'));
-        } else if ('isReCreateBasket' in session.privacy && session.privacy.isReCreateBasket
-            && 'orderID' in session.privacy && session.privacy.orderID !== null) {
-            var order = OrderMgr.getOrder(session.privacy.orderID);
+        } else if ('isReCreateBasket' in session.privacy && session.privacy.isReCreateBasket !== null
+            && 'orderId' in session.privacy && session.privacy.orderId !== null) {
+            var order = OrderMgr.getOrder(session.privacy.orderId);
             var currentBasket = COHelpers.reCreateBasket(order);
         } else {
+            delete session.privacy.orderId;
             res.json({
                 error: true,
                 cartError: true,

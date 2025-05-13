@@ -901,6 +901,38 @@ function Debug(OrderNo, request, response, Basket, billTo, shipTo, card, shipFro
 }
 
 /**
+ * Updates the billing address.
+ * @param address : billing address.
+ */
+
+function UpdateBillingAddress(address) {
+    
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Transaction = require('dw/system/Transaction');
+    var currentBasket = BasketMgr.getCurrentBasket();
+    var billingAddress = currentBasket.billingAddress;
+
+    Transaction.wrap(function () {
+        if (!empty(billingAddress) && session.privacy.updateBillingAddress) {
+            session.privacy.updateBillingAddress = false;
+            billingAddress.setFirstName(address.firstName);
+            billingAddress.setLastName(address.lastName);
+            billingAddress.setAddress1(address.address1);
+            billingAddress.setAddress2(address.address2);
+            billingAddress.setCity(address.city);
+            billingAddress.setPostalCode(address.postalCode);
+            billingAddress.setStateCode(address.stateCode);
+            billingAddress.setCountryCode(address.countryCode);
+            if (!billingAddress.phone) {
+                billingAddress.setPhone(address.phone);
+            }
+            return billingAddress;
+        }
+    });
+    
+}
+
+/**
  * Updates the shipping address with the standard shipping address or the billing address.
  * @param StandardizedAddress : Standard address.
  * @param LineItemCtnrObj : dw.order.LineItemCtnr contains object of basket or order
@@ -1828,6 +1860,7 @@ module.exports = {
     CreateCybersourceItemObject: CreateCybersourceItemObject,
     CreateKlarnaItemObject: CreateKlarnaItemObject,
     GetPaymentType: GetPaymentType,
+    UpdateBillingAddress: UpdateBillingAddress,
     UpdateOrderShippingAddress: UpdateOrderShippingAddress,
     CreateCartStateString: CreateCartStateString,
     UpdateTaxForGiftCertificate: UpdateTaxForGiftCertificate,

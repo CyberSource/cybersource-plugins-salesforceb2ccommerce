@@ -390,7 +390,8 @@ function paymentService(order, paymentInstrument) {
 
     // If customer has an already existin billing agreement ID
     var billingAgreementIDFlag = empty(customer.profile) ? false : !empty(customer.profile.custom.billingAgreementID);
-    if (billingAgreementIDFlag && dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_PAYPAL)) {
+    var paymentMethod = paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_PAYPAL) || paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_PAYPAL_CREDIT);
+    if (billingAgreementIDFlag && dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && paymentMethod) {
         orderType = 'BILLINGAGREEMENT';
     }
     switch (orderType) {

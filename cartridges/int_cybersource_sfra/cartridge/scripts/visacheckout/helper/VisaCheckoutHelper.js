@@ -468,7 +468,7 @@ function payerAuthEnroll(lineItemCtnrObj, paymentInstrument, orderNo) {
         session.privacy.AcsURL = serviceResponse.AcsURL;
         session.privacy.PAReq = serviceResponse.PAReq;
         session.privacy.PAXID = serviceResponse.PAXID;
-        session.privacy.order_id = orderNo;
+        session.privacy.orderId = orderNo;
         session.privacy.stepUpUrl = serviceResponse.stepUpUrl;
         session.privacy.authenticationTransactionID = serviceResponse.authenticationTransactionID;
         return { payerauthentication: true, serviceResponse: serviceResponse };

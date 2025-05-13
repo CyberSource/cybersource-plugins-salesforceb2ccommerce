@@ -47,11 +47,11 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
         redirectUrl = URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken).toString();
     } else if (result.pending) {
         session.privacy.isReCreateBasket = true;
-        session.privacy.orderID = order.orderNo;
+        session.privacy.orderId = order.orderNo;
         redirectUrl = URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('wechat.pending', 'cybersource', null)).toString();
     } else {
         session.privacy.isReCreateBasket = true;
-        session.privacy.orderID = order.orderNo;
+        session.privacy.orderId = order.orderNo;
         redirectUrl = URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('wechat.error', 'cybersource', null)).toString();
     }
     res.json({

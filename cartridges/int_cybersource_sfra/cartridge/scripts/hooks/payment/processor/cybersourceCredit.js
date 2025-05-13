@@ -229,7 +229,7 @@ function SecureAcceptanceAuthorize(orderNumber, pi, pmntProcessor) {
                 // eslint-disable-next-line
                 session.privacy.paymentType = 'SARedirect';
                 // eslint-disable-next-line
-                session.privacy.orderID = orderNumber;
+                session.privacy.orderId = orderNumber;
                 var data = saRedirectRequest.requestData;
                 var formAction = saRedirectRequest.formAction;
                 return {
@@ -249,7 +249,7 @@ function SecureAcceptanceAuthorize(orderNumber, pi, pmntProcessor) {
     } else {
         if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
             // eslint-disable-next-line
-            session.privacy.order_id = orderNumber;
+            session.privacy.orderId = orderNumber;
         }
         return require('*/cartridge/scripts/secureacceptance/adapter/SecureAcceptanceAdapter').Authorize(orderNumber, paymentInstrument, paymentProcessor, additionalArgs);
     }
