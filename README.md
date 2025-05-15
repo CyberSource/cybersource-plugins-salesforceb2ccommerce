@@ -3,9 +3,9 @@
 
 * **Description:**  Cybersource, a Visa solution, is the only global, modular payment management platform built on secure Visa infrastructure with the payment reach and fraud insights of a massive $500B+ global processing network. You can find out more about what Cybersource does [here](https://www.cybersource.com/en-gb.html).
 * **Categories:** Payment Processing, Fraud Detection, Address Validation, Tax Computation
-* **Version:** 25.1.0
+* **Version:** 25.2.0
 * **Compatibility:** <span style="color:red">This version of the Cybersource cartridge is not compatible with versions of SFRA higher than Release 7.0.0. </span>
-This version can be found on the Master branch of the SFRA repository at commit 50ee82face6e0a000f649a51f162e8a3f171531c  [50ee82f] on December , 2024 <span style="color:red">This version is compatible with Salesforce B2C Commerce 22.2 release. <span>
+This version can be found on the Master branch of the SFRA repository on May , 2025 <span style="color:red">This version is compatible with Salesforce B2C Commerce 22.2 release. <span>
 
 ----
 

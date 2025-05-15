@@ -12,28 +12,7 @@ Before you start accepting payments, test your integration in Test sandbox:
 Sign up for a [sandbox account](https://developer.cybersource.com/hello-world/sandbox.html) if you have not yet.
 
 Use our test card numbers to make test payments:
-  > The following test credit card numbers work only in the sandbox. If no expiration date is provided, use any expiration date after today’s date. If the card verification code is required and is not provided, use any 3-digit combination for Visa, Mastercard, Discover, Diners Club and JCB; use a 4-digit combination for American Express.
-
-  Test Card Brand | Number | CVV | Expires
------------- | ------------- | ------------- | -------------
-Visa | 4111 1111 1111 1111 |  | 	 	 
-Visa | 4622 9431 2701 3705 | 838 | 12/22
-Visa | 4622 9431 2701 3713 | 043 | 12/22
-Visa | 4622 9431 2701 3721 | 258 | 12/22
-Visa | 4622 9431 2701 3739 | 942 | 12/22
-Visa | 4622 9431 2701 3747 | 370 | 12/22
-MasterCard | 2222 4200 0000 1113 |  |  	 
-| |2222 6300 0000 1125|  |   	 	 
-| |5555 5555 5555 4444|  |   	 
-American Express | 3782 8224 6310 005 |  | 	 	 
-Discover | 6011 1111 1111 1117 |  | 	 	 
-JCB | 3566 1111 1111 1113 |  | 	 	 
-Maestro (International) | 5033 9619 8909 17 |  | 	 	 
-| |5868 2416 0825 5333 38 |  | 	 	 
-Maestro (UK Domestic) | 6759 4111 0000 0008 |  | 	 	 
-| |6759 5600 4500 5727 054 |  | 
-| |5641 8211 1116 6669|  | 	 	 
-UATP |1354 1234 5678 911|  | 
+  > The following test credit card numbers (https://developer.cybersource.com/hello-world/testing-guide-v1.html) work only in the sandbox. If no expiration date is provided, use any expiration date after today’s date. If the card verification code is required and is not provided, use any 3-digit combination for Visa, Mastercard, Discover, Diners Club and JCB; use a 4-digit combination for American Express.
 
 Register SFCC sandbox to Apple Sandbox Account.
  
