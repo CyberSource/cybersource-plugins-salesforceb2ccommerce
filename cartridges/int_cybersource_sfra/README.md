@@ -6,11 +6,11 @@ THe Cybersource cartridge has a link cartridge (`int_cybersource_sfra`) provided
 
 # Getting Started
 
-1 Set node version to 8.11.3
+1 Set node version to 18.19.0
 
 2 Clone this repository.
 
-3 Run `npm install` to install all of the local dependencies (node version 8.x or current LTS release recommended)
+3 Run `npm install` to install all of the local dependencies (node version 18.x or current LTS release recommended)
 
 4 Run `npm run compile:js` from the command line that would compile all client-side JS files. Run `npm run compile:scss` and `npm run compile:fonts` that would do the same for css and fonts.
 

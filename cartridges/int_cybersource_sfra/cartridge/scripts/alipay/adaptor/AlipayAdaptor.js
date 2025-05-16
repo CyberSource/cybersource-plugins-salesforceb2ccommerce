@@ -124,7 +124,7 @@ function handleAlipayInitiatePaymentResponse(order, alipayReturnUrl, alipayRespo
                 var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
                 PaymentInstrumentUtils.authorizeAlipayOrderUpdate(order, alipayResponse, alipayPaymentType.value);
                 // eslint-disable-next-line
-                session.privacy.order_id = order.orderNo;
+                session.privacy.orderId = order.orderNo;
                 if (Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value.equals('Test')) {
                     return { pending: true, alipayReturnUrl: alipayReturnUrl };
                 }

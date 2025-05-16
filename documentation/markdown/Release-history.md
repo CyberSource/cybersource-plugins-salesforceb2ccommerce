@@ -1,5 +1,16 @@
 ## <ins>Release History
 
+**Version 25.2.0 (May, 2025)**
+Enhancement: 
+• Refactored logic from the controller into a helper script and optimized controllers by integrating 
+hooks for enhanced modularity, maintainability, and functionality.
+• Enhanced the page.isml template for improved performance and readability.
+• Managed orderId session variables to ensure accurate tracking and retrieval.
+• Renamed PayPal to PAYPAL_CREDIT for consistency and clarity.
+
+Bug Fixes: 
+• Implemented a fix for follow-on transactions using PayPal Billing ID to ensure seamless payment processing.
+
 **Version 25.1.0 (April, 2025)**
 • Added Message-Level Encryption (MLE) feature.
 • Added support for JKS keystore type for P12 authentication.

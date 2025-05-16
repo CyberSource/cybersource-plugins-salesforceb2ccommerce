@@ -16,7 +16,7 @@ var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstan
  */
 server.get('OpenIframe', function (req, res, next) {
     var secureAcceptanceAdapter = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter');
-    var response = secureAcceptanceAdapter.OpenIframe(session.privacy.order_id);
+    var response = secureAcceptanceAdapter.OpenIframe(session.privacy.orderId);
 
     if (response.success) {
         res.CONTENT_SECURITY_POLICY = "default-src 'self'";
@@ -79,7 +79,7 @@ server.get('CreateFlexToken', server.middleware.https, function (req, res, next)
 server.get('ReCreateBasket', server.middleware.https, function (req, res, next) {
     var OrderMgr = require('dw/order/OrderMgr');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    var order = OrderMgr.getOrder(session.privacy.order_id);
+    var order = OrderMgr.getOrder(session.privacy.orderId);
     COHelpers.reCreateBasket(order);
     res.json({
         success: true

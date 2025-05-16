@@ -17,6 +17,10 @@
             "script": "./cartridge/scripts/hooks/tax/taxes"
         },
         {
+            "name": "app.template.miniCartPayments",
+            "script": "./cartridge/scripts/hooks/template/minicartPayments"
+        },
+        {
             "name": "app.payment.processor.paypal_express",
             "script": "./cartridge/scripts/hooks/payment/processor/PaypalExpress"
         },

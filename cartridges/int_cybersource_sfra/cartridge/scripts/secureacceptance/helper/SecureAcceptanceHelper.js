@@ -447,7 +447,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
         var cardObject = CardHelper.CreateCybersourcePaymentCardObject('billing', subscriptionToken);
         var CsTransactionType = Site.getCurrent().getCustomPreferenceValue('CsTransactionType').value;
         // eslint-disable-next-line
-        session.privacy.order_id = lineItemCtnr.orderNo;
+        session.privacy.orderId = lineItemCtnr.orderNo;
 
         /* Region BM Setting START: request setting for based on BM configuration */
         if (sitePreferenceData !== null) {
@@ -929,7 +929,7 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
             session.privacy.AcsURL = serviceResponse.AcsURL;
             session.privacy.PAReq = serviceResponse.PAReq;
             session.privacy.PAXID = serviceResponse.PAXID;
-            session.privacy.order_id = orderNo;
+            session.privacy.orderId = orderNo;
             session.privacy.stepUpUrl = serviceResponse.stepUpUrl;
             session.privacy.authenticationTransactionID = serviceResponse.authenticationTransactionID;
             return { payerauthentication: true, serviceResponse: serviceResponse };

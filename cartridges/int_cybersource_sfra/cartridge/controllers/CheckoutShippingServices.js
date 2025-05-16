@@ -63,30 +63,12 @@ server.append('SubmitShipping', function (req, res, next) {
 });
 
 server.append('UpdateShippingMethodsList', function (req, res, next) {
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var BasketMgr = require('dw/order/BasketMgr');
     var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
-    var Transaction = require('dw/system/Transaction');
     var currentBasket = BasketMgr.getCurrentBasket();
-
-    var billingAddress = currentBasket.billingAddress;
     var address = ShippingHelper.getAddressFromRequest(req);
-
-    Transaction.wrap(function () {
-        if (!empty(billingAddress) && session.privacy.updateBillingAddress) {
-            session.privacy.updateBillingAddress = false;
-            billingAddress.setFirstName(address.firstName);
-            billingAddress.setLastName(address.lastName);
-            billingAddress.setAddress1(address.address1);
-            billingAddress.setAddress2(address.address2);
-            billingAddress.setCity(address.city);
-            billingAddress.setPostalCode(address.postalCode);
-            billingAddress.setStateCode(address.stateCode);
-            billingAddress.setCountryCode(address.countryCode);
-            if (!billingAddress.phone) {
-                billingAddress.setPhone(address.phone);
-            }
-        }
-    });
+    var billingAddress = CommonHelper.UpdateBillingAddress(address);
     next();
 });
 

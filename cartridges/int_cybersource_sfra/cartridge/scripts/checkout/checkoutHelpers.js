@@ -8,6 +8,9 @@ var base = module.superModule;
 var renderTemplateHelper = require('*/cartridge/scripts/renderTemplateHelper');
 var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var OrderMgr = require('dw/order/OrderMgr');
+var HookMgr = require('dw/system/HookMgr');
+
 
 /**
  * creates a new payment instrument in customers wallet if payment instrument is new
@@ -19,10 +22,8 @@ var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstan
  */
 function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) {
     var billingData = billingDataObj;
-    var HookMgr = require('dw/system/HookMgr');
     var PaymentMgr = require('dw/order/PaymentMgr');
     var PaymentInstrument = require('dw/order/PaymentInstrument');
-    // var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
     var Site = require('dw/system/Site');
     var Resource = require('dw/web/Resource');
@@ -119,9 +120,6 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
  */
 function handlePayments(order, orderNumber) {
     var PaymentMgr = require('dw/order/PaymentMgr');
-    var HookMgr = require('dw/system/HookMgr');
-    // var Transaction = require('dw/system/Transaction');
-    var OrderMgr = require('dw/order/OrderMgr');
     var authorizationResult;
     var result = {};
 
@@ -314,9 +312,9 @@ function handlePayPal(basket) {
  */
 function clearPaymentAttributes() {
     /* eslint-disable */
-    session.privacy.isPaymentRedirectInvoked = '';
-    session.privacy.paymentType = '';
-    session.privacy.orderID = '';
+    delete session.privacy.isPaymentRedirectInvoked;
+    delete session.privacy.paymentType;
+    delete session.privacy.orderId;
     /* eslint-enable */
 }
 
@@ -326,13 +324,10 @@ function clearPaymentAttributes() {
  * @returns {*} obj
  */
 function reCreateBasket(order) {
-    // var Transaction = require('dw/system/Transaction');
     var BasketMgr = require('dw/order/BasketMgr');
-    var OrderMgr = require('dw/order/OrderMgr');
     Transaction.wrap(function () {
         OrderMgr.failOrder(order, true);
     });
-    // var BasketMgr = require('dw/order/BasketMgr');
     return BasketMgr.getCurrentBasket();
 }
 
@@ -343,7 +338,6 @@ function reCreateBasket(order) {
  */
 function handleSilentPostAuthorize(order) {
     var PaymentMgr = require('dw/order/PaymentMgr');
-    var HookMgr = require('dw/system/HookMgr');
     var paymentInstrument;
     if (order !== null) {
         var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
@@ -422,6 +416,163 @@ function calculatePaymentTransaction(currentBasket) {
     return result;
 }
 
+
+/**
+ * function
+ * @param {*} args args
+ * @returns {*} obj
+ */
+function failOrder(args) {
+    var Cybersource = require('*/cartridge/scripts/Cybersource');
+    var orderResult = Cybersource.GetOrder(args.Order);
+    if (orderResult.error) {
+        // eslint-disable-next-line
+        args.PlaceOrderError = orderResult.PlaceOrderError;
+        return args;
+    }
+    var order = orderResult.Order;
+    var PlaceOrderError = args.PlaceOrderError != null ? args.PlaceOrderError : new dw.system.Status(dw.system.Status.ERROR, 'confirm.error.declined', 'Payment Declined');
+    session.privacy.SkipTaxCalculation = false;
+    var failResult = dw.system.Transaction.wrap(function () {
+        OrderMgr.failOrder(order, true);
+        return {
+            error: true,
+            PlaceOrderError: PlaceOrderError
+        };
+    });
+    if (failResult.error) {
+        // eslint-disable-next-line
+        args.PlaceOrderError = failResult.PlaceOrderError;
+    }
+    return args;
+}
+
+/**
+ * Create Order and set to NOT CONFIRMED
+ * @param {*} orderId orderId
+ * @param {*} req req
+ * @param {*} res res
+ * @param {*} next next
+ * @returns {*} obj
+ */
+function reviewOrder(orderId, req, res, next) {
+    var URLUtils = require('dw/web/URLUtils');
+    var BasketMgr = require('dw/order/BasketMgr');
+    var currentBasket = BasketMgr.getCurrentBasket();
+    var order = OrderMgr.getOrder(orderId);
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+
+    if (fraudDetectionStatus.status === 'fail') {
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+        // fraud detection failed
+        req.session.privacyCache.set('fraudDetectionStatus', true);
+        res.redirect(URLUtils.https('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode));
+        return next();
+    }
+
+    base.sendConfirmationEmail(order, req.locale.id);
+
+    //  Set Order confirmation status to NOT CONFIRMED
+    var Order = require('dw/order/Order');
+    Transaction.wrap(function () {
+        order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+    });
+
+    // Reset usingMultiShip after successful Order placement
+    req.session.privacyCache.set('usingMultiShipping', false);
+    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken));
+    return next();
+}
+
+/**
+ * Submit the order and send order confirmation email
+ * @param {*} orderId orderId
+ * @param {*} req req
+ * @param {*} res res
+ * @param {*} next next
+ * @returns {*} obj
+ */
+function submitOrder(orderId, req, res, next) {
+    var URLUtils = require('dw/web/URLUtils');
+    var BasketMgr = require('dw/order/BasketMgr');
+    var currentBasket = BasketMgr.getCurrentBasket();
+    var order = OrderMgr.getOrder(orderId);
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+    var Resource = require('dw/web/Resource');
+
+    if (fraudDetectionStatus.status === 'fail') {
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+        // fraud detection failed
+        req.session.privacyCache.set('fraudDetectionStatus', true);
+        res.redirect(URLUtils.https('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode));
+        return next();
+    }
+
+    // Place the order
+    var placeOrderResult = base.placeOrder(order, fraudDetectionStatus);
+    if (placeOrderResult.error) {
+        res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
+        return next();
+    }
+
+    //  Set order confirmation status to not confirmed for REVIEW orders.
+    if (session.privacy.CybersourceFraudDecision === 'REVIEW') {
+        var Order = require('dw/order/Order');
+        Transaction.wrap(function () {
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+        });
+    }
+
+    base.sendConfirmationEmail(order, req.locale.id);
+    // Reset using MultiShip after successful Order placement
+    req.session.privacyCache.set('usingMultiShipping', false);
+    res.redirect(URLUtils.https('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken));
+    return next();
+}
+
+/**
+ * function
+ * @param {*} order order
+ * @param {*} req req
+ * @param {*} res res
+ * @param {*} next next
+ * @returns {*} obj
+ */
+function submitApplePayOrder(order, req, res, next) {
+    var server = require('server');
+    var OrderModel = require('*/cartridge/models/order');
+
+    if (!order && req.querystring.order_token !== order.getOrderToken()) {
+        return next(new Error('Order token does not match'));
+    }
+    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', order);
+    var orderPlacementStatus = base.placeOrder(order, fraudDetectionStatus);
+
+    if (orderPlacementStatus.error) {
+        return next(new Error('Could not place order'));
+    }
+
+    var config = {
+        numberOfLineItems: '*'
+    };
+    var orderModel = new OrderModel(order, { config: config });
+    if (!req.currentCustomer.profile) {
+        var passwordForm = server.forms.getForm('newPasswords');
+        passwordForm.clear();
+        res.render('checkout/confirmation/confirmation', {
+            order: orderModel,
+            returningCustomer: false,
+            passwordForm: passwordForm
+        });
+    } else {
+        res.render('checkout/confirmation/confirmation', {
+            order: orderModel,
+            returningCustomer: true
+        });
+    }
+    return next();
+}
+
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
 base.handlePayments = handlePayments;
 base.validatePayment = validatePayment;
@@ -435,5 +586,9 @@ base.reCreateBasket = reCreateBasket;
 base.addOrUpdateToken = addOrUpdateToken;
 base.getNonGCPaymemtInstument = getNonGCPaymemtInstument;
 base.calculatePaymentTransaction = calculatePaymentTransaction;
+base.failOrder = failOrder;
+base.reviewOrder = reviewOrder;
+base.submitOrder = submitOrder;
+base.submitApplePayOrder = submitApplePayOrder;
 
 module.exports = base;

@@ -12,167 +12,9 @@ var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var IsCartridgeEnabled = Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled');
 
 var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
-
+var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 server.extend(page);
 
-function verifyCard(card, form) {
-    var collections = require('*/cartridge/scripts/util/collections');
-    var Resource = require('dw/web/Resource');
-    var PaymentMgr = require('dw/order/PaymentMgr');
-    var PaymentStatusCodes = require('dw/order/PaymentStatusCodes');
-
-    var paymentCard = PaymentMgr.getPaymentCard(card.cardType);
-    var error = false;
-    var cardNumber = card.cardNumber;
-    var creditCardStatus;
-    var formCardNumber = form.cardNumber;
-
-    if (paymentCard) {
-        creditCardStatus = paymentCard.verify(
-            card.expirationMonth,
-            card.expirationYear,
-            cardNumber
-        );
-    } else {
-        formCardNumber.valid = false;
-        formCardNumber.error = Resource.msg('error.message.creditnumber.invalid', 'forms', null);
-        error = true;
-    }
-
-    if (creditCardStatus && creditCardStatus.error) {
-        collections.forEach(creditCardStatus.items, function (item) {
-            switch (item.code) {
-                case PaymentStatusCodes.CREDITCARD_INVALID_CARD_NUMBER:
-                    formCardNumber.valid = false;
-                    formCardNumber.error = Resource.msg('error.message.creditnumber.invalid', 'forms', null);
-                    error = true;
-                    break;
-
-                case PaymentStatusCodes.CREDITCARD_INVALID_EXPIRATION_DATE:
-                    var expirationMonth = form.expirationMonth;
-                    var expirationYear = form.expirationYear;
-                    expirationMonth.valid = false;
-                    expirationMonth.error = Resource.msg('error.message.creditexpiration.expired', 'forms', null);
-                    expirationYear.valid = false;
-                    error = true;
-                    break;
-                default:
-                    error = true;
-            }
-        });
-    }
-    return error;
-}
-
-/**
- * Creates an object from form values
- * @param {Object} paymentForm - form object
- * @returns {Object} a plain object of payment instrument
- */
-function getDetailsObject(paymentForm) {
-    return {
-        name: paymentForm.cardOwner.value,
-        cardNumber: paymentForm.cardNumber.value,
-        cardType: paymentForm.cardType.value,
-        expirationMonth: paymentForm.expirationMonth.value,
-        expirationYear: paymentForm.expirationYear.value,
-        paymentForm: paymentForm
-    };
-}
-
-/**
- * reset an object from form values
- * @param {Object} paymentForm - form object
- * @returns {Object} a plain object of payment instrument
- */
-// eslint-disable-next-line
-function setDetailsObject(paymentForm) {
-    return {
-        name: '',
-        cardNumber: '',
-        cardType: '',
-        expirationMonth: '',
-        expirationYear: '',
-        paymentForm: ''
-    };
-}
-
-/**
- * Saves a  customer credit card payment instrument.
- * @param {Object} params
- * @param {dw.customer.CustomerPaymentInstrument} params.PaymentInstrument - credit card object.
- * @param {dw.web.FormGroup} params.CreditCardFormFields - new credit card form.
- */
-function savePaymentInstrument(params) {
-    var paymentInstrument = params.PaymentInstrument;
-    var creditCardFields = params.CreditCardFields;
-    paymentInstrument.setCreditCardHolder(creditCardFields.name);
-    paymentInstrument.setCreditCardNumber(creditCardFields.cardNumber);
-    paymentInstrument.setCreditCardType(CardHelper.getCardType(creditCardFields.cardType));
-    paymentInstrument.setCreditCardExpirationMonth(creditCardFields.expirationMonth);
-    paymentInstrument.setCreditCardExpirationYear(creditCardFields.expirationYear);
-}
-
-function cardSaveLimit(Profile) {
-    var profile = Profile;
-    var addCardLimit = false;
-    var savedCCTimeNew = false;
-    var savedCCTime = false;
-    var addCardLimitError = false;
-    // var Site = require('dw/system/Site');
-    var Transaction = require('dw/system/Transaction');
-    var Logger = require('dw/system/Logger');
-    var cyberSourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-
-    var LimitSavedCardRateEnabled = !empty(cyberSourceHelper.getLimitSavedCardRate()) ? cyberSourceHelper.getLimitSavedCardRate() : false;
-
-    if (!LimitSavedCardRateEnabled) {
-        addCardLimit = true;
-    } else {
-        try {
-            var SavedCardLimitTimeFrame = !empty(cyberSourceHelper.getSavedCardLimitTimeFrame()) ? cyberSourceHelper.getSavedCardLimitTimeFrame() : 0;
-            var SavedCardLimitCount = !empty(cyberSourceHelper.getSavedCardLimitFrame()) ? cyberSourceHelper.getSavedCardLimitFrame() : 0;
-
-            if ('savedCCRateLookBack' in profile.custom && !empty(profile.custom.savedCCRateLookBack)) {
-                var customerTime = profile.custom.savedCCRateLookBack;
-                var currentTime = new Date();
-                var difference = new Date().setTime(Math.abs(currentTime - customerTime));
-                var differenceInSec = Math.floor(difference / 1000);
-                if (differenceInSec < SavedCardLimitTimeFrame * 60 * 60) {
-                    if ('savedCCRateCount' in profile.custom && (profile.custom.savedCCRateCount < SavedCardLimitCount)) {
-                        Transaction.wrap(function () {
-                            profile.custom.savedCCRateCount += 1;
-                        });
-                    } else {
-                        addCardLimitError = true;
-                    }
-                } else {
-                    addCardLimit = true;
-                    savedCCTimeNew = true;
-                }
-            } else {
-                addCardLimit = true;
-                savedCCTimeNew = true;
-            }
-        } catch (e) {
-            Logger.error('Error Processed while adding card: ', e.message);
-        }
-    }
-    var result = {
-        addCardLimit: addCardLimit,
-        savedCCTimeNew: savedCCTimeNew,
-        savedCCTime: savedCCTime,
-        addCardLimitError: addCardLimitError
-    };
-    return result;
-}
-
-/**
- * Checks if a credit card is valid or not
- * @param {Object} card - plain object with card details
- * @param {Object} form - form object
- * @returns {boolean} a boolean representing card validation
- */
 if (IsCartridgeEnabled) {
     server.append('List', userLoggedIn.validateLoggedIn, consentTracking.consent, function (req, res, next) {
         var subscriptionError = null;
@@ -218,9 +60,8 @@ if (IsCartridgeEnabled) {
         var dwOrderPaymentInstrument = require('dw/order/PaymentInstrument');
         var verifyDuplicates = false;
         var tokenizationResult = { subscriptionID: '', error: '' };
-        var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
         var paymentForm = server.forms.getForm('creditCard');
-        var result = getDetailsObject(paymentForm);
+        var result = PaymentInstrumentUtils.getDetailsObject(paymentForm);
 
         var billingForm = server.forms.getForm('billing');
         if (!empty(billingForm.creditCardFields.flexresponse.value)) {
@@ -252,7 +93,7 @@ if (IsCartridgeEnabled) {
                             PaymentInstrumentUtils.removeDuplicates(formInfo);
                         }
                         var paymentInstrument = wallet.createPaymentInstrument(dwOrderPaymentInstrument.METHOD_CREDIT_CARD);
-                        savePaymentInstrument({ PaymentInstrument: paymentInstrument, CreditCardFields: formInfo });
+                        PaymentInstrumentUtils.savePaymentInstrument({ PaymentInstrument: paymentInstrument, CreditCardFields: formInfo });
     
                         paymentInstrument.custom.isCSToken = true;
                         paymentInstrument.setCreditCardToken(tokenizationResult.subscriptionID);
@@ -260,7 +101,7 @@ if (IsCartridgeEnabled) {
 
                     Transaction.commit();
                     // Reseting the formData because response had CC#
-                    res.setViewData(setDetailsObject(paymentForm));
+                    res.setViewData(PaymentInstrumentUtils.setDetailsObject(paymentForm));
                     res.json({
                         success: true,
                         redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
@@ -288,7 +129,7 @@ if (IsCartridgeEnabled) {
         var Transaction = require('dw/system/Transaction');
         // var Logger = require('dw/system/Logger');
         var customerProfile = customer.getProfile();
-        var saveCard = cardSaveLimit(customerProfile);
+        var saveCard = PaymentInstrumentUtils.cardSaveLimit(customerProfile);
         if (saveCard.addCardLimitError) {
             res.json({
                 success: false,

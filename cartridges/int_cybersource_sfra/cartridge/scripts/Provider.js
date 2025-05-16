@@ -20,7 +20,7 @@ function saredirect(args) {
     var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
     var returnVariable;
     // eslint-disable-next-line
-    session.privacy.order_id = request.httpParameterMap.req_reference_number.stringValue;
+    session.privacy.orderId = request.httpParameterMap.req_reference_number.stringValue;
     switch (secureAcceptanceResponse.nextStep) {
         case CybersourceConstants.SA_SUBMITORDER: returnVariable = { submit: true, Order: secureAcceptanceResponse.data };
             break;
@@ -61,7 +61,7 @@ function saiframe(args) {
     var secureAcceptanceResponse = secureAcceptanceAdapter.SAResponse(request.httpParameterMap);
     var returnVariable;
     // eslint-disable-next-line
-    session.privacy.order_id = request.httpParameterMap.req_reference_number.stringValue;
+    session.privacy.orderId = request.httpParameterMap.req_reference_number.stringValue;
     switch (secureAcceptanceResponse.nextStep) {
         case CybersourceConstants.SA_SUBMITORDER: returnVariable = { submit: true, Order: secureAcceptanceResponse.data };
             break;
@@ -240,7 +240,7 @@ function card(args) {
     if (session.privacy.process3DRequest) {
         session.privacy.process3DRequest = false;
         session.privacy.process3DRequestParent = true;
-        session.privacy.order_id = order.orderNo;
+        session.privacy.orderId = order.orderNo;
         return { load3DRequest: true, Order: order };
     } if (session.privacy.process3DRequestParent) {
         var process3DResult = Cybersource.Process3DRequestParent({ Order: order });
