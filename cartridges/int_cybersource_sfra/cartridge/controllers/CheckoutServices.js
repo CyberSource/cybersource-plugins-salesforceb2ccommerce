@@ -400,22 +400,23 @@ if (IsCartridgeEnabled) {
                         currentBasket,
                         customer
                     );
-
-                    req.currentCustomer.wallet.paymentInstruments.push({
-                        creditCardHolder: saveCardResult.creditCardHolder,
-                        maskedCreditCardNumber: saveCardResult.maskedCreditCardNumber,
-                        creditCardType: saveCardResult.creditCardType,
-                        creditCardExpirationMonth: saveCardResult.creditCardExpirationMonth,
-                        creditCardExpirationYear: saveCardResult.creditCardExpirationYear,
-                        UUID: saveCardResult.UUID,
-                        creditCardNumber: Object.hasOwnProperty.call(
-                            saveCardResult,
-                            'creditCardNumber'
-                        )
-                            ? saveCardResult.creditCardNumber
-                            : null,
-                        raw: saveCardResult
-                    });
+                    if(saveCardResult){
+                        req.currentCustomer.wallet.paymentInstruments.push({
+                            creditCardHolder: saveCardResult.creditCardHolder,
+                            maskedCreditCardNumber: saveCardResult.maskedCreditCardNumber,
+                            creditCardType: saveCardResult.creditCardType,
+                            creditCardExpirationMonth: saveCardResult.creditCardExpirationMonth,
+                            creditCardExpirationYear: saveCardResult.creditCardExpirationYear,
+                            UUID: saveCardResult.UUID,
+                            creditCardNumber: Object.hasOwnProperty.call(
+                                saveCardResult,
+                                'creditCardNumber'
+                            )
+                                ? saveCardResult.creditCardNumber
+                                : null,
+                            raw: saveCardResult
+                        });
+                    }
                 }
 
                 // Calculate the basket

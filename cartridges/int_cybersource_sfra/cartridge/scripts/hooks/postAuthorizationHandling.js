@@ -11,6 +11,7 @@ var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource'
 var HookMgr = require('dw/system/HookMgr');
 var BasketMgr = require('dw/order/BasketMgr');
 var OrderMgr = require('dw/order/OrderMgr');
+var klarnaHelper = require('*/cartridge/scripts/klarna/helper/KlarnaHelper');
 
 
 /**
@@ -34,9 +35,9 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
         res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
         return { handleNext: true };
     }
-    
+
     if (handlePaymentResult.error) {
-        if (paymentInstrument.paymentMethod != null
+         if (paymentInstrument.paymentMethod != null
             && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
                 || (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
                     || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)
@@ -57,6 +58,8 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
                 errorMessage: Resource.msg('error.technical', 'checkout', null)
             });
         }
+        klarnaHelper.clearKlarnaSessionVariables();
+
         return { handleNext: true };
     } if (handlePaymentResult.returnToPage) {
         res.render('secureacceptance/secureAcceptanceIframeSummmary', {
@@ -80,7 +83,17 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
         return { handleEmitRouteComplete: true };
     }
     if (handlePaymentResult.redirection) {
-        res.redirect(handlePaymentResult.redirectionURL);
+        if (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.klarna', 'cybersource', null)) {
+            res.json({
+                error: false,
+                continueUrl: handlePaymentResult.redirectionURL
+            });
+        }
+        else {
+            res.redirect(handlePaymentResult.redirectionURL);
+        }
+        klarnaHelper.clearKlarnaSessionVariables();
+
         return { handleEmitRouteComplete: true };
     }
 
@@ -101,7 +114,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
     if (handlePaymentResult.declined) {
         session.privacy.SkipTaxCalculation = false;
         Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
+    
         if (paymentInstrument.paymentMethod != null
             && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
                 && (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
@@ -110,7 +123,6 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof', 'cybersource', null)
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl', 'cybersource', null)
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.klarna', 'cybersource', null)
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
         ) {
             res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
@@ -120,6 +132,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
                 errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
             });
         }
+        klarnaHelper.clearKlarnaSessionVariables();
         return { handleNext: true };
     }
     if (handlePaymentResult.missingPaymentInfo) {
@@ -205,6 +218,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
     session.privacy.SkipTaxCalculation = false;
     session.privacy.cartStateString = null;
 
+    klarnaHelper.clearKlarnaSessionVariables();
     // Handle Authorized status for Payer Authentication flow
     if (DFReferenceId !== undefined && (handlePaymentResult.authorized || handlePaymentResult.review)) {
         // eslint-disable-next-line
