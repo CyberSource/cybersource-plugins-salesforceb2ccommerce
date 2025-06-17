@@ -1,136 +1,137 @@
 'use strict';
 
-/* eslint-disable no-undef */
-
-$(document).ready(function () {
-    $('#klarna-pay-authorize').hide();
-
-    $('#klarna-error-message').hide();
-
-    //  If a session token has already been generated, display the widget and remove the request session form.
-    //  Prevents creating a new session every time customer comes to the billing step.
-    //  This will require a new implementation of Klarna.Payments.load to update the Klarna session with new
-    //  payment or basket information, as this could have changed since customer was last on the billing page.
-    /*
-        var sessionToken = $('#klarna-container').data('session-token');
-    if (sessionToken) {
-        removeSessionForm();
-        loadWidget(sessionToken);
-    }
-    */
-
-    /**
-     * function
-     */
-    function authorizeKlarnaOrder() {
+/**
+ * function
+ */
+function requestSession(isCheckoutPage) {
+    var endpoint = window.klarnaVariables.createSessionEndpoint;
+    if (isCheckoutPage)
         $.spinner().start();
-        var updateEndpoint = document.getElementById('klarnaUpdateUrl').value;
-        $.ajax({
-            method: 'POST',
-            url: updateEndpoint,
-            success: function (data) {
+    $.ajax({
+        url: endpoint,
+        method: 'POST',
+        data: null,
+        success: function (data) {
+            if (isCheckoutPage)
                 $.spinner().stop();
-                if (!data.error) {
-                    Klarna.Credit.authorize(function (res) {
-                        if (res.approved === true) {
-                            document.getElementById('klarnaAuthToken').value = res.authorization_token;
-                            $('#klarna-pay-authorize').hide();
-                            $('.submit-payment').trigger('click');
-                        } else
-                        if (res.show_form === true) {
-                            $('#klarna-pay-authorize').show();
-                        } else {
-                            $('#klarna-pay-authorize').hide();
-                        }
-                    });
-                } else {
-                    $('#klarna-email-group').show();
-                    $('#klarna-pay-get-session').show();
-                    $('#klarna-pay-authorize').hide();
-                    $('#klarna-credit-main').remove();
-                    $('.error-message').css('display', 'block');
-                    var errorPara = document.getElementsByClassName('error-message-text');
-                    if (errorPara.length > 0) {
-                        errorPara[0].innerText = 'Your payment settings could not be submitted. Please review your payment settings and try again. Thank you for your patience!';
+            if (data.reasonCode !== 100 || data.decision === 'REJECT') {
+                console.log("Error creating klarna session: ", data);
+                $('#klarna-error-message').show();
+                $('#klarna-submit-paymentButton').hide();
+            } else {
+                if (data.sessionToken) {
+                    window.klarnaVariables.klarnaClientToken = data.sessionToken;
+                    if (isCheckoutPage === false) {
+                        klarnaAsyncCallback(data.sessionToken);
+                    }
+                    else {
+                        $('#klarna-submit-paymentButton').show();
+                        Klarna.paymentStage($.Deferred());
                     }
                 }
-            },
-            // eslint-disable-next-line
-            error: function (err) {
-                $.spinner().stop();
-                $('.error-message').css('display', 'block');
-                var errorPara = document.getElementsByClassName('error-message-text');
-                if (errorPara.length > 0) {
-                    errorPara[0].innerText = 'Your payment settings could not be submitted. Please review your payment settings and try again. Thank you for your patience!';
-                }
             }
-        });
-    }
-
-    /**
-     * function
-     * @param {*} sessionToken sessionToken
-     */
-    function loadWidget(sessionToken) {
-        var token = {};
-        token.client_token = sessionToken;
-        Klarna.Credit.init(token);
-        Klarna.Credit.load({ container: '#klarna-container' }, function (res) {
-            if (res.show_form === true) {
-                $('#klarna-pay-authorize').show();
-                $('#klarna-pay-authorize').click(function () {
-                    authorizeKlarnaOrder();
-                });
-            }
-        });
-    }
-
-    /**
-     * function
-     */
-    function removeSessionForm() {
-        $('#klarna-email-group').hide();
-        $('#klarna-pay-get-session').hide();
-    }
-
-    /**
-     * function
-     */
-    function requestSession() {
-        var form = $('#dwfrm_billing');
-        var formData = $(form).serialize();
-        var endpoint = $('#klarna-pay-get-session').data('action-url');
-        $.spinner().start();
-        $.ajax({
-            url: endpoint,
-            method: 'POST',
-            data: formData,
-            success: function (data) {
-                $.spinner().stop();
-                if (data.reasonCode !== 100 || data.decision === 'REJECT') {
-                    $('#klarna-error-message').show();
-                } else {
-                    removeSessionForm();
-                    loadWidget(data.sessionToken);
-                }
-            },
-            // eslint-disable-next-line
-            error: function (err) {
-                $.spinner().stop();
+        },
+        // eslint-disable-next-line
+        error: function (err) {
+            if (isCheckoutPage){
                 $('#klarna-error-message').show();
+                $.spinner().stop();
             }
-        });
-    }
-
-    $('#klarna-pay-get-session').click(function (e) {
-        e.preventDefault();
-        // removing error message
-        $('.error-message').css('display', 'none');
-        //  If Klarna widget isn't already open.
-        if ($('#klarna-credit-main').length === 0) {
-            //  Request session token.
-            $('#klarna-error-message').hide();
-            requestSession();
+            console.log("Error creating klarna session: ", err);
         }
     });
+}
+
+
+$(function () {
+    $('#klarna-error-message').hide();
+
+    var $klarnaTab = $('#klarna-tab-checkout');
+    if ($klarnaTab.length !== 0) {
+
+        $klarnaTab.on('click', function (event) {
+            $('#klarna-error-message').hide();
+            handleKlarna(true); // isCheckoutPage = true
+        });
+    }
+
+    var $divElement = $('#checkout-actions');
+    if ($divElement.length !== 0) {
+        handleKlarna(false); // isCheckoutPage = false
+    }
+
 });
+function handleKlarna(isCheckoutPage) {
+    window.miniCartButtonLoaded = false;
+
+    if (isSessionExists()) {
+        klarnaAsyncCallback(window.klarnaVariables.klarnaClientToken);
+    }
+    else {
+        requestSession(isCheckoutPage); //isCheckoutPage = false
+    }
+}
+
+function isSessionExists() {
+    if (typeof window.klarnaVariables.klarnaClientToken !== 'undefined' && window.klarnaVariables.klarnaClientToken !== "null") {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+function klarnaAsyncCallback(sessionToken) {
+    var klarnaExpressCheckoutMC = document.querySelector('#klarnaExpressCheckoutMC');
+    var klarnaExpressCheckoutCart = document.querySelector('#klarnaExpressCheckoutCart');
+
+    sessionToken = window.klarnaVariables.klarnaClientToken;
+    if (klarnaExpressCheckoutMC && window.miniCartButtonLoaded !== true && isSessionExists()) {
+        initKlarnaExpressButton('#klarnaExpressCheckoutMC', sessionToken);
+    }
+    if (klarnaExpressCheckoutCart && window.cartButtonLoaded !== true && isSessionExists()) {
+        initKlarnaExpressButton('#klarnaExpressCheckoutCart', sessionToken);
+    }
+};
+
+
+function initKlarnaExpressButton(containerId, sessionToken) {
+
+    window.Klarna.Payments.Buttons.init({
+        client_token: sessionToken
+    }).load({
+        container: containerId,
+        locale: window.klarnaVariables.currentLocale,
+        on_click: (authorize) => {
+            authorize(
+                { collect_shipping_address: true, auto_finalize: false },
+                null,
+                (result) => {
+                    if (result.approved) {
+                        $.ajax({
+                            url: window.klarnaVariables.handleExpressCheckoutAuth,
+                            type: 'post',
+                            dataType: 'json',
+                            contentType: 'application/json',
+                            data: JSON.stringify(result),
+                            success: function (data) {
+                                if (data.redirectUrl) {
+                                    window.location.href = data.redirectUrl;
+                                }
+                            }
+                        });
+                    } else {
+                        console.log("Klarna error: ", result);
+                    }
+                },
+            );
+        },
+    },
+        function load_callback(loadResult) {
+            if (containerId === '#klarnaExpressCheckoutMC')
+                window.miniCartButtonLoaded = true;
+            else if (containerId === '#klarnaExpressCheckoutCart')
+                window.cartButtonLoaded = true;
+
+            console.log('Klarna widget loaded:', loadResult);
+        });
+}

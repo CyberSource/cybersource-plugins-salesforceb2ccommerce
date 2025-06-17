@@ -235,7 +235,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'FXSKE995';
+        return 'K2AB9ZDK';
     },
 
     getDeveloperID: function () {
@@ -749,6 +749,9 @@ var CybersourceHelper = {
         request.paySubscriptionCreateService = new CybersourceHelper.getcsReference().PaySubscriptionCreateService();
         request.paySubscriptionCreateService.disableAutoAuth = 'false';
         request.paySubscriptionCreateService.run = true;
+        if (CybersourceHelper.getDigitalFingerprintEnabled()) {
+            request.deviceFingerprintID =  replaceCharsInSessionID(session.sessionID);
+        }
         request.decisionManager = new CybersourceHelper.getcsReference().DecisionManager();
         request.decisionManager.enabled = true;
     },

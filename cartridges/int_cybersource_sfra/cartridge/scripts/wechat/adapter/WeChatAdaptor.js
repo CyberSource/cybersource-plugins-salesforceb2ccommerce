@@ -87,7 +87,7 @@ function CreateSaleServiceRequest(Basket) {
     purchaseObject = result.purchaseTotals;
     result = CommonHelper.CreateCyberSourceBillToObject(Basket, true);
     billToObject = result.billTo;
-    billToObject.email = 'noreply@cs.com';
+    billToObject.email = result.billTo.email;
     result = CommonHelper.CreateCybersourceShipToObject(Basket);
 
     var sessionObject = {};

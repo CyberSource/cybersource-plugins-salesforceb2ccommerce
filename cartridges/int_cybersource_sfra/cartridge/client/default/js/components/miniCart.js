@@ -37,6 +37,9 @@ module.exports = function () {
                 if (isGooglePayEnabled) {
                     onGooglePayLoaded();
                 }
+                if(window.klarnaVariables.isKlarnaEnabledForCartAndMinicart === 'true'){
+                    handleKlarna(false);  // isCheckoutPage = false
+                }
 
                 $.spinner().stop();
             });

@@ -17,10 +17,10 @@
             <isreplace/>
             <isinclude template="/components/footer/pageFooter" />
         </div>
-        <isif condition="${((dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  
-        				dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true) || 
-        				(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_GooglePay).isActive() && isGooglePayEnabled))}">
-        	<script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-3.7.1.min.js')}" type="text/javascript"></script>
+        <isif condition="${(((dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false &&  
+                dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true)) || 
+                (dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_GooglePay) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_GooglePay).isActive() : false && isGooglePayEnabled))}">
+            <script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-3.7.1.min.js')}" type="text/javascript"></script>
         </isif>
          <!--[if lt IE 10]>
             <isinclude sf-toolkit="off" template="/common/scripts" />
@@ -28,16 +28,16 @@
         <isscript>
 			var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 		</isscript>
-		<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+		<isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
 			<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 		</isif>
 		<script src="${URLUtils.staticURL('/custom/cybersource-custom.js')}"></script>
 		
-		<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive()}">
-			<script src="${URLUtils.staticURL('/custom/klarna.js')}"></script>
-		</isif>
+        <isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive() : false)}">
+            <script src="${URLUtils.staticURL('/custom/klarna.js')}"></script>
+        </isif>
 		   
-           <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD).isActive()}">
+           <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD).isActive() : false}">
 			<script src="${URLUtils.staticURL('/custom/wechat.js')}"></script>
 		</isif>
 

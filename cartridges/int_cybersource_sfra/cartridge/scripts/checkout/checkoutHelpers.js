@@ -10,6 +10,7 @@ var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var OrderMgr = require('dw/order/OrderMgr');
 var HookMgr = require('dw/system/HookMgr');
+var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 
 
 /**
@@ -29,6 +30,7 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
     var Resource = require('dw/web/Resource');
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+    var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
     if (CsSAType != null && CsSAType === Resource.msg('cssatype.SA_FLEX', 'cybersource', null)) {
         billingData.paymentInformation.cardType.value = CardHelper.getCardType(billingData.paymentInformation.cardType.value);
     }
@@ -37,10 +39,12 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
     var basket = BasketMgr.getCurrentOrNewBasket();
     var tokenizationResult = { subscriptionID: '', error: '' };
     var wallet = customer.getProfile().getWallet();
+    var customerProfile = customer.getProfile();
+    var saveCard = PaymentInstrumentUtils.cardSaveLimit(customerProfile);
     var paymentInstruments = wallet.getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
     var enableTokenization = Site.getCurrent().getCustomPreferenceValue('CsTokenizationEnable').value;
     var processor = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD).getPaymentProcessor();
-    if (enableTokenization.equals('YES') && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
+    if (enableTokenization.equals('YES') && !saveCard.addCardLimitError && HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
         verifyDuplicates = true;
         tokenizationResult = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(), 'CreatePaymentToken', 'billing');
     }
@@ -65,7 +69,7 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
         }
     }
 
-    if (!alreadyExists) {
+    if (!alreadyExists && !empty(tokenizationResult.subscriptionID)) {
         storedPaymentInstrument = wallet.createPaymentInstrument(PaymentInstrument.METHOD_CREDIT_CARD);
 
         storedPaymentInstrument.setCreditCardHolder(

@@ -19,7 +19,7 @@ var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstan
  * @param {*} isHandleRequired comment
  * @returns {*} obj
  */
-function HandleRequest(Basket, isHandleRequired) {
+function HandleRequest(Basket, isHandleRequired, paymentMethod) {
     /* check if payment instrument creation is required in handle request or not.
      * For pipeline handle request is not required but for controller handle
      * request is required
@@ -30,7 +30,7 @@ function HandleRequest(Basket, isHandleRequired) {
     }
     if (isHandleRequired) {
         // call handle method of helper
-        callSessionService = CommonHelper.HandleRequest(Basket);
+        callSessionService = CommonHelper.HandleRequest(Basket, paymentMethod);
     }
     // call session service in case of success response
     return callSessionService;
@@ -309,7 +309,6 @@ function CreateKlarnaSecureKey(Basket) {
     var sessionId = session.sessionID;
     var paymentType = CybersourceConstants.KLARNA_PAYMENT_TYPE;
     var merchantId = CybersourceHelper.getMerchantID();
-    var merchantKey = CybersourceHelper.getSoapSecurityKey();
     var amount = Basket.totalGrossPrice.value;
     var token = sessionId + paymentType + merchantId + amount;
     // call method of common helper to create a signature

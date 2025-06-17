@@ -9,7 +9,7 @@
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 </isscript>
 
-<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive() && (undefined !== pdict.summarypage)}">
+<isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive() : false) && (undefined !== pdict.summarypage)}">
     <style id="antiClickjack">body{display:none;}</style>
     <script type="text/javascript">
         if (self === top) {
