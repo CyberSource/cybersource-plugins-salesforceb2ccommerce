@@ -1594,9 +1594,11 @@ function CheckStatusServiceRequest(order) {
 /* Remove any existing Payment Instrument and create new
 * payment Instrument with success/error status for selected payment method
 */
-function HandleRequest(Basket) {
+function HandleRequest(Basket, PaymentMethod) {
     // get payment method from billing form
-    var PaymentMethod = session.forms.billing.paymentMethod.value;
+    if(!PaymentMethod){
+    PaymentMethod = session.forms.billing.paymentMethod.value;
+    }
     var isPaymentInstrumentCreated = false;
     // create payment instrument if selected payment method is not null
     if (!empty(PaymentMethod)) {

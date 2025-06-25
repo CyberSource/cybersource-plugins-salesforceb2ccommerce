@@ -65,7 +65,7 @@ function pageContent(pdict){
     }
 
     // ------------------ Visa Checkout ------------------ 
-    var visaCheckoutActive = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive(); 
+    var visaCheckoutActive = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT)?PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive():false; 
     var showVisaCheckout = Site.getCurrent().getCustomPreferenceValue('cybVisaButtonOnCart'); 
     if (showVisaCheckout && visaCheckoutActive) { 
         // Injects ISML template logic via controller call 

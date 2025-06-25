@@ -53,6 +53,12 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
     var alreadyExists = false;
 
     Transaction.begin();
+    if (saveCard.addCardLimit && saveCard.savedCCTimeNew) {
+        Transaction.wrap(function () {
+            customerProfile.custom.savedCCRateLookBack = new Date();
+            customerProfile.custom.savedCCRateCount = 1;
+        });
+    }
     var savedCreditCards = customer.getProfile().getWallet().getPaymentInstruments(PaymentInstrument.METHOD_CREDIT_CARD);
     var ccNumber = billingData.paymentInformation.cardNumber.value;
     // eslint-disable-next-line

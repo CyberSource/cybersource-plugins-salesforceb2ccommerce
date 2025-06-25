@@ -64,6 +64,17 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
         billTo.setPostalCode(basket.billingAddress.postalCode || '');
     }
 
+    // Create billto, shipto, item and purchase total object
+    if (!empty(basket.billingAddress.address1) || !empty(basket.defaultShipment.shippingAddress)) {
+        var result = CommonHelper.CreateCyberSourceBillToObject(basket, true);
+        billTo = result.billTo;
+    }
+    var shipTo;
+    if (!empty(basket.defaultShipment.shippingAddress)) {
+        result = CommonHelper.CreateCybersourceShipToObject(basket);
+        shipTo = result.shipTo;
+    }
+
     var result = CommonHelper.CreateCybersourcePurchaseTotalsObject(basket);
     purchaseObject = result.purchaseTotals;
     if (purchaseObject.currency === 'N/A' || purchaseObject.grandTotalAmount == 0) {
@@ -84,6 +95,8 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     // Create a session object
     var sessionObject = {};
     sessionObject.billTo = billTo;
+    if (shipTo)
+        sessionObject.shipTo = shipTo;
     sessionObject.purchaseObject = purchaseObject;
     sessionObject.items = items;
     sessionObject.klarnaPaymentType = klarnaPaymentType;
@@ -125,6 +138,12 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
     if (empty(basket.getPaymentInstruments()) || empty(basket.getPaymentInstruments()[0].paymentMethod) || (basket.getPaymentInstruments()[0].paymentMethod !== 'KLARNA')) {
         klarnaHelper.setKlarnaPaymentMethod(basket);
     }
+    // Recalculate payments and basket totals
+    var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+    Transaction.wrap(function () {
+        basketCalculationHelpers.calculateTotals(basket);
+        COHelpers.calculatePaymentTransaction(basket);
+    });
 
     //  Initialize data.
     var signature = klarnaHelper.CreateKlarnaSecureKey(basket);
@@ -195,7 +214,6 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
     res.json(returnObject);
     next();
 });
-
 
 /**
  * Process Klarna authorization result callback and redirect the customer to the checkout step

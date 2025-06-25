@@ -25,6 +25,7 @@ function requestSession(isCheckoutPage) {
                         klarnaAsyncCallback(data.sessionToken);
                     }
                     else {
+                        window.klarnaSessionFromCheckout = true;
                         $('#klarna-submit-paymentButton').show();
                         Klarna.paymentStage($.Deferred());
                     }
@@ -33,7 +34,7 @@ function requestSession(isCheckoutPage) {
         },
         // eslint-disable-next-line
         error: function (err) {
-            if (isCheckoutPage){
+            if (isCheckoutPage) {
                 $('#klarna-error-message').show();
                 $.spinner().stop();
             }
@@ -51,7 +52,9 @@ $(function () {
 
         $klarnaTab.on('click', function (event) {
             $('#klarna-error-message').hide();
-            handleKlarna(true); // isCheckoutPage = true
+            if (!isSessionExists()) {
+                requestSession(true); //isCheckoutPage = true
+            }
         });
     }
 
@@ -68,7 +71,7 @@ function handleKlarna(isCheckoutPage) {
         klarnaAsyncCallback(window.klarnaVariables.klarnaClientToken);
     }
     else {
-        requestSession(isCheckoutPage); //isCheckoutPage = false
+        requestSession(isCheckoutPage);
     }
 }
 
