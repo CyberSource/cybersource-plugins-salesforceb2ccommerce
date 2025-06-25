@@ -274,11 +274,11 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
         // eslint-disable-next-line
         if (empty(subscriptionToken)) {
             cardObject.setAccountNumber(accounNumber.replace(/\s/g, ''));
+            cardObject.setCvNumber(cvnNumber);
         }
         cardObject.setFullName(fullName);
         cardObject.setExpirationMonth(expiryMonth);
         cardObject.setExpirationYear(expiryYear);
-        cardObject.setCvNumber(cvnNumber);
         cardObject.setCardType(returnCardType(cardType));
     }
     return { success: true, card: cardObject };

@@ -95,6 +95,7 @@ server.get('SilentPostReviewOrder', csrfProtection.generateToken, function (req,
 server.get('SubmitOrderConformation', csrfProtection.generateToken, function (req, res, next) {
     var orderId = req.querystring.ID;
     var token = req.querystring.token;
+    delete session.privacy.orderId;
     res.render('cart/RedirectToConformation', {
         orderId: orderId,
         orderToken: token

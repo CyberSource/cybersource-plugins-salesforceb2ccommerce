@@ -106,7 +106,7 @@
 
                 <!-- Step 2: Payment and Billing-->
                 <isinclude template="checkout/billing/billing" />
-                <isif condition="${dw.order.PaymentMgr.getPaymentMethod('VISA_CHECKOUT').isActive()}">
+                <isif condition="${dw.order.PaymentMgr.getPaymentMethod('VISA_CHECKOUT') ? dw.order.PaymentMgr.getPaymentMethod('VISA_CHECKOUT').isActive() : false}">
 					<isinclude template="visacheckout/launch"/>
                 </isif>
                 <div class="card payment-summary">

@@ -334,30 +334,6 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
         CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
     }
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
-    /** ***************************** */
-    /* DAV-related WebService setup */
-    /** ***************************** */
-
-    var enableDAV = CybersourceHelper.getDavEnable();
-    var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
-    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
-    if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
-    // eslint-disable-next-line
-    if (enableDAV == 'YES') {
-            var ignoreDAVResult = false;
-            // eslint-disable-next-line
-        if (approveDAV == 'APPROVE') {
-                ignoreDAVResult = true;
-            }
-            CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
-        }
-        /* End of DAV WebService setup */
-
-        /* AVS Service setup */
-        var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
-        var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
-        CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
-    }
     var serviceResponse = null;
     // send request
     try {
@@ -478,30 +454,7 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
     }
 
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject.card, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
-    /** ***************************** */
-    /* DAV-related WebService setup */
-    /** ***************************** */
 
-    var enableDAV = CybersourceHelper.getDavEnable();
-    var approveDAV = CybersourceHelper.getDavOnAddressVerificationFailure();
-    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
-    if (paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
-        // eslint-disable-next-line
-        if (enableDAV == 'YES') {
-            var ignoreDAVResult = false;
-            // eslint-disable-next-line
-            if (approveDAV == 'APPROVE') {
-                ignoreDAVResult = true;
-            }
-            CybersourceHelper.addDAVRequestInfo(serviceRequest, billTo, shipTo, ignoreDAVResult);
-        }
-        /* End of DAV WebService setup */
-
-        /* AVS Service setup */
-        var ignoreAVSResult = CybersourceHelper.getAvsIgnoreResult();
-        var declineAVSFlags = CybersourceHelper.getAvsDeclineFlags();
-        CybersourceHelper.addAVSRequestInfo(serviceRequest, ignoreAVSResult, declineAVSFlags);
-    }
     var serviceResponse = null;
     // send request
     try {
