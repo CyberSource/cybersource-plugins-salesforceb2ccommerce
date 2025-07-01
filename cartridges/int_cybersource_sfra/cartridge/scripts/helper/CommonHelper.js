@@ -525,7 +525,7 @@ function CreateKlarnaItemObject(Basket) {
             itemObject.setProductCode('PRICE_ADJUSTMENT');
             itemObject.setProductName('PRICE_ADJUSTMENT');
             itemObject.setProductSKU('PRICE_ADJUSTMENT');
-            setKlarnaTaxAmount(itemObject, lineItem.tax.value, locale);
+            setKlarnaTaxAmount(itemObject, StringUtils.formatNumber(lineItem.tax.value < 0 ? 0 : lineItem.tax.value, '000000.00', locale));
             setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
             itemObject.setId(count);
         } else {

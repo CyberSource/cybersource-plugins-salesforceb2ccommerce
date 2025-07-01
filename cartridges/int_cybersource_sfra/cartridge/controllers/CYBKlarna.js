@@ -18,9 +18,6 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
 
     var returnObject = {};
 
-    //  Update billing address with posted form values and email param.
-    klarnaHelper.updateBillingAddress(basket);
-
     // updating Payment Transaction amount for purchase object
     COHelpers.calculatePaymentTransaction(basket);
 
@@ -56,16 +53,16 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     // Handle billing address state and postal code for US and non-US addresses
     if (currentLocale.country === 'US') {
         // For US addresses, set dummy values if state or postal code is missing. Actual values will be updated later in session update.
-        billTo.setState(basket.billingAddress.stateCode || 'CA');
-        billTo.setPostalCode(basket.billingAddress.postalCode || '94043');
+        billTo.setState((basket.billingAddress && basket.billingAddress.stateCode) || 'CA');
+        billTo.setPostalCode((basket.billingAddress && basket.billingAddress.postalCode) || '94043');
     } else {
         // For non-US addresses, use the billing address values directly
-        billTo.setState(basket.billingAddress.stateCode || '');
-        billTo.setPostalCode(basket.billingAddress.postalCode || '');
+        billTo.setState((basket.billingAddress && basket.billingAddress.stateCode) || '');
+        billTo.setPostalCode((basket.billingAddress && basket.billingAddress.postalCode) || '');
     }
 
     // Create billto, shipto, item and purchase total object
-    if (!empty(basket.billingAddress.address1) || !empty(basket.defaultShipment.shippingAddress)) {
+    if (!empty(basket.billingAddress && basket.billingAddress.address1) || !empty(basket.defaultShipment && basket.defaultShipment.shippingAddress)) {
         var result = CommonHelper.CreateCyberSourceBillToObject(basket, true);
         billTo = result.billTo;
     }
