@@ -183,7 +183,6 @@ function UpdateBilling(Basket, GPCheckoutPaymentData, email) {
     var logger = require('dw/system/Logger');
 
     try {
-        // var i = PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.googlepay', 'cybersource', null));
         if (PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.googlepay', 'cybersource', null)).isActive()) {
             var basket = BasketMgr.getCurrentOrNewBasket();
             // Retrieve the inputs

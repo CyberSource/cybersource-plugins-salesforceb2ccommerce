@@ -124,10 +124,8 @@ if (IsCartridgeEnabled) {
     });
 
     server.prepend('SavePayment', csrfProtection.validateAjaxRequest, function (req, res, next) {
-        // var URLUtils = require('dw/web/URLUtils');
         var Resource = require('dw/web/Resource');
         var Transaction = require('dw/system/Transaction');
-        // var Logger = require('dw/system/Logger');
         var customerProfile = customer.getProfile();
         var saveCard = PaymentInstrumentUtils.cardSaveLimit(customerProfile);
         if (saveCard.addCardLimitError) {

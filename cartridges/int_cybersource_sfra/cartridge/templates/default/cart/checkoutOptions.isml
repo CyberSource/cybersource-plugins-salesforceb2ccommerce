@@ -3,7 +3,7 @@
 <isscript>
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
  </isscript>
-<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() &&  
+<isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) &&  
 				dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
 	<div class="row">
 		<div class="col-12 checkout-continue">
@@ -51,6 +51,31 @@
 			</iselse>
 		</isif>	
 		<isinclude template="checkout/billing/paymentOptions/googleButton"/> 
+	</div>
+</div>
+</isif>
+
+<isset name="isKlarnaExpressCheckoutEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}" scope="page" />
+<isif condition="${isKlarnaExpressCheckoutEnabled}">
+<div class="row">
+	<div class="col-12 checkout-continue">
+		<isif condition="${miniCart}" >
+			<div id="klarnaExpressCheckoutMC" class="klarna-express-MiniCart"></div>
+		<iselse>
+			<div id="klarnaExpressCheckoutCart" class="klarna-express-Cart"></div>
+		</iselse>
+		</isif>	 
+
+        <script>
+	 var klarnaVariables = {
+		isKlarnaEnabledForCartAndMinicart: "${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}",
+        handleExpressCheckoutAuth: "${dw.web.URLUtils.https('CYBKlarna-KlarnaAuthorizationCallback').toString()}",
+		createSessionEndpoint: "${dw.web.URLUtils.https('CYBKlarna-GetSession').toString()}",
+		klarnaClientToken: "${session.privacy.klarna_client_token}",
+		currentLocale: "${require('dw/util/Locale').getLocale(request.getLocale())}"
+	 	}
+	 window.klarnaVariables = klarnaVariables;
+	</script>
 	</div>
 </div>
 </isif>

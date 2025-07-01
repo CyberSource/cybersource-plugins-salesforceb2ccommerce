@@ -60,6 +60,9 @@ function klarnaInitSessionService(sessionObject) {
     if (sessionObject.billTo != null) {
         request.billTo = libCybersource.copyBillTo(sessionObject.billTo);
     }
+    if (sessionObject.shipTo != null) {
+        request.shipTo = libCybersource.copyShipTo(sessionObject.shipTo);
+    }
     // set item object
     var items = [];
     // eslint-disable-next-line

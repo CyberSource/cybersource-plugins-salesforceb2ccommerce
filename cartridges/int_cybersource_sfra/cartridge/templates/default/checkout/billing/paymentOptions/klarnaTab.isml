@@ -1,5 +1,5 @@
 <li class="nav-item klarna-tab-wrapper" data-method-id="${paymentOption.ID}">
-    <a class="nav-link klarna-tab" data-toggle="tab" href="#klarna-content" role="tab">
+    <a class="nav-link klarna-tab" data-toggle="tab" href="#klarna-content" id="klarna-tab-checkout" role="tab">
         <img class="klarna-options"
                 src="${URLUtils.staticURL('/images/klarna.png')}"
                 height="32"

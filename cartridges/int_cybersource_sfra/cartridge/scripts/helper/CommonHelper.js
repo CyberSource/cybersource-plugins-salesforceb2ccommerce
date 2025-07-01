@@ -158,7 +158,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
                 if (customer.registered) {
                     billToObject.setEmail(customer.profile.email);
                 } else {
-                    billToObject.setEmail('noreply@cs.com');
+                    billToObject.setEmail(basket.customerEmail);
                 }
             }
             if (!empty(basket.getCustomerNo())) {
@@ -178,7 +178,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             if (customer.registered) {
                 billToObject.setEmail(customer.profile.email);
             } else {
-                billToObject.setEmail('noreply@cs.com');
+                billToObject.setEmail(basket.customerEmail);
             }
         }
     } else {
@@ -197,7 +197,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             billToObject.setCustomerID(customer.ID);
             billToObject.setEmail(customer.profile.email);
         } else {
-            billToObject.setEmail('noreply@cs.com');
+            billToObject.setEmail(basket.customerEmail);
         }
     }
     billToObject.setIpAddress(GetIPAddress());
@@ -384,8 +384,8 @@ function CreateCybersourceItemObject(Basket) {
             itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value, '000000.00', locale));
             setTotalAmount(processor, itemObject, lineItem.adjustedGrossPrice.value, locale);
 
-            if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0){
-                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value/lineItem.quantityValue, '000000.00', locale);
+            if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0) {
+                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value / lineItem.quantityValue, '000000.00', locale);
                 setTotalAmount(processor, itemObject, lineItem.proratedPrice.value, locale);
             }
 
@@ -425,7 +425,7 @@ function CreateCybersourceItemObject(Basket) {
             itemObject.setProductCode('PRICE_ADJUSTMENT');
             itemObject.setProductName('PRICE_ADJUSTMENT');
             itemObject.setProductSKU('PRICE_ADJUSTMENT');
-            itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.tax.value, '000000.00', locale));
+            itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.tax.value < 0 ? 0 : lineItem.tax.value, '000000.00', locale));
             setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
             itemObject.setId(count);
         } else {
@@ -455,9 +455,9 @@ function setKlarnaTaxAmount(itemObject, taxvalue, locale) {
 
 function setKlarnaTotalAmount(itemObject, totalAmount, taxvalue, locale) {
     /* set the total amount based on tax policy */
-     if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
+    if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
         // set totalamount for net taxation policy
-        itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount+taxvalue, '000000.00', locale));
+        itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount + taxvalue, '000000.00', locale));
     } else {
         // set totalamount for gross taxation policy
         itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount, '000000.00', locale));
@@ -492,9 +492,9 @@ function CreateKlarnaItemObject(Basket) {
             itemObject.setProductSKU(lineItem.productID);
             setKlarnaTaxAmount(itemObject, lineItem.tax.value, locale);
             setTotalAmount(processor, itemObject, lineItem.grossPrice.value, locale);
-            
-            if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0){
-                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value/lineItem.quantityValue, '000000.00', locale);;
+
+            if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0) {
+                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value / lineItem.quantityValue, '000000.00', locale);;
                 setKlarnaTotalAmount(itemObject, lineItem.proratedPrice.value, lineItem.tax.value, locale);
             }
 
@@ -525,7 +525,7 @@ function CreateKlarnaItemObject(Basket) {
             itemObject.setProductCode('PRICE_ADJUSTMENT');
             itemObject.setProductName('PRICE_ADJUSTMENT');
             itemObject.setProductSKU('PRICE_ADJUSTMENT');
-            setKlarnaTaxAmount(itemObject, lineItem.tax.value, locale);
+            setKlarnaTaxAmount(itemObject, StringUtils.formatNumber(lineItem.tax.value < 0 ? 0 : lineItem.tax.value, '000000.00', locale));
             setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
             itemObject.setId(count);
         } else {
@@ -906,7 +906,7 @@ function Debug(OrderNo, request, response, Basket, billTo, shipTo, card, shipFro
  */
 
 function UpdateBillingAddress(address) {
-    
+
     var BasketMgr = require('dw/order/BasketMgr');
     var Transaction = require('dw/system/Transaction');
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -929,7 +929,7 @@ function UpdateBillingAddress(address) {
             return billingAddress;
         }
     });
-    
+
 }
 
 /**
@@ -1237,11 +1237,11 @@ function signedDataUsingHMAC256(dataToSign, secretKey, paymentType) {
     var KeyRef = require('dw/crypto/KeyRef');
     var mac = new dw.crypto.Mac(dw.crypto.Mac.HMAC_SHA_256);
     var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
-    var CybersourceHelper = libCybersource.getCybersourceHelper(); 
-    if(paymentType === 'KLI'){
+    var CybersourceHelper = libCybersource.getCybersourceHelper();
+    if (paymentType === 'KLI') {
         var privateKey = new KeyRef(CybersourceHelper.getklarnaPrivateKeyAlias());
         signature = dw.crypto.Encoding.toBase64(mac.digest(dataToSign, privateKey));
-    }else{
+    } else {
         signature = dw.crypto.Encoding.toBase64(mac.digest(dataToSign, new dw.util.Bytes(secretKey, 'UTF-8')));
     }
     return signature;
@@ -1408,8 +1408,8 @@ function billAddressExistsInBasket(lineItemCntr) {
     if (empty(billingAddress)) {
         return false;
     } if (!empty(billingAddress.firstName) && !empty(billingAddress.lastName) && !empty(billingAddress.address1)
-            && !empty(billingAddress.city) && !empty(billingAddress.postalCode) && !empty(billingAddress.countryCode)
-            && !empty(billingAddress.stateCode) && !empty(billingAddress.phone)) {
+        && !empty(billingAddress.city) && !empty(billingAddress.postalCode) && !empty(billingAddress.countryCode)
+        && !empty(billingAddress.stateCode) && !empty(billingAddress.phone)) {
         return true;
     }
     return false;
@@ -1594,9 +1594,11 @@ function CheckStatusServiceRequest(order) {
 /* Remove any existing Payment Instrument and create new
 * payment Instrument with success/error status for selected payment method
 */
-function HandleRequest(Basket) {
+function HandleRequest(Basket, PaymentMethod) {
     // get payment method from billing form
-    var PaymentMethod = session.forms.billing.paymentMethod.value;
+    if(!PaymentMethod){
+    PaymentMethod = session.forms.billing.paymentMethod.value;
+    }
     var isPaymentInstrumentCreated = false;
     // create payment instrument if selected payment method is not null
     if (!empty(PaymentMethod)) {
@@ -1665,12 +1667,12 @@ function validatePayPalShippingAddress(checkStatusResponse, lineItemCntr) {
     defaultShipment = lineItemCntr.getDefaultShipment();
     shippingAddress = defaultShipment.getShippingAddress();
     if (!empty(shippingAddress) && !empty(shippingAddress.firstName) && !empty(shippingAddress.lastName) && !empty(shippingAddress.address1)
-            && !empty(shippingAddress.city) && !empty(shippingAddress.postalCode) && !empty(shippingAddress.countryCode)
-            && !empty(shippingAddress.stateCode)) {
+        && !empty(shippingAddress.city) && !empty(shippingAddress.postalCode) && !empty(shippingAddress.countryCode)
+        && !empty(shippingAddress.stateCode)) {
         return true;
     }
     if (!empty(shipTo.firstName) && !empty(shipTo.lastName) && !empty(shipTo.street1) && !empty(shipTo.city)
-            && !empty(shipTo.state) && !empty(shipTo.postalCode) && !empty(shipTo.country)) {
+        && !empty(shipTo.state) && !empty(shipTo.postalCode) && !empty(shipTo.country)) {
         return true;
     }
     return false;
@@ -1693,7 +1695,7 @@ function validatePayPalBillingAddress(checkStatusResponse, lineItemCntr) {
             return true;
         }
     } else if (!empty(billTo.firstName) && !empty(billTo.lastName) && !empty(billTo.street1) && !empty(billTo.city)
-            && !empty(billTo.state) && !empty(billTo.postalCode) && !empty(billTo.country) && !empty(billTo.email) && !empty(billTo.phoneNumber)) {
+        && !empty(billTo.state) && !empty(billTo.postalCode) && !empty(billTo.country) && !empty(billTo.email) && !empty(billTo.phoneNumber)) {
         return true;
     }
     return false;
@@ -1730,7 +1732,7 @@ function getDeviceType(currentRequest) {
     if (httpUserAgent.indexOf(iPhoneDevice) > 1) {
         deviceType = 'mobile';
 
-    // check if the device is Android mobile device
+        // check if the device is Android mobile device
     } else if (httpUserAgent.indexOf(andriodDevice) > 1) {
         if (httpUserAgent.indexOf('mobile') > 1) { deviceType = 'mobile'; }
     } else if (httpUserAgent.indexOf(iPadDevice) > 1) {
@@ -1756,7 +1758,7 @@ function getPaymentClass(paymentInstrument) {
     return paymentClass;
 }
 
-function createEncodeObject(result){
+function createEncodeObject(result) {
     var encodedObj = {};
     if (!empty(result.checkStatusResponse.billTo.street1)) {
         encodedObj.billTo_street1 = result.checkStatusResponse.billTo.street1;
@@ -1808,7 +1810,7 @@ function updatePaypalAddressFields(result, translatedObject) {
     if (!empty(translatedObject.shipTo_city)) {
         result.checkStatusResponse.shipTo.city = translatedObject.shipTo_city;
     }
-    if (!empty(translatedObject.shipTo_state)) { 
+    if (!empty(translatedObject.shipTo_state)) {
         result.checkStatusResponse.shipTo.state = translatedObject.shipTo_state;
     }
 
@@ -1820,7 +1822,7 @@ function decodeObj(encodedObj) {
     var decodedObj = {};
 
     attrs.forEach(function (key) {
-           decodedObj[key] = getDecodedStr(encodedObj[key]);
+        decodedObj[key] = getDecodedStr(encodedObj[key]);
     });
 
     return decodedObj;
@@ -1835,15 +1837,15 @@ function getDecodedStr(encodedStr) {
         if (encodedStr.charCodeAt(j) > 127) {
             start = j;
 
-            while(encodedStr.charCodeAt(j) > 127 && j < encodedStr.length) {
+            while (encodedStr.charCodeAt(j) > 127 && j < encodedStr.length) {
                 j++;
             }
 
-            escapeStr = escape(encodedStr.substring(start,j));
+            escapeStr = escape(encodedStr.substring(start, j));
             decodedStr = decodedStr + decodeURIComponent(escapeStr);
         }
         if (j != encodedStr.length) {
-        decodedStr = decodedStr + encodedStr[j];  
+            decodedStr = decodedStr + encodedStr[j];
         }
     }
 

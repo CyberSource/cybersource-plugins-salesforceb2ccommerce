@@ -155,16 +155,14 @@ function fillModalElement(verifyAddressUrl) {
             } else {
                 $('#deliveryAddressVerificationModal .modal-body').empty().append('<p><p>').text(params.addressNotVerified + ' ' + data.serviceResponse.reasonMessage);
                 if (data.onFailure === 'APPROVE') {
-                    $('#deliveryAddressVerificationModal .modal-body').append('<button class="btn btn-primary btn-block useOrigAddress continueWithThisAddress">continueWithThisAddress</button>');
+                    $('#deliveryAddressVerificationModal .modal-body').append('<button class="btn btn-primary btn-block useOrigAddress continueWithThisAddress">Continue with this Address</button>');
                 }
             }
-            // var enteredStdAddress = false;
             if (data.serviceResponse && (params.address1 === data.serviceResponse.standardizedAddress1)
                     && (params.city === data.serviceResponse.standardizedCity)
                     && (params.state === data.serviceResponse.standardizedState)
                     && (params.zipCode === data.serviceResponse.standardizedPostalCode)
                     && (params.countryCode === data.serviceResponse.standardizedCountry)) {
-                // enteredStdAddress = true;
                 moveToBilling();
             }
             $('#deliveryAddressVerificationModal').find('.useOrigAddress').on('click', function () {

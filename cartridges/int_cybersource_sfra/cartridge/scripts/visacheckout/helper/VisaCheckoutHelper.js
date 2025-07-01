@@ -248,7 +248,7 @@ function getButtonInitializeSettings(cart, requireDeliveryAddress) {
 function getInitializeSettings(requireDeliveryAddress) {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var BasketMgr = require('dw/order/BasketMgr');
-    var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive();
+    var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT)?PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive():false;
     if (isVisaCheckout) {
         var cart = BasketMgr.getCurrentBasket();
         cart = cart || null;

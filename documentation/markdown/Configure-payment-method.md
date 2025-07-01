@@ -510,7 +510,8 @@ Step 6: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cyberso
 
 | Field                            | Description                        |
 | -------------------------------- | ---------------------------------- |
-| Klarna Decision Manager Required | Enable or Disable Decision Manager |
+|enableKlarnaExpressCheckout       |Enable or Disable Klarna Express Checkout for Cart and Mini Cart |
+|Klarna Decision Manager Required | Enable or Disable Decision Manager |
 | Klarna JS API Path               | Klarna JS API Library Path         |
 | klarnaPrivateKeyAlias            | Private Key Alias of imported Key in Private Keys and Certificates |
 

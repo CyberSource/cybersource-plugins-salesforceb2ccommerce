@@ -147,7 +147,7 @@ function DecryptPayload() {
     var result = {};
 
     try {
-        if (PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.visacheckout', 'cybersource', null)).isActive()) {
+        if (PaymentMgr.getPaymentMethod(Resource.msg('paymentmethodname.visacheckout', 'cybersource', null))?PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive():false) {
             var basket = BasketMgr.getCurrentOrNewBasket();
             var decryptedPaymentData = {};
             /* eslint-disable */

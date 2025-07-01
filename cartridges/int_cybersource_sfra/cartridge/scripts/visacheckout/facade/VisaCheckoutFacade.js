@@ -536,7 +536,7 @@ function PayerAuthValidationCCAuthRequest(LineItemCtnrObj, PaRes, Amount, OrderN
 function ButtonDisplay() {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
-    var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive();
+    var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT)?PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive():false;
     if (isVisaCheckout) {
         // set the response header (X-FRAME-OPTIONS) to prevent clickjacking
         // eslint-disable-next-line

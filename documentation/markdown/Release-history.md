@@ -1,5 +1,19 @@
 ## <ins>Release History
 
+**Version 25.3.0 (June, 2025)**
+Enhancement:
+• Added support for Klarna Express Checkout from Mini Cart, Cart and Checkout pages.
+• Implemented rate limiter for saving cards during the checkout process.
+• Removed "Order-Details" and "Order-Confirm" from the cartridge and enhanced the order model. 
+
+Bug Fix:
+• Updated the default values for rate limiter fields in custom preferences. 
+• Added support for sending device information (Device Fingerprint) in the tokenization service call from My Account page.
+• Removed the hardcoded email Id sent in the tax service call.
+• Addressed dependency issue on payment methods in BM during the alteration and deletion of payment method IDs.
+• Fixed transactions failures with coupons when tax disabled.
+• Removed the CVV input field for transactions with saved cards during checkout.
+
 **Version 25.2.0 (May, 2025)**
 Enhancement: 
 • Refactored logic from the controller into a helper script and optimized controllers by integrating 
