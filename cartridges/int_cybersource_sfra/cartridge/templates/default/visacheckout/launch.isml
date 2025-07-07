@@ -11,7 +11,7 @@
     <isset name="visaToken" value="${''}" scope="page" />
 </isif>
 
-<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive()}">
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive() : false}">
     <isif condition="${!empty(visaToken.VInitFormattedString)}">
         <script>
 			var visaCheckoutSettings = <isprint value="${visaToken.VInitFormattedString}" encoding="htmlsinglequote" />;			

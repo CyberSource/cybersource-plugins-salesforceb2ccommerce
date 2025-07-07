@@ -137,13 +137,11 @@ base.editBillingSummary = function () {
 base.selectSavedPaymentInstrument = function () {
     $(document).on('click', '.saved-payment-instrument', function (e) {
         e.preventDefault();
-        $('.saved-payment-security-code').val('');
         $('.saved-payment-instrument').removeClass('selected-payment');
         $(this).addClass('selected-payment');
         $('.saved-payment-instrument .card-image').removeClass('checkout-hidden');
-        $('.saved-payment-instrument .security-code-input').addClass('checkout-hidden');
         $('.saved-payment-instrument.selected-payment'
-            + ' .card-image').addClass('checkout-hidden');
+            + ' .card-image');
         $('.saved-payment-instrument.selected-payment '
             + '.security-code-input').removeClass('checkout-hidden');
         $('#selectedCardID').val($('.saved-payment-instrument.selected-payment').data('uuid'));
@@ -151,7 +149,6 @@ base.selectSavedPaymentInstrument = function () {
         var cardType = ($('.saved-payment-instrument.selected-payment .saved-credit-card-type').text()).trim().replace(/\s{2,}/g, ' ').split(' ');
         $('input[name="dwfrm_billing_creditCardFields_cardType"]').val(cardType[1]);
         var expiryDate = ($('.saved-payment-instrument.selected-payment .saved-credit-card-expiration-date').text()).trim().replace(/[a-zA-Z\s]+/, '').split('/');
-        $('input[name="dwfrm_billing_creditCardFields_securityCode"]').val($('.saved-payment-instrument.selected-payment #saved-payment-security-code').val().trim());
         $('#expirationMonth').val(expiryDate[0]);
         $('#expirationYear').val(expiryDate[1]);
     });
