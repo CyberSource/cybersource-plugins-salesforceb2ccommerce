@@ -9,92 +9,99 @@ var Transaction = require('dw/system/Transaction');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
 var HookMgr = require('dw/system/HookMgr');
-var BasketMgr = require('dw/order/BasketMgr');
 var OrderMgr = require('dw/order/OrderMgr');
 var klarnaHelper = require('*/cartridge/scripts/klarna/helper/KlarnaHelper');
+var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
 
 
 /**
  * This function is to handle the post payment authorization customizations
- * @param {Object} result - Authorization Result
+ * @param {Object} handlePaymentResult - Authorization Result
+ * @param {Object} order - Order object
+ * @param {Object} options - Options object containing req, res, etc.
  */
 function postAuthorization(handlePaymentResult, order, options) { // eslint-disable-line no-unused-vars
+    var Logger = require('dw/system/Logger');
+    Logger.debug('postAuthorization hook called with handlePaymentResult: ' + JSON.stringify(handlePaymentResult));
 
-    var currentBasket = options.currentBasket;
-    var DFReferenceId = options.DFReferenceId;
+    var BasketMgr = require('dw/order/BasketMgr');
+    var currentBasket = BasketMgr.getCurrentBasket();
     var req = options.req;
     var res = options.res;
+
+    session.privacy.orderId = order.orderNo;
+
     var paymentInstrument;
 
     if (!empty(order.getPaymentInstruments())) {
         paymentInstrument = order.getPaymentInstruments()[0];
     }
-    //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
+
+    var DFReferenceId = paymentInstrument.custom.PayerAuthSetupReferenceID;
+
     if (handlePaymentResult.sca) {
-        session.privacy.paSetup = true;
-        res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
-        return { handleNext: true };
+        return {
+            error: false,
+            enrollSCA: true,
+            redirectUrl: URLUtils.url('COPlaceOrder-PayerAuth').toString()
+        };
     }
 
     if (handlePaymentResult.error) {
-         if (paymentInstrument.paymentMethod != null
-            && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
-                || (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
-                    || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)
-                    || CsSAType == Resource.msg('cssatype.SA_FLEX', 'cybersource', null)))
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.googlepay', 'cybersource', null)
-
-
-        ) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
-        } else {
-            res.json({
-                error: true,
-                errorMessage: Resource.msg('error.technical', 'checkout', null)
-            });
-        }
         klarnaHelper.clearKlarnaSessionVariables();
-
-        return { handleNext: true };
+        return {
+            error: true,
+            // errorMessage: Resource.msg('error.technical', 'checkout', null)
+            redirectUrl: URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)).toString()
+        };
     } if (handlePaymentResult.returnToPage) {
-        res.render('secureacceptance/secureAcceptanceIframeSummmary', {
-            Order: handlePaymentResult.order
-        });
-        return { handleEmitRouteComplete: true };
+        return {
+            error: false,
+            continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
+            renderTemplate: 'secureacceptance/secureAcceptanceIframeSummmary',
+            templateData: {
+                Order: handlePaymentResult.order
+            },            
+        };
     } if (handlePaymentResult.intermediate) {
-        res.render(handlePaymentResult.renderViewPath, {
-            alipayReturnUrl: handlePaymentResult.alipayReturnUrl
-        });
-        return { handleEmitRouteComplete: true };
+        return {
+            error: false,
+            continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
+            renderTemplate: handlePaymentResult.renderViewPath,
+            templateData: {
+                alipayReturnUrl: handlePaymentResult.alipayReturnUrl
+            },
+        };
+        //SA - redirect
     } if (handlePaymentResult.intermediateSA) {
-        res.render(handlePaymentResult.renderViewPath, {
-            Data: handlePaymentResult.data, FormAction: handlePaymentResult.formAction
-        });
-        return { handleEmitRouteComplete: true };
+        return {
+            error: false,
+            continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
+            renderTemplate: handlePaymentResult.renderViewPath,
+            templateData: {
+                requestData:  CommonHelper.convertHashMapToJSONString(handlePaymentResult.data),
+                FormAction: handlePaymentResult.formAction
+            },
+        };
     } if (handlePaymentResult.intermediateSilentPost) {
-        res.render(handlePaymentResult.renderViewPath, {
-            requestData: handlePaymentResult.data, formAction: handlePaymentResult.formAction, cardObject: handlePaymentResult.cardObject
-        });
-        return { handleEmitRouteComplete: true };
+        return {
+            error: false,
+            continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
+            renderTemplate: handlePaymentResult.renderViewPath,
+            templateData: {
+                requestData:  CommonHelper.convertHashMapToJSONString(handlePaymentResult.data),
+                formAction: handlePaymentResult.formAction,
+                cardObject: handlePaymentResult.cardObject
+            },
+        };
     }
     if (handlePaymentResult.redirection) {
-        if (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.klarna', 'cybersource', null)) {
-            res.json({
-                error: false,
-                continueUrl: handlePaymentResult.redirectionURL
-            });
-        }
-        else {
-            res.redirect(handlePaymentResult.redirectionURL);
-        }
         klarnaHelper.clearKlarnaSessionVariables();
 
-        return { handleEmitRouteComplete: true };
+        return {
+            error: false,
+            continueUrl: handlePaymentResult.redirectionURL
+        };
     }
 
     //  Set order confirmation status to not confirmed for REVIEW orders.
@@ -106,15 +113,17 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
         });
 
         if (CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(order.paymentTransaction.paymentProcessor.ID)) {
-            res.redirect(handlePaymentResult.redirectionURL);
-            return { handleEmitRouteComplete: true };
+            return {
+                error: false,
+                continueUrl: handlePaymentResult.redirectionURL
+            };
         }
     }
-
+    
     if (handlePaymentResult.declined) {
         session.privacy.SkipTaxCalculation = false;
         Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-    
+
         if (paymentInstrument.paymentMethod != null
             && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
                 && (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
@@ -125,15 +134,18 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
         ) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
-        } else {
-            res.json({
+            klarnaHelper.clearKlarnaSessionVariables();
+            return {
                 error: true,
                 errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
-            });
+            };
+        } else {
+            klarnaHelper.clearKlarnaSessionVariables();
+            return {
+                error: true,
+                errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
+            };
         }
-        klarnaHelper.clearKlarnaSessionVariables();
-        return { handleNext: true };
     }
     if (handlePaymentResult.missingPaymentInfo) {
         session.privacy.SkipTaxCalculation = false;
@@ -149,35 +161,46 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
             || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
         ) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
+            return {
+                error: true,
+                errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
+            };
         } else {
-            res.json({
+            return {
                 error: true,
                 errorMessage: Resource.msg('error.technical', 'checkout', null)
-            });
+            };
         }
-        return { handleNext: true };
     } if (handlePaymentResult.rejected) {
         Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
         Transaction.wrap(function () {
             COHelpers.handlePayPal(currentBasket);
         });
-        res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString());
-        return { handleNext: true };
+        return {
+            error: true,
+            errorMessage: Resource.msg('payerauthentication.carderror', 'cybersource', null)
+        };
     } if (handlePaymentResult.process3DRedirection) {
-        res.redirect(URLUtils.url('CheckoutServices-PayerAuthentication', 'accessToken', handlePaymentResult.jwt));
-        return { handleNext: true };
+        return {
+            error: false,
+            stepUp: true,
+            accessToken: handlePaymentResult.jwt,
+            stepUpUrl: handlePaymentResult.stepUpUrl,
+            sessionID: session.sessionID
+        };
     }
     if (handlePaymentResult.processWeChat) {
-        res.render('checkout/confirmation/weChatConfirmation', {
-            paymentResult: handlePaymentResult,
-            weChatQRCode: handlePaymentResult.WeChatMerchantURL,
-            orderNo: order.orderNo,
-            order: order,
-            noOfCalls: CybersourceHelper.getNumofCheckStatusCalls() != null ? CybersourceHelper.getNumofCheckStatusCalls() : 6,
-            serviceCallInterval: CybersourceHelper.getServiceCallInterval() != null ? CybersourceHelper.getServiceCallInterval() : 10
-        });
-        return { handleEmitRouteComplete: true };
+        return {
+            error: false,
+            continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
+            renderTemplate: 'checkout/confirmation/weChatConfirmation',
+            templateData: {
+                weChatQRCode: handlePaymentResult.WeChatMerchantURL,
+                orderNo: order.orderNo,
+                noOfCalls: CybersourceHelper.getNumofCheckStatusCalls() != null ? CybersourceHelper.getNumofCheckStatusCalls() : 6,
+                serviceCallInterval: CybersourceHelper.getServiceCallInterval() != null ? CybersourceHelper.getServiceCallInterval() : 10
+            },
+        };;
     }
 
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
@@ -187,24 +210,22 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
         // fraud detection failed
         req.session.privacyCache.set('fraudDetectionStatus', true);
 
-        res.json({
+        return {
             error: true,
             cartError: true,
             redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
             errorMessage: Resource.msg('error.technical', 'checkout', null)
-        });
-        return { handleNext: true };
+        };
     }
 
     // Places the order
     if (handlePaymentResult.authorized) {
         var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
         if (placeOrderResult.error) {
-            res.json({
+            return {
                 error: true,
                 errorMessage: Resource.msg('error.technical', 'checkout', null)
-            });
-            return { handleNext: true };
+            };
         }
     }
 
@@ -220,16 +241,24 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
 
     klarnaHelper.clearKlarnaSessionVariables();
     // Handle Authorized status for Payer Authentication flow
-    if (DFReferenceId !== undefined && (handlePaymentResult.authorized || handlePaymentResult.review)) {
-        // eslint-disable-next-line
-        res.redirect(URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken));
-        return { handleNext: true };
+    if (DFReferenceId !== null && (handlePaymentResult.authorized || handlePaymentResult.review)) {
+        delete session.privacy.orderId;
+        return {
+            error: false,
+            orderID: order.orderNo,
+            orderToken: order.orderToken,
+            continueUrl: URLUtils.url('Order-Confirm').toString()
+        };
     }
 
     if ((handlePaymentResult.authorized || handlePaymentResult.review) && (paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.googlepay', 'cybersource', null) || (paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.paypal', 'cybersource', null) && !session.privacy.paypalminiCart)) || paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)) {
-        // eslint-disable-next-line
-        res.redirect(URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken));
-        return { handleNext: true };
+        delete session.privacy.orderId;
+        return {
+            error: false,
+            orderID: order.orderNo,
+            orderToken: order.orderToken,
+            continueUrl: URLUtils.url('Order-Confirm').toString()
+        };
     }
 
 }

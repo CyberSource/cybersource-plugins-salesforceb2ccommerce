@@ -475,8 +475,7 @@ if (IsCartridgeEnabled) {
 }
 
 server.post('SilentPostAuthorize', server.middleware.https, function (req, res, next) {
-    var DFReferenceId = request.httpParameterMap.DFReferenceId;
-    session.privacy.DFReferenceId = DFReferenceId.stringValue;
+
     if (request.httpParameterMap.browserfields.submitted) {
         var browserfields = request.httpParameterMap.browserfields.value;
         browserfields = JSON.parse(browserfields);
@@ -492,12 +491,15 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
     var silentPostResponse = COHelpers.handleSilentPostAuthorize(order);
 
     if (silentPostResponse.sca) {
-        session.privacy.paSetup = true;
-        res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
+        res.render('payerauthentication/3dsRedirect', {
+            action: URLUtils.url('COPlaceOrder-PayerAuth')
+        });
         return next();
     }
     if (silentPostResponse.error || silentPostResponse.declined || silentPostResponse.rejected) {
-        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+        Transaction.wrap(function () {
+            OrderMgr.failOrder(order, true);
+        });
         delete session.privacy.orderId;
     }
     if (silentPostResponse.error) {
@@ -536,44 +538,21 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
 if (IsCartridgeEnabled) {
     server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
         var BasketMgr = require('dw/order/BasketMgr');
-        var HookMgr = require('dw/system/HookMgr');
         var OrderMgr = require('dw/order/OrderMgr');
-        var Resource = require('dw/web/Resource');
-        var Transaction = require('dw/system/Transaction');
         var URLUtils = require('dw/web/URLUtils');
-        var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-        var Site = require('dw/system/Site');
-        var CybersourceHelper = require('*/cartridge/scripts/cybersource/libCybersource').getCybersourceHelper();
-        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
-        var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
-        var paramMap = request.httpParameterMap;
-        var DFReferenceId;
-        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
-        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
-        var currentBasket;
 
-        if (request.httpParameterMap.DFReferenceId.submitted) {
-            DFReferenceId = request.httpParameterMap.DFReferenceId.stringValue;
-            session.privacy.DFReferenceId = DFReferenceId;
-        }
-        if (request.httpParameterMap.browserfields.submitted) {
-            var browserfields = request.httpParameterMap.browserfields.value;
-            browserfields = JSON.parse(browserfields);
+        // Handle browser fields sent from client-side AJAX
+        if (req.form && req.form.browserfields) {
+            var browserfields = JSON.parse(req.form.browserfields);
             session.privacy.screenWidth = browserfields.screenWidth;
             session.privacy.screenHeight = browserfields.screenHeight;
         }
-
-        // Added this session so that it doesn't get into second time, it comes to PlaceOrder.
-        if (session.custom.flag == true) {
-            currentBasket = BasketMgr.getCurrentBasket();
+        var currentBasket = BasketMgr.getCurrentBasket();
         if (!currentBasket) {
             if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked !== null
                 && 'orderId' in session.privacy && session.privacy.orderId !== null) {
                 var order = OrderMgr.getOrder(session.privacy.orderId);
                 var currentBasket = COHelpers.reCreateBasket(order);
-                res.redirect(URLUtils.url('Cart-Show'));
-                return next();
-            }
             res.json({
                 error: true,
                 cartError: true,
@@ -581,168 +560,9 @@ if (IsCartridgeEnabled) {
                 serverErrors: [],
                 redirectUrl: URLUtils.url('Cart-Show').toString()
             });
-            return next();
+           }
         }
-
-        if (req.session.privacyCache.get('fraudDetectionStatus')) {
-            res.json({
-                error: true,
-                cartError: true,
-                redirectUrl: URLUtils.url('Error-ErrorCode', 'err', '01').toString(),
-                errorMessage: Resource.msg('error.technical', 'checkout', null)
-            });
-
-            return next();
-        }
-
-        // If SFRA version is 3.2 ,then skip new way of validating order.
-        if (Resource.msg('global.version.number', 'version', null) != '3.1.0') {
-            var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-            var validationOrderStatus = hooksHelper('app.validate.order', 'validateOrder', currentBasket, require('*/cartridge/scripts/hooks/validateOrder').validateOrder);
-            if (validationOrderStatus.error) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', validationOrderStatus.message));
-                return next();
-            }
-        } else {
-            var validationOrderStatus = hooksHelper(
-                'app.validate.order',
-                'validateOrder',
-                currentBasket,
-                require('*/cartridge/scripts/hooks/validateOrder').validateOrder
-            );
-            if (validationOrderStatus.error) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', validationOrderStatus.message));
-                return next();
-            }
-        }
-
-        // Check to make sure there is a shipping address
-        if (currentBasket.defaultShipment.shippingAddress === null) {
-            res.json({
-                error: true,
-                errorStage: {
-                    stage: 'shipping',
-                    step: 'address'
-                },
-                errorMessage: Resource.msg('error.no.shipping.address', 'checkout', null)
-            });
-            return next();
-        }
-
-        // Check to make sure billing address exists
-        if (!currentBasket.billingAddress) {
-            res.json({
-                error: true,
-                errorStage: {
-                    stage: 'payment',
-                    step: 'billingAddress'
-                },
-                errorMessage: Resource.msg('error.no.billing.address', 'checkout', null)
-            });
-            return next();
-        }
-
-        // Calculate the basket
-        Transaction.wrap(function () {
-            basketCalculationHelpers.calculateTotals(currentBasket);
-        });
-
-        // Re-validates existing payment instruments
-        var validPayment = COHelpers.validatePayment(req, currentBasket);
-        if (validPayment.error) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.payment.not.valid', 'checkout', null)));
-            return next();
-        }
-
-        // Re-calculate the payments.
-        var calculatedPaymentTransactionTotal = COHelpers.calculatePaymentTransaction(currentBasket);
-        if (calculatedPaymentTransactionTotal.error) {
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
-            return next();
-        }
-
-
-        // Creates a new order.
-            var order = COHelpers.createOrder(currentBasket);
-            if (!order) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)));
-                return next();
-            }else{
-                session.privacy.orderId = order.orderNo;
-            }
-        }
-        var action = '';
-        if (CsSAType === 'SA_SILENTPOST') {
-            action = URLUtils.url('CheckoutServices-SilentPostAuthorize');
-        }
-        else if (!empty(currentBasket)) {
-            action = URLUtils.url('CheckoutServices-PlaceOrder');
-        }
-
-        session.custom.flag = false;
-
-        if (session.privacy.orderId !== null) {
-            var order = OrderMgr.getOrder(session.privacy.orderId);
-        }
-
-        var paymentInstrument = null;
-        if (!empty(order.getPaymentInstruments())) {
-            paymentInstrument = order.getPaymentInstruments()[0];
-        }
-        var paymentMethodID = paymentInstrument.paymentMethod;
-        var result = '';
-
-        if (session.privacy.paSetup == true) {
-            if (paymentMethodID.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
-                result = VisaCheckoutFacade.PayerAuthSetup(order.orderNo);
-            } else {
-                result = CardFacade.PayerAuthSetup(paymentInstrument, order.orderNo, session.forms.billing.creditCardFields);
-            }
-            if (result.deviceDataCollectionURL == null) {
-                res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
-                return next();
-            }
-            res.setContentType('application/json');
-            res.render('payerauthentication/deviceDataCollection', {
-                jwtToken: result.accessToken,
-                referenceID: result.referenceID,
-                ddcUrl: result.deviceDataCollectionURL,
-                orderNo: order.orderNo,
-                action: action
-            });
-            session.privacy.paSetup = false;
-            this.emit('route:Complete', req, res);
-            return;
-        }
-        // Handles payment authorization
-        var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo);
-
-        var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
-        // Handle custom processing post authorization
-        var options = {
-            currentBasket: currentBasket,
-            DFReferenceId: DFReferenceId,
-            req: req,
-            res: res,
-        };
-        var postAuthCustomizations = hooksHelper('app.post.auth', 'postAuthorization', handlePaymentResult, order, options, require('*/cartridge/scripts/hooks/postAuthorizationHandling').postAuthorization);
-        
-        if (postAuthCustomizations) {
-            if (postAuthCustomizations.handleNext === true) {
-            return next();
-            }else if (postAuthCustomizations.handleEmitRouteComplete === true) {
-            this.emit('route:Complete', req, res);
-            return;
-        }
-        }
-
-        // Reset usingMultiShip after successful Order placement
-        req.session.privacyCache.set('usingMultiShipping', false);
-        // var options = { paidWithPayPal: false, selectedPayment: 'others' };
-
-        // eslint-disable-next-line
-        res.redirect(URLUtils.url('COPlaceOrder-SubmitOrderConformation', 'ID', order.orderNo, 'token', order.orderToken).toString());
-        return next();
+       return next();
     });
 }
 
@@ -768,7 +588,7 @@ server.get('PayerAuthentication', server.middleware.https, function (req, res, n
     return next();
 });
 
-server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
+server.post('InitPayerAuth', server.middleware.https, function (req, res, next) {
     var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     var Resource = require('dw/web/Resource');
     var Site = require('dw/system/Site');
@@ -776,6 +596,7 @@ server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
     var creditCardType;
     var currentBasket = BasketMgr.getCurrentBasket();
     var URLUtils = require('dw/web/URLUtils');
+    var Transaction = require('dw/system/Transaction');
 
     if (!empty(currentBasket)) {
         var paymentIntruments = currentBasket.paymentInstruments;
@@ -794,60 +615,47 @@ server.get('InitPayerAuth', server.middleware.https, function (req, res, next) {
     }
 
     if (result.paEnabled) {
-        session.privacy.paSetup = true;
-        res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
-    } else {
-        var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
-        if (CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)) {
-            var OrderMgr = require('dw/order/OrderMgr');
-            var order = OrderMgr.getOrder(session.privacy.orderId);
-            var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-            var Transaction = require('dw/system/Transaction');
-            var HookMgr = require('dw/system/HookMgr');
-            var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
+        // if pa enabled, do setup
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
+        var VisaCheckoutFacade = require('*/cartridge/scripts/visacheckout/facade/VisaCheckoutFacade');
+        // Extract x-request-id from request headers
+        var xRequestId = request.httpHeaders.get('x-request-id');
 
-            var silentPostResponse = COHelpers.handleSilentPostAuthorize(order);
-            if (silentPostResponse.error || silentPostResponse.declined || silentPostResponse.rejected) {
-                Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-                delete session.privacy.orderId;
-            }
-            if (silentPostResponse.error) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString());
-            } else if (silentPostResponse.declined) {
-                session.privacy.SkipTaxCalculation = false;
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
-                return next();
-            } else if (silentPostResponse.rejected) {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('payerauthentication.carderror', 'cybersource', null)).toString());
-                return next();
-            } else if (silentPostResponse.authorized || silentPostResponse.review || silentPostResponse.process3DRedirection) {
-                var placeOrderResult;
-                Transaction.wrap(function () {
-                    placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-                });
-                if (placeOrderResult.error) {
-                    res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)));
-                    return next();
-                }
-                var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
-                COHelpers.addOrUpdateToken(order, customerObj, res);
-                session.privacy.orderId = order.orderNo;
-
-                if (silentPostResponse.review) {
-                    res.redirect(URLUtils.https('COPlaceOrder-SilentPostReviewOrder'));
-                    return next();
-                }
-                res.redirect(URLUtils.https('COPlaceOrder-SilentPostSubmitOrder'));
-                return next();
-            } else {
-                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'SecureAcceptanceError', 'true'));
-                return next();
-            }
+        var paymentIntruments = currentBasket.paymentInstruments;
+        var paymentMethodID = paymentIntruments[0].paymentMethod;
+        if (paymentMethodID.equals(CybersourceConstants.METHOD_VISA_CHECKOUT)) {
+            result = VisaCheckoutFacade.PayerAuthSetup(xRequestId);
         } else {
-            res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
+            result = CardFacade.PayerAuthSetup(paymentIntruments[0], xRequestId, session.forms.billing.creditCardFields, currentBasket);
         }
+        Transaction.wrap(function () {
+            paymentIntruments[0].custom.PayerAuthSetupReferenceID = result.referenceID;
+            paymentIntruments[0].custom.PASetupMerchantRefCode = xRequestId;
+        });        
+
+        if (result.deviceDataCollectionURL == null) {
+            res.json({
+                error: true,
+                errorMessage: Resource.msg('error.technical', 'checkout', null)
+            });
+            return next();
+        }
+        res.setContentType('application/json');
+        res.json({
+            jwtToken: result.accessToken,
+            referenceID: result.referenceID,
+            ddcUrl: result.deviceDataCollectionURL,
+            env: Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value
+        });
+        return next();
     }
-    return next();
+    else {
+        res.json({
+            isPayerAuthDisabled: true
+        });
+        return next();
+    }
 });
 
 /* Route to handle paypal submission. This route is called only when either
@@ -1087,7 +895,7 @@ server.post('SubmitPaymentGP', function (req, res, next) {
         res.setViewData(viewData);
 
         this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
-  
+
             var Transaction = require('dw/system/Transaction');
             var URLUtils = require('dw/web/URLUtils');
             var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
@@ -1176,5 +984,49 @@ server.post('SubmitPaymentGP', function (req, res, next) {
     }
     return next();
 });
+
+if (IsCartridgeEnabled) {
+    // New route to handle template rendering for some payment methods.
+    server.post('ProcessingPayment', server.middleware.https, function (req, res, next) {
+        var Logger = require('dw/system/Logger');
+        var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+
+            // Get template data from POST parameters
+            var renderTemplate = req.form.renderTemplate;
+            var templateDataString = req.form.templateData;
+            var isIframe = req.form.iframe === 'true';
+
+            if (renderTemplate) {
+                var templateData = {};
+                if (templateDataString) {
+                    try {
+                        templateData = JSON.parse(templateDataString);
+                        if (templateData.requestData) {
+                            templateData.requestData = CommonHelper.JSONObjectToHashMap(templateData.requestData);
+                        }
+                        // Logger.debug('Successfully parsed templateData with keys: ' + Object.keys(templateData).join(', '));
+                    } catch (parseError) {
+                        Logger.error('Error parsing templateData JSON: ' + String(parseError));
+                        Logger.error('Raw templateDataString: ' + templateDataString);
+                    }
+                }
+
+                // Handle SA-iframe case - render template and return HTML content
+                if (isIframe) {
+                    var OrderMgr = require('dw/order/OrderMgr');
+                    var order = OrderMgr.getOrder(session.privacy.orderId);
+                    templateData.Order = order;
+                    res.render(renderTemplate, templateData);
+                    return next();
+                }
+
+                // Regular case - render the template
+                res.render(renderTemplate, templateData);
+                return next();
+            } else {
+                Logger.error('No renderTemplate parameter found in POST data');
+            }
+    });
+}
 
 module.exports = server.exports();

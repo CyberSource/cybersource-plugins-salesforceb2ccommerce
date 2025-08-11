@@ -360,7 +360,7 @@ function SilentPostResponse() {
 
                 // Payer Auth 3DS updates
                 session.privacy.orderId = order.orderNo;
-                return URLUtils.https('CheckoutServices-InitPayerAuth');
+                return URLUtils.https('COPlaceOrder-PayerAuth');
             }
             return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'SecureAcceptanceError', 'true');
         }

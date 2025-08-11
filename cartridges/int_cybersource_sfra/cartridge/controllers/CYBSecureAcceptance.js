@@ -9,6 +9,7 @@ var server = require('server');
 
 /* API Includes */
 var Resource = require('dw/web/Resource');
+var URLUtils = require('dw/web/URLUtils');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
 /**
@@ -36,7 +37,16 @@ server.get('OpenIframe', function (req, res, next) {
  * This method receive response from the third party in http Parameter map, verify the signature , update the payment instrument with card value received, go to place order.
  */
 server.post('SilentPostResponse', server.middleware.https, function (req, res, next) {
-    res.redirect(require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').SilentPostResponse());
+    var redirectUrl = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').SilentPostResponse();
+    
+    // Check if this is the 3DS redirect URL
+    if (redirectUrl && redirectUrl.toString().indexOf('COPlaceOrder-PayerAuth') !== -1) {
+        res.render('payerauthentication/3dsRedirect', {
+            action: URLUtils.url('COPlaceOrder-PayerAuth')
+        });
+    } else {
+        res.redirect(redirectUrl);
+    }
     next();
 });
 

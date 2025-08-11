@@ -40,8 +40,10 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
 
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     // Objects to set in the Service Request inside facade
-    var billTo; var shipTo; var purchaseObject; var
-        cardObject;
+    var billTo;
+    var shipTo;
+    var purchaseObject;
+    var cardObject;
     var result = CommonHelper.CreateCyberSourceBillToObject(basket, ReadFromBasket);
     billTo = result.billTo;
     result = CommonHelper.CreateCybersourceShipToObject(basket);
@@ -67,7 +69,16 @@ function CCAuthRequest(Basket, OrderNo, IPAddress, SubscriptionID, payerEnrollRe
     if (!empty(SubscriptionID)) {
         CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
     } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
-        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+        // Check if payment method exists and is available before subscription creation
+        var paymentInstrument = null;
+        // eslint-disable-next-line
+        if (!empty(basket.getPaymentInstruments())) {
+            paymentInstrument = basket.getPaymentInstruments()[0];
+        }
+        // Only create subscription if payment method is NOT Google Pay
+        if (paymentInstrument && paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+            CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+        }
     }
 
     //* *************************************************************************//
@@ -226,27 +237,29 @@ function DAVRequest(Basket, billTo, shipTo) {
  * @param {*} CreditCardForm CreditCardForm
  * @returns {*} obj
  */
-function PayerAuthSetup(paymentInstrument, OrderNo, CreditCardForm) {
+function PayerAuthSetup(paymentInstrument, OrderNo, CreditCardForm, basket) {
     var creditCardForm = CreditCardForm;
     var orderNo = OrderNo;
     var paymentInstrument = paymentInstrument;
     // eslint-disable-next-line
-    session.privacy.paSetup= false;
 
     if (creditCardForm === null) {
         Logger.error('[CardFacade.js] Please provide the credit card form element!');
         return { error: true };
     }
+    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+    var billTo;
+    var result = CommonHelper.CreateCyberSourceBillToObject(basket, true, paymentInstrument);
+    billTo = result.billTo;
 
     var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
     var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var serviceRequest = new csReference.RequestMessage();
     var SubscriptionID = paymentInstrument.getCreditCardToken();
-    var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
     var result = CardHelper.CreateCybersourcePaymentCardObject('billing', SubscriptionID);
     var cardObject = result.card;
-    CybersourceHelper.addPayerAuthSetupInfo(serviceRequest, creditCardForm, orderNo, paymentInstrument.getCreditCardToken());
+    CybersourceHelper.addPayerAuthSetupInfo(serviceRequest, creditCardForm, orderNo, paymentInstrument.getCreditCardToken(), billTo);
     var serviceResponse = null;
     // send request
     try {
@@ -315,7 +328,7 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm) 
     var payerAuthsitems = CommonHelper.CreateCybersourceItemObject(lineItemCtnrObj);
     var items = payerAuthsitems.items;
 
-    CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest, orderNo, creditCardForm, lineItemCtnrObj.billingAddress.countryCode.value, amount, paymentInstrument.getCreditCardToken(), lineItemCtnrObj.billingAddress.phone, deviceType, billTo);
+    CybersourceHelper.addPayerAuthEnrollInfo(serviceRequest, orderNo, creditCardForm, lineItemCtnrObj.billingAddress.countryCode.value, amount, paymentInstrument.getCreditCardToken(), lineItemCtnrObj.billingAddress.phone, deviceType, billTo, LineItemCtnrObj.paymentInstrument.custom);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');
@@ -435,7 +448,7 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
 
     var serviceRequest = new csReference.RequestMessage();
 
-    CybersourceHelper.addPayerAuthValidateInfo(serviceRequest, orderNo, signedPaRes, creditCardForm, amount, CreditCardToken, processorTransactionId, billTo);
+    CybersourceHelper.addPayerAuthValidateInfo(serviceRequest, orderNo, signedPaRes, creditCardForm, amount, CreditCardToken, processorTransactionId, billTo, paymentInstrument.custom);
 
     //  Provide ability to customize request object with a hook.
     var HookMgr = require('dw/system/HookMgr');

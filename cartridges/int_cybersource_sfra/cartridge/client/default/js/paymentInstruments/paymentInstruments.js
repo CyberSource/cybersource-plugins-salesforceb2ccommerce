@@ -25,7 +25,7 @@ base.removePayment = function () {
                     $('#uuid-' + data.UUID).remove();
                     if (data.message) {
                         var toInsert = '<div><h3>'
-                            + data.message
+                            + DOMPurify.sanitize(data.message)
                             + '</h3><div>';
                         $('.paymentInstruments').html(toInsert);
                     }
@@ -62,7 +62,7 @@ base.submitPayment = function () {
                     formValidation($form, data);
                     if (data.message) {
                         var toInsert = '<div><h3>'
-                            + data.message
+                            + DOMPurify.sanitize(data.message)
                             + '</h3><div>';
                         $('.paymentInstruments').html(toInsert);
                     }

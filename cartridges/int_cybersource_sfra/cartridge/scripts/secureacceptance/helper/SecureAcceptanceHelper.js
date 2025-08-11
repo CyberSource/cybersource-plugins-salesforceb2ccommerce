@@ -513,9 +513,9 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     signedFieldNames += ',override_custom_cancel_page';
                     signedFieldNames += ',override_custom_receipt_page';
                     // eslint-disable-next-line
-                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal));
+                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal).toString());
                     // eslint-disable-next-line
-                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal));
+                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal).toString());
                     break;
                 case CybersourceConstants.METHOD_SA_SILENTPOST:
                     // eslint-disable-next-line
@@ -541,7 +541,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     }
                     signedFieldNames += ',override_custom_receipt_page';
                     // eslint-disable-next-line
-                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
+                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse').toString());
                     break;
                 default:
                     transactionType = CsTransactionType;
@@ -905,8 +905,8 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
         // eslint-disable-next-line
         result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields);
         serviceResponse = result.serviceResponse;
-        if(serviceResponse.ReasonCode === 478 && session.custom.enroll == true){
-            session.custom.enroll = false;
+        if(serviceResponse.ReasonCode === 478 && session.custom.SCA == true){
+            session.custom.SCA = false;
             return {sca: true};
         }
         if (result.error) {
@@ -1039,7 +1039,8 @@ function AuthorizeCreditCard(args) {
         session.privacy.process3DRequestParent = true;
         var handle3DResponse = {
             process3DRedirection: true,
-            jwt: result.serviceResponse.jwt
+            jwt: result.serviceResponse.jwt,
+            stepUpUrl: result.serviceResponse.stepUpUrl
         };
         return handle3DResponse;
     }

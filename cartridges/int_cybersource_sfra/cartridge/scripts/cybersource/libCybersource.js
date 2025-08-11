@@ -235,7 +235,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'K2AB9ZDK';
+        return 'MVSTWG57';
     },
 
     getDeveloperID: function () {
@@ -598,7 +598,7 @@ var CybersourceHelper = {
         var paymentMethod = order.paymentInstruments[0].paymentMethod;
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
-        
+
         if (enableDeviceFingerprint && CybersourceHelper.getCardDecisionManagerEnable()) {
             fingerprint = replaceCharsInSessionID(session.sessionID);
         }
@@ -882,29 +882,36 @@ var CybersourceHelper = {
         }
     },
 
-    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken){
+    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken, billTo) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
 
         setClientData(serviceRequest, orderNo);
+
+        if (billTo !== null) {
+            serviceRequest.billTo = copyBillTo(billTo);
+        }
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
         } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
-			CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
-			serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-			serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
-		}
+            CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+            serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+        }
         serviceRequest.payerAuthSetupService = new CybersourceHelper.getcsReference().PayerAuthSetupService();
         serviceRequest.payerAuthSetupService.run = true;
     },
 
-    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, paymentMethodID) {
+    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, PICustomVariables, paymentMethodID) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+        if (PICustomVariables.PASetupMerchantRefCode !== null) {
+            serviceRequest.partnerOriginalTransactionID = PICustomVariables.PASetupMerchantRefCode;
+        }
 
         setClientData(serviceRequest, orderNo);
 
@@ -921,11 +928,11 @@ var CybersourceHelper = {
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
         } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
-			CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
-			serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-			serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
-		}
+            CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+            serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+        }
         serviceRequest.payerAuthEnrollService = new CybersourceHelper.getcsReference().PayerAuthEnrollService();
         serviceRequest.purchaseTotals = new CybersourceHelper.getcsReference().PurchaseTotals();
         serviceRequest.purchaseTotals.currency = amount.currencyCode;
@@ -937,12 +944,13 @@ var CybersourceHelper = {
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
-        serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
-        if(session.custom.enroll == false || session.custom.SCA == false || session.custom.isScaEnabled == true){
-        serviceRequest.payerAuthEnrollService.challengeCode = '04';
+        serviceRequest.payerAuthEnrollService.referenceID = PICustomVariables.PayerAuthSetupReferenceID;
+        if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
+            serviceRequest.payerAuthEnrollService.challengeCode = '04';
         }
+
         var URLUtils = require('dw/web/URLUtils');
-        serviceRequest.payerAuthEnrollService.returnURL =URLUtils.https('COPlaceOrder-Submit','provider','card').toString();
+        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card').toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
@@ -1026,9 +1034,11 @@ var CybersourceHelper = {
         return request;
     },
 
-    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo) {
+    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo, PICustomVariables) {
         request.merchantID = CybersourceHelper.getMerchantID();
-
+        if (PICustomVariables.PASetupMerchantRefCode !== null) {
+            request.partnerOriginalTransactionID = PICustomVariables.PASetupMerchantRefCode;
+        }
         setClientData(request, orderNo);
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
@@ -1036,11 +1046,11 @@ var CybersourceHelper = {
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
         } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
-			CybersourceHelper.addCardInfo(request, creditCardForm);
-		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
-			request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-			request.tokenSource.transientToken = creditCardForm.flexresponse.value;
-		}
+            CybersourceHelper.addCardInfo(request, creditCardForm);
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+            request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            request.tokenSource.transientToken = creditCardForm.flexresponse.value;
+        }
 
         if (billTo !== null) {
             request.billTo = copyBillTo(billTo);
@@ -1062,7 +1072,7 @@ var CybersourceHelper = {
         request.item = items;
 
         request.payerAuthValidateService.run = true;
-        if (CybersourceHelper.getCardDecisionManagerEnable()){
+        if (CybersourceHelper.getCardDecisionManagerEnable()) {
             request.afsService = new CybersourceHelper.getcsReference().AFSService();
             request.afsService.run = true;
         }
@@ -1505,12 +1515,12 @@ var CybersourceHelper = {
         request.apPaymentType = paymentType;
         request.apRefundService.run = true;
     },
-    
-     /** ***************************************************************************
-     * Name: DecisionManager
-     * Description: DecisionManagerService.
-     *
-     *************************************************************************** */
+
+    /** ***************************************************************************
+    * Name: DecisionManager
+    * Description: DecisionManagerService.
+    *
+    *************************************************************************** */
     apDecisionManagerService: function (paymentMethodID, request, billTo, shipTo, purchase, refCode, enableDeviceFingerprint, itemsCybersource) {
         var PaymentMgr = require('dw/order/PaymentMgr');
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
