@@ -882,9 +882,10 @@ var CybersourceHelper = {
         }
     },
 
-    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken, billTo) {
+    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken, billTo, paymentInstrument) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
         setClientData(serviceRequest, orderNo);
 
@@ -892,13 +893,24 @@ var CybersourceHelper = {
             serviceRequest.billTo = copyBillTo(billTo);
         }
 
+        var Resource = require('dw/web/Resource');
+
+        var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
+
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
+        } else if (isGooglePay && paymentInstrument.custom.GooglePayEncryptedData !== null) {
+            serviceRequest.paymentSolution = '012';
+            var requestEncryptedPayment = new CybersourceHelper.getcsReference().EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = paymentInstrument.custom.GooglePayEncryptedData;
+            serviceRequest.encryptedPayment = requestEncryptedPayment;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value) && isCreditCard) {
             CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
             serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
         }
@@ -906,30 +918,38 @@ var CybersourceHelper = {
         serviceRequest.payerAuthSetupService.run = true;
     },
 
-    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, PICustomVariables, paymentMethodID) {
+    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, paymentInstrument, payerauthArgs, paymentMethodID) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
-        if (PICustomVariables.PASetupMerchantRefCode !== null) {
-            serviceRequest.partnerOriginalTransactionID = PICustomVariables.PASetupMerchantRefCode;
-        }
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
         setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
-            if(session.privacy.screenHeight && session.privacy.screenWidth){
-                billTo.setHttpBrowserScreenHeight(session.privacy.screenHeight);
-                billTo.setHttpBrowserScreenWidth(session.privacy.screenWidth);
+            if(payerauthArgs.parsedBrowserfields.screenHeight && payerauthArgs.parsedBrowserfields.screenWidth){
+                billTo.setHttpBrowserScreenHeight(payerauthArgs.parsedBrowserfields.screenHeight);
+                billTo.setHttpBrowserScreenWidth(payerauthArgs.parsedBrowserfields.screenWidth);
             }
             serviceRequest.billTo = copyBillTo(billTo);
         }
+        var Resource = require('dw/web/Resource');
+
+        var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
+        } else if (isGooglePay && paymentInstrument.custom.GooglePayEncryptedData !== null) {
+            serviceRequest.paymentSolution = '012';
+            var requestEncryptedPayment = new CybersourceHelper.getcsReference().EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = paymentInstrument.custom.GooglePayEncryptedData;
+            serviceRequest.encryptedPayment = requestEncryptedPayment;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value) && isCreditCard) {
             CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
             serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
         }
@@ -944,13 +964,13 @@ var CybersourceHelper = {
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
-        serviceRequest.payerAuthEnrollService.referenceID = PICustomVariables.PayerAuthSetupReferenceID;
+        serviceRequest.payerAuthEnrollService.referenceID = paymentInstrument.custom.PayerAuthSetupReferenceID;
         if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
             serviceRequest.payerAuthEnrollService.challengeCode = '04';
         }
 
         var URLUtils = require('dw/web/URLUtils');
-        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card').toString();
+        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo).toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
@@ -1034,20 +1054,28 @@ var CybersourceHelper = {
         return request;
     },
 
-    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo, PICustomVariables) {
+    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo, paymentInstrument) {
         request.merchantID = CybersourceHelper.getMerchantID();
-        if (PICustomVariables.PASetupMerchantRefCode !== null) {
-            request.partnerOriginalTransactionID = PICustomVariables.PASetupMerchantRefCode;
-        }
         setClientData(request, orderNo);
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var Resource = require('dw/web/Resource');
+
+        var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
+        } else if (isGooglePay && paymentInstrument.custom.GooglePayEncryptedData !== null) {
+            request.paymentSolution = '012';
+            var requestEncryptedPayment = new CybersourceHelper.getcsReference().EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = paymentInstrument.custom.GooglePayEncryptedData;
+            request.encryptedPayment = requestEncryptedPayment;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value) && isCreditCard) {
             CybersourceHelper.addCardInfo(request, creditCardForm);
-        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
             request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             request.tokenSource.transientToken = creditCardForm.flexresponse.value;
         }

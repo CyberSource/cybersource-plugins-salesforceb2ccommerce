@@ -37,15 +37,35 @@ server.get('OpenIframe', function (req, res, next) {
  * This method receive response from the third party in http Parameter map, verify the signature , update the payment instrument with card value received, go to place order.
  */
 server.post('SilentPostResponse', server.middleware.https, function (req, res, next) {
-    var redirectUrl = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').SilentPostResponse();
-    
-    // Check if this is the 3DS redirect URL
-    if (redirectUrl && redirectUrl.toString().indexOf('COPlaceOrder-PayerAuth') !== -1) {
-        res.render('payerauthentication/3dsRedirect', {
-            action: URLUtils.url('COPlaceOrder-PayerAuth')
-        });
+    var result = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter').SilentPostResponse();
+
+    if (result && result.checkPayerAuth === true) {
+        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+        var creditCardType;
+        creditCardType = result.order.paymentInstrument.creditCardType;
+        
+        // Check if Payer Auth is enabled for the credit card type
+        var cardResult = CardHelper.PayerAuthEnable(creditCardType);
+        if (cardResult.error) {
+            res.redirect(URLUtils.url('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
+            return next();
+        }
+
+        if (cardResult.paEnabled) {
+            res.render('payerauthentication/3dsRedirect', {
+                action: URLUtils.url('CheckoutServices-PayerAuthSetup'),
+                OrderNo: result.order.orderNo,
+            });
+            return next();
+        } else {
+            res.render('payerauthentication/3dsRedirect', {
+                action: URLUtils.url('CheckoutServices-SilentPostAuthorize'),
+                OrderNo: result.order.orderNo,
+            });
+            return next();
+        }
     } else {
-        res.redirect(redirectUrl);
+        res.redirect(result);
     }
     next();
 });
@@ -75,7 +95,7 @@ server.get('CreateFlexToken', server.middleware.https, function (req, res, next)
     if (parsedPayload != null) {
         var clientLibrary = parsedPayload.ctx[0].data.clientLibrary;
         var clientLibraryIntegrity = parsedPayload.ctx[0].data.clientLibraryIntegrity;
-        if(clientLibraryIntegrity && clientLibrary){
+        if (clientLibraryIntegrity && clientLibrary) {
             res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent', {
                 flexTokenResult: flexResult,
                 clientLibrary: clientLibrary,

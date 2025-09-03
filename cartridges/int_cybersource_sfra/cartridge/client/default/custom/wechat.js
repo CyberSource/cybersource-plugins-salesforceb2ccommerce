@@ -9,7 +9,6 @@ var totalServiceCalls = 1;
  * @param {*} enforceError enforceError
  */
 function weChatCheckStatus(serviceCalls, enforceError) {
-    var DOMPurify = require('dompurify');
     var orderNumber = document.getElementById('orderNo').value;
     var request = { orderNo: orderNumber };
     var weChatUrl = document.getElementById('weChatUrl').value;
@@ -27,7 +26,7 @@ function weChatCheckStatus(serviceCalls, enforceError) {
         success: function (data) {
             if (enforceError && !data.submit) {
                 $('.modal').spinner().stop();
-                weChatRedirectUrl = DOMPurify.sanitize(weChatRedirectUrl);
+                weChatRedirectUrl = weChatRedirectUrl;
                 window.location.href = decodeURIComponent(weChatRedirectUrl);
                 return;
             }

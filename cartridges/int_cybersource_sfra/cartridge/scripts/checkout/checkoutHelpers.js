@@ -128,7 +128,7 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
  * @param {string} orderNumber - The order number for the order
  * @returns {Object} an error object
  */
-function handlePayments(order, orderNumber) {
+function handlePayments(order, orderNumber, payerauthArgs) {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var authorizationResult;
     var result = {};
@@ -156,7 +156,8 @@ function handlePayments(order, orderNumber) {
                             'Authorize',
                             orderNumber,
                             paymentInstrument,
-                            paymentProcessor
+                            paymentProcessor,
+                            payerauthArgs
                         );
                     } else {
                         authorizationResult = HookMgr.callHook(
@@ -346,7 +347,7 @@ function reCreateBasket(order) {
  * @param {*} order order
  * @returns {*} obj
  */
-function handleSilentPostAuthorize(order) {
+function handleSilentPostAuthorize(order, isPayerAuthSetupCompleted) {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var paymentInstrument;
     if (order !== null) {
@@ -362,7 +363,8 @@ function handleSilentPostAuthorize(order) {
             'SilentPostAuthorize',
             order.orderNo,
             paymentInstrument,
-            paymentProcessor
+            paymentProcessor,
+            isPayerAuthSetupCompleted
         );
     }
     return authorizationResult;

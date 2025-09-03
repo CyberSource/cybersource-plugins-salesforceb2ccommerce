@@ -36,22 +36,29 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
     if (!empty(order.getPaymentInstruments())) {
         paymentInstrument = order.getPaymentInstruments()[0];
     }
-
-    var DFReferenceId = paymentInstrument.custom.PayerAuthSetupReferenceID;
-
     if (handlePaymentResult.sca) {
         return {
             error: false,
-            enrollSCA: true,
-            redirectUrl: URLUtils.url('COPlaceOrder-PayerAuth').toString()
+            orderID: order.orderNo,
+            orderToken: order.orderToken,
+            continueUrl: URLUtils.url('CheckoutServices-PayerAuthSetup').toString()
+        };
+    }
+
+    if (handlePaymentResult.performPayerAuthSetup) {
+        return {
+            error: false,
+            orderID: order.orderNo,
+            orderToken: order.orderToken,
+            continueUrl: URLUtils.url('CheckoutServices-PayerAuthSetup').toString()
         };
     }
 
     if (handlePaymentResult.error) {
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
         klarnaHelper.clearKlarnaSessionVariables();
         return {
             error: true,
-            // errorMessage: Resource.msg('error.technical', 'checkout', null)
             redirectUrl: URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)).toString()
         };
     } if (handlePaymentResult.returnToPage) {
@@ -59,9 +66,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             error: false,
             continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
             renderTemplate: 'secureacceptance/secureAcceptanceIframeSummmary',
-            templateData: {
-                Order: handlePaymentResult.order
-            },            
+            orderID: order.orderNo,
         };
     } if (handlePaymentResult.intermediate) {
         return {
@@ -72,8 +77,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
                 alipayReturnUrl: handlePaymentResult.alipayReturnUrl
             },
         };
-        //SA - redirect
-    } if (handlePaymentResult.intermediateSA) {
+    } if (handlePaymentResult.intermediateSA) { //SA - redirect
         return {
             error: false,
             continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
@@ -123,29 +127,11 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
     if (handlePaymentResult.declined) {
         session.privacy.SkipTaxCalculation = false;
         Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
-        if (paymentInstrument.paymentMethod != null
-            && (paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.creditcard', 'cybersource', null)
-                && (CsSAType == Resource.msg('cssatype.SA_REDIRECT', 'cybersource', null)
-                    || CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)))
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.alipay', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.sof', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.idl', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.mch', 'cybersource', null)
-            || paymentInstrument.paymentMethod == Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)
-        ) {
             klarnaHelper.clearKlarnaSessionVariables();
             return {
                 error: true,
                 errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
             };
-        } else {
-            klarnaHelper.clearKlarnaSessionVariables();
-            return {
-                error: true,
-                errorMessage: Resource.msg('sa.billing.payment.error.declined', 'cybersource', null)
-            };
-        }
     }
     if (handlePaymentResult.missingPaymentInfo) {
         session.privacy.SkipTaxCalculation = false;
@@ -203,64 +189,17 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
         };;
     }
 
-    var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
-    if (fraudDetectionStatus.status === 'fail') {
-        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-
-        // fraud detection failed
-        req.session.privacyCache.set('fraudDetectionStatus', true);
-
-        return {
-            error: true,
-            cartError: true,
-            redirectUrl: URLUtils.url('Error-ErrorCode', 'err', fraudDetectionStatus.errorCode).toString(),
-            errorMessage: Resource.msg('error.technical', 'checkout', null)
-        };
-    }
-
-    // Places the order
-    if (handlePaymentResult.authorized) {
-        var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-        if (placeOrderResult.error) {
-            return {
-                error: true,
-                errorMessage: Resource.msg('error.technical', 'checkout', null)
-            };
-        }
-    }
-
     session.privacy.paypalShippingIncomplete = '';
     session.privacy.paypalBillingIncomplete = '';
-    // eslint-disable-next-line
-    COHelpers.sendConfirmationEmail(order, req.locale.id);
 
     //  Reset decision session variable
     session.privacy.CybersourceFraudDecision = '';
     session.privacy.SkipTaxCalculation = false;
     session.privacy.cartStateString = null;
 
+    delete session.privacy.orderId;
+
     klarnaHelper.clearKlarnaSessionVariables();
-    // Handle Authorized status for Payer Authentication flow
-    if (DFReferenceId !== null && (handlePaymentResult.authorized || handlePaymentResult.review)) {
-        delete session.privacy.orderId;
-        return {
-            error: false,
-            orderID: order.orderNo,
-            orderToken: order.orderToken,
-            continueUrl: URLUtils.url('Order-Confirm').toString()
-        };
-    }
-
-    if ((handlePaymentResult.authorized || handlePaymentResult.review) && (paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.googlepay', 'cybersource', null) || (paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.paypal', 'cybersource', null) && !session.privacy.paypalminiCart)) || paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.paypalcredit', 'cybersource', null)) {
-        delete session.privacy.orderId;
-        return {
-            error: false,
-            orderID: order.orderNo,
-            orderToken: order.orderToken,
-            continueUrl: URLUtils.url('Order-Confirm').toString()
-        };
-    }
-
 }
 
 exports.postAuthorization = postAuthorization;

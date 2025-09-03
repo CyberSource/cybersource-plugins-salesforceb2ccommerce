@@ -15,6 +15,7 @@ var allowedPaymentMethods = ['CARD', 'TOKENIZED_CARD'];
  * confirm card networks supported by your site and gateway
  */
 var allowedCardNetworks = ['AMEX', 'DISCOVER', 'JCB', 'MASTERCARD', 'VISA'];
+var allowedCardAuthMethods = ['PAN_ONLY', 'CRYPTOGRAM_3DS'];
 
 var gatewayMerchantId = $('#googlePaygatewayMerchantId').val();
 
@@ -29,14 +30,51 @@ var merchantID = $('#googlePayMerchantID').val();
  * check with your gateway on the parameters to pass
  * @see {@link https://developers.google.com/pay/api/web/reference/object#Gateway|PaymentMethodTokenizationParameters}
  */
+
+
+// Add these new variables after your existing ones
+var baseRequest = {
+    apiVersion: 2,
+    apiVersionMinor: 0
+};
+
+var baseCardPaymentMethod = {
+    type: 'CARD',
+    parameters: {
+        allowedAuthMethods: allowedCardAuthMethods,
+        allowedCardNetworks: allowedCardNetworks,
+        assuranceDetailsRequired: true,
+        billingAddressRequired: true,
+        billingAddressParameters: {
+            format: 'FULL',
+            phoneNumberRequired: true
+        }
+    }
+};
+
+// Fix the tokenization parameters
 var tokenizationParameters = {
-    tokenizationType: 'PAYMENT_GATEWAY',
+    type: 'PAYMENT_GATEWAY',  // Changed from tokenizationType
     parameters: {
         gateway: 'cybersource',
         gatewayMerchantId: gatewayMerchantId
     }
 };
 
+var cardPaymentMethod = {
+    tokenizationSpecification: tokenizationParameters,
+    ...baseCardPaymentMethod
+};
+
+function formatInputMoney(input) {
+    var standardNumber = input;
+    if (input.indexOf(",") > input.indexOf(".") || (input.indexOf(",") !== -1 && input.indexOf(".") === -1)) {
+        standardNumber = parseFloat(input.replace(".", "").replace(",", ".").replace(/[^0-9.]/g, ''));
+    } else {
+        standardNumber = parseFloat(input.replace(/[^0-9.]/g, ''));
+    }
+    return standardNumber;
+}
 /**
  * Initialize a Google Pay API client
  *
@@ -51,17 +89,20 @@ function getGooglePaymentsClient() {
  */
 function onGooglePayLoaded() {
     var paymentsClient = getGooglePaymentsClient();
-    paymentsClient.isReadyToPay({ allowedPaymentMethods: allowedPaymentMethods })
+    var isReadyToPayRequest = {
+        ...baseRequest,
+        allowedPaymentMethods: [baseCardPaymentMethod]
+    };
+    
+    paymentsClient.isReadyToPay(isReadyToPayRequest)
         .then(function (response) {
             if (response.result) {
-            // alert(response.result);
                 addGooglePayButton();
                 prefetchGooglePaymentData();
             }
         })
         .catch(function (err) {
-        // show error in developer console for debugging
-            //console.error(err); // eslint-disable-line
+            // Handle error
         });
 }
 
@@ -86,21 +127,18 @@ function addGooglePayButton() {
  * @returns {object} PaymentDataRequest fields
  */
 function getGooglePaymentDataConfiguration() {
-    return {
-    // a merchant ID is available for a production environment after approval by Google
-    // @see {@link https://developers.google.com/pay/api/web/guides/test-and-deploy/integration-checklist|Integration checklist}
-        merchantId: merchantID,
-        paymentMethodTokenizationParameters: tokenizationParameters,
-        allowedPaymentMethods: allowedPaymentMethods,
-        emailRequired: true,
-        phoneNumberRequired: true,
-        cardRequirements: {
-            allowedCardNetworks: allowedCardNetworks
-            // billingAddressRequired: true,
-            // billingAddressFormat: 'FULL'
-        }
-    // shippingAddressRequired : true
+
+        var paymentDataRequest = {
+        ...baseRequest
     };
+    paymentDataRequest.allowedPaymentMethods = [cardPaymentMethod];
+    paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
+    paymentDataRequest.emailRequired = true;
+    paymentDataRequest.shippingAddressRequired = true;
+    paymentDataRequest.merchantInfo = {
+        merchantId: merchantID
+    };
+    return paymentDataRequest;
 }
 
 /**
@@ -110,12 +148,14 @@ function getGooglePaymentDataConfiguration() {
  * @returns {object} transaction info, suitable for use as transactionInfo property of PaymentDataRequest
  */
 function getGoogleTransactionInfo() {
+    var cartTotalValue = document.getElementById('carttotal').value.replace('$', '');
+    var formattedAmount = formatInputMoney(cartTotalValue);
+
     return {
         currencyCode: 'USD',
         totalPriceStatus: 'FINAL',
-        // set to cart total
-        totalPrice: $('body').find('.row.grand-total').find('.grand-total-sum').text()
-            .replace('$', '')
+        // Format the amount properly - convert to string with 2 decimal places
+        totalPrice: formattedAmount.toFixed(2)
     };
 }
 

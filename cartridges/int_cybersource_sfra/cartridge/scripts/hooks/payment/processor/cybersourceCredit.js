@@ -34,7 +34,7 @@ exports.CreatePaymentToken = function (module) {
 };
 
 // eslint-disable-next-line
-exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentProcessor) {
+exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentProcessor, isPayerAuthSetupCompleted) {
     var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
@@ -44,7 +44,7 @@ exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentP
     if (empty(paymentMethod)) {
         return { error: true };
     }
-    return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
+    return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order, isPayerAuthSetupCompleted: isPayerAuthSetupCompleted });
 };
 
 /**
@@ -173,15 +173,46 @@ function SecureAcceptanceHandle(basket, paymentInformation) {
  * possibly invalidates invalid form fields. If the verification was successful
  * a credit card payment instrument is created. The Controller just reuses the
  * basic credit card validation Controller from processor CYBERSOURCE_CREDIT.
- *
- * @param {Basket}  basket - Current customers basket.
- * @param {Object}  paymentInformation - JSON object containing payment information.
- * @returns {Object} -  {fieldErrors: [], serverErrors: [], error: Boolean}
  */
-exports.Handle = function (basket, paymentInformation) {
+/**
+ * Handles payment processing for Cybersource
+ * @param {Object} basket - current basket
+ * @param {Object} paymentInformation - payment information
+ * @param {string} paymentMethodID - payment method ID
+ * @param {Object} req - request object
+ * @return {Object} result object
+ */
+exports.Handle = function (basket, paymentInformation, paymentMethodID, req) {
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     // eslint-disable-next-line
+    // var PaymentMethod = server.forms.getForm('billing').paymentMethod.value;
     var PaymentMethod = session.forms.billing.paymentMethod.value;
+        var currentBasket = basket;
+        var cardErrors = {};
+        var serverErrors = [];
+        var creditCardStatus;
+       
+        // CYBERSOURCE ADDITION: Handle stored payment instruments
+        if (paymentInformation && paymentInformation.storedPaymentUUID &&
+            req.currentCustomer.raw.authenticated &&
+            req.currentCustomer.raw.registered) {
+           
+            var array = require('*/cartridge/scripts/util/array');
+            var paymentInstruments = req.currentCustomer.wallet.paymentInstruments;
+            var paymentInstrument = array.find(paymentInstruments, function (item) {
+                return paymentInformation.storedPaymentUUID === item.UUID;
+            });
+   
+            if (paymentInstrument) {
+                paymentInformation.cardNumber = { value: paymentInstrument.creditCardNumber };
+                paymentInformation.cardType = { value: paymentInstrument.creditCardType };
+                paymentInformation.securityCode = { value: req.form.securityCode };
+                paymentInformation.expirationMonth = { value: paymentInstrument.creditCardExpirationMonth };
+                paymentInformation.expirationYear = { value: paymentInstrument.creditCardExpirationYear };
+                paymentInformation.creditCardToken = paymentInstrument.raw.creditCardToken;
+            }
+        }
+ 
     // eslint-disable-next-line
     if (empty(PaymentMethod)) {
         return { error: true };
@@ -265,7 +296,7 @@ function SecureAcceptanceAuthorize(orderNumber, pi, pmntProcessor) {
  * @param {PaymentProcessor}  paymentProcessor - Payment Processor
  * @returns {Object} -  {fieldErrors: [], serverErrors: [], error: Boolean}
  */
-exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) {
+exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor, payerauthArgs) {
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
@@ -283,7 +314,7 @@ exports.Authorize = function (orderNumber, paymentInstrument, paymentProcessor) 
     if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD)
             && (CsSAType == null || CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX))) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) || paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
         var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
-        return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order });
+        return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order, payerauthArgs: payerauthArgs });
     }
     return SecureAcceptanceAuthorize(orderNumber, paymentInstrument, paymentProcessor);
 };

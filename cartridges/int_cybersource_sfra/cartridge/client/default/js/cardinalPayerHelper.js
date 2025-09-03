@@ -30,13 +30,12 @@ function initCardinalPayerAuthModal() {
 
             // Check if iframe has redirected to our domain
             if (iframeUrl && iframeUrl.indexOf(window.location.hostname) > -1) {
-                console.log("Cardinal Authentication completed, iframe URL:", iframeUrl);
                 clearInterval(checkInterval);
 
                 // Hide modal and redirect
                 modalOverlay.style.display = 'none';
                 // Check if this is an SCA retrigger scenario
-                if (iframeUrl.indexOf('COPlaceOrder-PayerAuth') > -1) {
+                if (iframeUrl.indexOf('CheckoutServices-PayerAuthSetup') > -1) {
                     var redirect = $('<form>')
                         .appendTo(document.body)
                         .attr({
@@ -76,7 +75,6 @@ window.onload = function () {
     if (payerAuthDiv) {
         initCardinalPayerAuthModal();
     } else {
-        // Fallback for legacy behavior
         var stepUpForm = document.querySelector('#step-up-form');
         if (stepUpForm) {
             stepUpForm.submit();

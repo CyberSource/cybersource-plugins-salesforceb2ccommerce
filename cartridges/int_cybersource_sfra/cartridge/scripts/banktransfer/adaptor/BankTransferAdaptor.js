@@ -90,9 +90,9 @@ function CreateSaleServiceRequest(Order, testMethod) {
     var billTo; var purchaseObject; var
         paymentType;
     var URLUtils = require('dw/web/URLUtils');
-    var cancelURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'cancelfail', 'cfk', false).toString();
-    var successURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'banktransfer').toString();
-    var failureURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'cancelfail', 'cfk', false).toString();
+    var cancelURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'cancelfail', 'cfk', false, 'orderID', Order.orderNo).toString();
+    var successURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'banktransfer', 'orderID', Order.orderNo).toString();
+    var failureURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'cancelfail', 'cfk', false, 'orderID', Order.orderNo).toString();
     // setting the value of payment type after getting from payment method
     // eslint-disable-next-line
     paymentType = session.forms.billing.paymentMethod.value;

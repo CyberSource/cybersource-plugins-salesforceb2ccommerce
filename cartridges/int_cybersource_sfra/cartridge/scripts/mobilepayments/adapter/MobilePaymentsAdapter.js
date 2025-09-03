@@ -80,6 +80,7 @@ function processPaymentGP(order) {
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
     var MobilePaymentHelper = require('../helper/MobilePaymentsHelper');
     var result = MobilePaymentHelper.validateMobilePaymentRequest(order);
+    var paymentInstrument = order.getPaymentInstruments()[0];
     /* Script Modules */
 
     var ERRORCODE;
@@ -96,7 +97,7 @@ function processPaymentGP(order) {
     // eslint-disable-next-line
     if (!empty(result.PaymentData)) {
         // eslint-disable-next-line
-        paymentAPIRequestParams.data = session.privacy.encryptedDataGP;
+        paymentAPIRequestParams.data = paymentInstrument.custom.GooglePayEncryptedData;
         // paymentAPIRequestParams.data = require('dw/crypto/Encoding').toBase64(new Bytes(JSON.stringify(result.PaymentData)));
         result.ServiceResponse = MobilePaymentFacade.mobilePaymentAuthRequest(paymentAPIRequestParams);
     }

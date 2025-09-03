@@ -15,8 +15,7 @@
 		</form>
 	</div>
 	<form class="payerAuthRedirect" action="${pdict.action}" method="POST" name="payerAuthRedirect" target="_parent">
-	    <iscomment> <input type="hidden" name="DFReferenceId" id="DFReferenceId" value="${pdict.referenceID}"/> </iscomment>
-		<iscomment> <input type="hidden" name="OrderNo" id="OrderNo" value="${pdict.orderNo}"/> </iscomment>
+		<input type="hidden" name="OrderNo" id="OrderNo" value="${pdict.orderNo}"/>
 		<input type="hidden" name="browserfields" id="browserfields" value= ""/>
 	</form>
 </body>
