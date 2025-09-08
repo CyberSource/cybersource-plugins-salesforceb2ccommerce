@@ -42,6 +42,15 @@ $(document).ready(function () {
       $("#cardType").val(cardType);
     });
 
+  $('#expirationMonth').on('change', function (event) {
+    $('#expirationMonthMissingMessage').css('display', 'none');
+    $('#expiredCardMessage').css('display', 'none');
+  })
+  $('#expirationYear').on('change', function (event) {
+    $('#expirationYearMissingMessage').css('display', 'none');
+    $('#expiredCardMessage').css('display', 'none');
+  })
+
     function parseJwt(token) {
       // eslint-disable-line no-inner-declarations
       var base64Url = token.split(".")[1];
@@ -61,11 +70,8 @@ $(document).ready(function () {
 
     function flexTokenCreation() {
       // eslint-disable-line no-inner-declarations
-      var expMonth = $("#expirationMonth").val() || $("#month").val();
-      var expYear = $("#expirationYear").val() || $("#year").val();
-      if (expMonth == "" || expYear == "") {
-        return false;
-      }
+      var expMonth = $("#expirationMonth").val();
+      var expYear = $("#expirationYear").val();
       // Send in optional parameters from other parts of your payment form
       var options = {
         expirationMonth: expMonth.length == 1 ? "0" + expMonth : expMonth,
@@ -78,10 +84,18 @@ $(document).ready(function () {
       microform.createToken(options, function (err, response) {
         // At this point the token may be added to the form
         // as hidden fields and the submission continued
+        let flag = false;
+
         if (err) {
-          $(".card-number-wrapper .invalid-feedback")
-            .text(err.message)
-            .css("display", "block");
+          $('.card-number-wrapper .invalid-feedback').text(err.message).css('display', 'block');
+          flag = true;
+        }
+
+        if (!cardExpiryValidate()) {
+          flag = true;
+        }
+
+        if (flag == true) {
           return true;
         }
 
@@ -145,6 +159,33 @@ $(document).ready(function () {
         }
         $("#cardType").val(correctCardType);
       }
+  }
+
+  function cardExpiryValidate() {
+        var expMonth = $('#expirationMonth').val();
+        var expYear = $('#expirationYear').val();
+
+        if (expMonth == '' || expYear == '') {
+            if (expMonth == '') {
+               $('#expirationMonthMissingMessage').css('display', 'block');
+            }
+            if (expYear == '') {
+                $('#expirationYearMissingMessage').css('display', 'block');
+            }
+            return false;
+        }
+        else {
+            let currentDate = new Date();
+            let currentMonth = currentDate.getMonth() + 1;
+            let currentYear = currentDate.getFullYear();
+
+            // Check if the card is expired
+            if (expYear < currentYear || (expYear == currentYear && expMonth < currentMonth)) {
+               $('#expiredCardMessage').css('display', 'block');
+                return false;
+            }
+        }
+        return true;
     }
 
     $(".payment-summary .edit-button").on("click", function () {
@@ -154,8 +195,6 @@ $(document).ready(function () {
     // intercept the form submission and make a tokenize request instead
     $(".submit-payment").on("click", function (event) {
       if (
-        $("#expirationMonth").val() !== "" &&
-        $("#expirationYear").val() !== "" &&
         ($("#flex-response").val() === "" ||
           $("#flex-response").val() === undefined) &&
         ($(".data-checkout-stage").data("customer-type") === "guest" ||

@@ -344,7 +344,11 @@ function PayerAuthEnrollCheck(LineItemCtnrObj, Amount, OrderNo, CreditCardForm, 
     if (!empty(SubscriptionID)) {
         CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
     } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
-        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, OrderNo);
+
+        // Only create subscription if payment method is NOT Google Pay
+        if (paymentInstrument && paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+            CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, orderNo);
+        }
     }
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);
     var serviceResponse = null;
@@ -463,7 +467,11 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
     if (!empty(SubscriptionID)) {
         CybersourceHelper.addOnDemandSubscriptionInfo(SubscriptionID, serviceRequest, purchaseObject, orderNo);
     } else if (CybersourceHelper.getSubscriptionTokenizationEnabled().equals('YES')) {
-        CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject.card, OrderNo);
+
+        // Only create subscription if payment method is NOT Google Pay
+        if (paymentInstrument && paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
+            CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, orderNo);
+        }
     }
 
     CybersourceHelper.addCCAuthRequestInfo(serviceRequest, billTo, shipTo, purchaseObject, cardObject.card, orderNo, CybersourceHelper.getDigitalFingerprintEnabled(), items);

@@ -201,7 +201,7 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
 });
 
 if (IsCartridgeEnabled) {
-server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
+    server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
         // POST-only middleware check
         if (req.httpMethod !== 'POST') {
             res.setStatusCode(405);
@@ -230,6 +230,22 @@ server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) 
                 });
             }
         }
+        return next();
+    });
+
+    server.append('PlaceOrder', server.middleware.https, function (req, res, next) {
+
+        var klarnaHelper = require('*/cartridge/scripts/klarna/helper/KlarnaHelper');
+        session.privacy.paypalShippingIncomplete = '';
+        session.privacy.paypalBillingIncomplete = '';
+
+        //  Reset decision session variable
+        session.privacy.CybersourceFraudDecision = '';
+        session.privacy.SkipTaxCalculation = false;
+        session.privacy.cartStateString = null;
+        delete session.privacy.orderId;
+        klarnaHelper.clearKlarnaSessionVariables();
+        
         return next();
     });
 }

@@ -186,20 +186,8 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
                 noOfCalls: CybersourceHelper.getNumofCheckStatusCalls() != null ? CybersourceHelper.getNumofCheckStatusCalls() : 6,
                 serviceCallInterval: CybersourceHelper.getServiceCallInterval() != null ? CybersourceHelper.getServiceCallInterval() : 10
             },
-        };;
+        };
     }
-
-    session.privacy.paypalShippingIncomplete = '';
-    session.privacy.paypalBillingIncomplete = '';
-
-    //  Reset decision session variable
-    session.privacy.CybersourceFraudDecision = '';
-    session.privacy.SkipTaxCalculation = false;
-    session.privacy.cartStateString = null;
-
-    delete session.privacy.orderId;
-
-    klarnaHelper.clearKlarnaSessionVariables();
 }
 
 exports.postAuthorization = postAuthorization;

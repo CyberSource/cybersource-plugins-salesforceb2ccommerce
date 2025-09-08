@@ -1046,7 +1046,7 @@ function AuthorizeCreditCard(args) {
             isGooglePayPayerAuth = false;
         }
     }
-    if (args.payerauthArgs.isPayerAuthSetupCompleted !== true) {
+    if (args.payerauthArgs && args.payerauthArgs.isPayerAuthSetupCompleted !== true) {
         var isPayerAuthEnabled = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
         if (isGooglePayPayerAuth === false) {
             isPayerAuthEnabled.paEnabled = false;
