@@ -347,7 +347,7 @@ function reCreateBasket(order) {
  * @param {*} order order
  * @returns {*} obj
  */
-function handleSilentPostAuthorize(order, isPayerAuthSetupCompleted) {
+function handleSilentPostAuthorize(order, payerauthArgs) {
     var PaymentMgr = require('dw/order/PaymentMgr');
     var paymentInstrument;
     if (order !== null) {
@@ -364,7 +364,7 @@ function handleSilentPostAuthorize(order, isPayerAuthSetupCompleted) {
             order.orderNo,
             paymentInstrument,
             paymentProcessor,
-            isPayerAuthSetupCompleted
+            payerauthArgs
         );
     }
     return authorizationResult;
@@ -542,6 +542,43 @@ function submitOrder(orderId, req, res, next) {
     return next();
 }
 
+
+//  /**
+//   * Attempts to place the order
+//   * @param {dw.order.Order} order - The order object to be placed
+//   * @param {Object} fraudDetectionStatus - an Object returned by the fraud detection hook
+//   * @returns {Object} an error object
+//   */
+function placeOrder(order, fraudDetectionStatus) {
+    var result = { error: false };
+    var Status = require('dw/system/Status');
+    var Order = require('dw/order/Order');
+
+    try {
+        Transaction.begin();
+        if (fraudDetectionStatus.status === 'success') {
+            var placeOrderStatus = OrderMgr.placeOrder(order);
+            if (placeOrderStatus === Status.ERROR) {
+                throw new Error();
+            }
+        }
+
+        if (fraudDetectionStatus.status === 'flag') {
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+        } else {
+            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+        }
+
+        order.setExportStatus(Order.EXPORT_STATUS_READY);
+        Transaction.commit();
+    } catch (e) {
+        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+        result.error = true;
+    }
+
+    return result;
+}
+
 /**
  * function
  * @param {*} order order
@@ -602,5 +639,6 @@ base.failOrder = failOrder;
 base.reviewOrder = reviewOrder;
 base.submitOrder = submitOrder;
 base.submitApplePayOrder = submitApplePayOrder;
+base.placeOrder = placeOrder;
 
 module.exports = base;

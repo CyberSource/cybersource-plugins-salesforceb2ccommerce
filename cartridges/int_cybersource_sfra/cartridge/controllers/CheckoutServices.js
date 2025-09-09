@@ -128,8 +128,10 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
     var payerauthArgs = {};
     if (request.httpParameterMap.browserfields.submitted) {
         var browserfields = request.httpParameterMap.browserfields.value;
-        browserfields = JSON.parse(browserfields);
-        payerauthArgs.browserfields = browserfields;
+        if (browserfields) {
+            var parsedBrowserfields = JSON.parse(browserfields);
+            payerauthArgs.parsedBrowserfields = parsedBrowserfields;
+        }
     }
     var URLUtils = require('dw/web/URLUtils');
     var OrderMgr = require('dw/order/OrderMgr');
@@ -150,7 +152,10 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
         return next();
     }
 
-    var isPayerAuthSetupCompleted = true;
+    var isPayerAuthSetupCompleted = false;
+    if (req.querystring.PayerAuthSetupCompleted) {
+        isPayerAuthSetupCompleted = req.querystring.PayerAuthSetupCompleted === 'true';
+    }
     payerauthArgs.isPayerAuthSetupCompleted = isPayerAuthSetupCompleted;
     var silentPostResponse = COHelpers.handleSilentPostAuthorize(order, payerauthArgs);
 
@@ -202,6 +207,7 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
 
 if (IsCartridgeEnabled) {
     server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
+    server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
         // POST-only middleware check
         if (req.httpMethod !== 'POST') {
             res.setStatusCode(405);
@@ -243,9 +249,8 @@ if (IsCartridgeEnabled) {
         session.privacy.CybersourceFraudDecision = '';
         session.privacy.SkipTaxCalculation = false;
         session.privacy.cartStateString = null;
-        delete session.privacy.orderId;
         klarnaHelper.clearKlarnaSessionVariables();
-        
+
         return next();
     });
 }
@@ -708,10 +713,10 @@ server.post('PayerAuthSetup', csrfProtection.generateToken, function (req, res, 
     var CsSAType = Site.getCurrent().getCustomPreferenceValue('CsSAType').value;
 
     if (paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null) && CsSAType == Resource.msg('cssatype.SA_SILENTPOST', 'cybersource', null)) {
-        action = URLUtils.url('CheckoutServices-SilentPostAuthorize');
+        action = URLUtils.url('CheckoutServices-SilentPostAuthorize', "PayerAuthSetupCompleted", 'true');
     }
     else {
-        action = URLUtils.url('CheckoutServices-PayerAuthSubmit');
+        action = URLUtils.url('CheckoutServices-PayerAuthSubmit', "PayerAuthSetupCompleted", 'true');
     }
 
     var paymentMethodID = paymentInstrument.paymentMethod;
@@ -773,7 +778,10 @@ server.post('PayerAuthSubmit', csrfProtection.generateToken, function (req, res,
         return next();
     }
 
-    var isPayerAuthSetupCompleted = true;
+    var isPayerAuthSetupCompleted = false;
+    if (req.querystring.PayerAuthSetupCompleted) {
+        isPayerAuthSetupCompleted = req.querystring.PayerAuthSetupCompleted === 'true';
+    }
     payerauthArgs.isPayerAuthSetupCompleted = isPayerAuthSetupCompleted;
     // Handles payment authorization
     var handlePaymentResult = COHelpers.handlePayments(order, order.orderNo, payerauthArgs);
@@ -834,13 +842,15 @@ server.post('PayerAuthSubmit', csrfProtection.generateToken, function (req, res,
             return next();
         }
 
-        // Place the order
-        var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
-        if (placeOrderResult.error) {
-            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-            delete session.privacy.orderId;
-            res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('error.technical', 'checkout', null)));
-            return next();
+        if (handlePaymentResult.authorized) {
+            // Place the order
+            var placeOrderResult = COHelpers.placeOrder(order, fraudDetectionStatus);
+            if (placeOrderResult.error) {
+                Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+                delete session.privacy.orderId;
+                res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'placeOrderError', Resource.msg('error.technical', 'checkout', null)));
+                return next();
+            }
         }
 
         // Save addresses to customer address book if logged in

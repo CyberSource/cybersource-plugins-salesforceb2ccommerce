@@ -102,7 +102,7 @@ function ProcessCardAuthResponse(serviceResponse, shipTo, billTo) {
  * @param {*} ResponseObject ResponseObj
  * @returns {*} obj
  */
-function HandleCardResponse(ResponseObject) {
+function HandleCardResponse(ResponseObject, paymentInstrument) {
     Logger.debug('[CardHelper.js] HandleDAVResponse ReasonCode : ' + ResponseObject.ReasonCode);
     switch (Number(ResponseObject.ReasonCode)) {
         case 100:
@@ -127,8 +127,16 @@ function HandleCardResponse(ResponseObject) {
             return { review: true };
 
         case 478:
-            return {sca : true};
-    
+            var isPayerAuthEnabled = PayerAuthEnable(paymentInstrument.creditCardType);
+            if (isPayerAuthEnabled.error) {
+                return { error: true };
+            }
+            if (isPayerAuthEnabled.paEnabled) {
+                return { sca: true };
+            }
+            else {
+                return { error: true }; // If Payer Auth is not enabled for the card type, then fail the transaction.
+            }
         default:
             return { error: true, declined: true };
     }
@@ -251,7 +259,7 @@ function CreateCybersourcePaymentCardObject(formType, SubscriptionID) {
             cvnNumber = session.forms.billing.creditCardFields.securityCode.value;
             if (SubscriptionID && !empty(SubscriptionID)) {
                 subscriptionToken = SubscriptionID;
-            }else {
+            } else {
                 subscriptionToken = CommonHelper.GetSubscriptionToken(session.forms.creditCard.selectedCardID.value, customer);
             }
             break;
@@ -476,7 +484,7 @@ function CardResponse(order, paymentInstrument, serviceResponse) {
             addOrUpdateToken(paymentInstrument, customer.authenticated ? customer : null);
         }
         // returns response as authorized, error, declined based on ReasonCode
-        return HandleCardResponse(serviceResponse);
+        return HandleCardResponse(serviceResponse, paymentInstrument);
     }
     // returns response as authorized, error, declined based on DAVReasonCode or ReasonCode
     return HandleDAVResponse(serviceResponse);

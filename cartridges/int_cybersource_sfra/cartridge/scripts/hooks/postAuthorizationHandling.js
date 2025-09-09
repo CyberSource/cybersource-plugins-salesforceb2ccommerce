@@ -159,12 +159,14 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
         }
     } if (handlePaymentResult.rejected) {
         Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
-        Transaction.wrap(function () {
-            COHelpers.handlePayPal(currentBasket);
-        });
+        if (!empty(currentBasket)) {
+            Transaction.wrap(function () {
+                COHelpers.handlePayPal(currentBasket);
+            });
+        }
         return {
             error: true,
-            errorMessage: Resource.msg('payerauthentication.carderror', 'cybersource', null)
+            redirectUrl: URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)).toString()
         };
     } if (handlePaymentResult.process3DRedirection) {
         return {

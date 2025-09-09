@@ -162,9 +162,11 @@ server.prepend('Begin', function (req, res, next) {
     var currentBasket = BasketMgr.getCurrentBasket();
 
     var payerAuthError = req.querystring.payerAuthError;
+    var placeOrderError = req.querystring.PlaceOrderError;
     var hasPaymentError = !empty(payerAuthError);
+    var hasplaceOrderError = !empty(placeOrderError);
 
-    if (currentStage === 'payment' && hasPaymentError) {
+    if (currentStage === 'payment' && (hasPaymentError || hasplaceOrderError)) {
         // Clear any basket payment instruments if they exist
         if (currentBasket && currentBasket.getPaymentInstruments().size() > 0) {
             var instruments = currentBasket.getPaymentInstruments();

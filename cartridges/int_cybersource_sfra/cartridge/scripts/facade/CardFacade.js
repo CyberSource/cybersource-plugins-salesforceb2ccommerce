@@ -470,7 +470,7 @@ function PayerAuthValidation(PaRes, Amount, OrderNo, CreditCardForm, CreditCardT
 
         // Only create subscription if payment method is NOT Google Pay
         if (paymentInstrument && paymentInstrument.paymentMethod !== CybersourceConstants.METHOD_GooglePay) {
-            CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject, orderNo);
+            CybersourceHelper.addPaySubscriptionCreateService(serviceRequest, billTo, purchaseObject, cardObject.card, orderNo);
         }
     }
 

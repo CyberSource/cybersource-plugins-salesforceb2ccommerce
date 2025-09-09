@@ -1,5 +1,11 @@
 ## <ins>Release History
 
+**Version 25.4.0 (September, 2025)**
+Enhancement:
+• Added support to use meta key for p12 authentication and Message Level Encryption.
+• Added Payer Authentication support for Google Pay.
+• Restructured code to follow SFRA best practices.
+
 **Version 25.3.0 (June, 2025)**
 Enhancement:
 • Added support for Klarna Express Checkout from Mini Cart, Cart and Checkout pages.

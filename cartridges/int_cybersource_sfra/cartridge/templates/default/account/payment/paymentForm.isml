@@ -89,7 +89,7 @@
                 <label class="form-control-label" for="month">
                     <isprint value="${pdict.paymentForm.expirationMonth.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="month" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-exp-month">
+                <select class="form-control custom-select" id="expirationMonth" <isprint value="${pdict.paymentForm.expirationMonth.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-exp-month">
                     <isloop items=${pdict.paymentForm.expirationMonth.options} var="month">
                         <option id="${month.id}" value="${month.htmlValue}" <isif condition="${month.selected}">selected</isif> >${month.label}</option>
                     </isloop>
@@ -106,7 +106,7 @@
                 <label class="form-control-label" for="year">
                     <isprint value="${pdict.paymentForm.expirationYear.label}" encoding="htmlcontent" />
                 </label>
-                <select class="form-control custom-select" id="year" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-exp-year">
+                <select class="form-control custom-select" id="expirationYear" <isprint value="${pdict.paymentForm.expirationYear.attributes}" encoding="htmlsinglequote" /> autocomplete="cc-exp-year">
                     <option value="${pdict.paymentForm.expirationYear.options[0].htmlValue}">${pdict.paymentForm.expirationYear.options[0].label}</option>
                     <isloop items=${pdict.expirationYears} var="year">
                         <option id="${year}" value="${year}" <isif condition="${year == pdict.paymentForm.expirationYear.value}">selected</isif> >${year}</option>

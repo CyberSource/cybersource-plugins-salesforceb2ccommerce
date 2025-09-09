@@ -926,7 +926,7 @@ var CybersourceHelper = {
         setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
-            if(payerauthArgs.parsedBrowserfields.screenHeight && payerauthArgs.parsedBrowserfields.screenWidth){
+            if(payerauthArgs && payerauthArgs.parsedBrowserfields.screenHeight && payerauthArgs.parsedBrowserfields.screenWidth){
                 billTo.setHttpBrowserScreenHeight(payerauthArgs.parsedBrowserfields.screenHeight);
                 billTo.setHttpBrowserScreenWidth(payerauthArgs.parsedBrowserfields.screenWidth);
             }

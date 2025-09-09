@@ -34,7 +34,7 @@ exports.CreatePaymentToken = function (module) {
 };
 
 // eslint-disable-next-line
-exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentProcessor, isPayerAuthSetupCompleted) {
+exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentProcessor, payerauthArgs) {
     var SecureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(orderNumber);
@@ -44,7 +44,7 @@ exports.SilentPostAuthorize = function (orderNumber, paymentInstrument, paymentP
     if (empty(paymentMethod)) {
         return { error: true };
     }
-    return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order, isPayerAuthSetupCompleted: isPayerAuthSetupCompleted });
+    return SecureAcceptanceHelper.AuthorizeCreditCard({ PaymentInstrument: pi, Order: order, payerauthArgs: payerauthArgs });
 };
 
 /**

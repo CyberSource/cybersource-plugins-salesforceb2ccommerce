@@ -24,12 +24,32 @@ Cybersource's Storefront Reference Architecture Cartridge can be installed from 
 }
 ```
 
-### Step 3: Create a p12 file for authentication
- Create a p12 file that you can use to authenticate requests. 
- Place the file generated in the webreferences2 folder in the same cartridge as the WSDL file and the file extension must be that of the type jks or pkcs12. Duplicate the CyberSourceTransaction.wsdl file, CyberSourceTransaction.wsdl.properties file and rename them with the same name as your respective p12 files.  
-Repeat  the above step to use multiple p12 files as per requirements. 
+### 3. Authentication and Encryption
 
-**NOTE**: If you are using different IDE, refer respective developer guide to setup the workspace. 
+Merchants can generate either a p12 key or a meta key to authenticate requests.
+
+#### 3.1. Create a p12 key
+
+We can use p12 key generated for a specific MID from which it is created. Follow the steps mentioned in [link] (https://developer.cybersource.com/docs/cybs/en-us/security-keys/user/all/ada/security-keys/keys-manage/keys-simple-order-intro.html) that you can use to authenticate requests. Convert the P12 file to JKS type by following `Cybersource B2C Commerce - SOAP Authentication Guide.pdf` under cartridge documentation folder. 
+
+Place the file generated in `webreferences2` folder of the same cartridge as the WSDL file and the file extension must be `jks` or `pkcs12`. Duplicate the `CyberSourceTransaction.wsdl` file, `CyberSourceTransaction.wsdl.properties` file and rename them with the same name as your respective keystore files.
+
+#### 3.2. Create Meta Key
+
+We can assign a single meta key to dozens or hundreds of transacting MIDs simultaneously. Follow the steps mentioned in [link] (https://developer.cybersource.com/docs/cybs/en-us/security-keys/user/all/ada/security-keys/keys-meta-intro.html) that you can use to authenticate requests. Convert the P12 file to JKS type by following `Cybersource B2C Commerce - SOAP Authentication Guide.pdf` under cartridge documentation folder. 
+
+Place the file generated in `webreferences2` folder of the same cartridge as the WSDL file and the file extension must be `jks` or `pkcs12`. Duplicate the `CyberSourceTransaction.wsdl` file, `CyberSourceTransaction.wsdl.properties` file and rename them with the same name as your respective keystore files.
+
+Repeat the above step to use multiple p12 files as per requirements.
+
+#### Message-Level Encryption (MLE)
+
+**Message-Level Encryption (MLE)** enables you to store information or communicate with other parties while helping to prevent uninvolved parties from understanding the stored information. MLE is optional and supported only for payments services.
+
+If you choose to use MLE, it is mandatory to use **JKS** as the Keystore type. If you are using MLE, the JKS keystore can be used for Authentication and MLE.
+
+**NOTE**: If you are using different IDE, refer to the respective developer guide to setup
+
 
 ### Step 4: Build and Upload the code
 Prerequisite: install node under "Cybersource" folder.
