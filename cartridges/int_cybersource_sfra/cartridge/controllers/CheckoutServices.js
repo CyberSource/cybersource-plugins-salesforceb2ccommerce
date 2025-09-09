@@ -207,7 +207,6 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
 
 if (IsCartridgeEnabled) {
     server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
-    server.prepend('PlaceOrder', server.middleware.https, function (req, res, next) {
         // POST-only middleware check
         if (req.httpMethod !== 'POST') {
             res.setStatusCode(405);
