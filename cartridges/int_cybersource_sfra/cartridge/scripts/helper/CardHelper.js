@@ -127,15 +127,19 @@ function HandleCardResponse(ResponseObject, paymentInstrument) {
             return { review: true };
 
         case 478:
-            var isPayerAuthEnabled = PayerAuthEnable(paymentInstrument.creditCardType);
-            if (isPayerAuthEnabled.error) {
-                return { error: true };
-            }
-            if (isPayerAuthEnabled.paEnabled) {
+            if (paymentInstrument) {
+                var isPayerAuthEnabled = PayerAuthEnable(paymentInstrument.creditCardType);
+                if (isPayerAuthEnabled.error) {
+                    return { error: true };
+                }
+                if (isPayerAuthEnabled.paEnabled) {
+                    return { sca: true };
+                }
+                else {
+                    return { error: true }; // If Payer Auth is not enabled for the card type, then fail the transaction.
+                }
+            } else {
                 return { sca: true };
-            }
-            else {
-                return { error: true }; // If Payer Auth is not enabled for the card type, then fail the transaction.
             }
         default:
             return { error: true, declined: true };
