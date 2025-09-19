@@ -6,17 +6,17 @@
 	<head>
 	<title>${Resource.msg('sa.redirect.form.title','cybersource',null)}</title>
 </head> 
-	<body class="cyb_sa_request_form">
-		<form method="post" name="ePayment" id="ePayment" action="${pdict.FormAction}" target="_parent">
-			<isif condition="${!empty(pdict.Data)}"> 
-				<isloop items="${pdict.Data.keySet().iterator()}" var="addresskey">
-					<input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.Data.get(addresskey)}" encoding="on"/>' />
-				</isloop>
-			</isif>
-			<input type="hidden" value="Proceed with Payment" name="Submit">
-		</form>
-		<span id="loading">
-    		<img src="${URLUtils.staticURL('/images/loading.gif')}" id="Img5" data-transition="slide" />
-	    </span>
+<body class="cyb_sa_request_form">
+        <form method="post" name="ePayment" id="ePayment" action="${pdict.FormAction}" target="_parent">
+            <isif condition="${!empty(pdict.requestData)}">
+                <isloop items="${pdict.requestData.keySet().iterator()}" var="addresskey">
+                    <input type="hidden" id="${addresskey}" name="${addresskey}" value='<isprint value="${pdict.requestData.get(addresskey)}" encoding="on"/>' />
+                </isloop>
+            </isif>
+            <input type="hidden" value="Proceed with Payment" name="Submit">
+        </form>
+        <span id="loading">
+            <img src="${URLUtils.staticURL('/images/loading.gif')}" id="Img5" data-transition="slide" />
+        </span>
 </body>
 </html>

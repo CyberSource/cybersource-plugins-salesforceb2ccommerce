@@ -54,7 +54,10 @@
                     </option>
                 </isloop>
             </select>
-            <div class="invalid-feedback"></div>
+            <span class="invalid-feedback" id="expirationMonthMissingMessage">${Resource.msg('payment.card.month.missing', 'forms', null)}</span>
+            <isif condition="${saStyleFlex}">
+                <span class="invalid-feedback" id="expiredCardMessage">${Resource.msg('error.message.creditexpiration.expired', 'forms', null)}</span>
+            </isif>
         </div>
     </div>
     <div class="col-6" ${saStyle !=null && saStyle  ? saStyle : ''}>
@@ -75,7 +78,7 @@
                     <isprint value="${year}" formatter="####" /></option>
                 </isloop>
             </select>
-            <div class="invalid-feedback"></div>
+			<span class="invalid-feedback" id="expirationYearMissingMessage">${Resource.msg('payment.card.year.missing', 'forms', null)}</span>
         </div>
     </div>
 </div>

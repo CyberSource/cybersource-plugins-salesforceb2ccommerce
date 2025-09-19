@@ -1,0 +1,10 @@
+<script>//common/scripts.isml</script>
+<script defer type="text/javascript" src="${URLUtils.staticURL('/js/main.js')}"></script>
+<script src="${URLUtils.staticURL('/custom/lib/dompurify.min.js')}"></script>
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
+    <isif condition="${script.integrity != null}">
+        <script defer type="text/javascript" integrity="${script.integrity}" crossorigin="anonymous" src="${script.src}"></script>
+    <iselse>
+        <script defer type="text/javascript" src="${script.src}"></script>
+    </isif>
+</isloop>

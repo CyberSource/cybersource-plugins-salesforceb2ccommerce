@@ -175,20 +175,20 @@ function SAIframeResponse(responseObject, order) {
                 if (empty(orderPlacementStatus) || Status.ERROR !== orderPlacementStatus) {
                     return {
                         nextStep: CybersourceConstants.SA_GOTO,
-                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'sasubmit'),
+                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'sasubmit', 'orderID', order.orderNo),
                         render: 'secureacceptance/saRedirect'
                     };
                 }
                 Logger.error('[SECURE_ACCEPTANCE] SAIframeResponse function Error in order failure even if order got ACCEPT for order ' + order.orderNo);
                 return {
                     nextStep: CybersourceConstants.SA_GOTO,
-                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', 'true'),
+                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', 'true', 'orderID', order.orderNo),
                     render: 'secureacceptance/saRedirect'
                 };
             } if (Order.ORDER_STATUS_FAILED !== order.status.value) {
                 return {
                     nextStep: CybersourceConstants.SA_GOTO,
-                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm'),
+                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm', 'orderID', order.orderNo),
                     render: 'secureacceptance/saRedirect'
                 };
             }
@@ -197,7 +197,7 @@ function SAIframeResponse(responseObject, order) {
             if (order.status.value === Order.ORDER_STATUS_CREATED) {
                 return {
                     nextStep: CybersourceConstants.SA_GOTO,
-                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm'),
+                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'saconfirm', 'orderID', order.orderNo),
                     render: 'secureacceptance/saRedirect'
                 };
             }
@@ -221,13 +221,13 @@ function SAIframeResponse(responseObject, order) {
                 if (empty(PlaceOrderError)) {
                     return {
                         nextStep: CybersourceConstants.SA_GOTO,
-                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail'),
+                        location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'orderID', order.orderNo),
                         render: 'secureacceptance/saRedirect'
                     };
                 }
                 return {
                     nextStep: CybersourceConstants.SA_GOTO,
-                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', responseObject.ReasonCode),
+                    location: URLUtils.https('COPlaceOrder-Submit', 'provider', 'safail', 'SecureAcceptanceError', responseObject.ReasonCode, 'orderID', order.orderNo),
                     render: 'secureacceptance/saRedirect'
                 };
             }
@@ -360,7 +360,10 @@ function SilentPostResponse() {
 
                 // Payer Auth 3DS updates
                 session.privacy.orderId = order.orderNo;
-                return URLUtils.https('CheckoutServices-InitPayerAuth');
+                return {
+                    checkPayerAuth: true,
+                    order: order
+                }
             }
             return URLUtils.https('Checkout-Begin', 'stage', 'placeOrder', 'SecureAcceptanceError', 'true');
         }

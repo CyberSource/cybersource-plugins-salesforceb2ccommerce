@@ -61,20 +61,20 @@ function AddOrUpdateToken(orderPaymentInstrument, CustomerObj) {
         }
         var Transaction = require('dw/system/Transaction');
         var status = Transaction.wrap(function () {
-        if (!empty(cardToken)) {
-            // eslint-disable-next-line
-            if (!empty(matchedPaymentInstrument)) {
-                wallet.removePaymentInstrument(matchedPaymentInstrument);
-            }
-            // eslint-disable-next-line
-            var paymentInstrument = wallet.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
-            paymentInstrument.setCreditCardHolder(cardHolder);
-            paymentInstrument.setCreditCardNumber(cardNumber);
-            paymentInstrument.setCreditCardExpirationMonth(cardMonth);
-            paymentInstrument.setCreditCardExpirationYear(cardYear);
-            paymentInstrument.setCreditCardType(cardType);            
-            paymentInstrument.setCreditCardToken(cardToken);
-            paymentInstrument.custom.isCSToken = true;
+            if (!empty(cardToken)) {
+                // eslint-disable-next-line
+                if (!empty(matchedPaymentInstrument)) {
+                    wallet.removePaymentInstrument(matchedPaymentInstrument);
+                }
+                // eslint-disable-next-line
+                var paymentInstrument = wallet.createPaymentInstrument(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
+                paymentInstrument.setCreditCardHolder(cardHolder);
+                paymentInstrument.setCreditCardNumber(cardNumber);
+                paymentInstrument.setCreditCardExpirationMonth(cardMonth);
+                paymentInstrument.setCreditCardExpirationYear(cardYear);
+                paymentInstrument.setCreditCardType(cardType);
+                paymentInstrument.setCreditCardToken(cardToken);
+                paymentInstrument.custom.isCSToken = true;
             }
             // }
             return { success: true };
@@ -188,7 +188,7 @@ function buildDataToSign(params) {
     if (params !== null) {
         signedFieldNames = params.get('signed_field_names').split(',');
         for (i = 0; i < signedFieldNames.length; i += 1) {
-        // for each(var signedFieldName: String in signedFieldNames) {
+            // for each(var signedFieldName: String in signedFieldNames) {
             signedFieldName = signedFieldNames[i];
             dataToSign.add(signedFieldName + '=' + params.get(signedFieldNames[i]));
         }
@@ -216,7 +216,7 @@ function buildDataFromResponse(httpParameterMap) {
     if (!empty(signedFieldNames)) {
         signedFieldsArr = signedFieldNames.split(',');
         for (i = 0; i < signedFieldsArr.length; i += 1) {
-        // for each(var signedFieldName: String in signedFieldsArr) {
+            // for each(var signedFieldName: String in signedFieldsArr) {
             signedFieldName = signedFieldsArr[i];
             dataToSign.add(signedFieldName + '=' + httpParameterMap.get(signedFieldsArr[i]).rawValue);
         }
@@ -459,7 +459,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
             switch (CsSAType) {
                 case CybersourceConstants.METHOD_SA_REDIRECT:
                     providerVal = 'saredirect';
-                    // eslint-disable-next-line
+                // eslint-disable-next-line
                 case CybersourceConstants.METHOD_SA_IFRAME:
                     if (CsSAType.equals(CybersourceConstants.METHOD_SA_IFRAME)) {
                         providerVal = 'saiframe';
@@ -477,7 +477,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                         } else {
                             transactionType += ',create_payment_token';
                         }
-                    // eslint-disable-next-line
+                        // eslint-disable-next-line
                     } else if (!empty(subscriptionToken)) {
                         signedFieldNames += ',payment_token';
                         requestMap.put('payment_token', subscriptionToken);
@@ -513,9 +513,9 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     signedFieldNames += ',override_custom_cancel_page';
                     signedFieldNames += ',override_custom_receipt_page';
                     // eslint-disable-next-line
-                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal));
+                    requestMap.put('override_custom_cancel_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal).toString());
                     // eslint-disable-next-line
-                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal));
+                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('COPlaceOrder-Submit', 'provider', providerVal).toString());
                     break;
                 case CybersourceConstants.METHOD_SA_SILENTPOST:
                     // eslint-disable-next-line
@@ -541,7 +541,7 @@ function CreateRequestData(sitePreferenceData, paymentInstrument, LineItemCtnr, 
                     }
                     signedFieldNames += ',override_custom_receipt_page';
                     // eslint-disable-next-line
-                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse'));
+                    requestMap.put('override_custom_receipt_page', dw.web.URLUtils.https('CYBSecureAcceptance-SilentPostResponse').toString());
                     break;
                 default:
                     transactionType = CsTransactionType;
@@ -873,7 +873,7 @@ function HandleDecision(ReasonCode) {
  * @param {Object} orderNo orderNo
  * @returns {Object} obj
  */
-function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
+function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo, payerauthArgs) {
     var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
     var CybersourceHelper = libCybersource.getCybersourceHelper();
     var result;
@@ -886,9 +886,18 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
     var paymentMethod = paymentInstrument.getPaymentMethod();
     // eslint-disable-next-line
     if (!empty(CybersourceHelper.getPAMerchantID())) {
+        var isGooglePayPayerAuth;
+        if (paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
+            if (paymentInstrument.custom.isGooglePaycardHolderAuthenticated === true) {
+                isGooglePayPayerAuth = false;
+            }
+        }
         var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
         if ((paymentMethod.equals(CybersourceConstants.METHOD_CREDIT_CARD) && (CsSAType == null || CsSAType !== CybersourceConstants.METHOD_SA_FLEX)) || paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) || paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
             result = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
+            if (isGooglePayPayerAuth === false) {
+                result.paEnabled = false;
+            }
         } else if (CsSAType.equals(CybersourceConstants.METHOD_SA_FLEX)) {
             result = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
         }
@@ -900,14 +909,14 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo) {
     }
 
     // eslint-disable-next-line
-    if (paEnabled && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT)) && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_GooglePay))) {
+    if (paEnabled && empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
         var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
         // eslint-disable-next-line
-        result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields);
+        result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, payerauthArgs);
         serviceResponse = result.serviceResponse;
-        if(serviceResponse.ReasonCode === 478 && session.custom.enroll == true){
-            session.custom.enroll = false;
-            return {sca: true};
+        if (serviceResponse.ReasonCode === 478 && session.custom.SCA == true) {
+            session.custom.SCA = false;
+            return { sca: true };
         }
         if (result.error) {
             return result;
@@ -962,12 +971,20 @@ function HookIn3DRequest(args) {
         result = VisaCheckoutFacade.CCAuthRequest(args.Order, args.orderNo, CommonHelper.getIPAddress());
     } else {
         var CardFacade = require('*/cartridge/scripts/facade/CardFacade');
-        var Resource = require('dw/web/Resource');
         // var ipAddress = CommonHelper.getIPAddress();
         var payerAuthEnable = CardHelper.PayerAuthEnable(args.paymentInstrument.creditCardType);
+        var isGooglePayPayerAuth;
+        if (args.paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
+            if (args.paymentInstrument.custom.isGooglePaycardHolderAuthenticated === true) {
+                isGooglePayPayerAuth = false;
+            }
+        }
+        if (isGooglePayPayerAuth === false) {
+            payerAuthEnable.paEnabled = false;
+        }
         if (payerAuthEnable.error) {
             return { error: true };
-        } if (payerAuthEnable.paEnabled && args.paymentInstrument.paymentMethod !== Resource.msg('paymentmethodname.googlepay', 'cybersource', null)) {
+        } if (payerAuthEnable.paEnabled) {
             // eslint-disable-next-line
             if (!empty(args.payerValidationResponse)) {
                 result = { serviceResponse: args.payerValidationResponse };
@@ -1022,8 +1039,28 @@ function AuthorizeCreditCard(args) {
     }
     /* eslint-enable */
 
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+    var isGooglePayPayerAuth;
+    if (paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_GooglePay)) {
+        if (paymentInstrument.custom.isGooglePaycardHolderAuthenticated === true) {
+            isGooglePayPayerAuth = false;
+        }
+    }
+    if (args.payerauthArgs && args.payerauthArgs.isPayerAuthSetupCompleted !== true) {
+        var isPayerAuthEnabled = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
+        if (isGooglePayPayerAuth === false) {
+            isPayerAuthEnabled.paEnabled = false;
+        }
+        if (isPayerAuthEnabled.error) {
+            return { error: true };
+        }
+        if (isPayerAuthEnabled.paEnabled) {
+            return { performPayerAuthSetup: true };
+        }
+    }
+
     var orderNo = args.Order.orderNo;
-    var result = AuthorizePayer(args.Order, paymentInstrument, orderNo);
+    var result = AuthorizePayer(args.Order, paymentInstrument, orderNo, args.payerauthArgs);
     if (result.error) {
         return { error: true };
     }
@@ -1031,7 +1068,6 @@ function AuthorizeCreditCard(args) {
         return { declined: true };
     }
     if (result.cardresponse) {
-        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
         return CardHelper.CardResponse(result.order, paymentInstrument, result.serviceResponse);
     }
     if (result.payerauthentication) {
@@ -1039,12 +1075,13 @@ function AuthorizeCreditCard(args) {
         session.privacy.process3DRequestParent = true;
         var handle3DResponse = {
             process3DRedirection: true,
-            jwt: result.serviceResponse.jwt
+            jwt: result.serviceResponse.jwt,
+            stepUpUrl: result.serviceResponse.stepUpUrl
         };
         return handle3DResponse;
     }
-    if(result.sca){
-        return {sca:true};
+    if (result.sca) {
+        return { sca: true };
     }
     if (paymentInstrument.paymentMethod.equals(CybersourceConstants.METHOD_VISA_CHECKOUT) && !result.success) {
         return result;

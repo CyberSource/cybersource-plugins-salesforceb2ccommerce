@@ -3,30 +3,33 @@
 	This template the template rendering the payer authentication page
 </iscomment>
 
-<isdecorate template="common/layout/checkout">
+<iscomment> <isdecorate template="common/layout/checkout"> </iscomment>
 	<iscontent type="text/html" charset="UTF-8" compact="true">
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
 	<script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-3.7.1.min.js')}" type="text/javascript"></script>
     <script src="${URLUtils.staticURL('/js/cardinalPayerHelper.js')}"></script>
-	<style>
-	.iframe-container{
-		display:flex;
-		justify-content : center;
-		position: relative;
-		background-color : #fff; 
-	}
-	</style>
+	
 	<div id="cyb_payerauth" class="cardinalpayerauth">
-			<input type="hidden" id="PaReq" value="${pdict.PAReq}">
-			<input type="hidden" id="AcsURL" value="${pdict.AcsURL}">
-			<input type="hidden" id="JWT" value="${pdict.jwtToken}">	
-			<input type="hidden" id="transactionId" value="${pdict.authenticationTransactionID}">
+		<input type="hidden" id="PaReq" value="${pdict.PAReq}" />
+		<input type="hidden" id="AcsURL" value="${pdict.AcsURL}" />
+		<input type="hidden" id="JWT" value="${pdict.jwtToken}" />	
+		<input type="hidden" id="transactionId" value="${pdict.authenticationTransactionID}" />
+		<input type="hidden" id="stepUpUrl" value="${pdict.stepUpUrl}" />
+		<input type="hidden" id="sessionID" value="${pdict.CurrentSession.sessionID}" />
 	</div>
-	<div class="iframe-container">
-		<iframe name="step-up-iframe" height="400" width="400"></iframe>
-        <form id="step-up-form" target="step-up-iframe" method="post" action="${pdict.stepUpUrl}"> 
-           <input type="hidden" name="JWT" value="${pdict.jwtToken}"/>
-           <input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}"/> 
-        </form>	
+	
+	<iscomment>Modal will be created dynamically by JavaScript</iscomment>
+	<div id="stepup-modal-overlay" class="stepup-modal-overlay">
+		<div class="stepup-modal-content">
+			<h3 class="stepup-modal-title">${Resource.msg('payment.authentication.title', 'cybersource', 'Payment Authentication')}</h3>
+			<div class="stepup-iframe-container">
+				<iframe id="step-up-iframe" name="step-up-iframe" class="stepup-iframe"></iframe>
+				<form id="step-up-form" target="step-up-iframe" method="post" action="${pdict.stepUpUrl}" class="hidden"> 
+					<input type="hidden" name="JWT" value="${pdict.jwtToken}" />
+					<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}" /> 
+				</form>
+			</div>
+		</div>
 	</div>
 </iscontent>
-</isdecorate>
+<iscomment> </isdecorate> </iscomment>

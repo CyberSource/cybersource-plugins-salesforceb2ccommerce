@@ -4,8 +4,6 @@
 var server = require('server');
 
 var OrderMgr = require('dw/order/OrderMgr');
-var HookMgr = require('dw/system/HookMgr');
-var BasketMgr = require('dw/order/BasketMgr');
 var URLUtils = require('dw/web/URLUtils');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var OrderModel = require('*/cartridge/models/order');
@@ -14,8 +12,8 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 // eslint-disable-next-line
 server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     var order;
-    if (!empty(req.querystring.order_id)) {
-        order = OrderMgr.getOrder(req.querystring.order_id);
+    if (!empty(req.querystring.orderID)) {
+        order = OrderMgr.getOrder(req.querystring.orderID);
     } else {
         order = OrderMgr.getOrder(session.privacy.orderId);
     }
@@ -71,9 +69,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 return next();
             }
             if (providerResult.sca) {
-                session.privacy.paSetup = true;
-                session.privacy.orderId = order.orderNo;
-                res.redirect(URLUtils.url('CheckoutServices-PlaceOrder'));
+                res.redirect(URLUtils.https('CheckoutServices-PayerAuthSetup', 'orderID', order.orderNo));
                 return next();
             }
         }
@@ -91,6 +87,7 @@ server.get('SilentPostReviewOrder', csrfProtection.generateToken, function (req,
     var orderId = session.privacy.orderId;
     COHelpers.reviewOrder(orderId, req, res, next);
 });
+
 
 server.get('SubmitOrderConformation', csrfProtection.generateToken, function (req, res, next) {
     var orderId = req.querystring.ID;

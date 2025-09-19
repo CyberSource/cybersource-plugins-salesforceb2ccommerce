@@ -1,17 +1,52 @@
 /* eslint-disable */
 
+function safeSanitize(dirty) {
+    try {
+        return DOMPurify.sanitize(dirty);
+    } catch (e) {
+        return dirty;
+    }
+}
+
 var init = {
-    verifyUrl : function(url){
-            try {
-                if(url != null){
-                new URL(url); 
-                return true; 
-                } else {
-                    return false;
-                }
-            } catch (err) {
+
+    verifyUrl: function (url) {
+        try {
+            if (url != null) {
+                new URL(url);
+                return true;
+            } else {
                 return false;
             }
+        } catch (err) {
+            return false;
+        }
+    },
+    sanitizeUrl: function (url) {
+        // Basic URL sanitization to prevent XSS
+        if (!url || typeof url !== 'string') {
+            return null;
+        }
+
+        // Remove javascript: and data: protocols
+        if (url.toLowerCase().startsWith('javascript:') || url.toLowerCase().startsWith('data:')) {
+            return null;
+        }
+
+        // Allow only relative URLs or same-origin URLs
+        try {
+            var parsedUrl = new URL(url, window.location.origin);
+            if (parsedUrl.origin !== window.location.origin) {
+                return null;
+            }
+            return parsedUrl.href;
+        } catch (e) {
+            // Handle relative URLs
+            if (url.startsWith('/') && !url.startsWith('//')) {
+                return url;
+            }
+            return null;
+        }
     },
     initConfig: function () {
         var requestId; var billingAgreementFlag; // A Flag to show whether user has opted for Billing Agreement or not
@@ -45,7 +80,7 @@ var init = {
                 if (billingAgreementFlag) {
                     CREATE_URL += '?billingAgreement=true';
                 } else if (isPayPalCredit) {
-                // Append a parameter to URL when PayPal Credit is used
+                    // Append a parameter to URL when PayPal Credit is used
                     CREATE_URL += '?isPayPalCredit=true';
                 }
                 return paypal.request.post(CREATE_URL)
@@ -64,19 +99,19 @@ var init = {
                 };
 
                 var paypalcallback = document.getElementById('paypal_callback').value;
-                if(init.verifyUrl(paypalcallback)){
+                if (init.verifyUrl(paypalcallback)) {
                     var paypalcallback_encode = encodeURIComponent(paypalcallback);
-                    var form = $('<form action="' +  decodeURIComponent(paypalcallback_encode) + '" method="post">'
-                    + '<input type="hidden" name="requestId" value="' + requestId + '" />'
-                    + '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />'
-                    + '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />'
-                    + '<input type="hidden" name="payerID" value="' + data.payerID + '" />'
-                    + '<input type="hidden" name="isPayPalCredit" value="' + isPayPalCredit + '" />'
-                    + '</form>');
-                    $('body').append(form);
-                    form.submit();
+                    var form = $('<form action="' + decodeURIComponent(paypalcallback_encode) + '" method="post">'
+                        + '<input type="hidden" name="requestId" value="' + requestId + '" />'
+                        + '<input type="hidden" name="billingAgreementFlag" value="' + billingAgreementFlag + '" />'
+                        + '<input type="hidden" name="paymentID" value="' + data.paymentID + '" />'
+                        + '<input type="hidden" name="payerID" value="' + data.payerID + '" />'
+                        + '<input type="hidden" name="isPayPalCredit" value="' + isPayPalCredit + '" />'
+                        + '</form>');
+                        $('body').append(form);
+                        form.submit();
+                    }
                 }
-        }
         };
         return config;
     },
@@ -117,22 +152,105 @@ var init = {
         }
     },
 
-    initFunctions: function () {
-        $(document).on('click', '.credit_card, .sa_flex', function (e) {
-            e.stopImmediatePropagation();
-            var payerAuth = $(this).data('payerauth');
-            window.location.href = payerAuth;
-        });
+    //function to post form submit to the template rendering route
+    postSubmitToTemplateRenderingUrl: function (data) {
 
-        $(document).on('click', '.dw_google_pay, .paypal, .paypal_credit, .wechat', function (e) {
+        var redirect = $('<form>')
+            .appendTo(document.body)
+            .attr({
+                method: 'POST',
+                action: data.continueUrl
+            });
+
+        $('<input>')
+            .appendTo(redirect)
+            .attr({
+                type: 'hidden',
+                name: 'renderTemplate',
+                value: data.renderTemplate
+            });
+
+        $('<input>')
+            .appendTo(redirect)
+            .attr({
+                type: 'hidden',
+                name: 'templateData',
+                value: JSON.stringify(data.templateData || {})
+            });
+
+        redirect.submit();
+    },
+
+    initFunctions: function () {
+        var self = this;
+
+        $(document).on('click', '.credit_card, .sa_flex, .dw_google_pay, .paypal, .paypal_credit, .wechat, .sa_silentpost, .sa_redirect, .alipay, .sof, .mch, .idl , .klarna', function (e) {
             e.stopImmediatePropagation();
             var formaction = $(this).attr('data-action');
-            formaction = encodeURIComponent(formaction);
-            if(formaction){
-                setTimeout(function () {
-                    window.location.href = decodeURIComponent(formaction);
-                }, 500);
-            }
+
+            // disable the placeOrder button here
+            $('body').trigger('checkout:disableButton', '.next-step-button button');
+            $.spinner().start();
+            $.ajax({
+                url: formaction,
+                method: 'POST',
+                success: function (data) {
+                    $.spinner().stop();
+                    // enable the placeOrder button here
+                    $('body').trigger('checkout:enableButton', '.next-step-button button');
+                    if (data.error) {
+                        if (data.cartError) {
+                            var sanitizedUrl = init.sanitizeUrl(data.redirectUrl);
+                            if (sanitizedUrl) {
+                                window.location.href = sanitizedUrl;
+                            }
+                        } else {
+                            if (data.redirectUrl) {
+                                var sanitizedUrl = init.sanitizeUrl(data.redirectUrl);
+                                if (sanitizedUrl) {
+                                    window.location.href = sanitizedUrl;
+                                }
+                            }
+                            else if (data.errorMessage) {
+                                $('.error-message').show();
+                                $('.error-message-text').text(data.errorMessage);
+                            }
+                        }
+                    } else if (data.renderTemplate) {
+
+                        self.postSubmitToTemplateRenderingUrl(data);
+
+                    } else {
+                        var redirect = $('<form>')
+                            .appendTo(document.body)
+                            .attr({
+                                method: 'POST',
+                                action: data.continueUrl
+                            });
+
+                        $('<input>')
+                            .appendTo(redirect)
+                            .attr({
+                                name: 'orderID',
+                                value: data.orderID
+                            });
+
+                        $('<input>')
+                            .appendTo(redirect)
+                            .attr({
+                                name: 'orderToken',
+                                value: data.orderToken
+                            });
+
+                        redirect.submit();
+                    }
+                },
+                error: function () {
+                    $.spinner().stop();
+                    // enable the placeOrder button here
+                    $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+                }
+            });
         });
 
         // for Alipay Intermediate
@@ -147,9 +265,14 @@ var init = {
         if ($('body').hasClass('cyb_testfingerprintRedirect')) {
             var url_loc = document.getElementById('URl_redirect').value;
             url_loc = encodeURIComponent(url_loc);
-            if(init.verifyUrl(url_loc)){
+            if (init.verifyUrl(decodeURIComponent(url_loc))) {
                 url_loc = decodeURIComponent(url_loc);
-                setTimeout(function () { location.href = url_loc; }, 1000);
+                setTimeout(function () {
+                    var sanitizedUrl = init.sanitizeUrl(url_loc);
+                    if (sanitizedUrl) {
+                        location.href = sanitizedUrl;
+                    }
+                }, 1000);
             }
         }
         // For Payerauth during checkout
@@ -171,15 +294,26 @@ var init = {
         // For Secure Acceptance Redirect
         if ($('body').hasClass('cyb_sa_redirect')) {
             var url_loc = document.getElementById('redirect_url_sa');
-            var Encoded_url_loc = encodeURIComponent(url_loc.value)
-            window.top.location.replace(decodeURIComponent(Encoded_url_loc));
+            var Encoded_url_loc = encodeURIComponent(url_loc.value);
+            var sanitizedUrl = init.sanitizeUrl(decodeURIComponent(Encoded_url_loc));
+            if (sanitizedUrl) {
+                window.top.location.replace(sanitizedUrl);
+            }
         }
         // For Secure Acceptance Iframe
         if ($('div').hasClass('SecureAcceptance_IFRAME')) {
             var url_loc = document.getElementById('sa_iframeURL').value;
-            if(init.verifyUrl(url_loc)){
-                $('.SecureAcceptance_IFRAME').append('<iframe src=' + url_loc + '  name="hss_iframe"  width="85%" height="730px" scrolling="no" />');
-           }
+            if (init.verifyUrl(url_loc)) {
+                var iframe = $('<iframe>')
+                    .attr({
+                        'src': url_loc,
+                        'name': 'hss_iframe',
+                        'width': '85%',
+                        'height': '730px',
+                        'scrolling': 'no'
+                    });
+                $('.SecureAcceptance_IFRAME').append(iframe);
+            }
         }
         // For Secure Acceptance Iframe
         if ($('body').hasClass('sa_iframe_request_form')) {
@@ -209,60 +343,82 @@ var init = {
             e.preventDefault();
             var paypalcallback = document.getElementById('paypal_callback').value;
             var encodedePaypalcallback = encodeURIComponent(paypalcallback);
-            if(init.verifyUrl(decodeURIComponent(encodedePaypalcallback))){
-                var form = $('<form action="' + paypalcallback + '" method="post">'
-                        + '</form>');
-                $('body').append(form);
-                form.submit();
-            }
-        });
-
-        $(document).on('click', '.sa_silentpost, .sa_redirect, .alipay, .sof, .mch, .idl , .klarna, .wechat', function (e) {
-            e.stopImmediatePropagation();
-            var CsSaType = $('li[data-method-id="CREDIT_CARD"]').attr('data-sa-type');
-            var paymentMethodID = $('input[name=dwfrm_billing_paymentMethod]').val();
-            var paymentMethodIds = ['KLARNA', 'ALIPAY', 'SOF', 'IDL', 'MCH', 'WECHAT'];
-            var paymentMethod = $.inArray(paymentMethodID, paymentMethodIds) > -1;
-            if ((CsSaType != 'CREDIT_CARD' && paymentMethodID == 'CREDIT_CARD') || paymentMethod) {
-                var formaction = $(this).attr('data-action');
-                formaction = encodeURIComponent(formaction);
-                setTimeout(function () {
-                    window.location.href = decodeURIComponent(formaction) ;
-                }, 500);
+            if (init.verifyUrl(decodeURIComponent(encodedePaypalcallback))) {
+                var sanitizedUrl = init.sanitizeUrl(decodeURIComponent(encodedePaypalcallback));
+                if (sanitizedUrl) {
+                    var form = $('<form>')
+                        .attr({
+                            'action': paypalcallback,
+                            'method': 'post'
+                        });
+                    $('body').append(form);
+                    form.submit();
+                }
             }
         });
 
         /**
- * @function
- * @description function to Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
- */
+    * @function
+    * @description function to Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
+    */
         $(document).on('click', '.sa_iframe', function (e) {
             e.stopImmediatePropagation();
             var creditCardItem = $('li[data-method-id="CREDIT_CARD"]');
             var CsSaType = $(creditCardItem).attr('data-sa-type');
             if (CsSaType == 'SA_IFRAME') {
                 var formaction = $(this).attr('data-action');
+                $.spinner().start();
                 $.ajax({
                     url: formaction,
                     type: 'POST',
-                    contentType : 'text/html',
-                    success: function (xhr, data) {
-                        if (xhr) {
-                            if (xhr.error == true) {
-                                $('#saspCardError').html(xhr.errorMsg);
-                                $('#saspCardError').addClass('error');
-                            } else {
-                                $('#secureAcceptanceIframe').html(xhr);
-                                document.getElementById('submit-order').classList.add('d-none');
+                    contentType: 'text/html',
+                    success: function (data) {
+                        $.spinner().stop();
+                        if (data) {
+                            if (data.error) {
+                                if (data.cartError) {
+                                    var sanitizedUrl = init.sanitizeUrl(data.redirectUrl);
+                                    if (sanitizedUrl) {
+                                        window.location.href = sanitizedUrl;
+                                    }
+                                } else {
+                                    if (data.redirectUrl) {
+                                        var sanitizedUrl = init.sanitizeUrl(data.redirectUrl);
+                                        if (sanitizedUrl) {
+                                            window.location.href = sanitizedUrl;
+                                        }
+                                    }
+                                    else if (data.errorMessage) {
+                                        $('.error-message').show();
+                                        $('.error-message-text').text(data.errorMessage);
+                                    }
+                                }
+                            } else if (data.renderTemplate) {
+                                $.ajax({
+                                    url: data.continueUrl,
+                                    type: 'POST',
+                                    data: {
+                                        renderTemplate: data.renderTemplate,
+                                        iframe: true,
+                                        orderID: data.orderID
+                                    },
+                                    success: function (responseData) {
+                                        if (responseData) {
+                                            // This is trusted HTML from our own SFCC template - no sanitization needed
+                                            $('#secureAcceptanceIframe').html(responseData);
+                                            document.getElementById('submit-order').classList.add('d-none');
+                                        }
+                                    },
+                                    error: function (data) {
+                                        console.error(data);
+                                    }
+                                });
                             }
-                        } else {
-                            $('#saspCardError').html(xhr.errorMsg);
-                            $('#saspCardError').addClass('error');
                         }
-                        return true;
                     },
-                    error: function () {
-                        $('#saspCardError').html(xhr.errorMsg).addClass('error');
+                    error: function (data) {
+                        $.spinner().stop();
+                        console.error(data);
                     }
                 });
             } else {
@@ -341,7 +497,7 @@ var paypalvalidator = {
 
     loadFormErrors: function (parentSelector, fieldErrors) {
         $.each(fieldErrors, function (attr) {
-            $('*[name=' + attr + ']', parentSelector).addClass('is-invalid').siblings('.invalid-feedback').html(fieldErrors[attr]);
+            $('*[name=' + attr + ']', parentSelector).addClass('is-invalid').siblings('.invalid-feedback').html(safeSanitize(fieldErrors[attr]));
         });
     },
 
@@ -354,15 +510,18 @@ var paypalvalidator = {
     },
     validateAddress: function (callback) {
         var paymentForm = $('#dwfrm_billing').serialize();
+        $.spinner().start();
         $.ajax({
             method: 'POST',
             async: false,
             data: paymentForm,
             url: $('.paypal-address').attr('action'),
             success: function (data) {
+                $.spinner().stop();
                 callback(data);
             },
             error: function (err) {
+                $.spinner().stop();
             }
         });
     },

@@ -1,4 +1,3 @@
-<!--- TEMPLATENAME: sondbird.isml --->
 <isdecorate template="common/layout/checkout">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -16,7 +15,6 @@
 		</form>
 	</div>
 	<form class="payerAuthRedirect" action="${pdict.action}" method="POST" name="payerAuthRedirect" target="_parent">
-	    <input type="hidden" name="DFReferenceId" id="DFReferenceId" value="${pdict.referenceID}"/>
 		<input type="hidden" name="OrderNo" id="OrderNo" value="${pdict.orderNo}"/>
 		<input type="hidden" name="browserfields" id="browserfields" value= ""/>
 	</form>

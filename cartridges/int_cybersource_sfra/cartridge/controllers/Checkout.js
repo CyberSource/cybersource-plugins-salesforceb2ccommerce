@@ -24,9 +24,7 @@ server.append('Begin', function (req, res, next) {
         VInitFormattedString = result.VInitFormattedString;
         signature = result.signature;
     }
-    session.custom.flag = true;
     session.custom.SCA = true;
-    session.custom.enroll = true;
     // TO handle the visa checkout click even on cart and billing page from mini cart
     session.privacy.cyb_CurrentPage = 'CybBilling';
     var usingMultiShipping = false; // Current integration support only single shpping
@@ -145,7 +143,7 @@ server.post('SetBillingAddress', csrfProtection.generateToken, server.middleware
             billingAddress.setCountryCode(paymentForm.addressFields.country.value);
         }
     });
-    // res.set('Content-Security-Policy', "script-src 'self'");
+    res.setHttpHeader('Content-Security-Policy', "script-src 'self'");
     res.json({
         error: false
     });
@@ -162,6 +160,22 @@ server.prepend('Begin', function (req, res, next) {
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var currentStage = req.querystring.stage;
     var currentBasket = BasketMgr.getCurrentBasket();
+
+    var payerAuthError = req.querystring.payerAuthError;
+    var placeOrderError = req.querystring.PlaceOrderError;
+    var hasPaymentError = !empty(payerAuthError);
+    var hasplaceOrderError = !empty(placeOrderError);
+
+    if (currentStage === 'payment' && (hasPaymentError || hasplaceOrderError)) {
+        // Clear any basket payment instruments if they exist
+        if (currentBasket && currentBasket.getPaymentInstruments().size() > 0) {
+            var instruments = currentBasket.getPaymentInstruments();
+            for (var i = 0; i < instruments.size(); i++) {
+                currentBasket.removePaymentInstrument(instruments[i]);
+            }
+        }
+    }
+
     if (!currentBasket) {
         if ('isPaymentRedirectInvoked' in session.privacy && session.privacy.isPaymentRedirectInvoked !== null
             && 'orderId' in session.privacy && session.privacy.orderId !== null) {

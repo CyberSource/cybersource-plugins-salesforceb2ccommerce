@@ -27,22 +27,43 @@
         {
             "name": "app.payment.processor.paypal_credit",
             "script": "./cartridge/scripts/hooks/payment/processor/PaypalCredit"
-		},
-		{
+  },
+  {
             "name": "app.payment.processor.cybersource_alipay",
             "script": "./cartridge/scripts/hooks/payment/processor/cybersourceAlipay"
         },
-		{
-			"name": "app.payment.processor.bank_transfer",
-			"script": "./cartridge/scripts/hooks/payment/processor/bankTransfer"
-		},
-		{
-			"name": "app.payment.processor.klarna_credit",
-			"script": "./cartridge/scripts/hooks/payment/processor/klarnaCredit"
+  {
+   "name": "app.payment.processor.bank_transfer",
+   "script": "./cartridge/scripts/hooks/payment/processor/bankTransfer"
+  },
+  {
+   "name": "app.payment.processor.klarna_credit",
+   "script": "./cartridge/scripts/hooks/payment/processor/klarnaCredit"
         },
         {
-			"name": "app.payment.processor.cybersource_wechat",
-			"script": "./cartridge/scripts/hooks/payment/processor/wechat"
-		}
+   "name": "app.payment.processor.cybersource_wechat",
+   "script": "./cartridge/scripts/hooks/payment/processor/wechat"
+  },
+        {
+            "name": "app.payment.form.processor.cybersource_credit",
+            "script": "./cartridge/scripts/hooks/payment/processor/basic_credit_form_processor"
+        },
+        {
+            "name": "app.payment.form.processor.klarna_credit",
+            "script": "./cartridge/scripts/hooks/payment/processor/basic_credit_form_processor"
+        },
+        {
+            "name": "app.payment.form.processor.cybersource_alipay",
+            "script": "./cartridge/scripts/hooks/payment/processor/basic_credit_form_processor"
+        },
+        {
+            "name": "app.payment.form.processor.cybersource_wechat",
+            "script": "./cartridge/scripts/hooks/payment/processor/basic_credit_form_processor"
+        },
+  {
+   "name": "app.payment.form.processor.bank_transfer",
+   "script": "./cartridge/scripts/hooks/payment/processor/basic_credit_form_processor"
+  }
+      
     ]
 }

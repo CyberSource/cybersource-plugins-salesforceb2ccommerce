@@ -1,4 +1,3 @@
-
 'use strict';
 
 /* eslint-disable no-undef */
@@ -27,6 +26,7 @@ function weChatCheckStatus(serviceCalls, enforceError) {
         success: function (data) {
             if (enforceError && !data.submit) {
                 $('.modal').spinner().stop();
+                weChatRedirectUrl = weChatRedirectUrl;
                 window.location.href = decodeURIComponent(weChatRedirectUrl);
                 return;
             }

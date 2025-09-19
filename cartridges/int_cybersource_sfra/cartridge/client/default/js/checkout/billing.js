@@ -217,28 +217,82 @@ base.onAddressSelection = function () {
     });
 };
 
-base.onBillingAddressUpdate = function () {
-    $('.billing-information').on('change', function () {
-        if (isPayPalEnabled()) {
-            var firstName = $('input[name$=_billing_addressFields_firstName]').val();
-            var lastName = $('input[name$=_billing_addressFields_lastName]').val();
-            var add1 = $('input[name$=_billing_addressFields_address1]').val();
-            // var add2 = $('input[name$=_billing_addressFields_address2]').val();
-            var city = $('input[name$=_billing_addressFields_city]').val();
-            var postalCode = $('input[name$=_billing_addressFields_postalCode]').val();
-            var state = $('select[name$=_billing_addressFields_states_stateCode]').val();
-            var country = $('select[name$=_billing_addressFields_country]').val();
+/**
+ * Helper function to determine if a field is a card-related field
+ * @param {string} fieldName - the name of the field being changed
+ * @returns {boolean} - true if the field is a card field
+ */
+function isCardField(fieldName) {
+    var cardFieldPatterns = [
+        'cardNumber',
+        'expirationMonth',
+        'expirationYear',
+        'securityCode',
+        'cardType',
+        'creditCardFields'
+    ];
+    
+    return cardFieldPatterns.some(function(pattern) {
+        return fieldName.indexOf(pattern) !== -1;
+    });
+}
 
-            firstName = firstName.trim();
-            lastName = lastName.trim();
-            add1 = add1.trim();
-            // add2 = $.trim(add2);
-            city = city.trim();
-            postalCode = postalCode.trim();
-            state = state.trim();
-            country = country.trim();
-            if (firstName && lastName && add1 && city && postalCode && state && country) {
-                saveBillingAddress();
+/**
+ * Helper function to determine if a field is an address field
+ * @param {string} fieldName - the name of the field being changed
+ * @returns {boolean} - true if the field is an address field
+ */
+function isAddressField(fieldName) {
+    var addressFieldPatterns = [
+        'addressFields',
+        'firstName',
+        'lastName',
+        'address1',
+        'address2',
+        'city',
+        'postalCode',
+        'states',
+        'country',
+        'phone',
+        'email'
+    ];
+    
+    return addressFieldPatterns.some(function(pattern) {
+        return fieldName.indexOf(pattern) !== -1;
+    });
+}
+
+base.onBillingAddressUpdate = function () {
+    $('.billing-information').on('change', function (event) {
+        if (isPayPalEnabled()) {
+            var fieldName = event.target.name || '';
+            
+            // Only process billing address update if it's actually an address field change
+            // Skip if it's a card field change
+            if (isCardField(fieldName)) {
+                return; // Don't trigger billing address update for card fields
+            }
+            
+            // Only proceed if it's an address field change
+            if (isAddressField(fieldName)) {
+                var firstName = $('input[name$=_billing_addressFields_firstName]').val();
+                var lastName = $('input[name$=_billing_addressFields_lastName]').val();
+                var add1 = $('input[name$=_billing_addressFields_address1]').val();
+                var city = $('input[name$=_billing_addressFields_city]').val();
+                var postalCode = $('input[name$=_billing_addressFields_postalCode]').val();
+                var state = $('select[name$=_billing_addressFields_states_stateCode]').val();
+                var country = $('select[name$=_billing_addressFields_country]').val();
+
+                firstName = firstName.trim();
+                lastName = lastName.trim();
+                add1 = add1.trim();
+                city = city.trim();
+                postalCode = postalCode.trim();
+                state = state.trim();
+                country = country.trim();
+                if (firstName && lastName && add1 && city && postalCode && state && country) {
+                    saveBillingAddress();
+                }
             }
         }
     });

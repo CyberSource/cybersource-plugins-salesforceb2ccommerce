@@ -114,10 +114,15 @@ function GetIPAddress() {
  * @param ReadFromBasket : true if value needs to be read from basket or order else false.
  */
 
-function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
+function CreateCyberSourceBillToObject(Basket, ReadFromBasket, paymentInstrument) {
     var BillToObject = require('*/cartridge/scripts/cybersource/CybersourceBillToObject');
     var billToObject = new BillToObject();
-    var paymentInstruments = Basket.getPaymentInstruments();
+    if (Basket == null) {
+        ReadFromBasket = false;
+    }
+    else {
+        var paymentInstrument = Basket.getPaymentInstruments()[0];
+    }
     var language = GetRequestLocale();
     if (ReadFromBasket) {
         var basket = Basket;
@@ -197,15 +202,12 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket) {
             billToObject.setCustomerID(customer.ID);
             billToObject.setEmail(customer.profile.email);
         } else {
-            billToObject.setEmail(basket.customerEmail);
+            billToObject.setEmail(billAddrForm.creditCardFields.email.value);
         }
     }
     billToObject.setIpAddress(GetIPAddress());
-    for (var i = 0; i < paymentInstruments.length; i += 1) {
-        var paymentInstrument = paymentInstruments[i];
-        if (CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)) {
-            billToObject.setLanguage(language);
-        }
+    if (CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)) {
+        billToObject.setLanguage(language);
     }
 
     return { success: true, billTo: billToObject };
@@ -1596,8 +1598,8 @@ function CheckStatusServiceRequest(order) {
 */
 function HandleRequest(Basket, PaymentMethod) {
     // get payment method from billing form
-    if(!PaymentMethod){
-    PaymentMethod = session.forms.billing.paymentMethod.value;
+    if (!PaymentMethod) {
+        PaymentMethod = session.forms.billing.paymentMethod.value;
     }
     var isPaymentInstrumentCreated = false;
     // create payment instrument if selected payment method is not null
@@ -1852,6 +1854,31 @@ function getDecodedStr(encodedStr) {
     return decodedStr;
 }
 
+function convertHashMapToJSONString(hashMap) {
+    var obj = {};
+    var keys = hashMap.keySet().iterator();
+
+    while (keys.hasNext()) {
+        var key = keys.next();
+        obj[key] = hashMap.get(key);
+    }
+
+    return obj; // JSON.stringify(obj);
+}
+
+function JSONObjectToHashMap(jsonObject) {
+    var HashMap = require('dw/util/HashMap');
+
+    var map = new HashMap();
+
+    for (var key in jsonObject) {
+        if (jsonObject.hasOwnProperty(key)) {
+            map.put(key, jsonObject[key]);
+        }
+    }
+    return map;
+}
+
 module.exports = {
     CreateCybersourceShipFromObject: CreateCybersourceShipFromObject,
     CreateCyberSourceBillToObject: CreateCyberSourceBillToObject,
@@ -1891,5 +1918,7 @@ module.exports = {
     GetPaymentClass: getPaymentClass,
     createEncodeObject: createEncodeObject,
     updatePaypalAddressFields: updatePaypalAddressFields,
-    decodeObj: decodeObj
+    decodeObj: decodeObj,
+    convertHashMapToJSONString: convertHashMapToJSONString,
+    JSONObjectToHashMap: JSONObjectToHashMap
 };

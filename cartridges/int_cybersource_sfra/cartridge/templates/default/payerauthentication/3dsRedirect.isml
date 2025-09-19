@@ -1,0 +1,13 @@
+<!--- TEMPLATENAME: 3dsRedirect.isml --->
+<iscomment>
+	This template is used to redirect
+</iscomment>
+	<form id="3dsRedirect" action="${pdict.action}" method="POST" name="3dsRedirect" target="_parent">
+	    <input type="hidden" name="orderID" value="${pdict.OrderNo}"/>
+	</form>
+
+<script type="text/javascript">
+window.onload = function () {
+    // Auto submit form on page load
+    document.getElementById('3dsRedirect').submit(); 
+};</script>

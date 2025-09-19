@@ -235,7 +235,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'K2AB9ZDK';
+        return 'MVSTWG57';
     },
 
     getDeveloperID: function () {
@@ -598,7 +598,7 @@ var CybersourceHelper = {
         var paymentMethod = order.paymentInstruments[0].paymentMethod;
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
-        
+
         if (enableDeviceFingerprint && CybersourceHelper.getCardDecisionManagerEnable()) {
             fingerprint = replaceCharsInSessionID(session.sessionID);
         }
@@ -882,50 +882,77 @@ var CybersourceHelper = {
         }
     },
 
-    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken){
+    addPayerAuthSetupInfo: function (serviceRequestObj, creditCardForm, orderNo, subscriptionToken, billTo, paymentInstrument) {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
-
-        setClientData(serviceRequest, orderNo);
-
-        if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
-            var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
-            requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
-            serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
-			CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
-			serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-			serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
-		}
-        serviceRequest.payerAuthSetupService = new CybersourceHelper.getcsReference().PayerAuthSetupService();
-        serviceRequest.payerAuthSetupService.run = true;
-    },
-
-    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, paymentMethodID) {
-        var serviceRequest = serviceRequestObj;
-        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 
         setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
-            if(session.privacy.screenHeight && session.privacy.screenWidth){
-                billTo.setHttpBrowserScreenHeight(session.privacy.screenHeight);
-                billTo.setHttpBrowserScreenWidth(session.privacy.screenWidth);
-            }
             serviceRequest.billTo = copyBillTo(billTo);
         }
+
+        var Resource = require('dw/web/Resource');
+
+        var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
-			CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
-		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
-			serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-			serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
-		}
+        } else if (isGooglePay && paymentInstrument.custom.GooglePayEncryptedData !== null) {
+            serviceRequest.paymentSolution = '012';
+            var requestEncryptedPayment = new CybersourceHelper.getcsReference().EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = paymentInstrument.custom.GooglePayEncryptedData;
+            serviceRequest.encryptedPayment = requestEncryptedPayment;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value) && isCreditCard) {
+            CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
+            serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+        }
+        serviceRequest.payerAuthSetupService = new CybersourceHelper.getcsReference().PayerAuthSetupService();
+        serviceRequest.payerAuthSetupService.run = true;
+    },
+
+    addPayerAuthEnrollInfo: function (serviceRequestObj, orderNo, creditCardForm, countryCode, amount, subscriptionToken, phoneNumber, deviceType, billTo, paymentInstrument, payerauthArgs, paymentMethodID) {
+        var serviceRequest = serviceRequestObj;
+        serviceRequest.merchantID = CybersourceHelper.getMerchantID();
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+
+        setClientData(serviceRequest, orderNo);
+
+        if (billTo !== null) {
+            if(payerauthArgs && payerauthArgs.parsedBrowserfields.screenHeight && payerauthArgs.parsedBrowserfields.screenWidth){
+                billTo.setHttpBrowserScreenHeight(payerauthArgs.parsedBrowserfields.screenHeight);
+                billTo.setHttpBrowserScreenWidth(payerauthArgs.parsedBrowserfields.screenWidth);
+            }
+            serviceRequest.billTo = copyBillTo(billTo);
+        }
+        var Resource = require('dw/web/Resource');
+
+        var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
+
+        if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
+            var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
+            requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
+            serviceRequest.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
+        } else if (isGooglePay && paymentInstrument.custom.GooglePayEncryptedData !== null) {
+            serviceRequest.paymentSolution = '012';
+            var requestEncryptedPayment = new CybersourceHelper.getcsReference().EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = paymentInstrument.custom.GooglePayEncryptedData;
+            serviceRequest.encryptedPayment = requestEncryptedPayment;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value) && isCreditCard) {
+            CybersourceHelper.addCardInfo(serviceRequest, creditCardForm);
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
+            serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+        }
         serviceRequest.payerAuthEnrollService = new CybersourceHelper.getcsReference().PayerAuthEnrollService();
         serviceRequest.purchaseTotals = new CybersourceHelper.getcsReference().PurchaseTotals();
         serviceRequest.purchaseTotals.currency = amount.currencyCode;
@@ -937,12 +964,13 @@ var CybersourceHelper = {
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
-        serviceRequest.payerAuthEnrollService.referenceID = session.privacy.DFReferenceId;
-        if(session.custom.enroll == false || session.custom.SCA == false || session.custom.isScaEnabled == true){
-        serviceRequest.payerAuthEnrollService.challengeCode = '04';
+        serviceRequest.payerAuthEnrollService.referenceID = paymentInstrument.custom.PayerAuthSetupReferenceID;
+        if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
+            serviceRequest.payerAuthEnrollService.challengeCode = '04';
         }
+
         var URLUtils = require('dw/web/URLUtils');
-        serviceRequest.payerAuthEnrollService.returnURL =URLUtils.https('COPlaceOrder-Submit','provider','card').toString();
+        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo).toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
@@ -1026,21 +1054,31 @@ var CybersourceHelper = {
         return request;
     },
 
-    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo) {
+    addPayerAuthValidateInfo: function (request, orderNo, signedPARes, creditCardForm, amount, subscriptionToken, processorTransactionId, billTo, paymentInstrument) {
         request.merchantID = CybersourceHelper.getMerchantID();
-
         setClientData(request, orderNo);
+        var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var Resource = require('dw/web/Resource');
+
+        var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
 
         if (subscriptionToken !== 'undefined' && !empty(subscriptionToken)) {
             var requestRecurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
             requestRecurringSubscriptionInfo.subscriptionID = subscriptionToken;
             request.recurringSubscriptionInfo = requestRecurringSubscriptionInfo;
-        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value)) {
-			CybersourceHelper.addCardInfo(request, creditCardForm);
-		} else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value)) {
-			request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-			request.tokenSource.transientToken = creditCardForm.flexresponse.value;
-		}
+        } else if (isGooglePay && paymentInstrument.custom.GooglePayEncryptedData !== null) {
+            request.paymentSolution = '012';
+            var requestEncryptedPayment = new CybersourceHelper.getcsReference().EncryptedPayment();
+            // eslint-disable-next-line
+            requestEncryptedPayment.data = paymentInstrument.custom.GooglePayEncryptedData;
+            request.encryptedPayment = requestEncryptedPayment;
+        } else if (null !== creditCardForm && empty(creditCardForm.flexresponse.value) && isCreditCard) {
+            CybersourceHelper.addCardInfo(request, creditCardForm);
+        } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
+            request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            request.tokenSource.transientToken = creditCardForm.flexresponse.value;
+        }
 
         if (billTo !== null) {
             request.billTo = copyBillTo(billTo);
@@ -1062,7 +1100,7 @@ var CybersourceHelper = {
         request.item = items;
 
         request.payerAuthValidateService.run = true;
-        if (CybersourceHelper.getCardDecisionManagerEnable()){
+        if (CybersourceHelper.getCardDecisionManagerEnable()) {
             request.afsService = new CybersourceHelper.getcsReference().AFSService();
             request.afsService.run = true;
         }
@@ -1505,12 +1543,12 @@ var CybersourceHelper = {
         request.apPaymentType = paymentType;
         request.apRefundService.run = true;
     },
-    
-     /** ***************************************************************************
-     * Name: DecisionManager
-     * Description: DecisionManagerService.
-     *
-     *************************************************************************** */
+
+    /** ***************************************************************************
+    * Name: DecisionManager
+    * Description: DecisionManagerService.
+    *
+    *************************************************************************** */
     apDecisionManagerService: function (paymentMethodID, request, billTo, shipTo, purchase, refCode, enableDeviceFingerprint, itemsCybersource) {
         var PaymentMgr = require('dw/order/PaymentMgr');
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
