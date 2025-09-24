@@ -166,9 +166,6 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
         requestCfg.put(WSUtil.WS_SIG_DIGEST_ALGO, "http://www.w3.org/2001/04/xmlenc#sha256");
 
         // define signature properties
-        // the keystore file has the basename of the WSDL file and the 
-        // file extension based on the keystore type (for example, HelloWorld.pkcs12).
-        // The keystore file has to be placed beside the WSDL file.
         requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_TYPE, "managed");
         requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_ALIAS, alisForSignature);
         requestCfg.put(WSUtil.WS_SIGNATURE_PARTS, "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body");
