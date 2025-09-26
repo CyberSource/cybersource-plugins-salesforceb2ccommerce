@@ -1,6 +1,9 @@
 ## <ins>Release History
 
 **Version 25.4.0 (September, 2025)**
+• Upgraded our cartridge to support accessing p12 file from Business Manager for SOAP Authentication 
+
+**Version 25.4.0 (September, 2025)**
 Enhancement:
 • Added support to use meta key for p12 authentication and Message Level Encryption.
 • Added Payer Authentication support for Google Pay.

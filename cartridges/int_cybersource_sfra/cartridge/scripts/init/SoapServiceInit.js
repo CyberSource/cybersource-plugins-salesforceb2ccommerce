@@ -133,15 +133,11 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
         var WSU_NS = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd";
         var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
         var CybersourceHelper = libCybersource.getCybersourceHelper();
-        var passwordOfKeystore = CybersourceHelper.getKeystorePassword();
         var alisForSignature = CybersourceHelper.getAliasForSignature();
 
-        var aliasForEncryption = CybersourceHelper.getAliasForMLEinJKSfile();
+        var aliasForEncryption = CybersourceHelper.getAliasForMLE();
         var isMLEEnabled = CybersourceHelper.isMLEEnabled();
-        var keystoreTypeforAuthentication = CybersourceHelper.getKeystoreTypeforAuthentication();
-
         var secretsMap = new HashMap();
-        secretsMap.put(alisForSignature, passwordOfKeystore);
 
         var requestCfg = new HashMap();
 
@@ -149,8 +145,7 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
             requestCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP + " " + WSUtil.WS_SIGNATURE + " " + WSUtil.WS_ENCRYPT);
               // define enrcryption properties
               requestCfg.put(WSUtil.WS_ENCRYPTION_USER, aliasForEncryption);
-              requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_TYPE, "jks");
-              requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_PW, passwordOfKeystore);
+              requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_TYPE, "managed");
               requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_ALIAS, aliasForEncryption);  
               requestCfg.put(WSUtil.WS_ENC_KEY_ID, WSUtil.KEY_ID_TYPE_X509_KEY_IDENTIFIER);
   
@@ -171,11 +166,7 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
         requestCfg.put(WSUtil.WS_SIG_DIGEST_ALGO, "http://www.w3.org/2001/04/xmlenc#sha256");
 
         // define signature properties
-        // the keystore file has the basename of the WSDL file and the 
-        // file extension based on the keystore type (for example, HelloWorld.pkcs12).
-        // The keystore file has to be placed beside the WSDL file.
-        requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_TYPE, keystoreTypeforAuthentication.value.toLowerCase());
-        requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_PW, passwordOfKeystore);
+        requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_TYPE, "managed");
         requestCfg.put(WSUtil.WS_SIG_PROP_KEYSTORE_ALIAS, alisForSignature);
         requestCfg.put(WSUtil.WS_SIGNATURE_PARTS, "{Element}{http://schemas.xmlsoap.org/soap/envelope/}Body");
         requestCfg.put(WSUtil.WS_SIG_KEY_ID, WSUtil.KEY_ID_TYPE_DIRECT_REFERENCE);

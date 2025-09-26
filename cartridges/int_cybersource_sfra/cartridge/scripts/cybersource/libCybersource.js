@@ -193,17 +193,12 @@ function replaceCharsInSessionID(sessionID) {
 var CybersourceHelper = {
 
     getcsReference: function() {
-        var wsdlName = Site.getCurrent().getCustomPreferenceValue('CsKeystore_Name');
-        var webref = webreferences2[wsdlName];
+        var webref = webreferences2["CyberSourceTransaction"];
         return webref;
     },
 
     getMerchantID: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
-    },
-
-    getKeystorePassword: function () {
-        return Site.getCurrent().getCustomPreferenceValue('CsKeystore_Password');
     },
 
     getAliasForSignature: function () {
@@ -214,12 +209,8 @@ var CybersourceHelper = {
         return Site.getCurrent().getCustomPreferenceValue('CsMLE_Enabled');
     },
 
-    getAliasForMLEinJKSfile: function () {
-        return Site.getCurrent().getCustomPreferenceValue('CsJKS_MLEAlias');
-    },
-
-    getKeystoreTypeforAuthentication: function () {
-        return Site.getCurrent().getCustomPreferenceValue('CsAuth_KeystoreType');
+    getAliasForMLE: function () {
+        return Site.getCurrent().getCustomPreferenceValue('CsMLE_Alias');
     },
 
     getklarnaPrivateKeyAlias: function() {
@@ -235,7 +226,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'MVSTWG57';
+        return 'N3B2JC4W';
     },
 
     getDeveloperID: function () {
