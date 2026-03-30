@@ -214,7 +214,12 @@ $('#checkout-main').find('.submit-shipping').on('click', function (e) {
 });
 
 $('#checkout-main .shipping-summary').find('span.edit-button').on('click', function () {
-    $('#checkout-main').find('.submit-shipping').removeClass('moveToPayment');
+    var submitShippingBtn = $('#checkout-main').find('.submit-shipping');
+    $(submitShippingBtn).removeClass('moveToPayment');
+    // Restore the next-step-button class that was removed by DAV logic
+    $(submitShippingBtn).closest('.row').children().addClass('next-step-button');
+    // Remove disabled attribute in case it was set
+    $(submitShippingBtn).prop('disabled', false);
     reCreateBasket();
 });
 

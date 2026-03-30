@@ -148,11 +148,23 @@ function getGooglePaymentDataConfiguration() {
  * @returns {object} transaction info, suitable for use as transactionInfo property of PaymentDataRequest
  */
 function getGoogleTransactionInfo() {
-    var cartTotalValue = document.getElementById('carttotal').value.replace('$', '');
+    // Read from .grand-total-sum which is always updated when totals change (e.g., after shipping edit)
+    // Fallback to #carttotal if .grand-total-sum is not available
+    var cartTotalValue;
+    var grandTotalElement = document.querySelector('.grand-total-sum');
+    if (grandTotalElement && grandTotalElement.textContent) {
+        // Remove currency symbols and get just the number
+        cartTotalValue = grandTotalElement.textContent.replace(/[^0-9.,]/g, '');
+    } else {
+        cartTotalValue = document.getElementById('carttotal').value.replace(/[^0-9.,]/g, '');
+    }
     var formattedAmount = formatInputMoney(cartTotalValue);
+    
+    // Get currency code from window.googlepayval (set by checkout.isml from session)
+    var currencyCode = (window.googlepayval && window.googlepayval.currencyCode) ? window.googlepayval.currencyCode : 'USD';
 
     return {
-        currencyCode: 'USD',
+        currencyCode: currencyCode,
         totalPriceStatus: 'FINAL',
         // Format the amount properly - convert to string with 2 decimal places
         totalPrice: formattedAmount.toFixed(2)

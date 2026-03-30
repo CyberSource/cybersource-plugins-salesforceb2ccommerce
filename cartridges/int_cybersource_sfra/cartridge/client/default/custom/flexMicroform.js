@@ -29,7 +29,7 @@ $(document).ready(function () {
       color: "#a94442",
     },
   };
-    var microform = flex.microform("card",{
+  var microform = flex.microform("card", {
     styles: customStyles,
   });
   var number = microform.createField("number");
@@ -162,31 +162,31 @@ $(document).ready(function () {
   }
 
   function cardExpiryValidate() {
-        var expMonth = $('#expirationMonth').val();
-        var expYear = $('#expirationYear').val();
+    var expMonth = $('#expirationMonth').val();
+    var expYear = $('#expirationYear').val();
 
-        if (expMonth == '' || expYear == '') {
-            if (expMonth == '') {
-               $('#expirationMonthMissingMessage').css('display', 'block');
-            }
-            if (expYear == '') {
-                $('#expirationYearMissingMessage').css('display', 'block');
-            }
-            return false;
-        }
-        else {
-            let currentDate = new Date();
-            let currentMonth = currentDate.getMonth() + 1;
-            let currentYear = currentDate.getFullYear();
-
-            // Check if the card is expired
-            if (expYear < currentYear || (expYear == currentYear && expMonth < currentMonth)) {
-               $('#expiredCardMessage').css('display', 'block');
-                return false;
-            }
-        }
-        return true;
+    if (expMonth == '' || expYear == '') {
+      if (expMonth == '') {
+        $('#expirationMonthMissingMessage').css('display', 'block');
+      }
+      if (expYear == '') {
+        $('#expirationYearMissingMessage').css('display', 'block');
+      }
+      return false;
     }
+    else {
+      let currentDate = new Date();
+      let currentMonth = currentDate.getMonth() + 1;
+      let currentYear = currentDate.getFullYear();
+
+      // Check if the card is expired
+      if (expYear < currentYear || (expYear == currentYear && expMonth < currentMonth)) {
+        $('#expiredCardMessage').css('display', 'block');
+        return false;
+      }
+    }
+    return true;
+  }
 
   $(".payment-summary .edit-button").on("click", function () {
     $("#flex-response").val("");
@@ -194,20 +194,22 @@ $(document).ready(function () {
 
   // intercept the form submission and make a tokenize request instead
   $(".submit-payment").on("click", function (event) {
-    if (
-      ($("#flex-response").val() === "" ||
-        $("#flex-response").val() === undefined) &&
-      ($(".data-checkout-stage").data("customer-type") === "guest" ||
-        ($(".data-checkout-stage").data("customer-type") === "registered" &&
-          $(".payment-information").data("is-new-payment")))
-    ) {
+    if ($('.payment-information').data('payment-method-id') === 'CREDIT_CARD') {
       if (
-        $("#flex-response").val() === "" ||
-        $("#flex-response").val() === undefined
+        ($("#flex-response").val() === "" ||
+          $("#flex-response").val() === undefined) &&
+        ($(".data-checkout-stage").data("customer-type") === "guest" ||
+          ($(".data-checkout-stage").data("customer-type") === "registered" &&
+            $(".payment-information").data("is-new-payment")))
       ) {
-        flexTokenCreation();
-        assignCorrectCardType();
-        event.stopImmediatePropagation();
+        if (
+          $("#flex-response").val() === "" ||
+          $("#flex-response").val() === undefined
+        ) {
+          flexTokenCreation();
+          assignCorrectCardType();
+          event.stopImmediatePropagation();
+        }
       }
     }
   });

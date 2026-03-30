@@ -11,6 +11,8 @@ var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstan
 var OrderMgr = require('dw/order/OrderMgr');
 var HookMgr = require('dw/system/HookMgr');
 var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
 
 
 /**
@@ -608,13 +610,13 @@ function submitApplePayOrder(order, req, res, next) {
     if (!req.currentCustomer.profile) {
         var passwordForm = server.forms.getForm('newPasswords');
         passwordForm.clear();
-        res.render('checkout/confirmation/confirmation', {
+        secureRender(res, 'checkout/confirmation/confirmation', {
             order: orderModel,
             returningCustomer: false,
             passwordForm: passwordForm
         });
     } else {
-        res.render('checkout/confirmation/confirmation', {
+        secureRender(res, 'checkout/confirmation/confirmation', {
             order: orderModel,
             returningCustomer: true
         });

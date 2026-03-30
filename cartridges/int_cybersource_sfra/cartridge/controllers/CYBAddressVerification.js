@@ -12,6 +12,8 @@ var PaymentInstrument = require('dw/order/PaymentInstrument');
 var Cipher = require('dw/crypto/Cipher');
 var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
 var addressVerificationHelper = require('*/cartridge/scripts/helper/AddressVerificationHelper');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
 server.get('VerifyAddress', function (req, res, next) {
     var returnObject = {};
@@ -51,7 +53,7 @@ server.get('VerifyAddress', function (req, res, next) {
     }
 
     res.cacheExpiration(0);
-    res.json(returnObject);
+    secureJsonResponse(res, returnObject);
     next();
 });
 

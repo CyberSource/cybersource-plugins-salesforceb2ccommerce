@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable */ 
 'use strict';
 
 var page = module.superModule;
@@ -13,6 +13,9 @@ var IsCartridgeEnabled = Site.getCurrent().getCustomPreferenceValue('IsCartridge
 
 var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
 var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 server.extend(page);
 
 if (IsCartridgeEnabled) {
@@ -33,7 +36,7 @@ if (IsCartridgeEnabled) {
             migrateCard.MigrateOldCardToken(paymentInstruments);
         }
         res.CONTENT_SECURITY_POLICY = "default-src 'self'";
-        res.render('account/payment/payment', {
+        secureRender(res, 'account/payment/payment', {
             paymentInstruments: AccountModel.getCustomerPaymentInstruments(
                 req.currentCustomer.wallet.paymentInstruments
             ),
@@ -102,12 +105,12 @@ if (IsCartridgeEnabled) {
                     Transaction.commit();
                     // Reseting the formData because response had CC#
                     res.setViewData(PaymentInstrumentUtils.setDetailsObject(paymentForm));
-                    res.json({
+                    secureJsonResponse(res, {
                         success: true,
                         redirectUrl: URLUtils.url('PaymentInstruments-List').toString()
                     });
                 } else {
-                    res.json({
+                    secureJsonResponse(res, {
                         success: false,
                         message: tokenizationResult.subscriptionError,
                         fields: formErrors.getFormErrors(paymentForm)
@@ -115,7 +118,7 @@ if (IsCartridgeEnabled) {
                 }
             });
         } else {
-            res.json({
+            secureJsonResponse(res, {
                 success: false,
                 fields: formErrors.getFormErrors(paymentForm)
             });
@@ -129,7 +132,7 @@ if (IsCartridgeEnabled) {
         var customerProfile = customer.getProfile();
         var saveCard = PaymentInstrumentUtils.cardSaveLimit(customerProfile);
         if (saveCard.addCardLimitError) {
-            res.json({
+            secureJsonResponse(res, {
                 success: false,
                 message: Resource.msg('error.message.addcard.fail', 'cybersource', null)
             });
@@ -194,17 +197,17 @@ if (IsCartridgeEnabled) {
             }
             paymentInstruments = wallet.getPaymentInstruments();
             if (paymentInstruments.length === 0) {
-                res.json({
+                secureJsonResponse(res, {
                     UUID: UUID,
                     message: Resource.msg('msg.no.saved.payments', 'payment', null)
                 });
             } else if (!empty(subscriptionError)) {
-                res.json({
+                secureJsonResponse(res, {
                     UUID: UUID,
                     message: subscriptionError
                 });
             } else {
-                res.json({ UUID: UUID });
+                secureJsonResponse(res, { UUID: UUID });
             }
         });
         return next();

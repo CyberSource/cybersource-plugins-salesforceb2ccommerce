@@ -8,6 +8,8 @@ var URLUtils = require('dw/web/URLUtils');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var OrderModel = require('*/cartridge/models/order');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
 
 // eslint-disable-next-line
 server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
@@ -39,7 +41,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 COHelpers.reviewOrder(providerResult.Order.orderNo, req, res, next);
                 return next();
             } if (providerResult.load3DRequest) {
-                res.render('cart/payerAuthenticationRedirect');
+                secureRender(res, 'cart/payerAuthenticationRedirect');
                 return next();
             } if (providerResult.submit) {
                 COHelpers.submitOrder(providerResult.Order.orderNo, req, res, next);
@@ -60,7 +62,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 res.redirect(URLUtils.url('Cart-Show'));
                 return next();
             } if (providerResult.redirect) {
-                res.render(providerResult.render, {
+                secureRender(res, providerResult.render, {
                     Location: providerResult.location
                 });
                 return next();
@@ -93,7 +95,7 @@ server.get('SubmitOrderConformation', csrfProtection.generateToken, function (re
     var orderId = req.querystring.ID;
     var token = req.querystring.token;
     delete session.privacy.orderId;
-    res.render('cart/RedirectToConformation', {
+    secureRender(res, 'cart/RedirectToConformation', {
         orderId: orderId,
         orderToken: token
     });

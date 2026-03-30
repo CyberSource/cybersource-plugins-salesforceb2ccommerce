@@ -3,6 +3,8 @@
 /* eslint-disable no-undef */
 var server = require('server');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 /**
  * Controller that handles the Cybersource paypal processing, manages redirection/callback from paypal,
  *
@@ -142,10 +144,11 @@ server.post(
 
         var result = adapter.InitiateExpressCheckout(cart, args);
         if (result.success) {
-            res.json(result);
+            secureJsonResponse(res, result);
         }
         return next();
     }
 );
 
 module.exports = server.exports();
+ 

@@ -34,7 +34,8 @@
 		<script src="${URLUtils.staticURL('/custom/cybersource-custom.js')}"></script>
 		
         <isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive() : false)}">
-            <script src="${URLUtils.staticURL('/custom/klarna.js')}"></script>
+            <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" defer></script>
+            <script src="${URLUtils.staticURL('/custom/klarna.js')}" defer></script>
         </isif>
 		   
            <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD).isActive() : false}">

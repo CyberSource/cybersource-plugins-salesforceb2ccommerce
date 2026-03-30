@@ -121,7 +121,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket, paymentInstrument
         ReadFromBasket = false;
     }
     else {
-        var paymentInstrument = Basket.getPaymentInstruments()[0];
+        var paymentInstrument = Basket.getPaymentInstrument();
     }
     var language = GetRequestLocale();
     if (ReadFromBasket) {
@@ -206,7 +206,7 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket, paymentInstrument
         }
     }
     billToObject.setIpAddress(GetIPAddress());
-    if (CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)) {
+    if (paymentInstrument && CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)) {
         billToObject.setLanguage(language);
     }
 

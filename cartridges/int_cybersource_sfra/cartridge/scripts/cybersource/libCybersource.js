@@ -917,9 +917,18 @@ var CybersourceHelper = {
         setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
-            if(payerauthArgs && payerauthArgs.parsedBrowserfields.screenHeight && payerauthArgs.parsedBrowserfields.screenWidth){
-                billTo.setHttpBrowserScreenHeight(payerauthArgs.parsedBrowserfields.screenHeight);
-                billTo.setHttpBrowserScreenWidth(payerauthArgs.parsedBrowserfields.screenWidth);
+            if(payerauthArgs && payerauthArgs.parsedBrowserfields){
+                var browserFields = payerauthArgs.parsedBrowserfields;
+                
+                // Set browser fields on billTo
+                if(browserFields.httpBrowserScreenHeight) billTo.httpBrowserScreenHeight = browserFields.httpBrowserScreenHeight;
+                if(browserFields.httpBrowserScreenWidth) billTo.httpBrowserScreenWidth = browserFields.httpBrowserScreenWidth;
+                if(browserFields.httpBrowserColorDepth) billTo.httpBrowserColorDepth = browserFields.httpBrowserColorDepth;
+                if(browserFields.httpBrowserJavaEnabled !== undefined) billTo.httpBrowserJavaEnabled = browserFields.httpBrowserJavaEnabled;
+                if(browserFields.httpBrowserJavaScriptEnabled !== undefined) billTo.httpBrowserJavaScriptEnabled = browserFields.httpBrowserJavaScriptEnabled;
+                if(browserFields.httpBrowserLanguage) billTo.httpBrowserLanguage = browserFields.httpBrowserLanguage;
+                if(browserFields.httpBrowserTimeDifference !== undefined) billTo.httpBrowserTimeDifference = browserFields.httpBrowserTimeDifference;
+                if(browserFields.ipAddress) billTo.ipAddress = request.httpRemoteAddress;
             }
             serviceRequest.billTo = copyBillTo(billTo);
         }
@@ -958,6 +967,14 @@ var CybersourceHelper = {
         serviceRequest.payerAuthEnrollService.referenceID = paymentInstrument.custom.PayerAuthSetupReferenceID;
         if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
             serviceRequest.payerAuthEnrollService.challengeCode = '04';
+        }
+
+        // Set payerAuthEnrollService fields from browser data
+        if(payerauthArgs && payerauthArgs.parsedBrowserfields){
+            var browserFields = payerauthArgs.parsedBrowserfields;
+            if(browserFields.httpUserAgent) serviceRequest.payerAuthEnrollService.httpUserAgent = browserFields.httpUserAgent;
+            if(browserFields.httpUserAccept) serviceRequest.payerAuthEnrollService.httpUserAccept = request.httpHeaders.get('accept');
+            if(browserFields.deviceChannel) serviceRequest.payerAuthEnrollService.deviceChannel = browserFields.deviceChannel;
         }
 
         var URLUtils = require('dw/web/URLUtils');

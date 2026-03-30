@@ -12,6 +12,8 @@ var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstan
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var Resource = require('dw/web/Resource');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
 server.post('GetSession', csrfProtection.generateToken, function (req, res, next) {
     var basket = BasketMgr.getCurrentBasket();
@@ -124,7 +126,7 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     }
 
     res.cacheExpiration(0);
-    res.json(returnObject);
+    secureJsonResponse(res, returnObject);
     next();
 });
 
@@ -208,7 +210,7 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
     }
 
     res.cacheExpiration(0);
-    res.json(returnObject);
+    secureJsonResponse(res, returnObject);
     next();
 });
 
@@ -231,7 +233,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
 
     // If response is missing, return error and redirect to cart
     if (!klarnaResponse) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             errorMessage: 'Missing response.',
             redirectUrl: URLUtils.url('Cart-Show').toString()
@@ -243,7 +245,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
 
     // If basket is missing, return error and redirect to cart
     if (!currentBasket) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
@@ -266,7 +268,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
     // Validate products and inventory in the basket
     var validatedProducts = validationHelpers.validateProducts(currentBasket);
     if (validatedProducts.error || !validatedProducts.hasInventory) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
@@ -336,7 +338,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
         result = HookMgr.callHook('app.payment.processor.default', 'Handle');
     }
     if (result.error) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
@@ -362,7 +364,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
         stage = 'shipping';
     }
 
-    res.json({
+    secureJsonResponse(res, {
         success: true,
         redirectUrl: URLUtils.url('Checkout-Begin', 'stage', stage).toString()
     });

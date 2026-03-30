@@ -56,7 +56,8 @@
 </isif>
 
 <isset name="isKlarnaExpressCheckoutEnabled" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}" scope="page" />
-<isif condition="${isKlarnaExpressCheckoutEnabled}">
+<isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive() : false)
+					 && isKlarnaExpressCheckoutEnabled}">
 <div class="row">
 	<div class="col-12 checkout-continue">
 		<isif condition="${miniCart}" >
@@ -67,14 +68,13 @@
 		</isif>	 
 
         <script>
-	 var klarnaVariables = {
-		isKlarnaEnabledForCartAndMinicart: "${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}",
-        handleExpressCheckoutAuth: "${dw.web.URLUtils.https('CYBKlarna-KlarnaAuthorizationCallback').toString()}",
-		createSessionEndpoint: "${dw.web.URLUtils.https('CYBKlarna-GetSession').toString()}",
-		klarnaClientToken: "${session.privacy.klarna_client_token}",
-		currentLocale: "${require('dw/util/Locale').getLocale(request.getLocale())}"
-	 	}
-	 window.klarnaVariables = klarnaVariables;
+	    // Initialize Klarna variables on window for cross-file access
+	    window.klarnaVariables = window.klarnaVariables || {};
+		window.klarnaVariables.isKlarnaEnabledForCartAndMinicart = "${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}";
+        window.klarnaVariables.handleExpressCheckoutAuth = "${dw.web.URLUtils.https('CYBKlarna-KlarnaAuthorizationCallback').toString()}";
+		window.klarnaVariables.createSessionEndpoint = "${dw.web.URLUtils.https('CYBKlarna-GetSession').toString()}";
+		window.klarnaVariables.klarnaClientToken = "${session.privacy.klarna_client_token}";
+		window.klarnaVariables.currentLocale = "${require('dw/util/Locale').getLocale(request.getLocale())}";
 	</script>
 	</div>
 </div>

@@ -12,6 +12,8 @@ var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var WeChatAdaptor = require('*/cartridge/scripts/wechat/adapter/WeChatAdaptor');
 var collections = require('*/cartridge/scripts/util/collections');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
 server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, next) {
     var orderNo = request.httpParameterMap.orderNo;
@@ -54,7 +56,7 @@ server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, ne
         session.privacy.orderId = order.orderNo;
         redirectUrl = URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('wechat.error', 'cybersource', null)).toString();
     }
-    res.json({
+    secureJsonResponse(res, {
         placedOrder: order,
         submit: result.submit,
         error: result.error,

@@ -22,9 +22,21 @@
 </html>
 <script>
 var browserProperties = {
-        screenWidth : window.screen.width,
-        screenHeight : window.screen.height
-};
+        httpBrowserScreenWidth: window.screen.width,
+        httpBrowserScreenHeight: window.screen.height,
+        httpBrowserColorDepth: window.screen.colorDepth,
+        httpBrowserJavaEnabled: navigator.javaEnabled ? navigator.javaEnabled() : false,
+        httpBrowserJavaScriptEnabled: true,
+        httpBrowserLanguage: navigator.language || navigator.userLanguage,
+        httpBrowserTimeDifference: new Date().getTimezoneOffset(),
+        httpUserAgent: navigator.userAgent,
+        httpUserAgent: navigator.userAgent,
+        deviceChannel: 'Browser'
+	};  // deviceChannel field : Determines the channel that the transaction came through. This field is required for SDK integration. Possible Values: SDK/Browser/3RI
+        // When you use the SDK integration, this field is dynamically set to SDK.
+        // When you use the JavaScript code, this field is dynamically set to Browser.
+        // For merchant-initiated or 3RI transactions, you must set the field to 3RI.
+        // When you use this field in addition to JavaScript code, you must set the field to Browser.
 var browserfields = JSON.stringify(browserProperties);
 document.getElementById("browserfields").value = browserfields;
 var endpoint= "${dw.system.Site.current.preferences.custom.CsEndpoint.value}";
