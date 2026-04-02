@@ -46,12 +46,12 @@
 <isscript>
 	var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
  </isscript>
-<isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false && dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+<isif condition="${!dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnablePayPalV2') && (dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) && dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
 	<input type="hidden" id="paypal_express" class="paypal_express" value="${URLUtils.url('CYBPaypal-InitiatePaypalExpress').toString()}" />
 	<input type="hidden" id="paypal_callback" class="paypal_callback" value="${URLUtils.https('CYBPaypal-SessionCallback').toString()}" />
-	<input type="hidden" id="paypal_enabled" class="paypal_enabled" value="${'CsEnableExpressPaypal' in dw.system.Site.getCurrent().getPreferences().getCustom() 
+	<input type="hidden" id="paypal_enabled" class="paypal_enabled" value="${'CsEnableExpressPaypal' in dw.system.Site.getCurrent().getPreferences().getCustom()
 		&& dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnableExpressPaypal') ? true : false}" />
-	<input type="hidden" id="paypal_endpoint" class="paypal_endpoint" value="${'CsEndpoint' in dw.system.Site.getCurrent().getPreferences().getCustom() 
+	<input type="hidden" id="paypal_endpoint" class="paypal_endpoint" value="${'CsEndpoint' in dw.system.Site.getCurrent().getPreferences().getCustom()
 		&& dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint').value == 'Production' ? 'production' : 'sandbox'}" />
 </isif>
 <iscomment>

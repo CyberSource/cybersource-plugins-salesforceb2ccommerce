@@ -3,6 +3,59 @@
 // var cart = require('base/cart/cart');
 /* eslint-disable no-undef */
 
+/**
+ * Safely sanitize HTML content using DOMPurify.
+ * DOMPurify is loaded globally via /custom/lib/dompurify.min.js in scripts.isml
+ * EXACT pattern from cybersource-custom.js safeSanitizeTemplate (line 27-40) which has NO Checkmarx issues.
+ * @param {string} dirty - The untrusted HTML content to sanitize
+ * @returns {string} Sanitized HTML string safe for DOM insertion
+ */
+function safeSanitizeTemplate(dirty) {
+    if (typeof DOMPurify !== 'undefined' && typeof DOMPurify.sanitize === 'function') {
+        // EXACT options from cybersource-custom.js safeSanitizeTemplate function
+        var templateOptions = {
+            ADD_TAGS: ['form', 'input', 'iframe', 'link', 'style', 'klarna-placement', 'klarna-express-button'],
+            ADD_ATTR: ['action', 'method', 'type', 'name', 'value', 'id', 'class', 'href', 'src', 'rel', 'target',
+                       'scrolling', 'width', 'height', 'frameborder', 'data-action', 'data-uuid', 'data-pid',
+                       'data-href', 'data-client-token', 'data-environment', 'data-locale', 'data-purchase-country',
+                       'data-theme', 'data-shape', 'data-on-click', 'data-instance-id'],
+            ALLOW_DATA_ATTR: true,
+            ALLOW_UNKNOWN_PROTOCOLS: false,
+            FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onmouseout', 'onfocus', 'onblur', 'onsubmit', 'onkeyup', 'onkeydown']
+        };
+        return DOMPurify.sanitize(dirty, templateOptions);
+    }
+    // Fallback: return empty string if DOMPurify is not available (security requirement)
+    console.warn('DOMPurify not available - content blocked for security');
+    return '';
+}
+
+/**
+ * Extract Klarna variables from HTML before sanitization strips the script tags.
+ * Only extracts known Klarna configuration values using strict patterns.
+ * @param {string} html - The HTML string containing Klarna script
+ */
+function extractKlarnaVariables(html) {
+    // Initialize klarnaVariables if not exists
+    window.klarnaVariables = window.klarnaVariables || {};
+    
+    // Extract specific known Klarna variables using strict regex patterns
+    var patterns = {
+        isKlarnaEnabledForCartAndMinicart: /window\.klarnaVariables\.isKlarnaEnabledForCartAndMinicart\s*=\s*["']([^"']+)["']/,
+        handleExpressCheckoutAuth: /window\.klarnaVariables\.handleExpressCheckoutAuth\s*=\s*["']([^"']+)["']/,
+        createSessionEndpoint: /window\.klarnaVariables\.createSessionEndpoint\s*=\s*["']([^"']+)["']/,
+        klarnaClientToken: /window\.klarnaVariables\.klarnaClientToken\s*=\s*["']([^"']+)["']/,
+        currentLocale: /window\.klarnaVariables\.currentLocale\s*=\s*["']([^"']+)["']/
+    };
+    
+    Object.keys(patterns).forEach(function(key) {
+        var match = html.match(patterns[key]);
+        if (match && match[1]) {
+            window.klarnaVariables[key] = match[1];
+        }
+    });
+}
+
 module.exports = function () {
     // cart();
     $('.minicart').on('count:update', function (event, count) {
@@ -22,10 +75,10 @@ module.exports = function () {
             $('.minicart .popover').spinner().start();
             $.get(url, function (data) {
                 if (data) {
-                    var dataDiv = document.createElement('div');
-                    dataDiv.innerHTML = data;
-                    $('.minicart .popover').empty();
-                    $('.minicart .popover').append(dataDiv);
+                    // Extract Klarna variables BEFORE sanitization strips the script tags
+                    extractKlarnaVariables(data);
+                    var sanitizedHtml = safeSanitizeTemplate(data);
+                    $('.minicart .popover').html(sanitizedHtml);
                 }
 
                 var isPaypalEnabled = !!($('#paypal_enabled').length > 0 && document.getElementById('paypal_enabled').value === 'true');
@@ -37,8 +90,8 @@ module.exports = function () {
                 if (isGooglePayEnabled) {
                     onGooglePayLoaded();
                 }
-                if(window.klarnaVariables.isKlarnaEnabledForCartAndMinicart === 'true'){
-                    handleKlarna(false);  // isCheckoutPage = false
+                if (window.klarnaVariables && window.klarnaVariables.isKlarnaEnabledForCartAndMinicart === 'true') {
+                    window.handleKlarna(false);  // isCheckoutPage = false
                 }
 
                 $.spinner().stop();

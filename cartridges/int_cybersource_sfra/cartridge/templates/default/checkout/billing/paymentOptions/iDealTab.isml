@@ -2,7 +2,7 @@
 <li class="nav-item" data-method-id="${paymentOption.ID}">
     <a class="nav-link iDeal-tab" data-toggle="tab" href="#credit-card-content" role="tab">
         <img class="ideal-options"
-                src="${URLUtils.staticURL('/images/ideal.png')}"
+                src="${URLUtils.staticURL('/images/iDEAL_Wero.png')}"
                 height="32"
                 alt="${paymentOption.name}"
                 title="${paymentOption.name}"

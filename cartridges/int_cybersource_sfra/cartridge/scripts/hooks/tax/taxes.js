@@ -61,6 +61,10 @@ function calculateTax(cart) {
                 }
                 // eslint-disable-next-line
                 session.privacy.isTaxCalculationFailed = false;
+            } else if (!empty(cart)) {
+                // Fallback to default SFRA tax calculation when shipping address is not yet available (cart/minicart)
+                var defaultCalculate = require('*/cartridge/scripts/hooks/cart/calculate');
+                return defaultCalculate.calculateTax(cart);
             }
             CommonHelper.UpdateTaxForGiftCertificate(cart);
             // eslint-disable-next-line

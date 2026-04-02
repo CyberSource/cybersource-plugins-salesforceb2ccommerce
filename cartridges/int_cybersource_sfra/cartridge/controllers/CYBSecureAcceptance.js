@@ -1,32 +1,30 @@
 'use strict';
-
 /* eslint-disable no-undef */
 var server = require('server');
-
 /*
  *Controller that handles the Cybersource Secure Acceptance Processing
 */
-
 /* API Includes */
 var Resource = require('dw/web/Resource');
 var URLUtils = require('dw/web/URLUtils');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
-
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 /**
  * Open the secure acceptance page inside Iframe if secure acceptance Iframe is selected
  */
 server.get('OpenIframe', function (req, res, next) {
     var secureAcceptanceAdapter = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/SecureAcceptanceAdapter');
     var response = secureAcceptanceAdapter.OpenIframe(session.privacy.orderId);
-
     if (response.success) {
         res.CONTENT_SECURITY_POLICY = "default-src 'self'";
-        res.render('services/secureAcceptanceIframeRequestForm', {
+        secureRender(res, 'services/secureAcceptanceIframeRequestForm', {
             requestData: response.data,
             formAction: response.formAction
         });
     } else {
-        res.render('/error', {
+        secureRender(res, '/error', {
             message: Resource.msg('subheading.error.general', 'error', null)
         });
     }
@@ -52,13 +50,13 @@ server.post('SilentPostResponse', server.middleware.https, function (req, res, n
         }
 
         if (cardResult.paEnabled) {
-            res.render('payerauthentication/3dsRedirect', {
+            secureRender(res, 'payerauthentication/3dsRedirect', {
                 action: URLUtils.url('CheckoutServices-PayerAuthSetup'),
                 OrderNo: result.order.orderNo,
             });
             return next();
         } else {
-            res.render('payerauthentication/3dsRedirect', {
+            secureRender(res, 'payerauthentication/3dsRedirect', {
                 action: URLUtils.url('CheckoutServices-SilentPostAuthorize'),
                 OrderNo: result.order.orderNo,
             });
@@ -77,10 +75,10 @@ server.get('MerchantPost', server.middleware.https, function (req, res, next) {
     var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
     if (secureAcceptanceHelper.validateSAMerchantPostRequest(request.httpParameterMap)) {
         if (!secureAcceptanceHelper.saveSAMerchantPostRequest(request.httpParameterMap)) {
-            res.render('common/http_404');
+            secureRender(res, 'common/http_404');
         }
     } else {
-        res.render('common/http_200');
+        secureRender(res, 'common/http_200');
     }
     next();
 });
@@ -96,7 +94,7 @@ server.get('CreateFlexToken', server.middleware.https, function (req, res, next)
         var clientLibrary = parsedPayload.ctx[0].data.clientLibrary;
         var clientLibraryIntegrity = parsedPayload.ctx[0].data.clientLibraryIntegrity;
         if (clientLibraryIntegrity && clientLibrary) {
-            res.render('checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent', {
+            secureRender(res, 'checkout/billing/paymentOptions/secureAcceptanceFlexMicroformContent', {
                 flexTokenResult: flexResult,
                 clientLibrary: clientLibrary,
                 clientLibraryIntegrity: clientLibraryIntegrity
@@ -111,7 +109,7 @@ server.get('ReCreateBasket', server.middleware.https, function (req, res, next) 
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var order = OrderMgr.getOrder(session.privacy.orderId);
     COHelpers.reCreateBasket(order);
-    res.json({
+    secureJsonResponse(res, {
         success: true
     });
     next();

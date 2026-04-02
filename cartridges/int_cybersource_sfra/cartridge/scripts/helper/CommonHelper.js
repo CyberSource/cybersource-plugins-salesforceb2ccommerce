@@ -121,7 +121,8 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket, paymentInstrument
         ReadFromBasket = false;
     }
     else {
-        var paymentInstrument = Basket.getPaymentInstruments()[0];
+        var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+        var paymentInstrument = CardHelper.getNonGCPaymemtInstument(Basket);
     }
     var language = GetRequestLocale();
     if (ReadFromBasket) {
@@ -206,7 +207,10 @@ function CreateCyberSourceBillToObject(Basket, ReadFromBasket, paymentInstrument
         }
     }
     billToObject.setIpAddress(GetIPAddress());
-    if (CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)) {
+    // Check if paymentInstrument exists before accessing its properties
+    // For PayPal (V1 and V2), paymentInstrument may not exist during initial order/session creation
+    if (paymentInstrument && !empty(paymentInstrument.paymentMethod) &&
+        CybersourceConstants.SOFORT_PAYMENT_METHOD.equals(paymentInstrument.paymentMethod)) {
         billToObject.setLanguage(language);
     }
 
@@ -363,10 +367,14 @@ function CreateCybersourceItemObject(Basket) {
     var locale = GetRequestLocale();
     // var PaymentMgr = require('dw/order/PaymentMgr');
     //  lineItemCtnr.paymentInstrument field is deprecated.  Get default payment method.
-    var paymentInstrument = null;
-    if (!empty(basket.getPaymentInstruments())) {
-        paymentInstrument = basket.getPaymentInstruments()[0];
+    var CardHelper = require('*/cartridge/scripts/helper/CardHelper');
+    var paymentInstrument = CardHelper.getNonGCPaymemtInstument(basket);
+
+    // If no payment instrument exists (e.g., during PayPal V2 initial order creation), return empty array
+    if (!paymentInstrument) {
+        return new (require('dw/util/ArrayList'))();
     }
+
     var selectedPaymentMethod = paymentInstrument.paymentMethod;
     var processor = GetPaymentType(selectedPaymentMethod).paymentProcessor;
     var lineItems = basket.allLineItems.iterator();
@@ -1092,6 +1100,7 @@ function calculatePurchaseTotal(lineItemCtnr, paypal) {
     if (!isGiftCertificate) {
         if (lineItemCtnr.shippingTotalPrice.available && lineItemCtnr.shippingTotalPrice.value > 0) {
             purchaseObject.setShippingAmount(StringUtils.formatNumber(lineItemCtnr.shippingTotalPrice.value, '#.00', locale));
+            //purchaseObject.setShippingAmount(StringUtils.formatNumber(lineItemCtnr.shippingTotalPrice.value, '0.00', locale));
         } else {
             purchaseObject.setShippingAmount(StringUtils.formatNumber(0, '0.00', locale));
         }
@@ -1105,7 +1114,8 @@ function calculatePurchaseTotal(lineItemCtnr, paypal) {
 
         if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
             if (lineItemCtnr.totalTax.available && lineItemCtnr.totalTax.value > 0) {
-                purchaseObject.setTaxAmount(StringUtils.formatNumber(lineItemCtnr.totalTax.value, '#.00', locale));
+                //purchaseObject.setTaxAmount(StringUtils.formatNumber(lineItemCtnr.totalTax.value, '#.00', locale));
+                purchaseObject.setTaxAmount(StringUtils.formatNumber(lineItemCtnr.totalTax.value, '0.00', locale));//this change is due to tax getting mapped as .05 instead of 0.05
             } else {
                 purchaseObject.setTaxAmount(StringUtils.formatNumber(0, '0.00', locale));
             }
@@ -1346,6 +1356,7 @@ function getItemObject(typeofService, basket) {
                 adjustedLineItemFinalPrice = lineItem.getAdjustedPrice().divide(actualQuantity);
             }
             itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(adjustedLineItemFinalPrice.getValue()), '#.00', locale));
+            //itemObject.setUnitPrice(StringUtils.formatNumber(Math.abs(adjustedLineItemFinalPrice.getValue()), '0.00', locale));
             itemObject.setQuantity(lineItem.quantityValue);
             itemObject.setProductCode('default');
             if (orderLevelTaxAdjustment != null && !empty(orderLevelTaxAdjustment) && orderLevelAdjustmentPrice.value > 0) {
@@ -1356,12 +1367,17 @@ function getItemObject(typeofService, basket) {
             if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
                 if (adjustedLineItemTaxPrice.available && adjustedLineItemTaxPrice.getValue() > 0) {
                     itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(adjustedLineItemTaxPrice.getValue()), '#.00', locale));
+                    //itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(adjustedLineItemTaxPrice.getValue()), '0.00', locale));
                 } else {
                     itemObject.setTaxAmount(StringUtils.formatNumber(0, '0.00', locale));
                 }
             }
             itemObject.setProductName(lineItem.productName);
             itemObject.setProductSKU(lineItem.productID);
+            // V2: Line item totalAmount = unitPrice × quantity (WITHOUT tax)
+            // Tax is separate and only added at purchaseTotals.grandTotalAmount level
+            var lineItemTotal = lineItem.getAdjustedPrice();
+            itemObject.setTotalAmount(StringUtils.formatNumber(lineItemTotal.getValue(), '0.00', locale));
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.ShippingLineItem) {
             if (typeofService === 'sessionService') {
@@ -1374,13 +1390,23 @@ function getItemObject(typeofService, basket) {
                 itemObject.setProductName(lineItem.ID);
                 itemObject.setProductSKU(lineItem.ID);
 
+                // Calculate shipping tax first
+                var shippingTax = 0;
                 if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
                     if (lineItem.adjustedTax.available && lineItem.adjustedTax.getValue() > 0) {
-                        itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.adjustedTax.getValue()), '#.00', locale));
-                    } else if (lineItem.adjustedTax.available && lineItem.adjustedTax.value > 0) {
+                        shippingTax = Math.abs(lineItem.adjustedTax.getValue());
+                        itemObject.setTaxAmount(StringUtils.formatNumber(shippingTax, '0.00', locale));
+                    } else {
                         itemObject.setTaxAmount(StringUtils.formatNumber(0, '0.00', locale));
                     }
+                } else {
+                    itemObject.setTaxAmount(StringUtils.formatNumber(0, '0.00', locale));
                 }
+                // V2 Requirement: totalAmount = (unitPrice * quantity) + taxAmount
+                itemObject.setTotalAmount(StringUtils.formatNumber(lineItem.adjustedPrice.value, '0.00', locale));
+                // PayPal V2 Required Fields for shipping
+                //itemObject.setTypeOfSupply('00'); // 00 = Physical goods/services
+                //itemObject.setProductDescription('Shipping and Handling');
                 itemObject.setId(count);
             }
         } else if (lineItem instanceof dw.order.ProductShippingLineItem) {
@@ -1393,6 +1419,9 @@ function getItemObject(typeofService, basket) {
             itemObject.setProductName('PRICE_ADJUSTMENT');
             itemObject.setProductSKU('PRICE_ADJUSTMENT');
             itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.tax.value), '#.00', locale));
+            //itemObject.setTaxAmount(StringUtils.formatNumber(Math.abs(lineItem.tax.value), '0.00', locale));
+            // V2 Requirement: totalAmount for price adjustment
+            itemObject.setTotalAmount(StringUtils.formatNumber(lineItem.price.value, '0.00', locale));
             itemObject.setId(count);
         } else {
             continue;

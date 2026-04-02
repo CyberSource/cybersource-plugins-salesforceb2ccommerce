@@ -2,6 +2,8 @@
 
 /* eslint-disable no-undef */
 var server = require('server');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
 
 /*
  * Controller that handles the Cybersource Device Fingerprint
@@ -39,7 +41,7 @@ server.get('GetFingerprint', function (req, res, next) {
     var url = location + '/fp/tags.js?org_id=' + orgID + '&session_id=' + merchID + sessionID;
 
     res.cacheExpiration(0);
-    res.render('common/deviceFingerprint', {
+    secureRender(res, 'common/deviceFingerprint', {
         url: url,
         getDeviceFingerprint: getDeviceFingerprint
     });

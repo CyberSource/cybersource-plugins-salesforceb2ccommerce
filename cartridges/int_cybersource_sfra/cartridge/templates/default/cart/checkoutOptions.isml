@@ -3,7 +3,7 @@
 <isscript>
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
  </isscript>
-<isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) &&  
+<isif condition="${!dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnablePayPalV2') && (dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) &&
 				dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
 	<div class="row">
 		<div class="col-12 checkout-continue">
@@ -13,11 +13,11 @@
 			<iselse/>
 			    <isset name="paypalClass" value="paypal-button-container-cart1" scope="page"/>
 			</isif>
-			<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && !empty(pdict.CurrentCustomer.profile) && !empty(pdict.CurrentCustomer.profile.custom.billingAgreementID)}"> 
+			<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('payPalBillingAgreements') && !empty(pdict.CurrentCustomer.profile) && !empty(pdict.CurrentCustomer.profile.custom.billingAgreementID)}">
 			    <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Paypal Express"  class="billingAgreementExpressCheckout" />
 			<iselse/>
 			    <div class="${paypalClass}"></div>
-			</isif>                 
+			</isif>
 		</div>
 	</div>
 </isif>
@@ -65,16 +65,19 @@
 			<div id="klarnaExpressCheckoutCart" class="klarna-express-Cart"></div>
 		</iselse>
 		</isif>	 
+		<isscript>
+            var klarnaHelperISML = require('*/cartridge/scripts/klarna/helper/KlarnaHelper');
+            var klarnaClientTokenValue = klarnaHelperISML.getLargeSessionToken('klarna_client_token');
+        </isscript>
 
         <script>
-	 var klarnaVariables = {
-		isKlarnaEnabledForCartAndMinicart: "${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}",
-        handleExpressCheckoutAuth: "${dw.web.URLUtils.https('CYBKlarna-KlarnaAuthorizationCallback').toString()}",
-		createSessionEndpoint: "${dw.web.URLUtils.https('CYBKlarna-GetSession').toString()}",
-		klarnaClientToken: "${session.privacy.klarna_client_token}",
-		currentLocale: "${require('dw/util/Locale').getLocale(request.getLocale())}"
-	 	}
-	 window.klarnaVariables = klarnaVariables;
+	    // Initialize Klarna variables on window for cross-file access
+	    window.klarnaVariables = window.klarnaVariables || {};
+		window.klarnaVariables.isKlarnaEnabledForCartAndMinicart = "${dw.system.Site.getCurrent().getCustomPreferenceValue('enableKlarnaExpressCheckout')}";
+        window.klarnaVariables.handleExpressCheckoutAuth = "${dw.web.URLUtils.https('CYBKlarna-KlarnaAuthorizationCallback').toString()}";
+		window.klarnaVariables.createSessionEndpoint = "${dw.web.URLUtils.https('CYBKlarna-GetSession').toString()}";
+		window.klarnaVariables.klarnaClientToken = "${klarnaClientTokenValue}";
+		window.klarnaVariables.currentLocale = "${require('dw/util/Locale').getLocale(request.getLocale())}";
 	</script>
 	</div>
 </div>

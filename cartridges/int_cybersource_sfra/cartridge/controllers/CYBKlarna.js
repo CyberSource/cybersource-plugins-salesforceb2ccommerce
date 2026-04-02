@@ -12,6 +12,8 @@ var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstan
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var Resource = require('dw/web/Resource');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
 server.post('GetSession', csrfProtection.generateToken, function (req, res, next) {
     var basket = BasketMgr.getCurrentBasket();
@@ -108,14 +110,15 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     // return the response as per decision and reason code
     if (response.decision === 'ACCEPT' && Number(response.reasonCode) === 100 && !empty(response.apSessionsReply.processorToken)) {
         // set the processor token into session variable
-        session.privacy.processorToken = response.apSessionsReply.processorToken;
+        klarnaHelper.setLargeSessionToken('processorToken',response.apSessionsReply.processorToken);
+
         session.privacy.requestID = response.requestID;
         returnObject.error = false;
         returnObject.decision = response.decision;
         returnObject.reasonCode = Number(response.reasonCode);
         returnObject.sessionToken = response.apSessionsReply.processorToken;
         //  Save token to session in case customer leaves billing page and goes back.
-        session.privacy.klarna_client_token = response.apSessionsReply.processorToken;
+        klarnaHelper.setLargeSessionToken('klarna_client_token', response.apSessionsReply.processorToken);
         // returnObject.reconciliationID = response.apSessionsReply.reconciliationID;
     } else {
         returnObject.error = true;
@@ -124,7 +127,7 @@ server.post('GetSession', csrfProtection.generateToken, function (req, res, next
     }
 
     res.cacheExpiration(0);
-    res.json(returnObject);
+    secureJsonResponse(res, returnObject);
     next();
 });
 
@@ -198,7 +201,7 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
         returnObject.reasonCode = Number(response.reasonCode);
         returnObject.sessionToken = response.apSessionsReply.processorToken;
         //  Save token to session in case customer leaves billing page and goes back.
-        session.privacy.klarna_client_token = response.apSessionsReply.processorToken;
+        klarnaHelper.setLargeSessionToken('klarna_client_token', response.apSessionsReply.processorToken);
         // returnObject.reconciliationID = response.apSessionsReply.reconciliationID;
     } else {
         returnObject.error = true;
@@ -208,7 +211,7 @@ server.post('UpdateSession', csrfProtection.generateToken, function (req, res, n
     }
 
     res.cacheExpiration(0);
-    res.json(returnObject);
+    secureJsonResponse(res, returnObject);
     next();
 });
 
@@ -231,7 +234,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
 
     // If response is missing, return error and redirect to cart
     if (!klarnaResponse) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             errorMessage: 'Missing response.',
             redirectUrl: URLUtils.url('Cart-Show').toString()
@@ -243,7 +246,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
 
     // If basket is missing, return error and redirect to cart
     if (!currentBasket) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
@@ -258,7 +261,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
         session.privacy.KlarnaPaymentsAuthorizationToken = klarnaResponse.authorization_token;
     }
     if (klarnaResponse.client_token) {
-        session.privacy.klarna_client_token = klarnaResponse.client_token;
+        klarnaHelper.setLargeSessionToken('klarna_client_token', klarnaResponse.client_token);
     }
     session.privacy.Klarna_IsExpressCheckout = true;
     session.privacy.Klarna_IsFinalizeRequired = klarnaResponse.finalize_required;
@@ -266,7 +269,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
     // Validate products and inventory in the basket
     var validatedProducts = validationHelpers.validateProducts(currentBasket);
     if (validatedProducts.error || !validatedProducts.hasInventory) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
@@ -336,7 +339,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
         result = HookMgr.callHook('app.payment.processor.default', 'Handle');
     }
     if (result.error) {
-        res.json({
+        secureJsonResponse(res, {
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
@@ -362,7 +365,7 @@ server.post('KlarnaAuthorizationCallback', function (req, res, next) {
         stage = 'shipping';
     }
 
-    res.json({
+    secureJsonResponse(res, {
         success: true,
         redirectUrl: URLUtils.url('Checkout-Begin', 'stage', stage).toString()
     });

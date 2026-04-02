@@ -1,5 +1,22 @@
 ## <ins>Release History
 
+**Version 26.1.0 (April, 2025)**
+Enhancement:
+• Added PayPal v2 support.
+• Updated iDEAL logo.
+• Refactored cartridge to follow SFRA best practices.
+• Added fallback to capture device fields when DDC fails.
+• Implemented Cardinal Commerce data center migration changes.
+ 
+Bug Fix:
+• Now displays error messages for SCA failures in both Redirect and iFrame flows.
+• Fixed "setAddress1" error on follow-up transactions after shipping address update.
+• Resolved Klarna token exceeding session.privacy character limit.
+• Fixed negative tax calculated for price adjustment.
+• Fixed iDEAL payment redirect to use http GET instead of POST.
+• For Google Pay fetch the total amount from the server side instead of capturing it on the frontend to avoid issues for different currencies across different locales.
+ 
+ 
 **Version 25.4.0 (September, 2025)**
 • Upgraded our cartridge to support accessing p12 file from Business Manager for SOAP Authentication 
 

@@ -13,6 +13,8 @@ var Transaction = require('dw/system/Transaction');
 // var Resource = require('dw/web/Resource');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
 
 var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
 var VisaCheckoutAdaptor = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/adaptor/VisaCheckoutAdaptor');
@@ -29,7 +31,7 @@ server.get('Button', function (req, res, next) {
         }
         var result = VisaCheckoutAdaptor.ButtonDisplay();
         if (!empty(result) && result.success) {
-            res.render('visacheckout/buttonDisplay', {
+            secureRender(res, 'visacheckout/buttonDisplay', {
                 VisaCheckoutButtonQueryString: result.ButtonDisplayURL,
                 VisaCheckoutTellMeMoreActive: result.TellMeMoreActive,
                 buttonsource: buttonsource
@@ -90,7 +92,7 @@ function visaCheckoutError(req, res, next) {
         COHelpers.recalculateBasket(cart);
 
         var Status = require('dw/system/Status');
-        res.render('cart/cart', {
+        secureRender(res, 'cart/cart', {
             cart: cart,
             RegistrationStatus: false,
             BasketStatus: new Status(Status.ERROR, 'VisaCheckoutError'),
@@ -160,7 +162,7 @@ server.get('InitializeVisaToken', server.middleware.https, function (req, res, n
         Basket: currentBasket,
         currentLocale: currentLocale.ID
     };
-    res.render('visacheckout/launch', {
+    secureRender(res, 'visacheckout/launch', {
         VisaTokenResult: visaToken
     });
     next();

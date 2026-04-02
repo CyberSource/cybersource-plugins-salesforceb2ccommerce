@@ -11,6 +11,9 @@ var server = require('server');
 var System = require('dw/system/System');
 var URLUtils = require('dw/web/URLUtils');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureRender = secureResponseHelper.secureRender;
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
 var TestFacade = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/facade/TestFacade');
 var TestHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'unittesting/helper/TestHelper');
@@ -28,7 +31,7 @@ server.get('Index', server.middleware.https, function (req, res, next) {
         return next();
     }
 
-    res.render('services/services');
+    secureRender(res, 'services/services');
     next();
 });
 
@@ -87,7 +90,7 @@ server.get('RunTests', server.middleware.https, function (req, res, next) {
     ResultsArray.push(checkStatusResponse);
 
     // Render consolidated response of all services
-    res.render('services/UnitTestResults', {
+    secureRender(res, 'services/UnitTestResults', {
         TestResults: ResultsArray
     });
 
@@ -124,7 +127,7 @@ server.get('TestCCAuth', server.middleware.https, function (req, res, next) {
                     card = result.card;
                     result = TestFacade.TestCCAuth(billTo, shipTo, card, purchaseTotals);
                     if (result.success) {
-                        res.render('services/CCAuthUnitTestResults', {
+                        secureRender(res, 'services/CCAuthUnitTestResults', {
                             CCAuthResponse: result.serviceResponse
                         });
                         next();
@@ -133,7 +136,7 @@ server.get('TestCCAuth', server.middleware.https, function (req, res, next) {
             }
         }
     } else {
-        res.render('common/scriptError', {
+        secureRender(res, 'common/scriptError', {
             log: !empty(result.errorMsg) ? result.errorMsg : 'System Exception occured contact administrator'
         });
         next();
@@ -155,11 +158,11 @@ server.get('TestTax', server.middleware.https, function (req, res, next) {
     var taxResponse = TaxHelper.CreatTaxRequest();
 
     if (!empty(taxResponse)) {
-        res.render('services/TaxUnitTestResults', {
+        secureRender(res, 'services/TaxUnitTestResults', {
             taxResponse: taxResponse
         });
     } else {
-        res.render('common/scriptError', {
+        secureRender(res, 'common/scriptError', {
             log: !empty(result.errorMsg) ? result.errorMsg : 'System Exception occured contact administrator'
         });
     }
@@ -182,7 +185,7 @@ server.get('TestCaptureService', function (req, res, next) {
         session.forms.genericTestInterfaceForm.clearFormElement();
         var captureServiceForm = server.forms.getForm('genericTestInterfaceForm');
         // render the refund service form
-        res.render('services/captureServiceForm', {
+        secureRender(res, 'services/captureServiceForm', {
             captureServiceForm: captureServiceForm,
             continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CaptureService').toString()
         });
@@ -239,14 +242,14 @@ server.post('CaptureService', function (req, res, next) {
     }
     session.forms.genericTestInterfaceForm.clearFormElement();
     if (!empty(serviceResponse)) {
-        res.render('services/transactionResult', {
+        secureRender(res, 'services/transactionResult', {
             serviceReply: captureReply,
             response: serviceResponse,
             msgHeader: captureReplyTitle
         });
         return next();
     }
-    res.render('custom/scriptError', {
+    secureRender(res, 'custom/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
@@ -265,7 +268,7 @@ server.get('TestCreditService', function (req, res, next) {
     session.forms.genericTestInterfaceForm.clearFormElement();
     var creditServiceForm = server.forms.getForm('genericTestInterfaceForm');
     // render the refund service form
-    res.render('services/CCCreditServiceForm', {
+    secureRender(res, 'services/CCCreditServiceForm', {
         creditServiceForm: creditServiceForm,
         continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CreditService').toString()
     });
@@ -331,14 +334,14 @@ server.post('CreditService', function (req, res, next) {
     session.forms.genericTestInterfaceForm.clearFormElement();
 
     if (!empty(serviceResponse)) {
-        res.render('services/transactionResult', {
+        secureRender(res, 'services/transactionResult', {
             serviceReply: refundReply,
             response: serviceResponse,
             msgHeader: creditReplyTitle
         });
         return next();
     }
-    res.render('custom/scriptError', {
+    secureRender(res, 'custom/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
@@ -356,7 +359,7 @@ server.get('TestAuthReversal', server.middleware.https, function (req, res, next
 
     var authReversalServiceForm = server.forms.getForm('genericTestInterfaceForm');
     authReversalServiceForm.clear();
-    res.render('services/authReversalForm', {
+    secureRender(res, 'services/authReversalForm', {
         authreversalform: authReversalServiceForm
     });
     return next();
@@ -392,10 +395,10 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
         serviceResponse = VisaCheckoutFacade.VCAuthReversalService(requestID, merchantRefCode, paymentType, currency, amount, orderid);
         reversalReplyTitle = 'VisaCheckout Reversal Reply';
         reversalReply = 'ccAuthReversalReply';
-    } else if (paymentType === 'KLI' || paymentType === 'PPL') {
+    } else if (paymentType === 'KLI' || paymentType === 'PPL' || paymentType === 'PYPLP') {
         var PayPalFacade = require('*/cartridge/scripts/paypal/facade/PayPalFacade');
         serviceResponse = PayPalFacade.PayPalReversalService(requestID, merchantRefCode, paymentType, amount, currency);
-        if (paymentType === 'PPL') {
+        if (paymentType === 'PPL' || paymentType === 'PYPLP') {
             reversalReplyTitle = 'PayPal Reversal Reply';
         }
         if (paymentType === 'KLI') {
@@ -410,14 +413,14 @@ server.post('CCAuthReversalService', server.middleware.https, function (req, res
 
     if (!empty(serviceResponse)) {
         // display the result page
-        res.render('services/transactionResult', {
+        secureRender(res, 'services/transactionResult', {
             serviceReply: reversalReply,
             response: serviceResponse,
             msgHeader: reversalReplyTitle
         });
         return next();
     }
-    res.render('common/scriptError', {
+    secureRender(res, 'common/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
@@ -439,7 +442,7 @@ server.get('TestCheckStatusService', function (req, res, next) {
         session.forms.genericTestInterfaceForm.clearFormElement();
         var checkStatusServiceForm = server.forms.getForm('genericTestInterfaceForm');
         // render the refund service form
-        res.render('services/checkStatusServiceForm', {
+        secureRender(res, 'services/checkStatusServiceForm', {
             checkStatusServiceForm: checkStatusServiceForm,
             continueUrl: dw.web.URLUtils.https('CYBServicesTesting-CheckStatusService').toString()
         });
@@ -472,7 +475,7 @@ server.post('CheckStatusService', server.middleware.https, function (req, res, n
     });
     if (session.forms.genericTestInterfaceForm.checkstatuspaymenttype.htmlValue !== paymentType) {
         serviceResponse = { error: true, errorMsg: 'Payment Method didnt match with Order Placed' };
-        res.render('common/scriptError', {
+        secureRender(res, 'common/scriptError', {
             log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
         });
         return next();
@@ -484,21 +487,21 @@ server.post('CheckStatusService', server.middleware.https, function (req, res, n
 
     if (!empty(serviceResponse)) {
         // display the result page
-        res.render('services/transactionresult', {
+        secureRender(res, 'services/transactionresult', {
             serviceReply: apCheckStatusReply,
             response: serviceResponse,
             msgHeader: apCheckStatusTitle
         });
         return next();
     }
-    res.render('common/scriptError', {
+    secureRender(res, 'common/scriptError', {
         log: !empty(serviceResponse.errorMsg) ? serviceResponse.errorMsg : 'System Exception occured contact administrator'
     });
     return next();
 });
 
 server.post('Generate', csrfProtection.generateToken, function (req, res, next) {
-    res.json();
+    secureJsonResponse(res, {});
     next();
 });
 
@@ -533,7 +536,7 @@ server.get('DMStandalone', server.middleware.https, function (req, res, next) {
     saleObject.orderNo = '00000202';
 
     var saleResponse = bankTransferFacade.BankTransferSaleService(saleObject, saleObject.paymentType);
-    res.json();
+    secureJsonResponse(res, {});
     return next();
 });
 

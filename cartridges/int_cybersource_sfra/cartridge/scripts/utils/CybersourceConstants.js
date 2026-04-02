@@ -14,7 +14,7 @@
 var CybersourceConstants = {};
 
 CybersourceConstants.APPLICATION_NAME = 'Salesforce B2C(SOAP)';
-CybersourceConstants.APPLICATION_VERSION = '25.5.0';
+CybersourceConstants.APPLICATION_VERSION = '26.1.0';
 
 CybersourceConstants.METHOD_ALIPAY = 'ALIPAY';
 CybersourceConstants.METHOD_ALIPAY_returnURLValue = 'alipay';
@@ -86,4 +86,6 @@ CybersourceConstants.SA_SUMMARY = 'SUMMARY';
 CybersourceConstants.SA_GOTO = 'GOTO';
 CybersourceConstants.SA_CANCEL = 'SA_CANCEL';
 CybersourceConstants.SECUREACCEPTANCEHELPER = CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/helper/SecureAcceptanceHelper';
+CybersourceConstants.PAYPAL_V2_PAYMENT_TYPE = 'PYPLP';
+
 module.exports = CybersourceConstants;

@@ -192,7 +192,8 @@ function AuthorizeRequest(orderNo, pi, token) {
     var paymentInstrument = pi;
     // set the value of processor token session variable as empty
     // eslint-disable-next-line
-    session.privacy.processorToken = '';
+    var klarnaHelper = require('*/cartridge/scripts/klarna/helper/KlarnaHelper');
+    klarnaHelper.setLargeSessionToken('processorToken', '');
     // create object of OrderMgr to get the order
     var OrderMgr = require('dw/order/OrderMgr');
     var Order = OrderMgr.getOrder(orderNo);

@@ -292,6 +292,7 @@ Cybersource Cartridge supports the following for PayPal:
 a. PayPal Express
 b. PayPal Credit
 c. PayPal Billing Agreement
+d. PayPal Checkout v2
 
 **Prerequsite**
 
@@ -351,6 +352,28 @@ Go to Merchant Tools > Site Preferences > Custom Preferences > Cybersource: Deci
 | Field                              | Description                                                                  |
 | ---------------------------------- | ---------------------------------------------------------------------------- |
 | Decision Manager Enable for Paypal | Enable or disable Decision Manager for PayPal transactions.                  |
+
+#### <ins>e. To setup PayPal Checkout v2 (Checkout Only)
+
+PayPal Checkout v2 is only supported as a payment option in the Checkout flow and not as an express, mini cart, or cart checkout option. For PayPal Checkout v2, the shopper selects PayPal during checkout, is redirected to PayPal to approve the payment, and is returned to the storefront to finalize the order.
+
+**Prerequisites**
+
+- A PayPal developer account and a REST application (Client ID and Secret) for Sandbox and Live.
+- PayPal v2 must be enabled with Cybersource and configured for your Merchant ID in the Cybersource Business Center.
+
+Step 1: Upload Cybersource metadata in Business Manager. If not follow ["Step 2: Upload metadata"](Configure-cartridge.md#step-2-upload-metadata) or import **"metadata/sfra_meta/meta/Cybersource_Paypal.xml"** in Business Manager (**Administration > Site Development > Import & Export**).
+
+Step 2: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource_Paypal** and set values for the parameter:
+
+| Field            | Description                                                                                                                                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Enable PayPal v2 | When set to true, PayPal v2 is enabled and the following PayPal features are disabled because they are not supported yet: PayPal buttons on cart and mini cart, Shipping address from PayPal and PayPal Billing Agreement. |
+
+> **Note:**
+> PayPal Checkout v2 Tax rounding: In the case that calculated tax is more than two decimals, the tax amount will be rounded up to the nearest two decimals to avoid total mismatch errors during order creation/capture.
+>
+> When Enable PayPal v2 is set to true, the legacy PayPal options cart/mini cart PayPal buttons and PayPal Billing Agreement are disabled.
 
 
 ### **4. Google Pay**

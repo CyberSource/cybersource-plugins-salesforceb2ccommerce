@@ -170,15 +170,14 @@ function setClientData(request, refCode, fingerprint) {
     request.merchantReferenceCode = refCode;
     request.partnerSolutionID = getCybersourceHelper().getPartnerSolutionID();
     var developerID = getCybersourceHelper().getDeveloperID();
-    var Resource = require('dw/web/Resource');
     if (!empty(developerID)) {
         request.developerID = developerID;
     }
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
-
     request.clientApplication = CybersourceConstants.APPLICATION_NAME;
     request.clientApplicationVersion = CybersourceConstants.APPLICATION_VERSION;
     request.clientEnvironment = 'Linux';
+    var Resource = require('dw/web/Resource');
     request.partnerSDKversion = Resource.msg('global.version.number', 'version', null);
     if (fingerprint) {
         request.deviceFingerprintID = fingerprint;
@@ -226,7 +225,7 @@ var CybersourceHelper = {
     },
 
     getPartnerSolutionID: function () {
-        return 'N3B2JC4W';
+        return 'JQSLXFNP';
     },
 
     getDeveloperID: function () {
@@ -484,18 +483,31 @@ var CybersourceHelper = {
         return noNexus;
     },
 
-    setEndpoint: function (service) {
+    setEndpoint: function (service, requestObj) {
         var endpoint = CybersourceHelper.getEndpoint();
         var Logger = dw.system.Logger.getLogger('Cybersource');
         Logger.debug('Connection to system "{0}"', endpoint);
         var Port = require('dw/ws/Port');
         var WSUtil = require('dw/ws/WSUtil');
+
+        // PayPal V2 (PYPLP) uses different CyberSource endpoints than other payment methods
+        var paymentType = requestObj && requestObj.apPaymentType ? requestObj.apPaymentType : null;
+        var isPayPalV2 = (paymentType === 'PYPLP');
+
         switch (endpoint) {
             case 'Production':
-                WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY, 'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor', service);
+                WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY,
+                    isPayPalV2
+                        ? 'https://ics2ws.ic3.com/commerce/1.x/transactionProcessor'
+                        : 'https://ics2wsa.ic3.com/commerce/1.x/transactionProcessor',
+                    service);
                 break;
             case 'Test':
-                WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY, 'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor', service);
+                WSUtil.setProperty(Port.ENDPOINT_ADDRESS_PROPERTY,
+                    isPayPalV2
+                        ? 'https://ics2wstest.ic3.com/commerce/1.x/transactionProcessor'
+                        : 'https://ics2wstesta.ic3.com/commerce/1.x/transactionProcessor',
+                    service);
                 break;
             default:
                 // eslint-disable-next-line
@@ -917,9 +929,18 @@ var CybersourceHelper = {
         setClientData(serviceRequest, orderNo);
 
         if (billTo !== null) {
-            if(payerauthArgs && payerauthArgs.parsedBrowserfields.screenHeight && payerauthArgs.parsedBrowserfields.screenWidth){
-                billTo.setHttpBrowserScreenHeight(payerauthArgs.parsedBrowserfields.screenHeight);
-                billTo.setHttpBrowserScreenWidth(payerauthArgs.parsedBrowserfields.screenWidth);
+            if(payerauthArgs && payerauthArgs.parsedBrowserfields){
+                var browserFields = payerauthArgs.parsedBrowserfields;
+                
+                // Set browser fields on billTo
+                if(browserFields.httpBrowserScreenHeight) billTo.httpBrowserScreenHeight = browserFields.httpBrowserScreenHeight;
+                if(browserFields.httpBrowserScreenWidth) billTo.httpBrowserScreenWidth = browserFields.httpBrowserScreenWidth;
+                if(browserFields.httpBrowserColorDepth) billTo.httpBrowserColorDepth = browserFields.httpBrowserColorDepth;
+                if(browserFields.httpBrowserJavaEnabled !== undefined) billTo.httpBrowserJavaEnabled = browserFields.httpBrowserJavaEnabled;
+                if(browserFields.httpBrowserJavaScriptEnabled !== undefined) billTo.httpBrowserJavaScriptEnabled = browserFields.httpBrowserJavaScriptEnabled;
+                if(browserFields.httpBrowserLanguage) billTo.httpBrowserLanguage = browserFields.httpBrowserLanguage;
+                if(browserFields.httpBrowserTimeDifference !== undefined) billTo.httpBrowserTimeDifference = browserFields.httpBrowserTimeDifference;
+                if(browserFields.ipAddress) billTo.ipAddress = request.httpRemoteAddress;
             }
             serviceRequest.billTo = copyBillTo(billTo);
         }
@@ -958,6 +979,14 @@ var CybersourceHelper = {
         serviceRequest.payerAuthEnrollService.referenceID = paymentInstrument.custom.PayerAuthSetupReferenceID;
         if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
             serviceRequest.payerAuthEnrollService.challengeCode = '04';
+        }
+
+        // Set payerAuthEnrollService fields from browser data
+        if(payerauthArgs && payerauthArgs.parsedBrowserfields){
+            var browserFields = payerauthArgs.parsedBrowserfields;
+            if(browserFields.httpUserAgent) serviceRequest.payerAuthEnrollService.httpUserAgent = browserFields.httpUserAgent;
+            if(browserFields.httpUserAccept) serviceRequest.payerAuthEnrollService.httpUserAccept = request.httpHeaders.get('accept');
+            if(browserFields.deviceChannel) serviceRequest.payerAuthEnrollService.deviceChannel = browserFields.deviceChannel;
         }
 
         var URLUtils = require('dw/web/URLUtils');
@@ -1350,7 +1379,6 @@ var CybersourceHelper = {
      * param : request, orderNo , requestID, paymentType
      *************************************************************************** */
     apBillingAgreementService: function (request, orderNo, requestID) {
-        // var Logger = require('dw/system/Logger').getLogger('Cybersource');
         request.merchantID = CybersourceHelper.getMerchantID();
         setClientData(request, orderNo);
         request.apPaymentType = 'PPL';
