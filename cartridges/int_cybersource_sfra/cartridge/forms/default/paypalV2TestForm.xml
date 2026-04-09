@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="orderNo" type="string" mandatory="false" binding="orderNo" max-length="50" />
+	<field formid="authRequestID" type="string" mandatory="false" binding="authRequestID" max-length="50" />
+	<field formid="merchantReferenceCode" type="string" mandatory="false" binding="merchantReferenceCode" max-length="50" />
+	<field formid="grandTotalAmount" type="string" mandatory="false" binding="grandTotalAmount" max-length="50" />
+	<field formid="currency" type="string" mandatory="false" binding="currency" max-length="10" />
+	<field formid="paymentType" type="string" mandatory="true" binding="paymentType" max-length="10">
+		<options>
+			<option optionid="PayPalV2" value="PYPLP" label="PAYPAL V2"/>
+		</options>
+	</field>
+
+	<!-- actions -->
+	<action formid="submit" label="Submit" valid-form="true"/>
+</form>

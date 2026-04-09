@@ -1,0 +1,26 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<title>PayPal V2 Services Testing</title>
+</head>
+<body>
+<div class="container" style="margin-top:30px;">
+	<h1>PayPal V2 - Services Testing</h1>
+	<p>Use these endpoints to test PayPal V2 (PYPLP) payment operations.</p>
+	<hr/>
+	<h3>Payment Processing</h3>
+	<ul>
+		<li><a href="${URLUtils.https('CYBPaypalV2Testing-TestCapture')}">Capture Payment</a> &mdash; Capture authorized funds (apCaptureService)</li>
+		<li><a href="${URLUtils.https('CYBPaypalV2Testing-TestAuthReversal')}">Authorization Reversal</a> &mdash; Void an authorization (apAuthReversalService)</li>
+		<li><a href="${URLUtils.https('CYBPaypalV2Testing-TestReauth')}">Re-Authorization</a> &mdash; Re-authorize a PayPal payment to refresh honor period (apAuthService + linkToRequest)</li>
+	</ul>
+	<hr/>
+	<h3>Order Management</h3>
+	<ul>
+		<li><a href="${URLUtils.https('CYBPaypalV2Testing-TestCheckStatus')}">Check Status</a> &mdash; Check status of any previous request (apCheckStatusService)</li>
+	</ul>
+</div>
+</body>
+</html>

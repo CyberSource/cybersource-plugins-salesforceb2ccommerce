@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<title>PayPal V2 - Capture Payment</title>
+</head>
+<body>
+<div class="container" style="margin-top:30px;">
+	<h1>PayPal V2 - Capture Payment</h1>
+	<p>Captures authorized funds. The <strong>authRequestID</strong>, amount, currency, and payment type
+	   are automatically derived from the order.</p>
+	<hr/>
+	<form action="${pdict.continueUrl}" method="post" id="paypalv2-capture-form">
+		<fieldset>
+			<div class="row">
+				<div class="col-md-8">
+					<div class="form-group">
+						<label class="form-control-label" for="orderNo">Order Number</label>
+						<input type="text" class="form-control" id="orderNo" required
+							<isprint value=${pdict.form.orderNo.attributes} encoding="off"/>
+						>
+						<p class="help-block">The SFCC order number. All payment details are read from this order.</p>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="form-group">
+						<label class="form-control-label" for="grandTotalAmount">Capture Amount (optional - leave blank for full capture)</label>
+						<input type="text" class="form-control" id="grandTotalAmount" placeholder="e.g. 49.05"
+							<isprint value=${pdict.form.grandTotalAmount.attributes} encoding="off"/>
+						>
+						<p class="help-block">For partial captures, enter a specific amount. Otherwise the full authorized amount is used.</p>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+		<div class="actions clearfix">
+			<button type="submit" class="btn btn-primary" name="${pdict.form.submit}">Capture Payment</button>
+			<a href="${URLUtils.https('CYBPaypalV2Testing-Index')}" class="btn btn-default" style="margin-left:10px;">Back</a>
+		</div>
+	</form>
+</div>
+</body>
+</html>

@@ -23,6 +23,23 @@ var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
  * @param {*} order order
  */
 function HandleCheckStatusServiceResponse(order) {
+    var paymentInstrument = null;
+    var paymentType = '';
+
+    // Get payment instrument to determine payment type
+    var paymentInstruments = order.getPaymentInstruments();
+    if (!empty(paymentInstruments) && paymentInstruments.length > 0) {
+        collections.forEach(paymentInstruments, function (pi) {
+            if (pi.paymentMethod === CybersourceConstants.METHOD_PAYPAL ||
+                pi.paymentMethod === CybersourceConstants.METHOD_PAYPAL_CREDIT) {
+                paymentInstrument = pi;
+                if (pi.paymentTransaction && pi.paymentTransaction.custom) {
+                    paymentType = pi.paymentTransaction.custom.apPaymentType || '';
+                }
+            }
+        });
+    }
+
     // Check the existing order payment status and get action to take.
     var paymentResponse = CommonHelper.CheckStatusServiceRequest(order);
 
@@ -72,6 +89,9 @@ function checkPaymentStatusJob(jobsParam) {
         Order.ORDER_STATUS_CANCELLED,
         Order.ORDER_STATUS_FAILED);
 
+    var ordersProcessed = 0;
+    var paypalOrdersProcessed = 0;
+
     // Iterate over Order query result
     // eslint-disable-next-line
     if (!empty(orderIterator)) {
@@ -87,6 +107,10 @@ function checkPaymentStatusJob(jobsParam) {
                 if (pi.paymentTransaction.paymentProcessor !== null) {
                     pp = pi.paymentTransaction.paymentProcessor.ID;
                 }
+
+                // Track if this is a PayPal order
+                var isPayPalOrder = (pp === CybersourceConstants.PAYPAL_PROCESSOR);
+
                 var ppList = CybersourceConstants.PAYMENTPROCESSORARR;
                 //  Check if order PI is one defined in the PAYMENTPROCESSORARR list.  Only these will have status checked.
                 // collections.forEach(ppList, function (paymentProcessor) {
@@ -96,6 +120,10 @@ function checkPaymentStatusJob(jobsParam) {
                     if (!empty(pp) && ppList[i].equals(pp)) {
                         //  Call APCheck payment status service and update order status based on response
                         HandleCheckStatusServiceResponse(order);
+                        ordersProcessed++;
+                        if (isPayPalOrder) {
+                            paypalOrdersProcessed++;
+                        }
                         break;
                     }
                 }

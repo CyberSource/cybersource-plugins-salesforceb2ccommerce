@@ -50,10 +50,10 @@
     <div class="minicart-footer">
         <div class="row estimated-total">
             <div class="col-8">
-                <p class="sub-total-label">${Resource.msg('label.estimatedtotal','cart',null)}</p>
+				<p class="grand-total-label">${Resource.msg('label.estimatedtotal','cart',null)}</p>
             </div>
             <div class="col-4">
-                <p class="text-right sub-total">${pdict.totals.subTotal}</p>
+				<p class="text-right grand-total">${pdict.totals.grandTotal}</p>
             </div>
         </div>
         <div class="row">

@@ -104,11 +104,51 @@ function convAddressObj(address) {
     return addressObj;
 }
 
+/**
+ * Sets a potentially large token value in session privacy by splitting it
+ * across multiple session attributes to avoid the 2000-character limit.
+ * @param {string} key - The base session privacy key name
+ * @param {string} value - The token value to store
+ */
+function setLargeSessionToken(key, value) {
+    var MAX_LENGTH = 2000;
+    if (!value || value.length <= MAX_LENGTH) {
+        session.privacy[key] = value || '';
+        session.privacy[key + '_part2'] = '';
+    } else {
+        session.privacy[key] = value.substring(0, MAX_LENGTH);
+        session.privacy[key + '_part2'] = value.substring(MAX_LENGTH);
+    }
+}
+
+/**
+ * Retrieves a potentially split token value from session privacy by
+ * joining the parts back together.
+ * @param {string} key - The base session privacy key name
+ * @returns {string} The full token value
+ */
+function getLargeSessionToken(key) {
+    var part1 = session.privacy[key] || '';
+    var part2 = session.privacy[key + '_part2'] || '';
+    var result = part1 + part2;
+    return result || null;
+}
+
+/**
+ * Deletes a potentially split token from session privacy.
+ * @param {string} key - The base session privacy key name
+ */
+function deleteLargeSessionToken(key) {
+    delete session.privacy[key];
+    delete session.privacy[key + '_part2'];
+}
+
+
 function clearKlarnaSessionVariables() {
     delete session.privacy.KlarnaPaymentsAuthorizationToken;
     delete session.privacy.Klarna_IsExpressCheckout;
     delete session.privacy.Klarna_IsFinalizeRequired;
-    delete session.privacy.klarna_client_token;
+    deleteLargeSessionToken('klarna_client_token');
 }
 
 module.exports = {
@@ -117,5 +157,8 @@ module.exports = {
     convAddressObj: convAddressObj,
     setKlarnaPaymentMethod: setKlarnaPaymentMethod,
     CreateKlarnaSecureKey: CreateKlarnaSecureKey,
-    clearKlarnaSessionVariables: clearKlarnaSessionVariables
+    clearKlarnaSessionVariables: clearKlarnaSessionVariables,
+    setLargeSessionToken: setLargeSessionToken,
+    getLargeSessionToken: getLargeSessionToken,
+    deleteLargeSessionToken: deleteLargeSessionToken
 }

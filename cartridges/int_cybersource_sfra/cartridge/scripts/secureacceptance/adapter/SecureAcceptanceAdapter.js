@@ -215,7 +215,7 @@ function SAIframeResponse(responseObject, order) {
             if (isOrderFailed) {
                 var PlaceOrderError = null;
                 var result = secureAcceptanceHelper.HandleDecision(responseObject.ReasonCode);
-                if (result.error) {
+                if (result.error || result.sca) {
                     PlaceOrderError = new Status(Status.ERROR, 'confirm.error.technical');
                 }
                 if (empty(PlaceOrderError)) {

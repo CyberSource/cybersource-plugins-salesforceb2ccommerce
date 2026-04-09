@@ -194,6 +194,7 @@ $(document).ready(function () {
 
   // intercept the form submission and make a tokenize request instead
   $(".submit-payment").on("click", function (event) {
+    if ($('.payment-information').data('payment-method-id') === 'CREDIT_CARD') {
     if (
       ($("#flex-response").val() === "" ||
         $("#flex-response").val() === undefined) &&
@@ -208,6 +209,7 @@ $(document).ready(function () {
         flexTokenCreation();
         assignCorrectCardType();
         event.stopImmediatePropagation();
+        }
       }
     }
   });

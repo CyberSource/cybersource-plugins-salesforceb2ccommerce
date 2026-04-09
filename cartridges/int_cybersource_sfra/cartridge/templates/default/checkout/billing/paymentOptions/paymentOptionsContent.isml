@@ -11,7 +11,11 @@
         <isinclude template="checkout/billing/paymentOptions/visaCheckoutContent" />
 
     <iselseif condition="${paymentOption.ID === 'PAYPAL'}">
-        <isinclude template="checkout/billing/paymentOptions/payPalContent" />
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnablePayPalV2')}">
+            <isinclude template="checkout/billing/paymentOptions/payPalv2Content" />
+        <iselse/>
+            <isinclude template="checkout/billing/paymentOptions/payPalContent" />
+        </isif>
 
 	<iselseif condition="${paymentOption.ID === 'KLARNA'}">
         <isinclude template="checkout/billing/paymentOptions/klarnaContent" />

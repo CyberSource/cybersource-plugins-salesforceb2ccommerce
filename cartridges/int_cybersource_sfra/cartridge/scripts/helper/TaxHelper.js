@@ -264,8 +264,8 @@ function UpdatePriceAdjustment(Basket) {
                 } else if (lineItem instanceof dw.order.ShippingLineItem) {
                     lineItem.updateTax(lineItem.taxRate, lineItem.adjustedNetPrice);
                     // eslint-disable-next-line
-                } else if (!lineItem instanceof dw.order.PriceAdjustment) { // eslint-disable-line no-unsafe-negation
-                    lineItem.updateTax(lineItem.taxRate, lineItem.netPrice);
+                } else if (lineItem instanceof dw.order.PriceAdjustment) { // eslint-disable-line no-unsafe-negation
+                    lineItem.updateTax(0);
                 } else {
                     lineItem.updateTax(lineItem.taxRate, lineItem.netPrice);
                 }
@@ -281,9 +281,103 @@ function UpdatePriceAdjustment(Basket) {
     return { success: true };
 }
 
+/**
+ * PayPal V2: Round up line item taxes on the basket so that per-unit tax is always
+ * in whole smallest-currency-units. PayPal V2 requires per-unit tax within the
+ * currency's decimal precision, and the gateway truncates beyond that causing
+ * amount mismatch errors.
+ *
+ * Currency-aware: uses the currency's fraction digits to determine precision.
+ *   USD (2 decimals): smallest unit = 0.01, multiplier = 100
+ *   JPY (0 decimals): smallest unit = 1,    multiplier = 1
+ *   BHD (3 decimals): smallest unit = 0.001, multiplier = 1000
+ *
+ * For each line item: if totalTax / quantity is not a whole smallest-unit,
+ * round up the total tax to ceil(totalUnits / qty) * qty.
+ *
+ * Follows TaxFacade pattern: setTax + updateTax(rate, baseAmount) to recalculate gross price.
+ *
+ * @param {dw.order.LineItemCtnr} basket - The basket to update
+ */
+function roundUpBasketTaxesForV2(basket) {
+    if (!basket) return;
+
+    var Transaction = require('dw/system/Transaction');
+    var Money = require('dw/value/Money');
+    var Currency = require('dw/util/Currency');
+    var ProductLineItem = require('dw/order/ProductLineItem');
+    var ShippingLineItem = require('dw/order/ShippingLineItem');
+
+    var currencyCode = basket.currencyCode;
+    var currencyObj = Currency.getCurrency(currencyCode);
+    var fractionDigits = currencyObj ? currencyObj.getDefaultFractionDigits() : 2;
+    var multiplier = Math.pow(10, fractionDigits);
+
+    var allLineItems = basket.getAllLineItems();
+    var adjusted = false;
+
+    Transaction.wrap(function () {
+        for (var i = 0; i < allLineItems.length; i++) {
+            var li = allLineItems[i];
+
+            if (!li.tax || !li.tax.available || li.tax.value <= 0) continue;
+
+            var qty;
+            if ('quantity' in li && li.quantity) {
+                qty = li.quantity.value || 1;
+            } else {
+                qty = 1;
+            }
+
+            if (qty <= 1) continue;
+
+            var totalUnits = Math.round(li.tax.value * multiplier);
+            var remainder = totalUnits % qty;
+
+            if (remainder === 0) continue;
+
+            var perUnitSmallest = Math.ceil(totalUnits / qty);
+            var newTotalUnits = perUnitSmallest * qty;
+            var newTaxValue = newTotalUnits / multiplier;
+            var newTaxMoney = new Money(newTaxValue, currencyCode);
+
+            Logger.debug('[TaxHelper] V2 TaxRoundUp: item "{0}" qty={1} tax {2} -> {3} smallest-units (per-unit {4}, currency {5})',
+                li.lineItemText || li.productName || li.productID || i,
+                qty, totalUnits, newTotalUnits, perUnitSmallest, currencyCode);
+
+            // Follow TaxFacade pattern: setTax + updateTax(rate, baseAmount) to recalculate gross price
+            li.setTax(newTaxMoney);
+            var taxRate = 0;
+            if (li instanceof ProductLineItem) {
+                if (!empty(li.proratedPrice) && li.proratedPrice.value !== 0) {
+                    taxRate = newTaxValue / li.proratedPrice.value;
+                }
+                li.updateTax(taxRate, li.proratedPrice);
+            } else if (li instanceof ShippingLineItem) {
+                if (!empty(li.adjustedNetPrice) && li.adjustedNetPrice.value !== 0) {
+                    taxRate = newTaxValue / li.adjustedNetPrice.value;
+                }
+                li.updateTax(taxRate, li.adjustedNetPrice);
+            } else {
+                if (!empty(li.netPrice) && li.netPrice.value !== 0) {
+                    taxRate = newTaxValue / li.netPrice.value;
+                }
+                li.updateTax(taxRate, li.netPrice);
+            }
+
+            adjusted = true;
+        }
+
+        if (adjusted) {
+            basket.updateTotals();
+        }
+    });
+}
+
 module.exports = {
     CreateCyberSourceTaxRequestObject: CreateCyberSourceTaxRequestObject,
     UpdatePriceAdjustment: UpdatePriceAdjustment,
     CreateCybersourceTaxationPurchaseTotalsObject: CreateCybersourceTaxationPurchaseTotalsObject,
-    CreateCybersourceTaxationItemsObject: CreateCybersourceTaxationItemsObject
+    CreateCybersourceTaxationItemsObject: CreateCybersourceTaxationItemsObject,
+    RoundUpBasketTaxesForV2: roundUpBasketTaxesForV2
 };

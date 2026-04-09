@@ -6,6 +6,8 @@ var server = require('server');
 var Site = require('dw/system/Site');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
+var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
 server.extend(page);
 
@@ -143,10 +145,8 @@ server.post('SetBillingAddress', csrfProtection.generateToken, server.middleware
             billingAddress.setCountryCode(paymentForm.addressFields.country.value);
         }
     });
-    res.setHttpHeader('Content-Security-Policy', "script-src 'self'");
-    res.json({
-        error: false
-    });
+    // Send secure JSON response with CSP headers
+    secureJsonResponse(res, { error: false });
     next();
 });
 
@@ -189,7 +189,8 @@ server.prepend('Begin', function (req, res, next) {
             var currentBasket = COHelpers.reCreateBasket(order);
         } else {
             delete session.privacy.orderId;
-            res.json({
+            // Send secure JSON response with CSP headers
+            secureJsonResponse(res, {
                 error: true,
                 cartError: true,
                 fieldErrors: [],

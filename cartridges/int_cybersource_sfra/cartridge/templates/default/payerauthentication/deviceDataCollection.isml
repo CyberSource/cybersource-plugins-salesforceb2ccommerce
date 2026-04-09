@@ -22,16 +22,30 @@
 </html>
 <script>
 var browserProperties = {
-        screenWidth : window.screen.width,
-        screenHeight : window.screen.height
-};
+        httpBrowserScreenWidth: window.screen.width,
+        httpBrowserScreenHeight: window.screen.height,
+        httpBrowserColorDepth: window.screen.colorDepth,
+        httpBrowserJavaEnabled: false, //The navigator.javaEnabled() method is deprecated and always returns false in modern browsers since Java applet support has been removed.
+        httpBrowserJavaScriptEnabled: true,
+        httpBrowserLanguage: navigator.language || navigator.userLanguage,
+        httpBrowserTimeDifference: new Date().getTimezoneOffset(),
+        httpUserAgent: navigator.userAgent,
+        httpUserAgent: navigator.userAgent,
+        deviceChannel: 'Browser'
+	};  // deviceChannel field : Determines the channel that the transaction came through. This field is required for SDK integration. Possible Values: SDK/Browser/3RI
+        // When you use the SDK integration, this field is dynamically set to SDK.
+        // When you use the JavaScript code, this field is dynamically set to Browser.
+        // For merchant-initiated or 3RI transactions, you must set the field to 3RI.
+        // When you use this field in addition to JavaScript code, you must set the field to Browser.
 var browserfields = JSON.stringify(browserProperties);
 document.getElementById("browserfields").value = browserfields;
 var endpoint= "${dw.system.Site.current.preferences.custom.CsEndpoint.value}";
+// Derive trusted origin dynamically from the DDC URL returned by the setup call
+var ddcOrigin = (new URL("${pdict.ddcUrl}")).origin;
 window.addEventListener("message", function(event) {
-if ((endpoint == "Test" && event.origin === "https://centinelapistag.cardinalcommerce.com") || (endpoint == "Production" && event.origin ==  "https://centinelapi.cardinalcommerce.com")) {
-     console.log("Event:"+ event.data);
-	 document.payerAuthRedirect.submit();
+    if (event.origin === ddcOrigin) {
+        console.log("Event:" + event.data);
+        document.payerAuthRedirect.submit();
     }
 }, false);
 </script>

@@ -6,14 +6,14 @@
 	xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/2004-08-24.xsd"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:tns="urn:schemas-cybersource-com:transaction-data:TransactionProcessor"
-	xmlns:data="urn:schemas-cybersource-com:transaction-data-1.192"
+	xmlns:data="urn:schemas-cybersource-com:transaction-data-1.224"
 	name="CyberSourceTransactionWS"
 	targetNamespace="urn:schemas-cybersource-com:transaction-data:TransactionProcessor">
 	<wsdl:types>
 		<xsd:schema>
 			<xsd:import
-				namespace="urn:schemas-cybersource-com:transaction-data-1.192" 
-				schemaLocation="CyberSourceTransaction_1.192.xsd" />
+				namespace="urn:schemas-cybersource-com:transaction-data-1.224" 
+				schemaLocation="CyberSourceTransaction_1.224.xsd" />
 		</xsd:schema>
 	</wsdl:types>
 	<wsdl:message name="messageIn">

@@ -538,9 +538,8 @@ function ButtonDisplay() {
     var VisaCheckoutHelper = require(CybersourceConstants.CS_CORE_SCRIPT + 'visacheckout/helper/VisaCheckoutHelper');
     var isVisaCheckout = PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT)?PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_VISA_CHECKOUT).isActive():false;
     if (isVisaCheckout) {
-        // set the response header (X-FRAME-OPTIONS) to prevent clickjacking
-        // eslint-disable-next-line
-        response.addHttpHeader('X-FRAME-OPTIONS', 'SAMEORIGIN');
+        // Note: X-FRAME-OPTIONS header cannot be set via addHttpHeader in SFCC - it's a restricted header
+        // The frame-ancestors directive in CSP provides equivalent clickjacking protection
         // Visa Checkout Button settings query string from site preferences
         var result = VisaCheckoutHelper.GetButtonDisplaySettings();
 

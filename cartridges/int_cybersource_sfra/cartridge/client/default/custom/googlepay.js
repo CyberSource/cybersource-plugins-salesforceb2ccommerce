@@ -116,13 +116,13 @@ function addGooglePayButton() {
  * @see {@link https://developers.google.com/pay/api/web/reference/object#PaymentDataRequest|PaymentDataRequest}
  * @returns {object} PaymentDataRequest fields
  */
-function getGooglePaymentDataConfiguration() {
+function getGooglePaymentDataConfiguration(transactionInfo) {
 
      var paymentDataRequest = {
         ...baseRequest
     };
     paymentDataRequest.allowedPaymentMethods = [cardPaymentMethod];
-    paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
+    paymentDataRequest.transactionInfo = transactionInfo;
     paymentDataRequest.emailRequired = true;
     paymentDataRequest.shippingAddressRequired = true;
     paymentDataRequest.merchantInfo = {
@@ -138,28 +138,37 @@ function getGooglePaymentDataConfiguration() {
  * @returns {object} transaction info, suitable for use as transactionInfo property of PaymentDataRequest
  */
 function getGoogleTransactionInfo() {
-
-    var cartTotalValue = document.getElementById('carttotal').value.replace('$', '');
-    var formattedAmount = formatInputMoney(cartTotalValue);
-
-    return {
-        currencyCode: 'USD',
-        totalPriceStatus: 'FINAL',
-        // Format the amount properly - convert to string with 2 decimal places
-        totalPrice: formattedAmount.toFixed(2)
-    };
+    return new Promise(function (resolve, reject) {
+        $.ajax({
+            url: window.googlepayval.getCartTotalUrl,
+            type: 'get',
+            dataType: 'json',
+            success: function (data) {
+                if (data.error) {
+                    reject(new Error('Failed to fetch cart total'));
+                    return;
+                }
+                resolve({
+                    currencyCode: data.currencyCode || window.googlepayval.currencyCode,
+                    totalPriceStatus: 'FINAL',
+                    totalPrice: data.totalPrice
+                });
+            },
+            error: function () {
+                reject(new Error('Failed to fetch cart total'));
+            }
+        });
+    });
 }
 
 /**
  * Prefetch payment data to improve performance
  */
 function prefetchGooglePaymentData() {
-    var paymentDataRequest = getGooglePaymentDataConfiguration();
-    // transactionInfo must be set but does not affect cache
-    paymentDataRequest.transactionInfo = {
+    var paymentDataRequest = getGooglePaymentDataConfiguration({
         totalPriceStatus: 'NOT_CURRENTLY_KNOWN',
         currencyCode: 'USD'
-    };
+    });
     var paymentsClient = getGooglePaymentsClient();
     paymentsClient.prefetchPaymentData(paymentDataRequest);
 }
@@ -168,11 +177,13 @@ function prefetchGooglePaymentData() {
  * Show Google Pay chooser when Google Pay purchase button is clicked
  */
 function onGooglePaymentButtonClicked() {
-    var paymentDataRequest = getGooglePaymentDataConfiguration();
-    paymentDataRequest.transactionInfo = getGoogleTransactionInfo();
+    getGoogleTransactionInfo()
+        .then(function (transactionInfo) {
+            var paymentDataRequest = getGooglePaymentDataConfiguration(transactionInfo);
 
-    var paymentsClient = getGooglePaymentsClient();
-    paymentsClient.loadPaymentData(paymentDataRequest)
+            var paymentsClient = getGooglePaymentsClient();
+            return paymentsClient.loadPaymentData(paymentDataRequest);
+        })
         .then(function (paymentData) {
         // handle the response
             processPayment(paymentData);

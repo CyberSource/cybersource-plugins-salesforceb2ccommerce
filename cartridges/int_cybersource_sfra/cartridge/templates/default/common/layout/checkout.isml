@@ -28,13 +28,14 @@
         <isscript>
 			var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
 		</isscript>
-		<isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
+		<isif condition="${!dw.system.Site.getCurrent().getCustomPreferenceValue('CsEnablePayPalV2') && (dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.METHOD_PAYPAL).isActive() : false) &&  dw.system.Site.current.getCustomPreferenceValue('CsEnableExpressPaypal')==true}">
 			<script src="https://www.paypalobjects.com/api/checkout.js"></script>
 		</isif>
 		<script src="${URLUtils.staticURL('/custom/cybersource-custom.js')}"></script>
 		
         <isif condition="${(dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.KLARNA_PAYMENT_METHOD).isActive() : false)}">
-            <script src="${URLUtils.staticURL('/custom/klarna.js')}"></script>
+            <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" defer></script>
+            <script src="${URLUtils.staticURL('/custom/klarna.js')}" defer></script>
         </isif>
 		   
            <isif condition="${dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD) ? dw.order.PaymentMgr.getPaymentMethod(CybersourceConstants.WECHAT_PAYMENT_METHOD).isActive() : false}">
@@ -58,6 +59,7 @@
                         totalPriceStatus: 'FINAL',
                         sessionCallBack : "${dw.web.URLUtils.url('CheckoutServices-SubmitPaymentGP')}",
                         submitURL : "${dw.web.URLUtils.https('Checkout-Begin', 'stage', 'placeOrder')}",
+                        getCartTotalUrl: "${dw.web.URLUtils.url('CheckoutServices-GetCartTotal')}",
                         environment: "${dw.system.System.getInstanceType() == dw.system.System.PRODUCTION_SYSTEM ? 'PRODUCTION' : 'TEST'}"
                     }	
                     window.googlepayval = googlepayvariables;

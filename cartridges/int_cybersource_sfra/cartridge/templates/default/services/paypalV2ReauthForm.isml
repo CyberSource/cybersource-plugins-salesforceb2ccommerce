@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<title>PayPal V2 - Re-Authorization</title>
+</head>
+<body>
+<div class="container" style="margin-top:30px;">
+	<h1>PayPal V2 - Re-Authorization</h1>
+	<hr/>
+	<form action="${pdict.continueUrl}" method="post" id="paypalv2-reauth-form">
+		<fieldset>
+			<div class="row">
+				<div class="col-md-8">
+					<div class="form-group">
+						<label class="form-control-label" for="orderNo">Order Number</label>
+						<input type="text" class="form-control" id="orderNo" required
+							<isprint value=${pdict.form.orderNo.attributes} encoding="off"/>
+						>
+						<p class="help-block">The SFCC order number. Used to look up the order, its line items, and the stored orderRequestID.</p>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="form-group">
+						<label class="form-control-label" for="authRequestID">Previous Auth Request ID (linkToRequest)</label>
+						<input type="text" class="form-control" id="authRequestID" required
+							<isprint value=${pdict.form.authRequestID.attributes} encoding="off"/>
+						>
+						<p class="help-block">The requestID from the previous authorization response. Used as <code>linkToRequest</code> per V2 spec.</p>
+					</div>
+				</div>
+			</div>
+		</fieldset>
+		<div class="actions clearfix">
+			<button type="submit" class="btn btn-primary" name="${pdict.form.submit}">Re-Authorize</button>
+			<a href="${URLUtils.https('CYBPaypalV2Testing-Index')}" class="btn btn-default" style="margin-left:10px;">Back</a>
+		</div>
+	</form>
+</div>
+</body>
+</html>

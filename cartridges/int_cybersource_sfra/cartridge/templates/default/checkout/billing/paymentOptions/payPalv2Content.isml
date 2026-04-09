@@ -1,0 +1,191 @@
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/cyber-source.css')}" />
+<div class="tab-pane ${pdict.selectedPayment == 'PAYPAL' ? 'active' : ''} paypal-content" id="paypal-content" role="tabpanel">
+    <fieldset class="payment-form-fields">
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="PAYPAL">
+    </fieldset>
+
+    <div class="paypalDetails ${pdict.paidWithPayPal ? 'checkout-hidden' : ''}">
+        <div class="row justify-content-center">
+            <div class="col-sm-6">
+                <div id="paypal-button-container-v2"></div>
+            </div>
+        </div>
+
+        <isscript>
+            var client_Id = dw.system.Site.getCurrent().getCustomPreferenceValue('CsPaypalClientID');
+            // Derive currency from session
+            var currentCurrency = session.currency.currencyCode || 'USD';
+            // buyer-country is a sandbox-only parameter — only include in test mode
+            var csEndpoint = dw.system.Site.getCurrent().getCustomPreferenceValue('CsEndpoint');
+            var isSandbox = csEndpoint && csEndpoint.value !== 'Production';
+            var Locale = require('dw/util/Locale');
+            var currentLocale = Locale.getLocale(request.locale);
+            var buyerCountryParam = isSandbox && currentLocale && currentLocale.country ? '&buyer-country=' + currentLocale.country : '';
+            // SDK intent must match merchant order type: authorize for CUSTOM, capture for STANDARD
+            // Falls back to 'authorize' if CsPaypalOrderType preference is not configured
+            var orderTypePref = dw.system.Site.getCurrent().getCustomPreferenceValue('CsPaypalOrderType');
+            var sdkIntent = (orderTypePref && orderTypePref.value === 'STANDARD') ? 'capture' : 'authorize';
+        </isscript>
+
+        <!-- Load V5 SDK with PayLater, dynamic currency and locale -->
+        <script src="https://www.paypal.com/sdk/js?client-id=${client_Id}&enable-funding=paylater&components=buttons,messages,funding-eligibility${buyerCountryParam}&currency=${currentCurrency}&disable-funding=card,venmo&intent=${sdkIntent}"></script>
+
+        <!-- Rendering Script -->
+        <script>
+            var paypalV2Rendering = false; // Guard against double-render race condition
+
+            var initPayPalV2Buttons = function() {
+                if (paypalV2Rendering) return; // Prevent double-render
+                paypalV2Rendering = true;
+
+                // Ensure PayPal section is visible before rendering
+                // checkout-hidden is set server-side when paidWithPayPal=true (after PayPal approval)
+                // SDK renders 0-height iframes into hidden containers, so remove it before render
+                var paypalDetails = document.querySelector('.paypalDetails');
+                if (paypalDetails) {
+                    paypalDetails.classList.remove('checkout-hidden');
+                }
+
+                if (window.paypal) {
+
+                    window.paypal.Buttons({
+                        style: {
+                            layout: 'vertical',
+                            color:  'gold',
+                            shape:  'rect'
+                        },
+                        // createOrder: Called when button is clicked - returns order ID for SDK
+                        createOrder: function(data, actions) {
+                            // Clear any previous error messages
+                            if ($('.error-message').length > 0) { $('.error-message').hide(); }
+                            if ($.spinner) { $.spinner().start(); }
+
+                            var fundingSource = data.fundingSource || 'paypal';
+
+                            // Serialize the billing form to send standard checkout data
+                            // Use form id fallback - some themes render the form with id #dwfrm_billing
+                            var formData = $('form.billing, #dwfrm_billing').serialize();
+
+                            // Append Funding Source to the request
+                            formData += '&fundingSource=' + encodeURIComponent(fundingSource);
+                            formData += '&billingAgreement=false';
+
+                            // Call server to create CyberSource order
+                            return $.ajax({
+                                url: "${URLUtils.url('CYBPaypal-InitiatePaypalV2')}",
+                                type: 'POST',
+                                data: formData,
+                                timeout: 30000
+                            }).then(function(response) {
+                                if ($.spinner) { $.spinner().stop(); }
+
+                                if (response.success) {
+                                    if (response.orderProcessorTransactionId) {
+                                        return response.orderProcessorTransactionId;
+                                    }
+
+                                    // No valid response data
+                                    console.error('[PayPal V2] No valid order data in response');
+                                    throw new Error('No order ID or redirect URL returned from server');
+                                } else {
+                                    console.error('[PayPal V2] Create order failed:', response);
+                                    throw new Error(response.errorMessage || 'Failed to create PayPal order');
+                                }
+                            }).catch(function(error) {
+                                if ($.spinner) { $.spinner().stop(); }
+                                console.error('[PayPal V2] AJAX Error:', error);
+                                if ($('.error-message').length > 0) {
+                                    $('.error-message').show();
+                                    $('.error-message-text').text('Failed to initiate PayPal checkout. Please try again.');
+                                }
+                                throw error; // Re-throw to prevent SDK from continuing
+                            });
+                        },
+                        // onApprove: Called after customer approves on PayPal
+                        onApprove: function(data, actions) {
+                            if ($.spinner) { $.spinner().start(); }
+
+                            // Build callback URL with all required parameters
+                            var callbackUrl = "${URLUtils.https('CYBPaypal-PaypalV2Callback')}";
+                            var params = [];
+                            if (data.orderID) {
+                                params.push('token=' + encodeURIComponent(data.orderID));
+                            }
+                            if (data.payerID) {
+                                params.push('PayerID=' + encodeURIComponent(data.payerID));
+                            }
+                            params.push('fundingSource=paypal');
+                            params.push('billingAgreementFlag=false');
+                            params.push('isPayPalCredit=false');
+
+                            callbackUrl += '?' + params.join('&');
+
+                            window.location.href = callbackUrl;
+                        },
+                        onCancel: function(data) {
+                            // Void the CyberSource order to free merchant capacity
+                            $.ajax({
+                                url: "${URLUtils.url('CYBPaypal-VoidOrder')}",
+                                type: 'POST',
+                                data: { orderID: data.orderID }
+                            });
+                            if ($.spinner) { $.spinner().stop(); }
+                            if ($('.error-message').length > 0) {
+                                $('.error-message').show();
+                                $('.error-message-text').text('PayPal checkout was cancelled.');
+                            }
+                        },
+                        onError: function(err) {
+                            console.error('[PayPal V2] SDK Error:', err);
+                            if ($.spinner) { $.spinner().stop(); }
+                            if ($('.error-message').length > 0) {
+                                $('.error-message').show();
+                                $('.error-message-text').text('An error occurred during PayPal checkout. Please try again.');
+                            }
+                        }
+                    }).render('#paypal-button-container-v2').then(function() {
+                        paypalV2Rendering = false;
+                    }).catch(function(err) {
+                        paypalV2Rendering = false;
+                        console.error('[PayPal V2] Button rendering failed:', err);
+                    });
+                } else {
+                    paypalV2Rendering = false;
+                    console.error('[PayPal V2] PayPal SDK not loaded - check network and client ID');
+                }
+            };
+
+            if (window.paypal) { initPayPalV2Buttons(); }
+            else { window.addEventListener('load', initPayPalV2Buttons); }
+
+            // Re-render PayPal buttons when returning to payment stage (e.g., "Edit Payment")
+            var reRenderPayPalButtons = function() {
+                var container = document.getElementById('paypal-button-container-v2');
+                if (container && window.paypal && !paypalV2Rendering) {
+                    container.innerHTML = '';
+                    initPayPalV2Buttons();
+                }
+            };
+
+            $(document).on('click', '.payment-summary .edit-button', function() {
+                setTimeout(reRenderPayPalButtons, 200);
+            });
+
+            // Observe data-checkout-stage attribute changes on #checkout-main
+            var checkoutMain = document.getElementById('checkout-main');
+            if (checkoutMain) {
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.attributeName === 'data-checkout-stage') {
+                            var stage = checkoutMain.getAttribute('data-checkout-stage');
+                            if (stage === 'payment') {
+                                setTimeout(reRenderPayPalButtons, 100);
+                            }
+                        }
+                    });
+                });
+                observer.observe(checkoutMain, { attributes: true });
+            }
+        </script>
+    </div>
+</div>
