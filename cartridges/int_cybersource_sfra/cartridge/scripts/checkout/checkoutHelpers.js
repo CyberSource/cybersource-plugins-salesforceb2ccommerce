@@ -473,6 +473,10 @@ function reviewOrder(orderId, req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
+    if (session.privacy.orderId && session.privacy.orderId !== orderId) {
+        res.redirect(URLUtils.url('Cart-Show'));
+        return next();
+    }
     var order = OrderMgr.getOrder(orderId);
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
 
@@ -510,6 +514,10 @@ function submitOrder(orderId, req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
+    if (session.privacy.orderId && session.privacy.orderId !== orderId) {
+        res.redirect(URLUtils.url('Cart-Show'));
+        return next();
+    }
     var order = OrderMgr.getOrder(orderId);
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
     var Resource = require('dw/web/Resource');
@@ -593,7 +601,7 @@ function submitApplePayOrder(order, req, res, next) {
     var server = require('server');
     var OrderModel = require('*/cartridge/models/order');
 
-    if (!order && req.querystring.order_token !== order.getOrderToken()) {
+    if (!order || req.querystring.order_token !== order.getOrderToken()) {
         return next(new Error('Order token does not match'));
     }
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', order);

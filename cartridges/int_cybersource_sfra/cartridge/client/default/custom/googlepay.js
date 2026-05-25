@@ -216,6 +216,9 @@ function processPayment(paymentData) {
         paymentData: JSON.stringify(paymentData)
 
     };
+    if (window.googlepayval.csrfTokenName && window.googlepayval.csrfToken) {
+        urlParams[window.googlepayval.csrfTokenName] = window.googlepayval.csrfToken;
+    }
 
     $.ajax({
         url: postdataUrl,

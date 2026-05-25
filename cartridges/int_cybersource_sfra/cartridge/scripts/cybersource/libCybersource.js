@@ -990,7 +990,10 @@ var CybersourceHelper = {
         }
 
         var URLUtils = require('dw/web/URLUtils');
-        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo).toString();
+        var OrderMgr = require('dw/order/OrderMgr');
+        var orderForToken = OrderMgr.getOrder(orderNo);
+        var enrollOrderToken = orderForToken ? orderForToken.orderToken : '';
+        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo, 'orderToken', enrollOrderToken).toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);

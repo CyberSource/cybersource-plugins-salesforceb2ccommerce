@@ -53,12 +53,14 @@ server.post('SilentPostResponse', server.middleware.https, function (req, res, n
             secureRender(res, 'payerauthentication/3dsRedirect', {
                 action: URLUtils.url('CheckoutServices-PayerAuthSetup'),
                 OrderNo: result.order.orderNo,
+                OrderToken: result.order.orderToken,
             });
             return next();
         } else {
             secureRender(res, 'payerauthentication/3dsRedirect', {
                 action: URLUtils.url('CheckoutServices-SilentPostAuthorize'),
                 OrderNo: result.order.orderNo,
+                OrderToken: result.order.orderToken,
             });
             return next();
         }

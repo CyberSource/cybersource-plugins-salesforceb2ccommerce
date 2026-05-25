@@ -214,6 +214,34 @@ function buildDataFromResponse(httpParameterMap) {
 
     // eslint-disable-next-line
     if (!empty(signedFieldNames)) {
+        // SECURITY FIX: Validate that mandatory fields are included in signed_field_names
+        // to prevent HMAC signature bypass attacks. Use exact membership (split by comma)
+        // rather than substring matching to avoid false positives like "reason_code_2".
+        var signedFieldsList = signedFieldNames.toLowerCase().split(',');
+        var signedFieldsSet = {};
+        for (i = 0; i < signedFieldsList.length; i += 1) {
+            signedFieldsSet[signedFieldsList[i].replace(/^\s+|\s+$/g, '')] = true;
+        }
+
+        var mandatoryFields = ['signed_field_names', 'decision', 'reason_code', 'req_reference_number'];
+
+        // auth_amount is only present in authorization/sale responses, not in token-only
+        // (create_payment_token / update_payment_token) flows used by SilentPost. Require it
+        // only when the response indicates an authorization transaction.
+        // eslint-disable-next-line
+        var reqTxnType = (httpParameterMap.req_transaction_type && httpParameterMap.req_transaction_type.stringValue)
+            ? httpParameterMap.req_transaction_type.stringValue.toLowerCase() : '';
+        if (reqTxnType.indexOf('authorization') !== -1 || reqTxnType.indexOf('sale') !== -1) {
+            mandatoryFields.push('auth_amount');
+        }
+
+        for (i = 0; i < mandatoryFields.length; i += 1) {
+            if (!signedFieldsSet[mandatoryFields[i].toLowerCase()]) {
+                Logger.error('Security validation failed: Mandatory field "' + mandatoryFields[i] + '" is missing from signed_field_names');
+                return null;
+            }
+        }
+
         signedFieldsArr = signedFieldNames.split(',');
         for (i = 0; i < signedFieldsArr.length; i += 1) {
             // for each(var signedFieldName: String in signedFieldsArr) {
@@ -606,9 +634,14 @@ function CreateHMACSignature(paymentInstrument, LineItemCtnr, responseParameterM
         // parse secure acceptance response and create and authorize signature
         if (paymentInstrument !== null && responseParameterMap !== null) {
             dataToSign = buildDataFromResponse(responseParameterMap);
+            // SECURITY FIX: Check if buildDataFromResponse returned null due to missing mandatory fields
+            if (dataToSign === null) {
+                Logger.error('Error in Secure acceptance signature validation: mandatory fields missing');
+                return { error: true, errorMsg: 'Security validation failed: mandatory signed fields missing' };
+            }
             var resposneSignature = responseParameterMap.signature.stringValue;
             signature = CommonHelper.signedDataUsingHMAC256(dataToSign, secretKey);
-            if (signature.toString() === resposneSignature) {
+            if (hmacEquals(signature.toString(), resposneSignature)) {
                 signatureAuthorize = true;
                 CommonHelper.LogResponse(responseParameterMap.req_reference_number.stringValue, responseParameterMap.transaction_id.stringValue,
                     responseParameterMap.request_token.stringValue, responseParameterMap.reason_code.stringValue, responseParameterMap.decision.stringValue);
@@ -770,13 +803,39 @@ function validateSAMerchantPostRequest(httpParameterMap) {
         }
         // prepare signature and send match result
         var dataToSign = buildDataFromResponse(httpParameterMap);
+        // SECURITY FIX: Check if buildDataFromResponse returned null due to missing mandatory fields
+        if (dataToSign === null) {
+            Logger.error('[SecureAcceptanceHelper.js] validateSAMerchantPostRequest - Security validation failed: mandatory signed fields missing');
+            return false;
+        }
         var signature = CommonHelper.signedDataUsingHMAC256(dataToSign, result.secretkey, null);
-        if (signature.toString() === httpParameterMap.signature.stringValue) {
+       if (hmacEquals(signature.toString(), httpParameterMap.signature.stringValue)) {
             // signature got Authorize
             return true;
         }
     }
     return false;
+}
+
+/**
+ * Timing-safe HMAC signature comparison using double-HMAC pattern.
+ * Prevents timing oracle attacks by ensuring comparison time is independent of input similarity.
+ * @param {string} computedSignature - The HMAC signature computed locally
+ * @param {string} receivedSignature - The HMAC signature received from the response
+ * @returns {boolean} true if signatures are equal
+ */
+function hmacEquals(computedSignature, receivedSignature) {
+    var Mac = require('dw/crypto/Mac');
+    var Bytes = require('dw/util/Bytes');
+    var Encoding = require('dw/crypto/Encoding');
+    if (computedSignature.length !== receivedSignature.length) {
+        return false;
+    }
+    var mac = new Mac(Mac.HMAC_SHA_256);
+    var key = new Bytes(computedSignature, 'UTF-8');
+    var hmacA = Encoding.toBase64(mac.digest(new Bytes(computedSignature, 'UTF-8'), key));
+    var hmacB = Encoding.toBase64(mac.digest(new Bytes(receivedSignature, 'UTF-8'), key));
+    return hmacA === hmacB;
 }
 
 /**
@@ -786,42 +845,45 @@ function validateSAMerchantPostRequest(httpParameterMap) {
  */
 function jsonSecureAcceptanceResponse(httpParameterMap) {
     var responseJSON;
-    var responseObject = [];
     if (httpParameterMap !== null) {
-        responseObject.push('"Decision":"' + httpParameterMap.decision.stringValue + '"');
-        responseObject.push('"ReasonCode":"' + httpParameterMap.reason_code.stringValue + '"');
-        responseObject.push('"RequestID":"' + httpParameterMap.transaction_id.stringValue + '"');
-        responseObject.push('"CardType":"' + httpParameterMap.req_card_type.stringValue + '"');
-        responseObject.push('"RequestToken":"' + httpParameterMap.request_token.stringValue + '"');
-        responseObject.push('"AuthorizationAmount":"' + httpParameterMap.auth_amount.stringValue + '"');
-        responseObject.push('"AuthorizationCode":"' + httpParameterMap.auth_code.stringValue + '"');
-        responseObject.push('"AuthorizationReasonCode":"' + httpParameterMap.auth_response.stringValue + '"');
-        responseObject.push('"SubscriptionID":"' + httpParameterMap.payment_token.stringValue + '"');
-        responseObject.push('"req_bill_to_address_line1":"' + httpParameterMap.req_bill_to_address_line1.stringValue + '"');
-        responseObject.push('"req_bill_to_address_line2":"' + httpParameterMap.req_bill_to_address_line2 + '"');
-        responseObject.push('"req_bill_to_email":"' + httpParameterMap.req_bill_to_email.stringValue + '"');
-        responseObject.push('"req_bill_to_phone":"' + httpParameterMap.req_bill_to_phone.stringValue + '"');
-        responseObject.push('"req_bill_to_address_city":"' + httpParameterMap.req_bill_to_address_city.stringValue + '"');
-        responseObject.push('"req_bill_to_address_postal_code":"' + httpParameterMap.req_bill_to_address_postal_code.stringValue + '"');
-        responseObject.push('"req_bill_to_address_state":"' + httpParameterMap.req_bill_to_address_state.stringValue + '"');
-        responseObject.push('"req_bill_to_forename":"' + httpParameterMap.req_bill_to_forename.stringValue + '"');
-        responseObject.push('"req_bill_to_surname":"' + httpParameterMap.req_bill_to_surname.stringValue + '"');
-        responseObject.push('"req_bill_to_address_country":"' + httpParameterMap.req_bill_to_address_country.stringValue + '"');
-        responseObject.push('"req_ship_to_address_line1":"' + httpParameterMap.req_ship_to_address_line1.stringValue + '"');
-        responseObject.push('"req_ship_to_address_line2":"' + httpParameterMap.req_ship_to_address_line2 + '"');
-        responseObject.push('"req_ship_to_forename":"' + httpParameterMap.req_ship_to_forename.stringValue + '"');
-        responseObject.push('"req_ship_to_phone":"' + httpParameterMap.req_ship_to_phone.stringValue + '"');
-        responseObject.push('"req_ship_to_address_city":"' + httpParameterMap.req_ship_to_address_city.stringValue + '"');
-        responseObject.push('"ship_to_address_postal_code":"' + httpParameterMap.ship_to_address_postal_code.stringValue + '"');
-        responseObject.push('"req_ship_to_address_state":"' + httpParameterMap.req_ship_to_address_state.stringValue + '"');
-        responseObject.push('"req_ship_to_surname":"' + httpParameterMap.req_ship_to_surname.stringValue + '"');
-        responseObject.push('"req_ship_to_address_country":"' + httpParameterMap.req_ship_to_address_country.stringValue + '"');
-        responseObject.push('"payment_token":"' + httpParameterMap.payment_token.stringValue + '"');
-        responseObject.push('"req_payment_token":"' + httpParameterMap.req_payment_token.stringValue + '"');
-        responseObject.push('"req_card_expiry_date":"' + httpParameterMap.req_card_expiry_date.stringValue + '"');
-        responseObject.push('"req_card_number":"' + httpParameterMap.req_card_number.stringValue + '"');
-        responseObject.push('"req_card_type":"' + httpParameterMap.req_card_type.stringValue + '"');
-        responseJSON = '{' + responseObject.join(',') + '}';
+        // SECURITY FIX: Use proper JSON object construction instead of string concatenation
+        // to prevent JSON injection attacks
+        var responseObject = {
+            Decision: httpParameterMap.decision.stringValue,
+            ReasonCode: httpParameterMap.reason_code.stringValue,
+            RequestID: httpParameterMap.transaction_id.stringValue,
+            CardType: httpParameterMap.req_card_type.stringValue,
+            RequestToken: httpParameterMap.request_token.stringValue,
+            AuthorizationAmount: httpParameterMap.auth_amount.stringValue,
+            AuthorizationCode: httpParameterMap.auth_code.stringValue,
+            AuthorizationReasonCode: httpParameterMap.auth_response.stringValue,
+            SubscriptionID: httpParameterMap.payment_token.stringValue,
+            req_bill_to_address_line1: httpParameterMap.req_bill_to_address_line1.stringValue,
+            req_bill_to_address_line2: httpParameterMap.req_bill_to_address_line2 ? httpParameterMap.req_bill_to_address_line2.stringValue : '',
+            req_bill_to_email: httpParameterMap.req_bill_to_email.stringValue,
+            req_bill_to_phone: httpParameterMap.req_bill_to_phone.stringValue,
+            req_bill_to_address_city: httpParameterMap.req_bill_to_address_city.stringValue,
+            req_bill_to_address_postal_code: httpParameterMap.req_bill_to_address_postal_code.stringValue,
+            req_bill_to_address_state: httpParameterMap.req_bill_to_address_state.stringValue,
+            req_bill_to_forename: httpParameterMap.req_bill_to_forename.stringValue,
+            req_bill_to_surname: httpParameterMap.req_bill_to_surname.stringValue,
+            req_bill_to_address_country: httpParameterMap.req_bill_to_address_country.stringValue,
+            req_ship_to_address_line1: httpParameterMap.req_ship_to_address_line1.stringValue,
+            req_ship_to_address_line2: httpParameterMap.req_ship_to_address_line2 ? httpParameterMap.req_ship_to_address_line2.stringValue : '',
+            req_ship_to_forename: httpParameterMap.req_ship_to_forename.stringValue,
+            req_ship_to_phone: httpParameterMap.req_ship_to_phone.stringValue,
+            req_ship_to_address_city: httpParameterMap.req_ship_to_address_city.stringValue,
+            ship_to_address_postal_code: httpParameterMap.ship_to_address_postal_code.stringValue,
+            req_ship_to_address_state: httpParameterMap.req_ship_to_address_state.stringValue,
+            req_ship_to_surname: httpParameterMap.req_ship_to_surname.stringValue,
+            req_ship_to_address_country: httpParameterMap.req_ship_to_address_country.stringValue,
+            payment_token: httpParameterMap.payment_token.stringValue,
+            req_payment_token: httpParameterMap.req_payment_token.stringValue,
+            req_card_expiry_date: httpParameterMap.req_card_expiry_date.stringValue,
+            req_card_number: httpParameterMap.req_card_number.stringValue,
+            req_card_type: httpParameterMap.req_card_type.stringValue
+        };
+        responseJSON = JSON.stringify(responseObject);
     }
     return responseJSON;
 }

@@ -67,6 +67,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             continueUrl: URLUtils.url('CheckoutServices-ProcessingPayment').toString(),
             renderTemplate: 'secureacceptance/secureAcceptanceIframeSummmary',
             orderID: order.orderNo,
+            orderToken: order.getOrderToken()
         };
     } if (handlePaymentResult.intermediate) {
         return {
@@ -185,6 +186,7 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             templateData: {
                 weChatQRCode: handlePaymentResult.WeChatMerchantURL,
                 orderNo: order.orderNo,
+                orderToken: order.getOrderToken(),
                 noOfCalls: CybersourceHelper.getNumofCheckStatusCalls() != null ? CybersourceHelper.getNumofCheckStatusCalls() : 6,
                 serviceCallInterval: CybersourceHelper.getServiceCallInterval() != null ? CybersourceHelper.getServiceCallInterval() : 10
             },

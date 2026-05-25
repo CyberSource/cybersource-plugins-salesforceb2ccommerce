@@ -53,7 +53,9 @@ function pageContent(pdict){
             output += 'sessionCallBack: "' + URLUtils.url('CheckoutServices-GetGooglePayToken') + '",';
             output += 'returnURL: "' + URLUtils.https('Checkout-Begin', 'stage', 'placeOrder') + '",';
             output += 'cartURL: "' + URLUtils.https('Cart-Show') + '",';
-            output += 'getCartTotalUrl: "' + URLUtils.url('CheckoutServices-GetCartTotal') + '"';
+            output += 'getCartTotalUrl: "' + URLUtils.url('CheckoutServices-GetCartTotal') + '",';
+            output += 'csrfTokenName: "' + dw.web.CSRFProtection.getTokenName() + '",';
+            output += 'csrfToken: "' + dw.web.CSRFProtection.generateToken() + '"';
             output += '};'; 
             output += 'window.googlepayval = googlepayvariables;'; 
             output += '</script>'; 

@@ -13,6 +13,7 @@
 			<option optionid="PayPal" value="PPL" label="PAYPAL"/>
 			<option optionid="VisaCheckout" value="visacheckout" label="VISACHECKOUT"/>
 			<option optionid="AliPay" value="APY" label="ALIPAY"/>
+			<option optionid="GooglePay" value="googlepay" label="GOOGLEPAY"/>
 			<option optionid="Bancontact" value="MCH" label="BANCONTACT"/>
 			<option optionid="Ideal" value="IDL" label="IDEAL"/>
 			<option optionid="Sofort" value="SOF" label="SOFORT"/>

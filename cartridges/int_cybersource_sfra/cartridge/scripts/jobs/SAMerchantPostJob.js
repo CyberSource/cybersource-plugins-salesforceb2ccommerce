@@ -20,6 +20,42 @@ var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER
 var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 
 /**
+ * Validates the HMAC signature on stored postParams to prevent tampering
+ * @param {Object} responseObject containing the stored postParams
+ * @returns {boolean} true if signature is valid, false otherwise
+ */
+function validateStoredSignature(responseObject) {
+    try {
+        // Create a mock httpParameterMap-like structure from the responseObject
+        var HashMap = require('dw/util/HashMap');
+        var mockParameterMap = new HashMap();
+
+        // Map all response fields to the parameter map structure
+        // eslint-disable-next-line
+        for (var key in responseObject) {
+            // eslint-disable-next-line
+            if (responseObject.hasOwnProperty(key)) {
+                mockParameterMap.put(key, { stringValue: responseObject[key], rawValue: responseObject[key] });
+            }
+        }
+
+        // Call the existing validateSAMerchantPostRequest function from SecureAcceptanceHelper
+        // This function verifies HMAC signature, profile matching, and required fields
+        var isValid = secureAcceptanceHelper.validateSAMerchantPostRequest(mockParameterMap);
+
+        if (!isValid) {
+            Logger.error('[SAmerchantPost.js] Signature validation failed - HMAC mismatch or invalid profile parameters');
+            return false;
+        }
+
+        return true;
+    } catch (e) {
+        Logger.error('[SAmerchantPost.js] Error during signature validation: {0}', e.message);
+        return false;
+    }
+}
+
+/**
  * Remove all custom objects for already processed Order
  */
 function removeProcessedOrders() {
@@ -144,6 +180,12 @@ function SAMerchantPostJob() {
                             Logger.error('[SAmerchantPost.js] Error occured for order:', orderID);
                             throw new Error('Error occured for order');
                         } else {
+                            // Re-validate HMAC signature before trusting the Decision field
+                            var signatureValid = validateStoredSignature(responseObject);
+                            if (!signatureValid) {
+                                Logger.error('[SAmerchantPost.js] HMAC signature validation failed for order:', orderID);
+                                throw new Error('HMAC signature validation failed for order');
+                            }
                             // var Decision = responseObject.Decision;
                             // update payment instrument, payment transaction, billing/shipping details,
                             updatePIDetails(order, responseObject, paymentInstrument);

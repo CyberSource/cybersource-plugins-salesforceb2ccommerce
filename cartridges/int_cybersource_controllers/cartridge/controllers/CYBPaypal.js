@@ -88,4 +88,4 @@ function paypalExpress(){
 exports.SessionCallback = guard.ensure(['post', 'https'], initSessionCallback);
 /**
 * Cybersource - Paypal Express Checkout */
-exports.InitiatePaypalExpress = guard.ensure(['post'],paypalExpress);
+exports.InitiatePaypalExpress = guard.ensure(['post', 'https'],paypalExpress);

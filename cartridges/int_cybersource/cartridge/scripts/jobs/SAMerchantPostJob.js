@@ -15,6 +15,40 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 
+/**
+ * Validates the HMAC signature on stored postParams to prevent tampering
+ * @param responseObject : Object containing the stored postParams
+ * @returns Boolean : true if signature is valid, false otherwise
+ */
+function validateStoredSignature(responseObject){
+	try {
+		// Create a mock httpParameterMap-like structure from the responseObject
+		var HashMap = require('dw/util/HashMap');
+		var mockParameterMap = new HashMap();
+
+		// Map all response fields to the parameter map structure
+		for (var key in responseObject) {
+			if (responseObject.hasOwnProperty(key)) {
+				mockParameterMap.put(key, {stringValue: responseObject[key], rawValue: responseObject[key]});
+			}
+		}
+
+		// Call the existing validateSAMerchantPostRequest function from SecureAcceptanceHelper
+		// This function verifies HMAC signature, profile matching, and required fields
+		var isValid = secureAcceptanceHelper.validateSAMerchantPostRequest(mockParameterMap);
+
+		if (!isValid) {
+			Logger.error('[SAmerchantPost.js] Signature validation failed - HMAC mismatch or invalid profile parameters');
+			return false;
+		}
+
+		return true;
+	} catch (e) {
+		Logger.error('[SAmerchantPost.js] Error during signature validation: {0}', e.message);
+		return false;
+	}
+}
+
 function SAMerchantPostJob()
 {
 	// get all SA order with below query status
@@ -38,8 +72,14 @@ function SAMerchantPostJob()
 						 	throw new Error('Error occured for order');
 						 }
 						 else{
+							// Re-validate HMAC signature before trusting the Decision field
+							var signatureValid = validateStoredSignature(responseObject);
+							if(!signatureValid){
+								Logger.error('[SAmerchantPost.js] HMAC signature validation failed for order:', orderID);
+								throw new Error('HMAC signature validation failed for order');
+							}
 							var Decision = responseObject.Decision;
-							// update payment instrument, payment transaction, billing/shipping details, 
+							// update payment instrument, payment transaction, billing/shipping details,
 							updatePIDetails(order,responseObject,paymentInstrument);
 							}
                      }

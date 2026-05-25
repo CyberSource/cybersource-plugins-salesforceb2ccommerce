@@ -15,9 +15,34 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
 var secureJsonResponse = secureResponseHelper.secureJsonResponse;
 
-server.post('WeChatStatus', csrfProtection.generateToken, function (req, res, next) {
-    var orderNo = request.httpParameterMap.orderNo;
-    var order = OrderMgr.getOrder(orderNo);
+server.post('WeChatStatus', csrfProtection.validateAjaxRequest, function (req, res, next) {
+    var Logger = require('dw/system/Logger');
+    var orderNo = request.httpParameterMap.orderNo.stringValue;
+    var orderToken = request.httpParameterMap.orderToken.stringValue;
+
+    // SECURITY FIX: Validate order ownership via orderToken (per-order secret)
+    // or session.privacy.orderId. Matches the pattern used in CheckoutServices
+    // PayerAuth routes. Customer.ID comparison is unreliable for guests/anonymous
+    // sessions and broke the WeChat redirect flow.
+    var order = null;
+    if (orderNo) {
+        if (orderToken) {
+            order = OrderMgr.getOrder(orderNo, orderToken);
+        } else if (session.privacy.orderId && session.privacy.orderId === orderNo) {
+            order = OrderMgr.getOrder(orderNo);
+        }
+    }
+
+    if (!order) {
+        Logger.error('[CYBWeChat-WeChatStatus] Order ownership validation failed for orderNo: ' + (orderNo || 'null'));
+        secureJsonResponse(res, {
+            submit: false,
+            error: true,
+            pending: false,
+            redirectUrl: URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)).toString()
+        });
+        return next();
+    }
     var paymentInstruments = order.paymentInstruments;
     var pi;
     // Iterate on All Payment Instruments and select PayPal

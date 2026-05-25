@@ -1,4 +1,4 @@
-/* eslint-disable */
+​/* eslint-disable */
 
 /**
  * Safely sanitize HTML content using DOMPurify.
@@ -584,7 +584,8 @@ var init = {
                                     data: {
                                         renderTemplate: data.renderTemplate,
                                         iframe: true,
-                                        orderID: data.orderID
+                                        orderID: data.orderID,
+                                        orderToken: data.orderToken
                                     },
                                     success: function (responseData) {
                                         if (responseData) {

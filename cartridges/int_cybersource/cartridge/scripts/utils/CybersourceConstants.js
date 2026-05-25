@@ -1,9 +1,9 @@
 /*********************************************************************************
-*@file 		  : File Name - CybersourceConstants
-*@description : This script file is used to define the payment method names used 	
-* 				in this cartridge .
+*@file     : File Name - CybersourceConstants
+*@description : This script file is used to define the payment method names used  
+*     in this cartridge .
 *
-*@author	  :	Vibhore Jain
+*@author   : Vibhore Jain
 *@created On  : 27 Dec 2016
 **********************************************************************************
 *@copyright  (C) 2015-2016 Cybersource.  All Rights Reserved.
@@ -91,5 +91,6 @@ CybersourceConstants.SA_REVIEWORDER = 'REVIEWORDER';
 CybersourceConstants.SA_SUMMARY = 'SUMMARY';
 CybersourceConstants.SA_GOTO = 'GOTO';
 CybersourceConstants.SA_CANCEL = 'SA_CANCEL';
+CybersourceConstants.SA_MANDATORY_RESPONSE_SIGNED_FIELDS = ['signed_field_names', 'signed_date_time', 'transaction_id', 'req_reference_number', 'decision', 'reason_code'];
 CybersourceConstants.SECUREACCEPTANCEHELPER = CybersourceConstants.CS_CORE_SCRIPT+'secureacceptance/helper/SecureAcceptanceHelper';
 module.exports = CybersourceConstants;

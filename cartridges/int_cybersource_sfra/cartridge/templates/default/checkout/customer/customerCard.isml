@@ -1,0 +1,69 @@
+<div class="card-body">
+    <form autocomplete="on" id="guest-customer" class="guest-form" method="POST" action="${URLUtils.url('CheckoutServices-SubmitCustomer')}"
+        <isprint value=${pdict.forms.guestCustomerForm.attributes} encoding="off" /> novalidate>
+        <fieldset class="customer-information-block">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="form-control-label">
+                            ${Resource.msg('field.customer.email','checkout',null)}
+                        </label>
+                        <input type="text" class="form-control email" id="email-guest"
+                                    value="${(pdict.customer.registeredUser && pdict.customer.profile && pdict.customer.profile.email) ? pdict.customer.profile.email : ''}" <isprint value=${pdict.forms.guestCustomerForm.email.attributes} encoding="off"/>
+                                    aria-describedby="guestEmailInvalidMessage" >
+                        <div class="invalid-feedback" id="guestEmailInvalidMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <isif condition="${!pdict.customer.registeredUser}">
+                <button class="btn btn-primary btn-block submit-customer" type="submit" name="submit" value="submit-customer" disabled>
+                    ${Resource.msg('button.guest.customer.continue', 'checkout', null)}
+                </button>
+            </isif>
+             <strong>${Resource.msg('msg.guest.customer.exists', 'checkout', null)} <button type="button" class="btn btn-link js-login-customer">${Resource.msg('action.customer.login', 'checkout', null)}</button></strong>
+        </fieldset>
+        <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+    </form>
+    <form autocomplete="on" id="registered-customer" method="POST" class="registered-form d-none" action="${URLUtils.url('CheckoutServices-LoginCustomer')}"
+        <isprint value=${pdict.forms.registeredCustomerForm.attributes} encoding="off" /> novalidate>
+        <fieldset class="customer-information-block">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <label class="form-control-label">
+                            ${Resource.msg('field.customer.email','checkout',null)}
+                        </label>
+                        <input type="text" class="form-control email" id="email"
+                                    value="${(pdict.customer.registeredUser && pdict.customer.profile && pdict.customer.profile.email) ? pdict.customer.profile.email : ''}" <isprint value=${pdict.forms.registeredCustomerForm.email.attributes} encoding="off"/>
+                                    aria-describedby="emailInvalidMessage" >
+                        <div class="invalid-feedback" id="emailInvalidMessage"></div>
+                    </div>
+                    <div class="form-group password-form">
+                        <label class="form-control-label">
+                            ${Resource.msg('field.customer.password','checkout',null)}
+                        </label>
+                        <input type="password" class="form-control password" id="password"
+                                    <isprint value=${pdict.forms.registeredCustomerForm.password.attributes} encoding="off"/>
+                                    aria-describedby="passwordInvalidMessage" >
+                        <div class="invalid-feedback" id="passwordInvalidMessage"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="col-12">
+                        <div class="mb-sm-3">
+                            <button class="btn btn-primary btn-block submit-customer-login" type="submit" name="submit" value="submit-login" disabled>
+                                ${Resource.msg('button.customer.login', 'checkout', null)}
+                            </button>
+
+                            <button class="btn btn-light btn-block js-cancel-login" name="submit" value="cancel-login">
+                                ${Resource.msg('button.customer.login.cancel', 'checkout', null)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+        </fieldset>
+        <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+    </form>
+
+</div>

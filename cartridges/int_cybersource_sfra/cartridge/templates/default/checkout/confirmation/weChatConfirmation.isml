@@ -7,7 +7,8 @@
   	<input type="hidden" name="noOfCalls" id="noOfCalls" value="${pdict.noOfCalls}"/>
 	<input type="hidden" name="serviceCallInterval" id="serviceCallInterval" value="${pdict.serviceCallInterval}"/>
   <input type="hidden" id="orderNo" value="${pdict.orderNo}"/>
-  <input type="hidden" name="weChatUrl" id="weChatUrl" value="${URLUtils.url('CYBWeChat-WeChatStatus').toString()}"/>
+  <input type="hidden" id="orderToken" value="${pdict.orderToken}"/>
+  <input type="hidden" name="weChatUrl" id="weChatUrl" value="${URLUtils.url('CYBWeChat-WeChatStatus', dw.web.CSRFProtection.getTokenName(), dw.web.CSRFProtection.generateToken()).toString()}"/>
   <input type="hidden" name="weChatRedirectUrl" id="weChatRedirectUrl" value="${dw.web.URLUtils.https('Checkout-Begin', 'stage', 'payment')}"/>
   <div class="modal fade show" id="weChatModal" role="dialog" >
     <div class="modal-dialog">

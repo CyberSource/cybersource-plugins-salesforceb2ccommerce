@@ -97,6 +97,12 @@ function SAResponse(currentRequestParameterMap) {
 	if (result.success && !empty(result.responseObject)) {
 		var orderNo = currentRequestParameterMap.req_reference_number.stringValue;
 		var order = OrderMgr.getOrder(orderNo);
+		if (empty(order) || empty(customer) || empty(order.customer) || order.customer.ID !== customer.ID) {
+			Logger.error('[SECURE_ACCEPTANCE] SAResponse function order ownership validation failed for order '+orderNo);
+			return {nextStep : CybersourceConstants.SA_GOTO,
+					location : URLUtils.https('Cart-Show','saerror','true'),
+					render : 'secureacceptance/saredirect'};
+		}
 	    var responseObject = result.responseObject;
 		if('saredirect'.equals(currentRequestParameterMap.provider.stringValue)){
 			var redirectResponse = SARedirectResponse(responseObject,order);
@@ -262,6 +268,10 @@ function SAHandleResponse(httpParameterMap) {
 		var OrderMgr = require('dw/order/OrderMgr');
 		var orderNo = httpParameterMap.req_reference_number.stringValue;
 		var order = OrderMgr.getOrder(orderNo);
+		if (empty(order) || empty(customer) || empty(order.customer) || order.customer.ID !== customer.ID) {
+			Logger.error('[SECURE_ACCEPTANCE] SAHandleResponse order ownership validation failed for order '+orderNo);
+			return {error:true};
+		}
 	    var saResponse,responseObject;
 			paymentInstrument = secureAcceptanceHelper.GetPaymemtInstument(order);
 			if (null !== order && !empty(paymentInstrument)) {

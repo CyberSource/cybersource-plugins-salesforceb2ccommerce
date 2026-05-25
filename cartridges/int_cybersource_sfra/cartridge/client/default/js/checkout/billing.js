@@ -111,7 +111,7 @@ base.paymentTabs = function () {
             }
             $('.bankTransfer').hide();
             $('.next-step-button .submit-payment').attr('id', 'showSubmitPayment');
-        } else if (methodID === 'VISA_CHECKOUT' || methodID === 'KLARNA' || methodID === 'DW_GOOGLE_PAY' || (methodID === 'PAYPAL' && $(this).attr('data-auth') === 're-auth')) {
+        } else if (methodID === 'VISA_CHECKOUT' || methodID === 'KLARNA' || methodID === 'DW_GOOGLE_PAY' || methodID === 'DW_APPLE_PAY' || (methodID === 'PAYPAL' && $(this).attr('data-auth') === 're-auth')) {
             $('.next-step-button .submit-payment').attr('id', 'hideSubmitPayment');
         } else {
             $('.next-step-button .submit-payment').attr('id', 'showSubmitPayment');
