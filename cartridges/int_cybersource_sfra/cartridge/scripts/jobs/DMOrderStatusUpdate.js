@@ -77,13 +77,26 @@ function parseJSONResponse(message, orderHashMap) {
 /**
  * Function to set date time parameter to provide
  * as an input. The date range will pick
- * records of 24 hours before the current time
- * @returns {*} obj
+ * records of 24 hours before the current time.
+ * If explicit StartTime/EndTime job params are provided (format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'),
+ * those will be used directly instead of the lookback calculation.
+ * NOTE: CyberSource API enforces a max range of 24 hours per request.
+ * @param {Object} jobParams jobParams
+ * @returns {Object} obj
  */
-function setDateTimeForParameter() {
+function setDateTimeForParameter(jobParams) {
     var System = require('dw/system/System');
     var StringUtils = require('dw/util/StringUtils');
     var time = {};
+
+    // Use explicit job parameters if provided (for backfill scenarios)
+    if (jobParams && !empty(jobParams.StartTime) && !empty(jobParams.EndTime)) {
+        logger.info('Using explicit StartTime: {0} and EndTime: {1} from job parameters', jobParams.StartTime, jobParams.EndTime);
+        time.start = jobParams.StartTime;
+        time.end = jobParams.EndTime;
+        return time;
+    }
+
     var endDate = System.getCalendar();
     endDate.setTimeZone('GMT');
     time.end = StringUtils.formatCalendar(endDate, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'');
@@ -203,7 +216,7 @@ function orderStatusUpdate(jobParams) {
     //  Process Orders and change status in SFCC
     if (orderHashMap.length > 0) {
         //  Mapping request object with correct parameter
-        var time = setDateTimeForParameter();
+        var time = setDateTimeForParameter(jobParams);
         var responseObj = null;
 
         //  Call conversion report service
