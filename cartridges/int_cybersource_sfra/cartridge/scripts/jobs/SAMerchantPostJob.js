@@ -142,6 +142,23 @@ function validateStoredSignature(responseObject) {
             return false;
         }
 
+        // eslint-disable-next-line no-prototype-builtins
+        if (responseObject.hasOwnProperty('Decision')
+                && responseObject.Decision !== responseObject.decision) {
+            Logger.error('[SAmerchantPost.js] Decision alias mismatch '
+                + '(Decision={0}, decision={1}, orderRef={2}) - rejecting tampered CO',
+                responseObject.Decision, responseObject.decision, reqReferenceNumber);
+            return false;
+        }
+        // eslint-disable-next-line no-prototype-builtins
+        if (responseObject.hasOwnProperty('ReasonCode')
+                && responseObject.ReasonCode !== responseObject.reason_code) {
+            Logger.error('[SAmerchantPost.js] ReasonCode alias mismatch '
+                + '(ReasonCode={0}, reason_code={1}, orderRef={2}) - rejecting tampered CO',
+                responseObject.ReasonCode, responseObject.reason_code, reqReferenceNumber);
+            return false;
+        }
+
         return true;
     } catch (e) {
         Logger.error('[SAmerchantPost.js] Error during signature validation: {0}', e.message);

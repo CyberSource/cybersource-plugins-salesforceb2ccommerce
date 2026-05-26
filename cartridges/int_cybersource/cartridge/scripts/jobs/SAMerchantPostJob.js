@@ -16,7 +16,6 @@ var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 
 /**
- *
  * @param responseObject : Object containing the stored postParams
  * @returns Boolean : true if signature is valid, false otherwise
  */
@@ -114,13 +113,27 @@ function validateStoredSignature(responseObject) {
 			return false;
 		}
 
+		if (responseObject.hasOwnProperty('Decision')
+				&& responseObject.Decision !== responseObject.decision) {
+			Logger.error('[SAmerchantPost.js] Decision alias mismatch ' +
+				'(Decision={0}, decision={1}, orderRef={2}) - rejecting tampered CO',
+				responseObject.Decision, responseObject.decision, reqReferenceNumber);
+			return false;
+		}
+		if (responseObject.hasOwnProperty('ReasonCode')
+				&& responseObject.ReasonCode !== responseObject.reason_code) {
+			Logger.error('[SAmerchantPost.js] ReasonCode alias mismatch ' +
+				'(ReasonCode={0}, reason_code={1}, orderRef={2}) - rejecting tampered CO',
+				responseObject.ReasonCode, responseObject.reason_code, reqReferenceNumber);
+			return false;
+		}
+
 		return true;
 	} catch (e) {
-		Logger.error('[SAmerchantPost.js] Error during signature validation: {0}', e.message);
+		Logger.error('[SAmerchantPost.js] error during signature validation: {0}', e.message);
 		return false;
 	}
 }
-
 
 function constantTimeEquals(a, b) {
 	if (typeof a !== 'string' || typeof b !== 'string') {
