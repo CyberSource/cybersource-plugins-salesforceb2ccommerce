@@ -5,6 +5,29 @@ var server = require('server');
 var secureResponseHelper = require('*/cartridge/scripts/helpers/secureResponseHelper');
 var secureRender = secureResponseHelper.secureRender;
 
+function getDeviceFingerprintToken() {
+    if (empty(session.privacy.cybsDeviceFingerprintToken)) {
+        var Mac = require('dw/crypto/Mac');
+        var KeyRef = require('dw/crypto/KeyRef');
+        var Encoding = require('dw/crypto/Encoding');
+        var Bytes = require('dw/util/Bytes');
+        var Site = require('dw/system/Site');
+        var libCybersource = require('*/cartridge/scripts/cybersource/libCybersource');
+        var CybersourceHelper = libCybersource.getCybersourceHelper();
+
+        var currentSite = Site.getCurrent();
+        var alias = CybersourceHelper.getAliasForSignature(); // CsAuth_Alias site preference
+        var key = !empty(alias) ? new KeyRef(alias) : new Bytes(currentSite.getID(), 'UTF-8');
+        var message = session.sessionID + ':' + currentSite.getID();
+
+        var mac = new Mac(Mac.HMAC_SHA_256);
+        var digestBytes = mac.digest(message, key);
+        session.privacy.cybsDeviceFingerprintToken = Encoding.toHex(digestBytes);
+    }
+    return session.privacy.cybsDeviceFingerprintToken;
+}
+
+
 /*
  * Controller that handles the Cybersource Device Fingerprint
 */
@@ -16,7 +39,7 @@ server.get('GetFingerprint', function (req, res, next) {
     var Site = require('dw/system/Site');
     var orgID = Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintOrgId');
     var merchID = Site.getCurrent().getCustomPreferenceValue('CsMerchantId');
-    var sessionID = session.sessionID;
+    var sessionID = getDeviceFingerprintToken();
     var location = Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintJetmetrixLocation');
     var now = new Date().valueOf();
     var devicefingerprintTTL = Site.getCurrent().getCustomPreferenceValue('CsDeviceFingerprintTTL');
@@ -36,7 +59,7 @@ server.get('GetFingerprint', function (req, res, next) {
             }
         }
     }
-    sessionID = libCybersource.replaceCharsInSessionID(sessionID);
+
 
     var url = location + '/fp/tags.js?org_id=' + orgID + '&session_id=' + merchID + sessionID;
 
@@ -52,3 +75,4 @@ server.get('GetFingerprint', function (req, res, next) {
  * Module exports
  */
 module.exports = server.exports();
+ 

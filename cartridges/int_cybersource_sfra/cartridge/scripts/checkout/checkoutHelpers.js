@@ -222,7 +222,7 @@ function validatePayment(req, currentBasket) {
             invalid = false;
         }
 
-        if (CsSAType) {
+        if (CsSAType && PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstrument.paymentMethod)) {
             invalid = false;
         }
 
@@ -242,7 +242,7 @@ function validatePayment(req, currentBasket) {
         }
 
         if (invalid) {
-            break; // there is an invalid payment instrument
+            break; 
         }
     }
 
@@ -302,13 +302,11 @@ function validatePPLForm(form) {
 function handlePayPal(basket) {
     var ccPaymentInstrs = basket.getPaymentInstruments();
 
-    // get all credit card payment instruments
 
     var iter = ccPaymentInstrs.iterator();
     var existingPI = null;
     var PaymentInstrument = require('dw/order/PaymentInstrument');
 
-    // remove them
     while (iter.hasNext()) {
         existingPI = iter.next();
         if (existingPI.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {

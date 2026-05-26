@@ -20,31 +20,125 @@ var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER
 var PaymentInstrumentUtils = require('*/cartridge/scripts/utils/PaymentInstrumentUtils');
 
 /**
- * Validates the HMAC signature on stored postParams to prevent tampering
+ * Constant-time string comparison to avoid leaking byte-position info via
+ * early-exit timing on signature comparison.
+ * @param {string} a first
+ * @param {string} b second
+ * @returns {boolean} true if equal
+ */
+function constantTimeEquals(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+        return false;
+    }
+    if (a.length !== b.length) {
+        return false;
+    }
+    var diff = 0;
+    for (var i = 0; i < a.length; i += 1) {
+        // eslint-disable-next-line no-bitwise
+        diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+    }
+    return diff === 0;
+}
+
+/**
+ *
  * @param {Object} responseObject containing the stored postParams
  * @returns {boolean} true if signature is valid, false otherwise
  */
 function validateStoredSignature(responseObject) {
     try {
-        // Create a mock httpParameterMap-like structure from the responseObject
-        var HashMap = require('dw/util/HashMap');
-        var mockParameterMap = new HashMap();
+        if (responseObject === null || typeof responseObject !== 'object') {
+            Logger.error('[SAmerchantPost.js] stored postParams not an object');
+            return false;
+        }
 
-        // Map all response fields to the parameter map structure
+        var storedSignature = responseObject.signature;
+        var signedFieldNames = responseObject.signed_field_names;
+        var reqAccessKey = responseObject.req_access_key;
+        var reqProfileId = responseObject.req_profile_id;
+        var reqReferenceNumber = responseObject.req_reference_number;
+
+        if (empty(storedSignature) || empty(signedFieldNames)
+                || empty(reqAccessKey) || empty(reqProfileId)
+                || empty(reqReferenceNumber)) {
+            Logger.warn('[SAmerchantPost.js] rejecting legacy CO '
+                + 'without stored signature metadata (orderRef={0}); drain pre-fix '
+                + 'queue before relying on this verdict.',
+                reqReferenceNumber || responseObject.req_reference_number || '<unknown>');
+            return false;
+        }
+
+        var Site = require('dw/system/Site').getCurrent();
+        var secretKey = null;
+
+        var redirectAccessKey = Site.getCustomPreferenceValue('SA_Redirect_AccessKey');
+        var redirectProfileId = Site.getCustomPreferenceValue('SA_Redirect_ProfileID');
+        var redirectSecretKey = Site.getCustomPreferenceValue('SA_Redirect_SecretKey');
         // eslint-disable-next-line
-        for (var key in responseObject) {
+        if (!empty(redirectAccessKey) && !empty(redirectProfileId)
+                && reqAccessKey === redirectAccessKey
+                && reqProfileId === redirectProfileId) {
+            secretKey = redirectSecretKey;
+        }
+
+        if (secretKey === null) {
+            var iframeAccessKey = Site.getCustomPreferenceValue('SA_Iframe_AccessKey');
+            var iframeProfileId = Site.getCustomPreferenceValue('SA_Iframe_ProfileID');
+            var iframeSecretKey = Site.getCustomPreferenceValue('SA_Iframe_SecretKey');
             // eslint-disable-next-line
-            if (responseObject.hasOwnProperty(key)) {
-                mockParameterMap.put(key, { stringValue: responseObject[key], rawValue: responseObject[key] });
+            if (!empty(iframeAccessKey) && !empty(iframeProfileId)
+                    && reqAccessKey === iframeAccessKey
+                    && reqProfileId === iframeProfileId) {
+                secretKey = iframeSecretKey;
             }
         }
 
-        // Call the existing validateSAMerchantPostRequest function from SecureAcceptanceHelper
-        // This function verifies HMAC signature, profile matching, and required fields
-        var isValid = secureAcceptanceHelper.validateSAMerchantPostRequest(mockParameterMap);
+        // eslint-disable-next-line
+        if (empty(secretKey)) {
+            Logger.error('[SAmerchantPost.js] stored profile/access key '
+                + 'does not match any configured SA profile (orderRef={0})',
+                reqReferenceNumber);
+            return false;
+        }
 
-        if (!isValid) {
-            Logger.error('[SAmerchantPost.js] Signature validation failed - HMAC mismatch or invalid profile parameters');
+        var mandatory = ['signed_field_names', 'decision', 'reason_code', 'auth_amount', 'req_reference_number'];
+        var signedFieldsArr = signedFieldNames.split(',');
+        var signedFieldsLower = signedFieldNames.toLowerCase();
+        for (var m = 0; m < mandatory.length; m += 1) {
+            if (signedFieldsLower.indexOf(mandatory[m].toLowerCase()) === -1) {
+                Logger.error('[SAmerchantPost.js] stored signed_field_names '
+                    + 'missing mandatory field {0} (orderRef={1})',
+                    mandatory[m], reqReferenceNumber);
+                return false;
+            }
+        }
+
+        var parts = [];
+        for (var i = 0; i < signedFieldsArr.length; i += 1) {
+            var fieldName = signedFieldsArr[i];
+            // eslint-disable-next-line no-prototype-builtins
+            if (!responseObject.hasOwnProperty(fieldName)) {
+                Logger.error('[SAmerchantPost.js] stored postParams '
+                    + 'missing signed field {0} (orderRef={1})',
+                    fieldName, reqReferenceNumber);
+                return false;
+            }
+            parts.push(fieldName + '=' + responseObject[fieldName]);
+        }
+        var dataToSign = parts.join(',');
+
+        var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
+        var computedSignature = CommonHelper.signedDataUsingHMAC256(dataToSign, secretKey, null);
+        if (computedSignature === null || typeof computedSignature === 'undefined') {
+            Logger.error('[SAmerchantPost.js] HMAC computation returned empty');
+            return false;
+        }
+
+        if (!constantTimeEquals(computedSignature.toString(), storedSignature)) {
+            Logger.error('[SAmerchantPost.js] HMAC mismatch on stored '
+                + 'postParams (orderRef={0}) - rejecting potentially tampered CO',
+                reqReferenceNumber);
             return false;
         }
 

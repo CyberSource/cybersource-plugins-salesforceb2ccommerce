@@ -162,7 +162,6 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
     var orderID = req.form.orderID || req.form.OrderNo;
     var orderToken = req.form.orderToken;
 
-    // SECURITY FIX: Validate order ownership before processing.
     // Accept either a matching orderToken or a matching session.privacy.orderId.
     if (orderID) {
         if (orderToken) {
@@ -847,10 +846,6 @@ server.post('PayerAuthSetup', csrfProtection.generateToken, function (req, res, 
     }
     orderToken = req.form.orderToken || req.querystring.orderToken;
 
-    // SECURITY FIX: Validate order ownership before processing.
-    // Accept either a matching orderToken (cryptographic per-order secret) or
-    // a matching session.privacy.orderId. This prevents an attacker from
-    // triggering PayerAuthSetup on an arbitrary order.
     if (!orderID) {
         Logger.error('[CheckoutServices-PayerAuthSetup] Missing orderID');
         res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
@@ -933,8 +928,6 @@ server.post('PayerAuthSubmit', csrfProtection.generateToken, function (req, res,
     var orderID = req.form.orderID || req.form.OrderNo;
     var orderToken = req.form.orderToken;
 
-    // SECURITY FIX: Validate order ownership before processing.
-    // Accept either a matching orderToken or a matching session.privacy.orderId.
     if (orderID) {
         if (orderToken) {
             order = OrderMgr.getOrder(orderID, orderToken);

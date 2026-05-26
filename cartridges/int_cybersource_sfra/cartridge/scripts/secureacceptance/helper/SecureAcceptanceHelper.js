@@ -214,9 +214,6 @@ function buildDataFromResponse(httpParameterMap) {
 
     // eslint-disable-next-line
     if (!empty(signedFieldNames)) {
-        // SECURITY FIX: Validate that mandatory fields are included in signed_field_names
-        // to prevent HMAC signature bypass attacks. Use exact membership (split by comma)
-        // rather than substring matching to avoid false positives like "reason_code_2".
         var signedFieldsList = signedFieldNames.toLowerCase().split(',');
         var signedFieldsSet = {};
         for (i = 0; i < signedFieldsList.length; i += 1) {
@@ -225,9 +222,6 @@ function buildDataFromResponse(httpParameterMap) {
 
         var mandatoryFields = ['signed_field_names', 'decision', 'reason_code', 'req_reference_number'];
 
-        // auth_amount is only present in authorization/sale responses, not in token-only
-        // (create_payment_token / update_payment_token) flows used by SilentPost. Require it
-        // only when the response indicates an authorization transaction.
         // eslint-disable-next-line
         var reqTxnType = (httpParameterMap.req_transaction_type && httpParameterMap.req_transaction_type.stringValue)
             ? httpParameterMap.req_transaction_type.stringValue.toLowerCase() : '';
@@ -634,7 +628,7 @@ function CreateHMACSignature(paymentInstrument, LineItemCtnr, responseParameterM
         // parse secure acceptance response and create and authorize signature
         if (paymentInstrument !== null && responseParameterMap !== null) {
             dataToSign = buildDataFromResponse(responseParameterMap);
-            // SECURITY FIX: Check if buildDataFromResponse returned null due to missing mandatory fields
+  
             if (dataToSign === null) {
                 Logger.error('Error in Secure acceptance signature validation: mandatory fields missing');
                 return { error: true, errorMsg: 'Security validation failed: mandatory signed fields missing' };
@@ -803,7 +797,7 @@ function validateSAMerchantPostRequest(httpParameterMap) {
         }
         // prepare signature and send match result
         var dataToSign = buildDataFromResponse(httpParameterMap);
-        // SECURITY FIX: Check if buildDataFromResponse returned null due to missing mandatory fields
+
         if (dataToSign === null) {
             Logger.error('[SecureAcceptanceHelper.js] validateSAMerchantPostRequest - Security validation failed: mandatory signed fields missing');
             return false;
@@ -846,8 +840,7 @@ function hmacEquals(computedSignature, receivedSignature) {
 function jsonSecureAcceptanceResponse(httpParameterMap) {
     var responseJSON;
     if (httpParameterMap !== null) {
-        // SECURITY FIX: Use proper JSON object construction instead of string concatenation
-        // to prevent JSON injection attacks
+
         var responseObject = {
             Decision: httpParameterMap.decision.stringValue,
             ReasonCode: httpParameterMap.reason_code.stringValue,
@@ -883,6 +876,29 @@ function jsonSecureAcceptanceResponse(httpParameterMap) {
             req_card_number: httpParameterMap.req_card_number.stringValue,
             req_card_type: httpParameterMap.req_card_type.stringValue
         };
+
+        responseObject.signature = httpParameterMap.signature.stringValue;
+        responseObject.signed_field_names = httpParameterMap.signed_field_names.stringValue;
+        responseObject.req_access_key = httpParameterMap.req_access_key.stringValue;
+        responseObject.req_profile_id = httpParameterMap.req_profile_id.stringValue;
+        responseObject.req_reference_number = httpParameterMap.req_reference_number.stringValue;
+
+        // Capture every field listed in signed_field_names verbatim. The HMAC is
+        // computed over these raw values, so we must store them as the gateway sent
+        // them (any normalization would invalidate the signature).
+        var signedFieldNames = httpParameterMap.signed_field_names.stringValue;
+        // eslint-disable-next-line
+        if (!empty(signedFieldNames)) {
+            var signedFieldsArr = signedFieldNames.split(',');
+            for (var i = 0; i < signedFieldsArr.length; i += 1) {
+                var fieldName = signedFieldsArr[i];
+                var paramRef = httpParameterMap.get(fieldName);
+                if (paramRef !== null) {
+                    responseObject[fieldName] = paramRef.rawValue;
+                }
+            }
+        }
+
         responseJSON = JSON.stringify(responseObject);
     }
     return responseJSON;

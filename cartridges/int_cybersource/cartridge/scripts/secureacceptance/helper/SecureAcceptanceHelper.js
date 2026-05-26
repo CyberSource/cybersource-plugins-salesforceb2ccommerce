@@ -770,7 +770,6 @@ return false;
 
 /**
  * JSON prepare for Merchant POST parameters
- * SECURITY FIX: Use proper JSON object creation to prevent JSON injection attacks
  */
 function jsonSecureAcceptanceResponse(httpParameterMap) {
 var responseJSON;
@@ -812,7 +811,24 @@ if(null !== httpParameterMap){
         req_card_type: httpParameterMap.req_card_type.stringValue
     };
 
-    // Use JSON.stringify() to safely serialize the object, preventing injection attacks
+    responseObject.signature = httpParameterMap.signature.stringValue;
+    responseObject.signed_field_names = httpParameterMap.signed_field_names.stringValue;
+    responseObject.req_access_key = httpParameterMap.req_access_key.stringValue;
+    responseObject.req_profile_id = httpParameterMap.req_profile_id.stringValue;
+    responseObject.req_reference_number = httpParameterMap.req_reference_number.stringValue;
+
+    var signedFieldNames = httpParameterMap.signed_field_names.stringValue;
+    if (!empty(signedFieldNames)) {
+        var signedFieldsArr = signedFieldNames.split(',');
+        for (var i = 0; i < signedFieldsArr.length; i++) {
+            var fieldName = signedFieldsArr[i];
+            var paramRef = httpParameterMap.get(fieldName);
+            if (paramRef !== null) {
+                responseObject[fieldName] = paramRef.rawValue;
+            }
+        }
+    }
+
     responseJSON = JSON.stringify(responseObject);
 }
 return responseJSON;

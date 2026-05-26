@@ -19,11 +19,6 @@ server.post('WeChatStatus', csrfProtection.validateAjaxRequest, function (req, r
     var Logger = require('dw/system/Logger');
     var orderNo = request.httpParameterMap.orderNo.stringValue;
     var orderToken = request.httpParameterMap.orderToken.stringValue;
-
-    // SECURITY FIX: Validate order ownership via orderToken (per-order secret)
-    // or session.privacy.orderId. Matches the pattern used in CheckoutServices
-    // PayerAuth routes. Customer.ID comparison is unreliable for guests/anonymous
-    // sessions and broke the WeChat redirect flow.
     var order = null;
     if (orderNo) {
         if (orderToken) {
