@@ -90,10 +90,14 @@ function setDateTimeForParameter(jobParams) {
     var time = {};
 
     // Use explicit job parameters if provided (for backfill scenarios)
-    if (jobParams && !empty(jobParams.StartTime) && !empty(jobParams.EndTime)) {
-        logger.info('Using explicit StartTime: {0} and EndTime: {1} from job parameters', jobParams.StartTime, jobParams.EndTime);
-        time.start = jobParams.StartTime;
-        time.end = jobParams.EndTime;
+    // Coerce to JS string via concatenation to handle Java String objects
+    var startTimeParam = (jobParams && jobParams.StartTime) ? (jobParams.StartTime + '').replace(/^\s+|\s+$/g, '') : '';
+    var endTimeParam = (jobParams && jobParams.EndTime) ? (jobParams.EndTime + '').replace(/^\s+|\s+$/g, '') : '';
+
+    if (startTimeParam !== '' && endTimeParam !== '') {
+        logger.info('Using explicit StartTime: {0} and EndTime: {1} from job parameters', startTimeParam, endTimeParam);
+        time.start = startTimeParam;
+        time.end = endTimeParam;
         return time;
     }
 
