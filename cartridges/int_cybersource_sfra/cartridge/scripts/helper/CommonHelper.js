@@ -59,7 +59,7 @@ function setKlarnaDiscountAmount(processor, purchaseObject, basket, locale) {
         }
         // set discount amount into purchase object when amount is not zero
         if (discountAmount !== 0) {
-            purchaseObject.setDiscountAmount(StringUtils.formatNumber(discountAmount, '000000.00', locale));
+            purchaseObject.setDiscountAmount(discountAmount.toString());
         }
     }
 }
@@ -96,7 +96,7 @@ function CreateCybersourcePurchaseTotalsObject(Basket) {
     purchaseObject.setCurrency(amount.currencyCode);
     // set the discount amount for Klarna
     //setKlarnaDiscountAmount(processor, purchaseObject, basket, locale);
-    purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value, '000000.00', locale));
+    purchaseObject.setGrandTotalAmount(amount.value.toString()); 
 
     return { success: true, purchaseTotals: purchaseObject };
 }
@@ -353,7 +353,7 @@ function removeExistingPaymentInstrumentsExceptPaymentType(basket, paymentType) 
  */
 function setTotalAmount(processor, itemObject, lineItemValue, locale) {
     if (CybersourceConstants.BANK_TRANSFER_PROCESSOR.equals(processor) || CybersourceConstants.KLARNA_PROCESSOR.equals(processor) || CybersourceConstants.WECHAT_PROCESSOR.equals(processor)) {
-        itemObject.setTotalAmount(StringUtils.formatNumber(lineItemValue, '000000.00', locale));
+        itemObject.setTotalAmount(lineItemValue.toString());
     }
 }
 
@@ -386,56 +386,56 @@ function CreateCybersourceItemObject(Basket) {
         var ItemObject = require('*/cartridge/scripts/cybersource/CybersourceItemObject');
         var itemObject = new ItemObject();
         if (lineItem instanceof dw.order.ProductLineItem) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.basePrice.value.toString());
             itemObject.setQuantity(lineItem.quantityValue);
             itemObject.setProductCode('default');
             itemObject.setProductName(lineItem.productName);
             itemObject.setProductSKU(lineItem.productID);
-            itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value, '000000.00', locale));
+            itemObject.setTaxAmount(lineItem.adjustedTax.value.toString());
             setTotalAmount(processor, itemObject, lineItem.adjustedGrossPrice.value, locale);
 
             if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0) {
-                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value / lineItem.quantityValue, '000000.00', locale);
+                itemObject.unitPrice = (lineItem.proratedPrice.value / lineItem.quantityValue).toString();
                 setTotalAmount(processor, itemObject, lineItem.proratedPrice.value, locale);
             }
 
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.GiftCertificateLineItem) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.grossPrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.grossPrice.value.toString());
             itemObject.setQuantity(1);
             itemObject.setProductCode('GIFT_CERTIFICATE');
             itemObject.setProductName('GIFT_CERTIFICATE');
             itemObject.setProductSKU('GIFT_CERTIFICATE');
-            itemObject.setTaxAmount(StringUtils.formatNumber(0, '000000.00', locale));
+            itemObject.setTaxAmount('0');
             setTotalAmount(processor, itemObject, lineItem.grossPrice.value, locale);
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.ShippingLineItem) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.adjustedPrice.value.toString());
             itemObject.setQuantity(1);
             itemObject.setProductCode(lineItem.ID);
             itemObject.setProductName(lineItem.ID);
             itemObject.setProductSKU(lineItem.ID);
             if (lineItem.adjustedTax.available && lineItem.adjustedTax.value > 0) {
-                itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value, '000000.00', locale));
+                itemObject.setTaxAmount(lineItem.adjustedTax.value.toString());
             }
             setTotalAmount(processor, itemObject, lineItem.adjustedGrossPrice.value, locale);
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.ProductShippingLineItem) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.adjustedPrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.adjustedPrice.value.toString());
             itemObject.setQuantity(1);
             itemObject.setProductCode('SHIPPING_SURCHARGE');
             itemObject.setProductName('SHIPPING_SURCHARGE');
             itemObject.setProductSKU('SHIPPING_SURCHARGE');
-            itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.adjustedTax.value, '000000.00', locale));
+            itemObject.setTaxAmount(lineItem.adjustedTax.value.toString());
             setTotalAmount(processor, itemObject, lineItem.adjustedGrossPrice.value, locale);
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.PriceAdjustment) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setUnitPrice((lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value).toString());
             itemObject.setQuantity(lineItem.quantity);
             itemObject.setProductCode('PRICE_ADJUSTMENT');
             itemObject.setProductName('PRICE_ADJUSTMENT');
             itemObject.setProductSKU('PRICE_ADJUSTMENT');
-            itemObject.setTaxAmount(StringUtils.formatNumber(lineItem.tax.value < 0 ? 0 : lineItem.tax.value, '000000.00', locale));
+            itemObject.setTaxAmount((lineItem.tax.value < 0 ? 0 : lineItem.tax.value).toString());
             setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
             itemObject.setId(count);
         } else {
@@ -456,10 +456,10 @@ function setKlarnaTaxAmount(itemObject, taxvalue, locale) {
      amount to zero for gross policy */
     if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
         // set the tax value for net taxation policy
-        itemObject.setTaxAmount(StringUtils.formatNumber(taxvalue, '000000.00', locale));
+        itemObject.setTaxAmount(taxvalue.toString());
     } else {
         // set the tax for gross taxation policy
-        itemObject.setTaxAmount(StringUtils.formatNumber(0, '000000.00', locale));
+        itemObject.setTaxAmount('0');
     }
 }
 
@@ -467,10 +467,10 @@ function setKlarnaTotalAmount(itemObject, totalAmount, taxvalue, locale) {
     /* set the total amount based on tax policy */
     if (dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET) {
         // set totalamount for net taxation policy
-        itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount + taxvalue, '000000.00', locale));
+        itemObject.setTotalAmount((totalAmount + taxvalue).toString());
     } else {
         // set totalamount for gross taxation policy
-        itemObject.setTotalAmount(StringUtils.formatNumber(totalAmount, '000000.00', locale));
+        itemObject.setTotalAmount(totalAmount.toString());
     }
 
 }
@@ -495,7 +495,7 @@ function CreateKlarnaItemObject(Basket) {
         var itemObject = new ItemObject();
         if (lineItem instanceof dw.order.ProductLineItem) {
             // set product line item
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.basePrice.value.toString());
             itemObject.setQuantity(lineItem.quantityValue);
             itemObject.setProductCode('default');
             itemObject.setProductName(lineItem.productName);
@@ -504,14 +504,14 @@ function CreateKlarnaItemObject(Basket) {
             setTotalAmount(processor, itemObject, lineItem.grossPrice.value, locale);
 
             if (lineItem.lineItemCtnr.priceAdjustments.length > 0 || lineItem.proratedPriceAdjustmentPrices.length > 0) {
-                itemObject.unitPrice = StringUtils.formatNumber(lineItem.proratedPrice.value / lineItem.quantityValue, '000000.00', locale);;
+                itemObject.unitPrice = (lineItem.proratedPrice.value / lineItem.quantityValue).toString();
                 setKlarnaTotalAmount(itemObject, lineItem.proratedPrice.value, lineItem.tax.value, locale);
             }
 
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.ShippingLineItem) {
             // set shipping line item
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.basePrice.value.toString());
             itemObject.setQuantity(1);
             itemObject.setProductCode(lineItem.ID);
             itemObject.setProductName(lineItem.ID);
@@ -521,7 +521,7 @@ function CreateKlarnaItemObject(Basket) {
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.ProductShippingLineItem) {
             // set surcharge added on shipping item
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setUnitPrice(lineItem.basePrice.value.toString());
             itemObject.setQuantity(lineItem.quantity.value);
             itemObject.setProductCode('SHIPPING_SURCHARGE');
             itemObject.setProductName('SHIPPING_SURCHARGE');
@@ -530,12 +530,12 @@ function CreateKlarnaItemObject(Basket) {
             setTotalAmount(processor, itemObject, lineItem.grossPrice.value, locale);
             itemObject.setId(count);
         } else if (lineItem instanceof dw.order.PriceAdjustment) {
-            itemObject.setUnitPrice(StringUtils.formatNumber(lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, '000000.00', locale));
+            itemObject.setUnitPrice((lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value).toString());
             itemObject.setQuantity(lineItem.quantity);
             itemObject.setProductCode('PRICE_ADJUSTMENT');
             itemObject.setProductName('PRICE_ADJUSTMENT');
             itemObject.setProductSKU('PRICE_ADJUSTMENT');
-            setKlarnaTaxAmount(itemObject, StringUtils.formatNumber(lineItem.tax.value < 0 ? 0 : lineItem.tax.value, '000000.00', locale));
+            setKlarnaTaxAmount(itemObject, (lineItem.tax.value < 0 ? 0 : lineItem.tax.value).toString());
             setTotalAmount(processor, itemObject, lineItem.basePrice.value < 0 ? 0 : lineItem.basePrice.value, locale);
             itemObject.setId(count);
         } else {
@@ -569,7 +569,7 @@ function CreateCyberSourcePurchaseTotalsObjectUserData(Currency, Amount) {
         if (Number.isNaN(amount)) {
             return { error: true, errorCode: '102', errorMsg: 'Amount value is invalid' };
         }
-        purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(), '000000.00', locale));
+        purchaseObject.setGrandTotalAmount((amount.valueOf()).toString());
     } else {
         return { error: true, errorCode: '101', errorMsg: 'Amount value is missing' };
     }

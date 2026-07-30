@@ -218,6 +218,17 @@ function returnCardType(cardType) {
             case 'diners':
                 cardTypeNew = '005';
                 break;
+            case 'china unionpay':
+                cardTypeNew = '062';
+                break;
+            case 'elo':
+                cardTypeNew = '054';
+                break;
+            case 'cartesbancaires':
+                cardTypeNew = '036'
+                break;
+            default:
+                return '001';
         }
     }
     return cardTypeNew;
@@ -308,8 +319,7 @@ function CreateCyberSourcePurchaseTotalsObjectUserData(currency, Amount) {
     var purchaseObject = new PurchaseTotalsObject();
     purchaseObject.setCurrency(currency);
     amount = parseFloat(amount);
-    var StringUtils = require('dw/util/StringUtils');
-    purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.valueOf(), '000000.00', 'en_US'));
+    purchaseObject.setGrandTotalAmount(amount.valueOf().toString());
     return { success: true, purchaseTotals: purchaseObject };
 }
 

@@ -122,6 +122,9 @@
  | SA_Flex_SharedSecret | Flex Microform Shared Secret                                                                                                                                      
  SA_Flex_AllowedCardNetworks      |   Configure card types for Cybersource Flex Microform | VISA  MASTER DISCOVER  DINERSCLUB JCB MAESTRO AMEX CUP JCREW CARTESBANCAIRES ELO 
 
+ SA_Flex_Card_Prefix (BIN)    |Card prefix (BIN) returned in flex token response. | None 
+Six digit Bin(SIX)   Eight digit BIN (Eight)
+
  Step 4: Navigate to ‘**Administration > Global Preferences >  Locales**’ and ensure the local ‘en_US’ is present. If not present, create a new local with the following information:
  - Language Code: en 
  - Country Code: US

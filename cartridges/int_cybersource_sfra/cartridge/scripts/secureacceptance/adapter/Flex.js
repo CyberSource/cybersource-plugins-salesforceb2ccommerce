@@ -116,6 +116,15 @@ function CreateFlexKey() {
         }
     }
 
+    var CardPrefixPreference = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_Card_Prefix (BIN)');
+    var includeCardPrefix;
+    if(CardPrefixPreference != 'Six'){
+        if(CardPrefixPreference == 'Eight'){
+            includeCardPrefix = true;
+        }else{
+            includeCardPrefix = false;
+        }
+    }
     var digest = {
         'targetOrigins': [
             targetOrigin
@@ -123,7 +132,7 @@ function CreateFlexKey() {
         'allowedCardNetworks': list,
         'clientVersion': "v2",
         'transientTokenResponseOptions':{
-            'includeCardPrefix':false
+            'includeCardPrefix': includeCardPrefix
         }
     };
     var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');

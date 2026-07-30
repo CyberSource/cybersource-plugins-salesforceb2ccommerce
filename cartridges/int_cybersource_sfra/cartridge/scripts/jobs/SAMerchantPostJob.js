@@ -49,7 +49,7 @@ function constantTimeEquals(a, b) {
 function validateStoredSignature(responseObject) {
     try {
         if (responseObject === null || typeof responseObject !== 'object') {
-            Logger.error('[SAmerchantPost.js] stored postParams not an object');
+            Logger.error('[SAmerchantPost.js] : stored postParams not an object');
             return false;
         }
 
@@ -59,16 +59,20 @@ function validateStoredSignature(responseObject) {
         var reqProfileId = responseObject.req_profile_id;
         var reqReferenceNumber = responseObject.req_reference_number;
 
+        // eslint-disable-next-line
         if (empty(storedSignature) || empty(signedFieldNames)
                 || empty(reqAccessKey) || empty(reqProfileId)
                 || empty(reqReferenceNumber)) {
-            Logger.warn('[SAmerchantPost.js] rejecting legacy CO '
+            Logger.warn('[SAmerchantPost.js] : rejecting legacy CO '
                 + 'without stored signature metadata (orderRef={0}); drain pre-fix '
                 + 'queue before relying on this verdict.',
                 reqReferenceNumber || responseObject.req_reference_number || '<unknown>');
             return false;
         }
 
+        // Look up the secret key for the (access_key, profile_id) pair, mirroring
+        // isSAMatchProfileForPost. A forged CO referencing a different profile
+        // will not validate.
         var Site = require('dw/system/Site').getCurrent();
         var secretKey = null;
 
@@ -96,30 +100,36 @@ function validateStoredSignature(responseObject) {
 
         // eslint-disable-next-line
         if (empty(secretKey)) {
-            Logger.error('[SAmerchantPost.js] stored profile/access key '
+            Logger.error('[SAmerchantPost.js] : stored profile/access key '
                 + 'does not match any configured SA profile (orderRef={0})',
                 reqReferenceNumber);
             return false;
         }
 
+        // Reject if signed_field_names omits any of the mandatory fields the
+        // merchant-post handler enforces at receive time (mirrors the inline
+        // list in SecureAcceptanceHelper.buildDataFromResponse).
         var mandatory = ['signed_field_names', 'decision', 'reason_code', 'auth_amount', 'req_reference_number'];
         var signedFieldsArr = signedFieldNames.split(',');
         var signedFieldsLower = signedFieldNames.toLowerCase();
         for (var m = 0; m < mandatory.length; m += 1) {
             if (signedFieldsLower.indexOf(mandatory[m].toLowerCase()) === -1) {
-                Logger.error('[SAmerchantPost.js] stored signed_field_names '
+                Logger.error('[SAmerchantPost.js] : stored signed_field_names '
                     + 'missing mandatory field {0} (orderRef={1})',
                     mandatory[m], reqReferenceNumber);
                 return false;
             }
         }
 
+        // Rebuild canonical signed string using stored raw values, in the order
+        // dictated by signed_field_names. Any field referenced by signed_field_names
+        // but absent from the stored payload is treated as tampering.
         var parts = [];
         for (var i = 0; i < signedFieldsArr.length; i += 1) {
             var fieldName = signedFieldsArr[i];
             // eslint-disable-next-line no-prototype-builtins
             if (!responseObject.hasOwnProperty(fieldName)) {
-                Logger.error('[SAmerchantPost.js] stored postParams '
+                Logger.error('[SAmerchantPost.js] : stored postParams '
                     + 'missing signed field {0} (orderRef={1})',
                     fieldName, reqReferenceNumber);
                 return false;
@@ -131,12 +141,12 @@ function validateStoredSignature(responseObject) {
         var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
         var computedSignature = CommonHelper.signedDataUsingHMAC256(dataToSign, secretKey, null);
         if (computedSignature === null || typeof computedSignature === 'undefined') {
-            Logger.error('[SAmerchantPost.js] HMAC computation returned empty');
+            Logger.error('[SAmerchantPost.js] : HMAC computation returned empty');
             return false;
         }
 
         if (!constantTimeEquals(computedSignature.toString(), storedSignature)) {
-            Logger.error('[SAmerchantPost.js] HMAC mismatch on stored '
+            Logger.error('[SAmerchantPost.js] : HMAC mismatch on stored '
                 + 'postParams (orderRef={0}) - rejecting potentially tampered CO',
                 reqReferenceNumber);
             return false;
@@ -145,7 +155,7 @@ function validateStoredSignature(responseObject) {
         // eslint-disable-next-line no-prototype-builtins
         if (responseObject.hasOwnProperty('Decision')
                 && responseObject.Decision !== responseObject.decision) {
-            Logger.error('[SAmerchantPost.js] Decision alias mismatch '
+            Logger.error('[SAmerchantPost.js] : Decision alias mismatch '
                 + '(Decision={0}, decision={1}, orderRef={2}) - rejecting tampered CO',
                 responseObject.Decision, responseObject.decision, reqReferenceNumber);
             return false;
@@ -153,7 +163,7 @@ function validateStoredSignature(responseObject) {
         // eslint-disable-next-line no-prototype-builtins
         if (responseObject.hasOwnProperty('ReasonCode')
                 && responseObject.ReasonCode !== responseObject.reason_code) {
-            Logger.error('[SAmerchantPost.js] ReasonCode alias mismatch '
+            Logger.error('[SAmerchantPost.js] : ReasonCode alias mismatch '
                 + '(ReasonCode={0}, reason_code={1}, orderRef={2}) - rejecting tampered CO',
                 responseObject.ReasonCode, responseObject.reason_code, reqReferenceNumber);
             return false;
@@ -161,7 +171,7 @@ function validateStoredSignature(responseObject) {
 
         return true;
     } catch (e) {
-        Logger.error('[SAmerchantPost.js] Error during signature validation: {0}', e.message);
+        Logger.error('[SAmerchantPost.js] : error during signature validation: {0}', e.message);
         return false;
     }
 }
