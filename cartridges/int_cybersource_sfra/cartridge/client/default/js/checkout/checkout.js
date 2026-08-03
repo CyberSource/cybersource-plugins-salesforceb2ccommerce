@@ -14,4 +14,12 @@ var shippingHelpers = require('./shipping');
     });
 });
 
+// Wrap the base initialize to enable customer submit buttons after JS is ready
+var originalInitialize = base.initialize;
+base.initialize = function () {
+    originalInitialize();
+    // Enable customer form buttons now that JS event handlers are registered
+    $('.submit-customer, .submit-customer-login').prop('disabled', false);
+};
+
 module.exports = base;

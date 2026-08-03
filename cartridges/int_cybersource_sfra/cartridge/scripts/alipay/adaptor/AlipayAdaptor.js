@@ -101,8 +101,7 @@ function CreateCSPurchaseTotalForAlipay(Order) {
     } else {
         purchaseObject.setCurrency(amount.currencyCode);
     }
-    var StringUtils = require('dw/util/StringUtils');
-    purchaseObject.setGrandTotalAmount(StringUtils.formatNumber(amount.value, '000000.00', 'en_US'));
+    purchaseObject.setGrandTotalAmount(amount.value.toString());
     // set the value of purchase total object in pipeline dictionary
     return { success: true, purchaseTotals: purchaseObject };
 }

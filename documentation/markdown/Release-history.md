@@ -1,6 +1,18 @@
 ## <ins>Release History
 
-**Version 26.1.0 (April, 2025)**
+**Version 26.1.1 (July, 2026)**
+Enhancement:
+• Added support for Canada in Klarna integrations across the Mini Cart and Checkout pages. 
+• Enhanced the Authentication and Authorization flows by introducing Card type value and 
+configurable preferences for Card BIN Prefixes. 
+
+Bug Fix:
+• Resolved identified security findings to improve the overall security, reliability, and stability of 
+integration. 
+• Removed hardcoded amount formatting from payment requests to ensure transaction values 
+are passed in their native format. 
+
+**Version 26.1.0 (April, 2026)**
 Enhancement:
 • Added PayPal v2 support.
 • Updated iDEAL logo.

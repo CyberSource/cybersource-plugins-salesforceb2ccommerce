@@ -27,15 +27,14 @@ function fraudDetection(basket) {
             // eslint-disable-next-line
             decision = session.privacy.CybersourceFraudDecision;
         } else {
-            Logger.error("Error setting fraud decision.  CybersourceFraudDecision missing from session.  Default is set to 'ACCEPT'");
+            Logger.error("Error setting fraud decision.  CybersourceFraudDecision missing from session.  Failing closed - defaulting to REJECT.");
+            decision = 'REJECT';
         }
     }
 
     if (decision === 'REVIEW') {
         status = 'flag';
     } else if (decision === 'REJECT') {
-    //  Reject state shouldn't happen with CS.
-    //  The CC auth returns an error when decision is REJECT, so it shouldn't get to this point.
         status = 'fail';
     }
 

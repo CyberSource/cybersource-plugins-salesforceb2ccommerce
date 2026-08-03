@@ -1,4 +1,4 @@
-/* eslint-disable */
+​/* eslint-disable */
 
 /**
  * Safely sanitize HTML content using DOMPurify.
@@ -584,7 +584,8 @@ var init = {
                                     data: {
                                         renderTemplate: data.renderTemplate,
                                         iframe: true,
-                                        orderID: data.orderID
+                                        orderID: data.orderID,
+                                        orderToken: data.orderToken
                                     },
                                     success: function (responseData) {
                                         if (responseData) {
@@ -619,21 +620,6 @@ var init = {
                                                 var sanitizedIframeSrc = init.sanitizeUrl(iframeSrc);
                                                 
                                                 if (sanitizedIframeSrc) {
-                                                    // SECURITY: Create sandboxed iframe for CyberSource Secure Acceptance
-                                                    // This iframe loads external payment processing page from CyberSource
-                                                    // REQUIRED for PCI DSS compliant credit card processing
-                                                    //
-                                                    // Sandbox permissions (minimum required for payment flow):
-                                                    // - allow-forms: Required to submit payment form to CyberSource
-                                                    // - allow-scripts: Required for 3DS2 authentication JavaScript
-                                                    // - allow-popups: Required for 3DS challenge windows
-                                                    // - allow-top-navigation: Required for redirect after payment
-                                                    // - allow-same-origin: Required by CyberSource for cookie/storage access
-                                                    //
-                                                    // NOTE: allow-same-origin is required by CyberSource Secure Acceptance
-                                                    // for proper payment processing functionality. This is a vendor requirement.
-                                                    //
-                                                    // Using sandbox property (DOMTokenList) for proper security initialization
                                                     var secureIframe = document.createElement('iframe');
                                                     // Set sandbox IMMEDIATELY using property to ensure iframe is sandboxed from creation
                                                     secureIframe.sandbox.add('allow-forms');

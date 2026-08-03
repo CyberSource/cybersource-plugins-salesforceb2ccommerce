@@ -104,7 +104,9 @@ function getDelayFromSelection(value) {
  */
 function weChatCheckStatus(serviceCalls, enforceError) {
     var orderNumber = document.getElementById('orderNo').value;
-    var request = { orderNo: orderNumber };
+    var orderTokenEl = document.getElementById('orderToken');
+    var orderToken = orderTokenEl ? orderTokenEl.value : '';
+    var request = { orderNo: orderNumber, orderToken: orderToken };
     var weChatUrl = document.getElementById('weChatUrl').value;
     var weChatRedirectUrl = document.getElementById('weChatRedirectUrl').value;
     var noOfCalls = document.getElementById('noOfCalls').value;

@@ -4,6 +4,9 @@
 </iscomment>
 	<form id="3dsRedirect" action="${pdict.action}" method="POST" name="3dsRedirect" target="_parent">
 	    <input type="hidden" name="orderID" value="${pdict.OrderNo}"/>
+	    <isif condition="${!empty(pdict.OrderToken)}">
+	        <input type="hidden" name="orderToken" value="${pdict.OrderToken}"/>
+	    </isif>
 	</form>
 
 <script type="text/javascript">

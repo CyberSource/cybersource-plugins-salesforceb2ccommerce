@@ -157,17 +157,22 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
     var OrderMgr = require('dw/order/OrderMgr');
     var Resource = require('dw/web/Resource');
     var Transaction = require('dw/system/Transaction');
+    var Logger = require('dw/system/Logger');
     var order;
-    if (req.form.orderID) {
-        order = OrderMgr.getOrder(req.form.orderID);
-    } else if (req.form.OrderNo) {
-        order = OrderMgr.getOrder(req.form.OrderNo);
+    var orderID = req.form.orderID || req.form.OrderNo;
+    var orderToken = req.form.orderToken;
+
+    // Accept either a matching orderToken or a matching session.privacy.orderId.
+    if (orderID) {
+        if (orderToken) {
+            order = OrderMgr.getOrder(orderID, orderToken);
+        } else if (session.privacy.orderId && session.privacy.orderId === orderID) {
+            order = OrderMgr.getOrder(orderID);
+        }
     }
 
     if (!order) {
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order, true);
-        });
+        Logger.error('[CheckoutServices-SilentPostAuthorize] Order ownership validation failed for orderID: ' + (orderID || 'null'));
         res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
@@ -183,6 +188,7 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
         secureRender(res, 'payerauthentication/3dsRedirect', {
             action: URLUtils.url('CheckoutServices-PayerAuthSetup'),
             OrderNo: order.orderNo,
+            OrderToken: order.orderToken,
         });
         return next();
     }
@@ -506,7 +512,7 @@ function googlePayCheckoutError(req, res, next) {
 }
 
 // eslint-disable-next-line
-server.post('GetGooglePayToken', function (req, res, next) {
+server.post('GetGooglePayToken', csrfProtection.validateRequest, function (req, res, next) {
     var Encoding = require('dw/crypto/Encoding');
     var repsonse = JSON.parse(request.httpParameterMap.paymentData);
     // Extract authentication details from Google Pay response
@@ -558,7 +564,7 @@ server.post('GetGooglePayToken', function (req, res, next) {
 });
 
 //checkout Gpay
-server.post('SubmitPaymentGP', function (req, res, next) {
+server.post('SubmitPaymentGP', csrfProtection.validateRequest, function (req, res, next) {
     var Encoding = require('dw/crypto/Encoding');
     var paymentForm = server.forms.getForm('billing');
     var paymentMethodID = server.forms.getForm('billing').paymentMethod.value;
@@ -750,6 +756,14 @@ server.get('GetCartTotal', function (req, res, next) {
 
 
 if (IsCartridgeEnabled) {
+    var ALLOWED_RENDER_TEMPLATES = [
+        'secureacceptance/secureAcceptanceIframeSummmary',
+        'secureacceptance/secureAcceptanceSilentPost',
+        'services/secureAcceptanceRequestForm',
+        'alipay/alipayIntermediate',
+        'checkout/confirmation/weChatConfirmation'
+    ];
+
     // New route to handle template rendering for some payment methods.
     server.post('ProcessingPayment', server.middleware.https, function (req, res, next) {
         var Logger = require('dw/system/Logger');
@@ -759,6 +773,12 @@ if (IsCartridgeEnabled) {
         var renderTemplate = req.form.renderTemplate;
         var templateDataString = req.form.templateData;
         var isIframe = req.form.iframe === 'true';
+
+        if (!renderTemplate || ALLOWED_RENDER_TEMPLATES.indexOf(renderTemplate) === -1) {
+            Logger.error('Blocked disallowed or missing renderTemplate: ' + renderTemplate);
+            secureJsonResponse(res, { error: true });
+            return next();
+        }
 
         if (renderTemplate) {
             var templateData = {};
@@ -778,7 +798,12 @@ if (IsCartridgeEnabled) {
             // Handle SA-iframe case - render template and return HTML content
             if (isIframe) {
                 var OrderMgr = require('dw/order/OrderMgr');
-                var order = OrderMgr.getOrder(req.form.orderID || req.form.OrderNo);
+                var order = OrderMgr.getOrder(req.form.orderID || req.form.OrderNo, req.form.orderToken);
+                if (!order) {
+                    Logger.error('Order not found or token mismatch for orderID: ' + (req.form.orderID || req.form.OrderNo));
+                    secureJsonResponse(res, { error: true });
+                    return next();
+                }
                 templateData.Order = order;
                 secureRender(res, renderTemplate, templateData);
                 return next();
@@ -806,18 +831,35 @@ server.post('PayerAuthSetup', csrfProtection.generateToken, function (req, res, 
     var Transaction = require('dw/system/Transaction');
     var OrderMgr = require('dw/order/OrderMgr');
 
+    var Logger = require('dw/system/Logger');
     var order;
+    var orderID;
+    var orderToken;
     if (req.form.orderID) {
-        order = OrderMgr.getOrder(req.form.orderID);
+        orderID = req.form.orderID;
     }
     else if (req.form.OrderNo) {
-        order = OrderMgr.getOrder(req.form.OrderNo);
+        orderID = req.form.OrderNo;
     }
     else if (req.querystring.orderID) {
-        order = OrderMgr.getOrder(req.querystring.orderID);
+        orderID = req.querystring.orderID;
+    }
+    orderToken = req.form.orderToken || req.querystring.orderToken;
+
+    if (!orderID) {
+        Logger.error('[CheckoutServices-PayerAuthSetup] Missing orderID');
+        res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
+        return next();
+    }
+
+    if (orderToken) {
+        order = OrderMgr.getOrder(orderID, orderToken);
+    } else if (session.privacy.orderId && session.privacy.orderId === orderID) {
+        order = OrderMgr.getOrder(orderID);
     }
 
     if (!order) {
+        Logger.error('[CheckoutServices-PayerAuthSetup] Order ownership validation failed for orderID: ' + orderID);
         res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
@@ -856,6 +898,7 @@ server.post('PayerAuthSetup', csrfProtection.generateToken, function (req, res, 
         jwtToken: result.accessToken,
         referenceID: result.referenceID,
         orderNo: order.orderNo,
+        orderToken: order.orderToken,
         ddcUrl: result.deviceDataCollectionURL,
         action: action
     });
@@ -880,17 +923,21 @@ server.post('PayerAuthSubmit', csrfProtection.generateToken, function (req, res,
         }
     }
 
+    var Logger = require('dw/system/Logger');
     var order;
-    if (req.form.orderID) {
-        order = OrderMgr.getOrder(req.form.orderID);
+    var orderID = req.form.orderID || req.form.OrderNo;
+    var orderToken = req.form.orderToken;
+
+    if (orderID) {
+        if (orderToken) {
+            order = OrderMgr.getOrder(orderID, orderToken);
+        } else if (session.privacy.orderId && session.privacy.orderId === orderID) {
+            order = OrderMgr.getOrder(orderID);
+        }
     }
-    else if (req.form.OrderNo) {
-        order = OrderMgr.getOrder(req.form.OrderNo);
-    }
+
     if (!order) {
-        Transaction.wrap(function () {
-            OrderMgr.failOrder(order, true);
-        });
+        Logger.error('[CheckoutServices-PayerAuthSubmit] Order ownership validation failed for orderID: ' + (orderID || 'null'));
         res.redirect(URLUtils.https('Checkout-Begin', 'stage', 'payment', 'payerAuthError', Resource.msg('error.technical', 'checkout', null)));
         return next();
     }
@@ -930,6 +977,7 @@ server.post('PayerAuthSubmit', csrfProtection.generateToken, function (req, res,
         secureRender(res, 'payerauthentication/3dsRedirect', {
             action: URLUtils.url('CheckoutServices-PayerAuthSetup'),
             OrderNo: order.orderNo,
+            OrderToken: order.orderToken,
         });
         return next();
     }

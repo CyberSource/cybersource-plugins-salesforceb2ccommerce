@@ -210,7 +210,7 @@ function GetOrder(args) {
 			order = OrderMgr.getOrder(session.privacy.order_id);
 			session.privacy.order_id = "";
 		} 
-		if (order && order.orderToken) {
+		if (order && order.orderToken && (order.customer.ID === session.customer.ID)) {
 			return {success:true, Order:order};
 		}
 		var Status = require('dw/system/Status');

@@ -14,14 +14,20 @@ var secureRender = secureResponseHelper.secureRender;
 // eslint-disable-next-line
 server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
     var order;
-    if (!empty(req.querystring.orderID)) {
-        order = OrderMgr.getOrder(req.querystring.orderID);
+    var orderID = req.querystring.orderID || req.querystring.order_id;
+    var orderToken = req.querystring.orderToken || req.querystring.order_token;
+    if (!empty(orderID)) {
+        if (!empty(orderToken)) {
+            order = OrderMgr.getOrder(orderID, orderToken);
+        } else if (orderID === session.privacy.orderId) {
+            order = OrderMgr.getOrder(session.privacy.orderId);
+        }
     } else {
         order = OrderMgr.getOrder(session.privacy.orderId);
     }
-    if (!empty(order) && !empty(order.orderToken)) {
-        // eslint-disable-next-line
-        var orderToken = order.orderToken;
+    if (!order) {
+        res.redirect(URLUtils.url('Cart-Show'));
+        return next();
     }
     var Provider = require('*/cartridge/scripts/Provider');
     var providerParam = req.querystring.provider;
@@ -41,7 +47,10 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 COHelpers.reviewOrder(providerResult.Order.orderNo, req, res, next);
                 return next();
             } if (providerResult.load3DRequest) {
-                secureRender(res, 'cart/payerAuthenticationRedirect');
+                secureRender(res, 'cart/payerAuthenticationRedirect', {
+                    orderID: order.orderNo,
+                    orderToken: order.orderToken
+                });
                 return next();
             } if (providerResult.submit) {
                 COHelpers.submitOrder(providerResult.Order.orderNo, req, res, next);
@@ -71,7 +80,7 @@ server.use('Submit', csrfProtection.generateToken, function (req, res, next) {
                 return next();
             }
             if (providerResult.sca) {
-                res.redirect(URLUtils.https('CheckoutServices-PayerAuthSetup', 'orderID', order.orderNo));
+                res.redirect(URLUtils.https('CheckoutServices-PayerAuthSetup', 'orderID', order.orderNo, 'orderToken', order.orderToken));
                 return next();
             }
         }
@@ -102,3 +111,4 @@ server.get('SubmitOrderConformation', csrfProtection.generateToken, function (re
     return next();
 });
 module.exports = server.exports();
+ 

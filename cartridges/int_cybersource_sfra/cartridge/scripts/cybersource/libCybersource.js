@@ -600,7 +600,7 @@ var CybersourceHelper = {
         var order = OrderMgr.getOrder(refCode);
         var paymentMethod = order.paymentInstruments[0].paymentMethod;
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
-
+        var cardHelper = require('*/cartridge/scripts/helper/CardHelper');
 
         if (enableDeviceFingerprint && CybersourceHelper.getCardDecisionManagerEnable()) {
             fingerprint = replaceCharsInSessionID(session.sessionID);
@@ -620,6 +620,11 @@ var CybersourceHelper = {
         if (transientToken) {
                 request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
                 request.tokenSource.transientToken = transientToken;
+                var cardTypeValue = form.creditCardFields.cardType.value;
+                if (cardTypeValue) {
+                    request.card = new CybersourceHelper.getcsReference().Card();
+                    request.card.cardType = cardHelper.ReturnCardType(cardTypeValue);
+                }
         } else if (!empty(card)) {
             if (empty(card.getCreditCardToken())) {
                 request.card = copyCreditCard(card);
@@ -889,6 +894,7 @@ var CybersourceHelper = {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var cardHelper = require('*/cartridge/scripts/helper/CardHelper');
 
         setClientData(serviceRequest, orderNo);
 
@@ -916,6 +922,8 @@ var CybersourceHelper = {
         } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
             serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+            serviceRequest.card = new CybersourceHelper.getcsReference().Card();
+            serviceRequest.card.cardType = cardHelper.ReturnCardType(creditCardForm.cardType.value);
         }
         serviceRequest.payerAuthSetupService = new CybersourceHelper.getcsReference().PayerAuthSetupService();
         serviceRequest.payerAuthSetupService.run = true;
@@ -925,6 +933,7 @@ var CybersourceHelper = {
         var serviceRequest = serviceRequestObj;
         serviceRequest.merchantID = CybersourceHelper.getMerchantID();
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+        var cardHelper = require('*/cartridge/scripts/helper/CardHelper');
 
         setClientData(serviceRequest, orderNo);
 
@@ -964,15 +973,16 @@ var CybersourceHelper = {
         } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
             serviceRequest.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             serviceRequest.tokenSource.transientToken = creditCardForm.flexresponse.value;
+            serviceRequest.card = new CybersourceHelper.getcsReference().Card();
+            serviceRequest.card.cardType = cardHelper.ReturnCardType(creditCardForm.cardType.value);
         }
         serviceRequest.payerAuthEnrollService = new CybersourceHelper.getcsReference().PayerAuthEnrollService();
         serviceRequest.purchaseTotals = new CybersourceHelper.getcsReference().PurchaseTotals();
         serviceRequest.purchaseTotals.currency = amount.currencyCode;
         var items = [];
         var item = new CybersourceHelper.getcsReference().Item();
-        var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber(amount.value, '000000.00');
+        item.unitPrice = (amount.value).toString();
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
@@ -990,7 +1000,10 @@ var CybersourceHelper = {
         }
 
         var URLUtils = require('dw/web/URLUtils');
-        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo).toString();
+        var OrderMgr = require('dw/order/OrderMgr');
+        var orderForToken = OrderMgr.getOrder(orderNo);
+        var enrollOrderToken = orderForToken ? orderForToken.orderToken : '';
+        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo, 'orderToken', enrollOrderToken).toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);
@@ -1009,9 +1022,8 @@ var CybersourceHelper = {
         request.purchaseTotals.currency = 'USD';
         var items = [];
         var item = new CybersourceHelper.getcsReference().Item();
-        var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber('100', '000000.00');
+        item.unitPrice = '100';
         items.push(item);
         request.item = items;
         request.payerAuthEnrollService.run = true;
@@ -1027,9 +1039,8 @@ var CybersourceHelper = {
         request.purchaseTotals.currency = 'USD';
         var items = [];
         var item = new CybersourceHelper.getcsReference().Item();
-        var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber('100', '000000.00');
+        item.unitPrice = '100';
         items.push(item);
         request.item = items;
         request.payerAuthValidateService.run = true;
@@ -1079,6 +1090,7 @@ var CybersourceHelper = {
         setClientData(request, orderNo);
         var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
         var Resource = require('dw/web/Resource');
+        var cardHelper = require('*/cartridge/scripts/helper/CardHelper');
 
         var isGooglePay = paymentInstrument.paymentMethod === CybersourceConstants.METHOD_GooglePay;
         var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
@@ -1098,6 +1110,8 @@ var CybersourceHelper = {
         } else if (null !== creditCardForm && !empty(creditCardForm.flexresponse.value) && isCreditCard) {
             request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             request.tokenSource.transientToken = creditCardForm.flexresponse.value;
+            request.card = new CybersourceHelper.getcsReference().Card();
+            request.card.cardType = cardHelper.ReturnCardType(creditCardForm.cardType.value);
         }
 
         if (billTo !== null) {
@@ -1113,9 +1127,8 @@ var CybersourceHelper = {
         request.purchaseTotals.currency = amount.currencyCode;
         var items = [];
         var item = new CybersourceHelper.getcsReference().Item();
-        var StringUtils = require('dw/util/StringUtils');
         item.id = 0;
-        item.unitPrice = StringUtils.formatNumber(amount.value, '000000.00');
+        item.unitPrice = (amount.value).toString();
         items.push(item);
         request.item = items;
 

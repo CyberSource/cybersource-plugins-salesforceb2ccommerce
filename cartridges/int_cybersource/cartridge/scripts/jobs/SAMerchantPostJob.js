@@ -15,6 +15,140 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Resource = require('dw/web/Resource');
 var Transaction = require('dw/system/Transaction');
 
+/**
+ * @param responseObject : Object containing the stored postParams
+ * @returns Boolean : true if signature is valid, false otherwise
+ */
+function validateStoredSignature(responseObject) {
+	try {
+		if (responseObject === null || typeof responseObject !== 'object') {
+			Logger.error('[SAmerchantPost.js] stored postParams not an object');
+			return false;
+		}
+
+		var storedSignature = responseObject.signature;
+		var signedFieldNames = responseObject.signed_field_names;
+		var reqAccessKey = responseObject.req_access_key;
+		var reqProfileId = responseObject.req_profile_id;
+		var reqReferenceNumber = responseObject.req_reference_number;
+
+		if (empty(storedSignature) || empty(signedFieldNames)
+				|| empty(reqAccessKey) || empty(reqProfileId)
+				|| empty(reqReferenceNumber)) {
+			Logger.warn('[SAmerchantPost.js] rejecting legacy CO ' +
+				'without stored signature metadata (orderRef={0}); drain pre-fix ' +
+				'queue before relying on this verdict.',
+				reqReferenceNumber || responseObject.req_reference_number || '<unknown>');
+			return false;
+		}
+
+		var Site = require('dw/system/Site').getCurrent();
+		var secretKey = null;
+
+		var redirectAccessKey = Site.getCustomPreferenceValue('SA_Redirect_AccessKey');
+		var redirectProfileId = Site.getCustomPreferenceValue('SA_Redirect_ProfileID');
+		var redirectSecretKey = Site.getCustomPreferenceValue('SA_Redirect_SecretKey');
+		if (!empty(redirectAccessKey) && !empty(redirectProfileId)
+				&& reqAccessKey === redirectAccessKey
+				&& reqProfileId === redirectProfileId) {
+			secretKey = redirectSecretKey;
+		}
+
+		if (secretKey === null) {
+			var iframeAccessKey = Site.getCustomPreferenceValue('SA_Iframe_AccessKey');
+			var iframeProfileId = Site.getCustomPreferenceValue('SA_Iframe_ProfileID');
+			var iframeSecretKey = Site.getCustomPreferenceValue('SA_Iframe_SecretKey');
+			if (!empty(iframeAccessKey) && !empty(iframeProfileId)
+					&& reqAccessKey === iframeAccessKey
+					&& reqProfileId === iframeProfileId) {
+				secretKey = iframeSecretKey;
+			}
+		}
+
+		if (empty(secretKey)) {
+			Logger.error('[SAmerchantPost.js] stored profile/access key ' +
+				'does not match any configured SA profile (orderRef={0})',
+				reqReferenceNumber);
+			return false;
+		}
+
+		var CybersourceConstants = require('~/cartridge/scripts/utils/CybersourceConstants');
+		var mandatory = CybersourceConstants.SA_MANDATORY_RESPONSE_SIGNED_FIELDS;
+		var signedFieldsArr = signedFieldNames.split(',');
+		if (mandatory) {
+			for (var m = 0; m < mandatory.length; m++) {
+				if (signedFieldsArr.indexOf(mandatory[m]) === -1) {
+					Logger.error('[SAmerchantPost.js] stored signed_field_names ' +
+						'missing mandatory field {0} (orderRef={1})',
+						mandatory[m], reqReferenceNumber);
+					return false;
+				}
+			}
+		}
+
+		var parts = [];
+		for (var i = 0; i < signedFieldsArr.length; i++) {
+			var fieldName = signedFieldsArr[i];
+			if (!responseObject.hasOwnProperty(fieldName)) {
+				Logger.error('[SAmerchantPost.js] stored postParams ' +
+					'missing signed field {0} (orderRef={1})',
+					fieldName, reqReferenceNumber);
+				return false;
+			}
+			parts.push(fieldName + '=' + responseObject[fieldName]);
+		}
+		var dataToSign = parts.join(',');
+
+		var CommonHelper = require('~/cartridge/scripts/helper/CommonHelper');
+		var computedSignature = CommonHelper.signedDataUsingHMAC256(dataToSign, secretKey);
+		if (computedSignature === null || typeof computedSignature === 'undefined') {
+			Logger.error('[SAmerchantPost.js] HMAC computation returned empty');
+			return false;
+		}
+
+		if (!constantTimeEquals(computedSignature.toString(), storedSignature)) {
+			Logger.error('[SAmerchantPost.js] HMAC mismatch on stored ' +
+				'postParams (orderRef={0}) - rejecting potentially tampered CO',
+				reqReferenceNumber);
+			return false;
+		}
+
+		if (responseObject.hasOwnProperty('Decision')
+				&& responseObject.Decision !== responseObject.decision) {
+			Logger.error('[SAmerchantPost.js] Decision alias mismatch ' +
+				'(Decision={0}, decision={1}, orderRef={2}) - rejecting tampered CO',
+				responseObject.Decision, responseObject.decision, reqReferenceNumber);
+			return false;
+		}
+		if (responseObject.hasOwnProperty('ReasonCode')
+				&& responseObject.ReasonCode !== responseObject.reason_code) {
+			Logger.error('[SAmerchantPost.js] ReasonCode alias mismatch ' +
+				'(ReasonCode={0}, reason_code={1}, orderRef={2}) - rejecting tampered CO',
+				responseObject.ReasonCode, responseObject.reason_code, reqReferenceNumber);
+			return false;
+		}
+
+		return true;
+	} catch (e) {
+		Logger.error('[SAmerchantPost.js] error during signature validation: {0}', e.message);
+		return false;
+	}
+}
+
+function constantTimeEquals(a, b) {
+	if (typeof a !== 'string' || typeof b !== 'string') {
+		return false;
+	}
+	if (a.length !== b.length) {
+		return false;
+	}
+	var diff = 0;
+	for (var i = 0; i < a.length; i++) {
+		diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+	}
+	return diff === 0;
+}
+
 function SAMerchantPostJob()
 {
 	// get all SA order with below query status
@@ -38,8 +172,14 @@ function SAMerchantPostJob()
 						 	throw new Error('Error occured for order');
 						 }
 						 else{
+							// Re-validate HMAC signature before trusting the Decision field
+							var signatureValid = validateStoredSignature(responseObject);
+							if(!signatureValid){
+								Logger.error('[SAmerchantPost.js] HMAC signature validation failed for order:', orderID);
+								throw new Error('HMAC signature validation failed for order');
+							}
 							var Decision = responseObject.Decision;
-							// update payment instrument, payment transaction, billing/shipping details, 
+							// update payment instrument, payment transaction, billing/shipping details,
 							updatePIDetails(order,responseObject,paymentInstrument);
 							}
                      }

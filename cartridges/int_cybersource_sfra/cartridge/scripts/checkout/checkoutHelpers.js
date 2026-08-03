@@ -222,7 +222,7 @@ function validatePayment(req, currentBasket) {
             invalid = false;
         }
 
-        if (CsSAType) {
+        if (CsSAType && PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstrument.paymentMethod)) {
             invalid = false;
         }
 
@@ -242,7 +242,7 @@ function validatePayment(req, currentBasket) {
         }
 
         if (invalid) {
-            break; // there is an invalid payment instrument
+            break; 
         }
     }
 
@@ -302,13 +302,11 @@ function validatePPLForm(form) {
 function handlePayPal(basket) {
     var ccPaymentInstrs = basket.getPaymentInstruments();
 
-    // get all credit card payment instruments
 
     var iter = ccPaymentInstrs.iterator();
     var existingPI = null;
     var PaymentInstrument = require('dw/order/PaymentInstrument');
 
-    // remove them
     while (iter.hasNext()) {
         existingPI = iter.next();
         if (existingPI.paymentMethod.equals(PaymentInstrument.METHOD_GIFT_CERTIFICATE)) {
@@ -473,6 +471,10 @@ function reviewOrder(orderId, req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
+    if (session.privacy.orderId && session.privacy.orderId !== orderId) {
+        res.redirect(URLUtils.url('Cart-Show'));
+        return next();
+    }
     var order = OrderMgr.getOrder(orderId);
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
 
@@ -510,6 +512,10 @@ function submitOrder(orderId, req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
+    if (session.privacy.orderId && session.privacy.orderId !== orderId) {
+        res.redirect(URLUtils.url('Cart-Show'));
+        return next();
+    }
     var order = OrderMgr.getOrder(orderId);
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', currentBasket);
     var Resource = require('dw/web/Resource');
@@ -593,7 +599,7 @@ function submitApplePayOrder(order, req, res, next) {
     var server = require('server');
     var OrderModel = require('*/cartridge/models/order');
 
-    if (!order && req.querystring.order_token !== order.getOrderToken()) {
+    if (!order || req.querystring.order_token !== order.getOrderToken()) {
         return next(new Error('Order token does not match'));
     }
     var fraudDetectionStatus = HookMgr.callHook('app.fraud.detection', 'fraudDetection', order);

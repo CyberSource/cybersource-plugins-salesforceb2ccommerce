@@ -16,6 +16,9 @@
 	</div>
 	<form class="payerAuthRedirect" action="${pdict.action}" method="POST" name="payerAuthRedirect" target="_parent">
 		<input type="hidden" name="OrderNo" id="OrderNo" value="${pdict.orderNo}"/>
+		<isif condition="${!empty(pdict.orderToken)}">
+			<input type="hidden" name="orderToken" id="orderToken" value="${pdict.orderToken}"/>
+		</isif>
 		<input type="hidden" name="browserfields" id="browserfields" value= ""/>
 	</form>
 </body>
