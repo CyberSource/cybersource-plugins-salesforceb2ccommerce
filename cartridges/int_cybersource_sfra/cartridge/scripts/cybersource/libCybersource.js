@@ -937,20 +937,25 @@ var CybersourceHelper = {
 
         setClientData(serviceRequest, orderNo);
 
+        var PayerAuthSetupHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+        //  Device data collection may have run on an earlier request (Flex Microform collects the
+        //  browser fields at card entry), so fall back to the stored copy. Every enrollment call has
+        //  to carry these fields, not only the ones routed through deviceDataCollection.isml.
+        var browserFields = (payerauthArgs && payerauthArgs.parsedBrowserfields)
+            || PayerAuthSetupHelper.getBrowserFields()
+            || {};
+
         if (billTo !== null) {
-            if(payerauthArgs && payerauthArgs.parsedBrowserfields){
-                var browserFields = payerauthArgs.parsedBrowserfields;
-                
-                // Set browser fields on billTo
-                if(browserFields.httpBrowserScreenHeight) billTo.httpBrowserScreenHeight = browserFields.httpBrowserScreenHeight;
-                if(browserFields.httpBrowserScreenWidth) billTo.httpBrowserScreenWidth = browserFields.httpBrowserScreenWidth;
-                if(browserFields.httpBrowserColorDepth) billTo.httpBrowserColorDepth = browserFields.httpBrowserColorDepth;
-                if(browserFields.httpBrowserJavaEnabled !== undefined) billTo.httpBrowserJavaEnabled = browserFields.httpBrowserJavaEnabled;
-                if(browserFields.httpBrowserJavaScriptEnabled !== undefined) billTo.httpBrowserJavaScriptEnabled = browserFields.httpBrowserJavaScriptEnabled;
-                if(browserFields.httpBrowserLanguage) billTo.httpBrowserLanguage = browserFields.httpBrowserLanguage;
-                if(browserFields.httpBrowserTimeDifference !== undefined) billTo.httpBrowserTimeDifference = browserFields.httpBrowserTimeDifference;
-                if(browserFields.ipAddress) billTo.ipAddress = request.httpRemoteAddress;
-            }
+            // Set browser fields on billTo
+            if(browserFields.httpBrowserScreenHeight) billTo.httpBrowserScreenHeight = browserFields.httpBrowserScreenHeight;
+            if(browserFields.httpBrowserScreenWidth) billTo.httpBrowserScreenWidth = browserFields.httpBrowserScreenWidth;
+            if(browserFields.httpBrowserColorDepth) billTo.httpBrowserColorDepth = browserFields.httpBrowserColorDepth;
+            if(browserFields.httpBrowserJavaEnabled !== undefined) billTo.httpBrowserJavaEnabled = browserFields.httpBrowserJavaEnabled;
+            if(browserFields.httpBrowserJavaScriptEnabled !== undefined) billTo.httpBrowserJavaScriptEnabled = browserFields.httpBrowserJavaScriptEnabled;
+            if(browserFields.httpBrowserLanguage) billTo.httpBrowserLanguage = browserFields.httpBrowserLanguage;
+            if(browserFields.httpBrowserTimeDifference !== undefined) billTo.httpBrowserTimeDifference = browserFields.httpBrowserTimeDifference;
+            //  Taken from the live request rather than the client payload, which never sends it.
+            billTo.ipAddress = request.httpRemoteAddress;
             serviceRequest.billTo = copyBillTo(billTo);
         }
         var Resource = require('dw/web/Resource');
@@ -986,24 +991,27 @@ var CybersourceHelper = {
         items.push(item);
         serviceRequest.item = items;
         serviceRequest.payerAuthEnrollService.run = true;
-        serviceRequest.payerAuthEnrollService.referenceID = paymentInstrument.custom.PayerAuthSetupReferenceID;
+        //  The reference ID may sit on the payment instrument (order-time setup) or on the session
+        //  (setup ran at card entry, before a payment instrument existed).
+        serviceRequest.payerAuthEnrollService.referenceID = PayerAuthSetupHelper.getSetupReferenceID(paymentInstrument);
         if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
             serviceRequest.payerAuthEnrollService.challengeCode = '04';
         }
 
-        // Set payerAuthEnrollService fields from browser data
-        if(payerauthArgs && payerauthArgs.parsedBrowserfields){
-            var browserFields = payerauthArgs.parsedBrowserfields;
-            if(browserFields.httpUserAgent) serviceRequest.payerAuthEnrollService.httpUserAgent = browserFields.httpUserAgent;
-            if(browserFields.httpUserAccept) serviceRequest.payerAuthEnrollService.httpUserAccept = request.httpHeaders.get('accept');
-            if(browserFields.deviceChannel) serviceRequest.payerAuthEnrollService.deviceChannel = browserFields.deviceChannel;
-        }
+        // Set payerAuthEnrollService fields from browser data, falling back to the live request
+        serviceRequest.payerAuthEnrollService.httpUserAgent = browserFields.httpUserAgent || request.httpUserAgent;
+        serviceRequest.payerAuthEnrollService.httpUserAccept = request.httpHeaders.get('accept');
+        serviceRequest.payerAuthEnrollService.deviceChannel = browserFields.deviceChannel || 'Browser';
 
         var URLUtils = require('dw/web/URLUtils');
         var OrderMgr = require('dw/order/OrderMgr');
         var orderForToken = OrderMgr.getOrder(orderNo);
         var enrollOrderToken = orderForToken ? orderForToken.orderToken : '';
-        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('COPlaceOrder-Submit', 'provider', 'card', 'orderID', orderNo, 'orderToken', enrollOrderToken).toString();
+        //  Returns to a thin interstitial rather than straight to COPlaceOrder-Submit. It forwards
+        //  these same parameters on to COPlaceOrder-Submit, but landing on a same-origin page first
+        //  lets the challenge window know the challenge has ended before the validation and order
+        //  placement run. See CheckoutServices-PayerAuthReturn.
+        serviceRequest.payerAuthEnrollService.returnURL = URLUtils.https('CheckoutServices-PayerAuthReturn', 'provider', 'card', 'orderID', orderNo, 'orderToken', enrollOrderToken).toString();
         serviceRequest.payerAuthEnrollService.mobilePhone = phoneNumber;
         // var currentDevice = session.privacy.device;
         serviceRequest.payerAuthEnrollService.transactionMode = getTransactionMode(deviceType);

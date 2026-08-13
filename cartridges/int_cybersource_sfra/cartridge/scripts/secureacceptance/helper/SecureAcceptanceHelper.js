@@ -1124,7 +1124,23 @@ function AuthorizeCreditCard(args) {
             isGooglePayPayerAuth = false;
         }
     }
-    if (args.payerauthArgs && args.payerauthArgs.isPayerAuthSetupCompleted !== true) {
+    //  Skip the setup detour when setup already ran - either earlier in this checkout (it fires at
+    //  card entry) or on a previous pass through the order-time PayerAuthSetup route.
+    //
+    //  When payerauthArgs is absent - which is every call from base CheckoutServices-PlaceOrder,
+    //  since it invokes handlePayments(order, order.orderNo) with two arguments - a missing reference
+    //  is treated as "setup still owed" for card payments only. That saves a reference-less
+    //  enrollment that would come back 478 before bouncing to the setup route anyway. Google Pay and
+    //  Visa Checkout also reach this function, and they stay on their existing path.
+    var PayerAuthSetupHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+    var setupReferenceID = PayerAuthSetupHelper.getSetupReferenceID(paymentInstrument);
+    // eslint-disable-next-line
+    var setupPending = empty(setupReferenceID)
+        && (args.payerauthArgs
+            ? args.payerauthArgs.isPayerAuthSetupCompleted !== true
+            : String(paymentInstrument.paymentMethod) === CybersourceConstants.METHOD_CREDIT_CARD);
+
+    if (setupPending) {
         var isPayerAuthEnabled = CardHelper.PayerAuthEnable(paymentInstrument.creditCardType);
         if (isGooglePayPayerAuth === false) {
             isPayerAuthEnabled.paEnabled = false;

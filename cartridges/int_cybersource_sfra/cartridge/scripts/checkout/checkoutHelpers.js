@@ -5,6 +5,14 @@
 */
 
 var base = module.superModule;
+
+/*
+    Captured before the assignments at the bottom of this file replace it. This module exports the
+    superModule object itself, so base.createOrder becomes our own createOrder once that runs - calling
+    base.createOrder from inside it would recurse until the stack overflows.
+*/
+var baseCreateOrder = base.createOrder;
+
 var renderTemplateHelper = require('*/cartridge/scripts/renderTemplateHelper');
 var Transaction = require('dw/system/Transaction');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
@@ -122,6 +130,40 @@ function savePaymentInstrumentToWallet(billingDataObj, currentBasket, customer) 
     }
     Transaction.commit();
     return storedPaymentInstrument;
+}
+
+/**
+ * Creates the order, using the order number reserved before the Payer Auth Setup call when there is
+ * one, so that setup and enrollment report the same merchantReferenceCode to Cybersource.
+ *
+ * Only payer auth checkouts reserve a number, so every other flow falls straight through to the base
+ * implementation and keeps a platform generated order number.
+ * @param {dw.order.Basket} currentBasket - the current basket
+ * @returns {dw.order.Order|null} the order, or null when it could not be created
+ */
+function createOrder(currentBasket) {
+    var PayerAuthSetupHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+    var reservedOrderNo = PayerAuthSetupHelper.getReservedOrderNo();
+
+    if (!reservedOrderNo) {
+        return baseCreateOrder(currentBasket);
+    }
+
+    //  A reservation is single use. Drop it before creating, so that a failure here can never lead to
+    //  a second attempt with a number the platform may already have consumed.
+    PayerAuthSetupHelper.clearOrderNo();
+
+    try {
+        return Transaction.wrap(function () {
+            return OrderMgr.createOrder(currentBasket, reservedOrderNo);
+        });
+    } catch (e) {
+        //  Fall back to a platform generated number rather than dead-ending the checkout. The
+        //  enrollment call then reports a different merchantReferenceCode than setup did, which is
+        //  the pre-existing behaviour - the two calls are still linked by the setup reference ID.
+        require('dw/system/Logger').error('[checkoutHelpers] Could not create order with reserved number {0}: {1}', reservedOrderNo, e.message);
+        return baseCreateOrder(currentBasket);
+    }
 }
 
 /**
@@ -631,6 +673,7 @@ function submitApplePayOrder(order, req, res, next) {
 }
 
 base.savePaymentInstrumentToWallet = savePaymentInstrumentToWallet;
+base.createOrder = createOrder;
 base.handlePayments = handlePayments;
 base.validatePayment = validatePayment;
 base.getOrderPaymentInstruments = getOrderPaymentInstruments;

@@ -1,5 +1,15 @@
 ## <ins>Release History
 
+
+**Version 26.1.2 (August, 2026)**
+Enhancement:
+• Refined the payer authentication workflow to initiate Device Data Collection (DDC) only after customer card details are received. 
+• Added support for PayPal metadata to enhance transaction processing and traceability. 
+• Resolved an issue preventing the Decision Manager job from updating records correctly. 
+
+Bug Fix:
+• Added timeout handling for Device Data Collection (DDC) to prevent payer authentication failures caused by delayed or unresponsive DDC processing. 
+
 **Version 26.1.1 (July, 2026)**
 Enhancement:
 • Added support for Canada in Klarna integrations across the Mini Cart and Checkout pages. 

@@ -1,5 +1,11 @@
 <isloop items="${pdict.customer.customerPaymentInstruments}" var="paymentInstrument" status="loopSate">
-    <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}" data-uuid="${paymentInstrument.UUID}">
+    <iscomment>
+        data-card-type lets the payer auth trigger decide whether this card needs setup + device data
+        collection, without having to parse the display text below.
+    </iscomment>
+    <div class="row saved-payment-instrument ${loopSate.first ? 'selected-payment' : ''}"
+         data-uuid="${paymentInstrument.UUID}"
+         data-card-type="${paymentInstrument.creditCardType}">
         <div class="saved-payment-information col-6 col-md-3">
             <img class="card-image"
                  src="${paymentInstrument.cardTypeImage.src}"

@@ -141,6 +141,46 @@ if (IsCartridgeEnabled) {
         return next();
     });
 
+    /**
+     * Carries the pre-order payer auth setup reference onto the payment instrument that SFRA has
+     * just created for the basket. Setup runs while the shopper is still filling in the card fields,
+     * so no payment instrument existed at that point.
+     */
+    server.append('SubmitPayment', server.middleware.https, function (req, res, next) {
+        this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
+            var PayerAuthSetupHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+            var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+            var BasketMgr = require('dw/order/BasketMgr');
+
+            var viewData = res.getViewData();
+            if (viewData.error) {
+                return;
+            }
+
+            //  Silent post and the hosted flows never run setup at card entry, so there is no
+            //  reference to carry across - see PayerAuthSetupHelper.supportsEarlySetup.
+            var earlySetupApplies = PayerAuthSetupHelper.supportsEarlySetup();
+
+            var currentBasket = BasketMgr.getCurrentBasket();
+            var paymentInstrument = currentBasket ? COHelpers.getNonGCPaymemtInstument(currentBasket) : null;
+
+            if (earlySetupApplies
+                && paymentInstrument
+                && String(paymentInstrument.paymentMethod) === CybersourceConstants.METHOD_CREDIT_CARD) {
+                PayerAuthSetupHelper.applySetupReferenceToPaymentInstrument(paymentInstrument);
+                return;
+            }
+
+            //  Any other payment selection means the pre-order setup no longer applies. Drop it so a
+            //  stale reference can never reach the enrollment call, and release the reserved order
+            //  number so a non-payer-auth order keeps a platform generated one.
+            PayerAuthSetupHelper.clear();
+            PayerAuthSetupHelper.clearOrderNo();
+        });
+
+        return next();
+    });
+
 }
 
 server.post('SilentPostAuthorize', server.middleware.https, function (req, res, next) {
@@ -184,7 +224,10 @@ server.post('SilentPostAuthorize', server.middleware.https, function (req, res, 
     payerauthArgs.isPayerAuthSetupCompleted = isPayerAuthSetupCompleted;
     var silentPostResponse = COHelpers.handleSilentPostAuthorize(order, payerauthArgs);
 
-    if (silentPostResponse.sca) {
+    //  performPayerAuthSetup means the early card-entry setup never happened (or its reference was
+    //  dropped), so fall back to the order-time setup route. Without this branch the result falls
+    //  through to the generic SecureAcceptanceError redirect at the bottom of this route.
+    if (silentPostResponse.sca || silentPostResponse.performPayerAuthSetup) {
         secureRender(res, 'payerauthentication/3dsRedirect', {
             action: URLUtils.url('CheckoutServices-PayerAuthSetup'),
             OrderNo: order.orderNo,
@@ -339,6 +382,7 @@ if (IsCartridgeEnabled) {
         session.privacy.CybersourceFraudDecision = '';
         session.privacy.SkipTaxCalculation = false;
         session.privacy.cartStateString = null;
+        require('*/cartridge/scripts/helper/PayerAuthSetupHelper').clear();
         klarnaHelper.clearKlarnaSessionVariables();
 
         return next();
@@ -818,6 +862,190 @@ if (IsCartridgeEnabled) {
     });
 }
 
+/**
+ * Runs the Payer Auth Setup service call as soon as the shopper has finished entering card details,
+ * i.e. before the billing form is submitted and before an order exists. Responds with the device
+ * data collection URL and JWT so the client can run DDC in a hidden iframe while the shopper is
+ * still on the billing step.
+ *
+ * Handles three payload shapes, since no payment instrument exists yet in any of them:
+ *   flexToken          - Flex Microform transient token (SA_FLEX only)
+ *   storedPaymentUUID  - a saved card; the wallet token is resolved server side, so no PAN is posted
+ *   cardNumber         - plain card entry (CsSAType unset)
+ *
+ * Three response shapes, because the client only surfaces a message for a genuine failure:
+ *   { error: false, applicable: false }               - nothing to do, stay silent
+ *   { error: true,  errorMessage }                    - the setup call broke, show the message
+ *   { error: false, applicable: true, ddcUrl, jwtToken }
+ */
+server.post('PayerAuthSetupData', server.middleware.https, csrfProtection.validateAjaxRequest, function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+    var PayerAuthSetupHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+    var Resource = require('dw/web/Resource');
+    var Logger = require('dw/system/Logger');
+
+    /**
+     * Nothing to set up. Not an error the shopper needs to see - the order-time
+     * CheckoutServices-PayerAuthSetup route still covers these cases.
+     * @returns {void}
+     */
+    function notApplicable() {
+        PayerAuthSetupHelper.clear();
+        secureJsonResponse(res, { error: false, applicable: false });
+    }
+
+    //  Value, not the object: an unset enum preference still returns a truthy EnumValue whose value is
+    //  null, and String(null) would give the string "null" rather than an absent type.
+    var CsSATypePreference = Site.getCurrent().getCustomPreferenceValue('CsSAType');
+    var CsSAType = (CsSATypePreference && CsSATypePreference.value) ? String(CsSATypePreference.value) : null;
+
+    //  Only plain card entry and the Flex Microform run setup at card entry - see supportsEarlySetup.
+    if (!PayerAuthSetupHelper.supportsEarlySetup()) {
+        notApplicable();
+        return next();
+    }
+
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (!currentBasket) {
+        notApplicable();
+        return next();
+    }
+
+    //  Too early: the basket has no address to build a billTo from, which would make the facade throw
+    //  on a null shipping address. Not a failure the shopper caused or can act on, so answer "not
+    //  applicable" and stay silent rather than blocking them with an error. The trigger runs again
+    //  once checkout reaches the payment step, and the order-time route remains the fallback.
+    if (!PayerAuthSetupHelper.hasBillToAddress(currentBasket)) {
+        Logger.debug('[CheckoutServices-PayerAuthSetupData] No billing or shipping address on basket {0} yet, skipping setup', currentBasket.UUID);
+        notApplicable();
+        return next();
+    }
+
+    var flexToken = req.form.flexToken;
+    var storedPaymentUUID = req.form.storedPaymentUUID;
+    var cardNumber = req.form.cardNumber;
+    var cardType = req.form.cardType;
+    var subscriptionToken = null;
+
+    //  Common shape read by CybersourceHelper.addPayerAuthSetupInfo. flexresponse must always be
+    //  present: that function branches on empty(creditCardForm.flexresponse.value).
+    var creditCardForm = {
+        flexresponse: { value: '' },
+        cardType: { value: cardType },
+        cardNumber: { value: '' },
+        expirationMonth: { value: req.form.expirationMonth },
+        expirationYear: { value: req.form.expirationYear },
+        securityCode: { value: '' }
+    };
+
+    if (!empty(flexToken)) {
+        if (CsSAType !== CybersourceConstants.METHOD_SA_FLEX) {
+            notApplicable();
+            return next();
+        }
+        creditCardForm.flexresponse.value = flexToken;
+    } else if (!empty(storedPaymentUUID)) {
+        //  Resolve the saved card the same way cybersourceCredit.Handle does, so the setup request
+        //  uses the stored token and no card data has to travel from the browser.
+        var array = require('*/cartridge/scripts/util/array');
+        var wallet = req.currentCustomer && req.currentCustomer.wallet;
+        var storedInstrument = wallet ? array.find(wallet.paymentInstruments, function (item) {
+            return storedPaymentUUID === item.UUID;
+        }) : null;
+
+        if (!storedInstrument || empty(storedInstrument.raw.creditCardToken)) {
+            notApplicable();
+            return next();
+        }
+
+        subscriptionToken = storedInstrument.raw.creditCardToken;
+        cardType = storedInstrument.creditCardType;
+        creditCardForm.cardType.value = cardType;
+        creditCardForm.expirationMonth.value = storedInstrument.creditCardExpirationMonth;
+        creditCardForm.expirationYear.value = storedInstrument.creditCardExpirationYear;
+    } else if (!empty(cardNumber)) {
+        if (CsSAType === CybersourceConstants.METHOD_SA_FLEX) {
+            //  Flex must tokenize first; a raw card number is never expected here.
+            notApplicable();
+            return next();
+        }
+        creditCardForm.cardNumber.value = cardNumber;
+    } else {
+        notApplicable();
+        return next();
+    }
+
+    if (empty(cardType) || !PayerAuthSetupHelper.isApplicable(cardType)) {
+        notApplicable();
+        return next();
+    }
+
+    var paymentInstrumentStub = {
+        paymentMethod: CybersourceConstants.METHOD_CREDIT_CARD,
+        getCreditCardToken: function () {
+            return subscriptionToken;
+        },
+        custom: {}
+    };
+
+    //  Reserve the order number up front and use it as the merchantReferenceCode, so this setup call
+    //  and the later enrollment call report the same reference to Cybersource. checkoutHelpers
+    //  .createOrder creates the order with this number. Falls back to the basket UUID if a number
+    //  cannot be reserved, which keeps setup working at the cost of the reference not matching.
+    var referenceNumber = PayerAuthSetupHelper.reserveOrderNo() || currentBasket.UUID;
+
+    var setupResult = PayerAuthSetupHelper.runSetup({
+        basket: currentBasket,
+        paymentInstrument: paymentInstrumentStub,
+        creditCardForm: creditCardForm,
+        referenceNumber: referenceNumber
+    });
+
+    if (setupResult.error) {
+        //  Log the basket only - never the card number.
+        Logger.warn('[CheckoutServices-PayerAuthSetupData] Payer auth setup failed for basket {0}', currentBasket.UUID);
+        PayerAuthSetupHelper.clear();
+        secureJsonResponse(res, {
+            error: true,
+            errorMessage: Resource.msg('error.message.payerauthsetup.fail', 'cybersource', null)
+        });
+        return next();
+    }
+
+    secureJsonResponse(res, {
+        error: false,
+        applicable: true,
+        ddcUrl: setupResult.ddcUrl,
+        jwtToken: setupResult.jwtToken
+    });
+    return next();
+});
+
+/**
+ * Stores the browser properties collected alongside device data collection, so that every
+ * subsequent Payer Auth enrollment call carries them.
+ */
+server.post('SaveDeviceData', server.middleware.https, csrfProtection.validateAjaxRequest, function (req, res, next) {
+    var PayerAuthSetupHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+    var saved = PayerAuthSetupHelper.saveBrowserFields(req.form.browserfields);
+
+    secureJsonResponse(res, { success: saved });
+    return next();
+});
+
+/**
+ * Drops the stored setup reference and browser fields. Called by the client when the shopper edits
+ * the card after device data collection has already run, since the reference describes the
+ * previous card.
+ */
+server.post('ClearPayerAuthSetup', server.middleware.https, csrfProtection.validateAjaxRequest, function (req, res, next) {
+    require('*/cartridge/scripts/helper/PayerAuthSetupHelper').clear();
+
+    secureJsonResponse(res, { success: true });
+    return next();
+});
+
 // Route to perform the payer auth setup and device data collection.
 server.post('PayerAuthSetup', csrfProtection.generateToken, function (req, res, next) {
 
@@ -901,6 +1129,51 @@ server.post('PayerAuthSetup', csrfProtection.generateToken, function (req, res, 
         orderToken: order.orderToken,
         ddcUrl: result.deviceDataCollectionURL,
         action: action
+    });
+    return next();
+});
+
+/**
+ * Landing point for the ACS after the shopper completes the 3DS challenge, set as the enrollment
+ * returnURL in libCybersource.addPayerAuthEnrollInfo.
+ *
+ * This route deliberately performs no payment work. It renders a page that notifies the parent
+ * window that the challenge has ended, then forwards the ACS parameters to COPlaceOrder-Submit,
+ * which runs PayerAuthValidate and places the order exactly as before.
+ *
+ * The reason for the hop: the challenge iframe is cross-origin, so the parent cannot detect when
+ * the shopper submitted. Landing on a same-origin page first gives it an exact signal at the
+ * start of the server-side work rather than at the end, which is the only way to cover that wait
+ * with a spinner without guessing from load timings.
+ */
+server.post('PayerAuthReturn', csrfProtection.generateToken, function (req, res, next) {
+    var URLUtils = require('dw/web/URLUtils');
+
+    //  Carried through on the returnURL, and needed by Provider.Check and Cybersource.GetOrder.
+    var provider = req.querystring.provider || 'card';
+    var orderID = req.querystring.orderID || '';
+    var orderToken = req.querystring.orderToken || '';
+
+    //  Forward whatever the ACS posted rather than naming individual fields: Process3DRequestParent
+    //  reads PaRes, MD and TransactionId straight off the request, and the exact set an ACS sends
+    //  varies. req.form is the POST body alone, so the querystring parameters above are not in it,
+    //  but they are excluded defensively in case an ACS also posts a field by one of those names.
+    var reserved = ['provider', 'orderID', 'orderToken', 'csrf_token'];
+    var submitted = req.form || {};
+    var fields = [];
+
+    Object.keys(submitted).forEach(function (name) {
+        if (reserved.indexOf(name) === -1) {
+            fields.push({
+                name: name,
+                value: submitted[name] === null || submitted[name] === undefined ? '' : String(submitted[name])
+            });
+        }
+    });
+
+    secureRender(res, 'payerauthentication/payerAuthReturn', {
+        action: URLUtils.https('COPlaceOrder-Submit', 'provider', provider, 'orderID', orderID, 'orderToken', orderToken).toString(),
+        fields: fields
     });
     return next();
 });

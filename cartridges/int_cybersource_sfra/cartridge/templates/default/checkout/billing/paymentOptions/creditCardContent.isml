@@ -1,5 +1,56 @@
 <!--- applicable credit cards--->
 <div class="tab-pane ${pdict.selectedPayment != 'PAYPAL' ? 'active' : ''} credit-card-content" id="credit-card-content" role="tabpanel">
+  <iscomment>
+    Payer Auth Setup and Device Data Collection run as soon as the shopper finishes the card block,
+    i.e. before the billing form is submitted. This container carries the endpoints and hosts the
+    hidden collection iframe.
+
+    It sits here rather than in creditCardForm.isml because that template is inside the
+    .credit-card-form fieldset, which is hidden for registered shoppers who have stored cards - and
+    stored cards use this flow too. Its presence is what enables the early flow, so it never reaches
+    the My Account "add card" page, which shares flexMicroform.js but has no basket.
+
+    Which secure acceptance types are in scope is decided by
+    PayerAuthSetupHelper.supportsEarlySetup, the same function the server routes use, so the two
+    cannot drift. Silent post and the hosted flows keep the order-time setup route.
+  </iscomment>
+  <isscript>
+    var cybPayerAuthHelper = require('*/cartridge/scripts/helper/PayerAuthSetupHelper');
+    var cybEarlyPayerAuth = dw.system.Site.getCurrent().getCustomPreferenceValue('IsCartridgeEnabled')
+        && cybPayerAuthHelper.supportsEarlySetup();
+  </isscript>
+  <isif condition="${cybEarlyPayerAuth}">
+    <isscript>
+      var cybPayerAuthCardTypes = cybPayerAuthHelper.getPayerAuthEnabledCardTypes().join(',');
+    </isscript>
+    <iscomment>
+      data-payer-auth-card-types carries the card types with csEnablePayerAuthentication switched on,
+      read from the same active payment cards CardHelper.PayerAuthEnable inspects. The client skips
+      the setup request altogether for anything not in this list, so a card that does not need payer
+      auth never costs a round trip. The route re-checks server side regardless.
+    </iscomment>
+    <div id="cyb-payerauth-ddc"
+         data-setup-url="${URLUtils.https('CheckoutServices-PayerAuthSetupData')}"
+         data-save-device-data-url="${URLUtils.https('CheckoutServices-SaveDeviceData')}"
+         data-clear-url="${URLUtils.https('CheckoutServices-ClearPayerAuthSetup')}"
+         data-capture-context-url="${URLUtils.https('CYBSecureAcceptance-FlexCaptureContext')}"
+         data-payer-auth-card-types="${cybPayerAuthCardTypes}"
+         hidden></div>
+    <iscomment>
+      SA_FLEX loads jQuery, payerAuthDDC.js and its own flexMicroform.js from creditCardForm.isml, so
+      that jQuery sits immediately before the file that builds the microform. Loading it twice on one
+      page replaces window.$ mid-flight, so only one of the two places may do it.
+
+      jQuery has to be a synchronous tag either way: SFRA serves main.js and every assets.addJs script
+      with defer, so $ does not exist yet this far up the body.
+    </iscomment>
+    <isif condition="${CsSaType != 'SA_FLEX'}">
+      <script src="${URLUtils.staticURL('/custom/lib/jquery/jquery-3.7.1.min.js')}" type="text/javascript"></script>
+      <script src="${URLUtils.staticURL('/custom/payerAuthDDC.js')}" type="text/javascript"></script>
+      <script src="${URLUtils.staticURL('/custom/payerAuthCardFields.js')}" type="text/javascript"></script>
+    </isif>
+  </isif>
+
   <fieldset class="payment-form-fields">
     <!--- payment method is credit card --->
     <input type="hidden" class="form-control"

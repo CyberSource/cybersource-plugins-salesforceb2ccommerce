@@ -177,7 +177,7 @@ function orderStatusUpdate(jobParams) {
     var message;
 
     //  Create hashmap of orders based on the query below
-    var orderIterator = OrderMgr.searchOrders('confirmationStatus = {0} AND status != {1} AND status != {2}', 'orderNo asc', Order.CONFIRMATION_STATUS_NOTCONFIRMED, Order.ORDER_STATUS_FAILED, Order.ORDER_STATUS_CANCELLED);
+    var orderIterator = OrderMgr.searchOrders('confirmationStatus = {0} AND status != {1} AND status != {2}', 'orderNo desc', Order.CONFIRMATION_STATUS_NOTCONFIRMED, Order.ORDER_STATUS_FAILED, Order.ORDER_STATUS_CANCELLED);
     var orderHashMap = new HashMap();
     // eslint-disable-next-line
     if (!empty(orderIterator)) {

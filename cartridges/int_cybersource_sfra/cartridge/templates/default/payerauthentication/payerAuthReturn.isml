@@ -1,0 +1,32 @@
+<!--- TEMPLATENAME: payerAuthReturn.isml --->
+<iscomment>
+	Thin interstitial the ACS returns to once the shopper has finished the 3DS challenge. It does
+	no payment work. Its only jobs are to tell the parent window that the challenge is over, and
+	then hand the ACS parameters on to COPlaceOrder-Submit, which runs PayerAuthValidate and
+	places the order.
+
+	This split is what lets the parent stop guessing. While the challenge is up the iframe is on
+	the issuer's domain, so the parent cannot see into it or tell when the shopper submitted. This
+	page is same-origin, so it can simply say so - and because it renders immediately, the parent
+	learns the challenge ended BEFORE the slow server-side work starts rather than after it.
+</iscomment>
+<iscontent type="text/html" charset="UTF-8" compact="true">
+<form id="payerAuthReturn" name="payerAuthReturn" action="${pdict.action}" method="POST" target="_self">
+	<isloop items="${pdict.fields}" var="field">
+		<input type="hidden" name="${field.name}" value="${field.value}" />
+	</isloop>
+</form>
+<script type="text/javascript">
+	try {
+		//  Same origin as the parent, so our own origin is also the correct target origin.
+		window.parent.postMessage({ type: 'cybersource:payerauth-complete' }, window.location.origin);
+	} catch (e) {
+		//  Not fatal. The parent also treats a same-origin document in the iframe as proof that
+		//  the challenge has ended, so it still shows the spinner on this page's load event.
+	}
+
+	window.onload = function () {
+		//  Posted above rather than here, so the parent hears about it before this navigation.
+		document.getElementById('payerAuthReturn').submit();
+	};
+</script>
