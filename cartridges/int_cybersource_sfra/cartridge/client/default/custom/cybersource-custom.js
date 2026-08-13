@@ -363,6 +363,12 @@ var init = {
             // disable the placeOrder button here
             $('body').trigger('checkout:disableButton', '.next-step-button button');
             $.spinner().start();
+
+            // Payer Auth device data collection may still be in flight from the card entry step. The
+            // button is already held and the spinner already running, so give it a short chance to
+            // finish before enrollment quotes its setup reference. Returns immediately when nothing is
+            // pending, which is every payment method that does not run collection.
+            var proceedWithPlaceOrder = function () {
             $.ajax({
                 url: formaction,
                 method: 'POST',
@@ -388,6 +394,20 @@ var init = {
                                 $('.error-message-text').text(data.errorMessage);
                             }
                         }
+                    } else if (data.stepUp) {
+                        // 3DS step-up required. Navigate to the page that renders the Cardinal
+                        // challenge modal. This is a GET rather than the form POST used below,
+                        // because CheckoutServices-PayerAuthentication is registered as server.get.
+                        var sanitizedStepUpUrl = init.sanitizeUrl(data.redirectUrl);
+                        if (!sanitizedStepUpUrl) {
+                            console.error('Invalid step-up redirect URL');
+                            return;
+                        }
+                        // Hold the spinner and the button across the navigation, so the order cannot
+                        // be submitted twice while the challenge page loads.
+                        $.spinner().start();
+                        $('body').trigger('checkout:disableButton', '.next-step-button button');
+                        window.location.href = sanitizedStepUpUrl;
                     } else if (data.renderTemplate) {
 
                         self.postSubmitToTemplateRenderingUrl(data);
@@ -453,6 +473,13 @@ var init = {
                     $('body').trigger('checkout:enableButton', $('.next-step-button button'));
                 }
             });
+            };
+
+            if (window.CybersourcePayerAuthDDC && window.CybersourcePayerAuthDDC.whenReady) {
+                window.CybersourcePayerAuthDDC.whenReady(proceedWithPlaceOrder);
+            } else {
+                proceedWithPlaceOrder();
+            }
         });
 
         // for Alipay Intermediate

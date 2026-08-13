@@ -2,6 +2,20 @@
 @import "~base/global";
 @import "components/applePay";
 
+//  Spinner colour. Base SFRA paints the two bouncing dots $white in
+//  app_storefront_base/.../scss/components/_spinner.scss; overridden here rather than there so the
+//  change survives an SFRA upgrade. Change this one value to restyle every $.spinner() on the site.
+$cyb-spinner-color: #add8e6;
+
+//  Scoped to .veil .spinner so it outranks the base .dot1 / .dot2 rules on specificity, rather than
+//  relying on import order.
+.veil .spinner {
+    .dot1,
+    .dot2 {
+        background-color: $cyb-spinner-color;
+    }
+}
+
 .info-icon {
     &:hover .tooltip {
         display: block;

@@ -170,12 +170,21 @@ function postAuthorization(handlePaymentResult, order, options) { // eslint-disa
             redirectUrl: URLUtils.url('Checkout-Begin', 'stage', 'payment', 'PlaceOrderError', Resource.msg('error.technical', 'checkout', null)).toString()
         };
     } if (handlePaymentResult.process3DRedirection) {
+        //  3DS step-up is required. Send the shopper to the page that renders the Cardinal challenge
+        //  modal - the same destination CheckoutServices-PayerAuthSubmit and -SilentPostAuthorize
+        //  redirect to. Everything else that page needs (AcsURL, stepUpUrl, transaction ID) was just
+        //  written to session.privacy by AuthorizePayer.
+        //
+        //  This branch only became reachable once Payer Auth Setup started running at card entry.
+        //  Before that, the enrollment on this request had no reference ID, failed with reason code
+        //  478, and the challenge was reached through the order-time setup route instead.
         return {
             error: false,
             stepUp: true,
             accessToken: handlePaymentResult.jwt,
             stepUpUrl: handlePaymentResult.stepUpUrl,
-            sessionID: session.sessionID
+            sessionID: session.sessionID,
+            redirectUrl: URLUtils.https('CheckoutServices-PayerAuthentication', 'accessToken', handlePaymentResult.jwt).toString()
         };
     }
     if (handlePaymentResult.processWeChat) {

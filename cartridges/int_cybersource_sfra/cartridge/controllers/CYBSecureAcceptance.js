@@ -106,6 +106,42 @@ server.get('CreateFlexToken', server.middleware.https, function (req, res, next)
     }
 });
 
+/**
+* Returns a fresh Flex capture context as JSON.
+*
+* A capture context can mint only one transient token. The Flex Microform flow tokenizes early, as
+* soon as the card fields are valid, so that Payer Auth Setup and device data collection can run
+* before the shopper submits the billing form. If the shopper then edits the card, the client needs
+* a new capture context to re-tokenize - which is what this route provides. CreateFlexToken stays
+* for the initial page render, where the microform markup is rendered by a remote include.
+*/
+server.get('FlexCaptureContext', server.middleware.https, function (req, res, next) {
+    var Flex = require(CybersourceConstants.CS_CORE_SCRIPT + 'secureacceptance/adapter/Flex');
+    var flexResult = Flex.CreateFlexKey();
+    var parsedPayload = flexResult ? Flex.jwtDecode(flexResult) : null;
+
+    if (parsedPayload == null) {
+        secureJsonResponse(res, { error: true });
+        return next();
+    }
+
+    var clientLibrary = parsedPayload.ctx[0].data.clientLibrary;
+    var clientLibraryIntegrity = parsedPayload.ctx[0].data.clientLibraryIntegrity;
+
+    if (!clientLibrary || !clientLibraryIntegrity) {
+        secureJsonResponse(res, { error: true });
+        return next();
+    }
+
+    secureJsonResponse(res, {
+        error: false,
+        captureContext: flexResult,
+        clientLibrary: clientLibrary,
+        clientLibraryIntegrity: clientLibraryIntegrity
+    });
+    return next();
+});
+
 server.get('ReCreateBasket', server.middleware.https, function (req, res, next) {
     var OrderMgr = require('dw/order/OrderMgr');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');

@@ -23,10 +23,22 @@
 		<div class="stepup-modal-content">
 			<h3 class="stepup-modal-title">${Resource.msg('payment.authentication.title', 'cybersource', 'Payment Authentication')}</h3>
 			<div class="stepup-iframe-container">
-				<iframe id="step-up-iframe" name="step-up-iframe" class="stepup-iframe"></iframe>
-				<form id="step-up-form" target="step-up-iframe" method="post" action="${pdict.stepUpUrl}" class="hidden"> 
+				<iscomment>
+					Shown while the challenge is being loaded, and again once the shopper has
+					submitted it - the return trip runs PayerAuthValidate plus order placement
+					server side, so the iframe would otherwise sit blank for several seconds.
+				</iscomment>
+				<div id="stepup-processing" class="stepup-status" role="status" aria-live="polite">
+					<div class="stepup-spinner-ring"></div>
+					<p class="stepup-status-text">${Resource.msg('payment.authentication.processing', 'cybersource', null)}</p>
+				</div>
+				<div id="stepup-timeout" class="stepup-status" role="alert" hidden>
+					<p class="stepup-status-text">${Resource.msg('payment.authentication.timeout', 'cybersource', null)}</p>
+				</div>
+				<iframe id="step-up-iframe" name="step-up-iframe" class="stepup-iframe" hidden></iframe>
+				<form id="step-up-form" target="step-up-iframe" method="post" action="${pdict.stepUpUrl}" class="hidden">
 					<input type="hidden" name="JWT" value="${pdict.jwtToken}" />
-					<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}" /> 
+					<input type="hidden" name="MD" value="${pdict.CurrentSession.sessionID}" />
 				</form>
 			</div>
 		</div>
