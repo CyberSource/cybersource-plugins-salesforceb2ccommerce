@@ -33,6 +33,11 @@ $(document).ready(function () {
         lastPayloadKey: null
     };
     var triggerTimeoutId = null;
+    //  True while this file is holding the submit button for a run it has armed but not started.
+    //  Tracked so releaseHold only ever gives back a hold this file took: on a Flex site
+    //  flexMicroform.js holds for new card entry and both files see the expiry change events, and
+    //  releasing unconditionally there would hand the button back mid-tokenization.
+    var holdingSubmit = false;
 
     /**
      * @returns {Object|null} the payer auth DDC module, when it is wired up on this page
@@ -213,6 +218,26 @@ $(document).ready(function () {
     }
 
     /**
+     * Holds the submit button for the run armed below, so the debounce is not a window in which the
+     * shopper can click "Next: Place Order" and submit the billing form before setup has run.
+     */
+    function takeHold() {
+        holdingSubmit = true;
+        ddc().holdSubmit();
+    }
+
+    /**
+     * Gives the button back, for a card this file held for and is no longer going to run for.
+     */
+    function releaseHold() {
+        if (!holdingSubmit) {
+            return;
+        }
+        holdingSubmit = false;
+        ddc().releaseSubmit();
+    }
+
+    /**
      * Arms the debounced setup + collection run.
      * @param {boolean} [silent] - true to skip the spinner, for a run the shopper did not initiate
      */
@@ -223,13 +248,25 @@ $(document).ready(function () {
             return;
         }
 
+        //  Only held for a card that is already complete. Holding on every keystroke would leave the
+        //  button disabled for the whole time the shopper is typing a new card, and re-checking here
+        //  is what gives the button straight back when they break a card that had been complete.
+        if (buildPayload()) {
+            takeHold();
+        } else {
+            releaseHold();
+        }
+
         triggerTimeoutId = window.setTimeout(function () {
             var payload = buildPayload();
             if (!payload || state.completed) {
+                releaseHold();
                 return;
             }
             state.completed = true;
             state.lastPayloadKey = payloadKey(payload);
+            //  runSetupAndDdc owns the hold from here, and re-arms it for the length of the run.
+            holdingSubmit = false;
             ddc().runSetupAndDdc(payload, { silent: silent === true });
         }, TRIGGER_DEBOUNCE_MS);
     }

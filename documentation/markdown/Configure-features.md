@@ -597,25 +597,3 @@ Step 2: In the Business Manager, go to **Merchant Tools > Ordering > Payment Met
 ### **13. Supported Locales**
 
 Out of box cartridge supports most of the locales like English (United States), English (United Kingdom), French (FRANCE), English (Austria), German (GERMANY), Dutch (NETHERLANDS) and more. 
-
-
-
-### **14. Message-Level Encryption (MLE)**
-
-Step 1: Upload Cybersource metadata in Business Manager. Otherwise follow the steps mentioned in “4.2: Upload metadata” or import "metadata/sfra_meta/meta/Cybersource.xml" in Business Manager **Administration > Site Development > Import & Export** 
-
-Step 2: Create a p12 file [link](https://developer.cybersource.com/docs/cybs/en-us/platform/developer/all/rest/rest-getting-started/restgs-jwt-message-intro/restgs-security-p12-intro/restgs-security-P12.html) that you can use to authenticate requests. Place the Keystore file in Business Manager for SOAP Authentication by following Step1 to Step3 mentioned in Cybersource B2C Commerce - SOAP Authentication Guide.pdf available under documentation folder.
-
-Repeat the above step to use multiple keystore files as per requirements.
-
-
-Step 3: Go to **Merchant Tools > Site Preferences > Custom Preferences > Cybersource** and set values for the parameter:
-
-Name | Description
------------- | ------------- 
-
-CsAuth_Alias | Alias specified for p12 file imported in Private Keys and certificate in Business Manager for Authentication.
-
-CsMLE_Enabled | Enable or Disable Message-Level Encryption
-
-CsMLE_Alias | Alias of the certificate imported to private Keys and certificate in Business Manager for MLE

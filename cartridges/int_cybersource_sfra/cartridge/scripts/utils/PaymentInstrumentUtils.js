@@ -156,7 +156,7 @@ function checkStatusOrderUpdate(Order, responseObject, paymentType) {
                 switch (paymentType) {
                     case 'APY':
                     case 'APD':
-                        paymentInstrument.paymentTransaction.transactionID = responseObject.apCheckStatusReply.processorTransactionID;
+                        paymentInstrument.paymentTransaction.transactionID = responseObject.requestID;
                 }
             }
             if (Number(responseObject.reasonCode) === 100 && (responseObject.apCheckStatusReply.paymentStatus === 'COMPLETED'

@@ -22,9 +22,10 @@
     //  backup fields are sent up front. Reaching it simply means Cardinal never confirmed, so
     //  enrollment proceeds on the backup fields alone.
     var DDC_TIMEOUT_MS = 13000;
-    //  Longest the "Next: Place Order" button is held while setup and collection run. Beyond this
-    //  the shopper is let through: the setup reference and the browser fields are both stored server
-    //  side by then, so enrollment has everything it needs.
+    //  Longest the "Next: Place Order" button is held, whether by a trigger that has armed a run
+    //  (holdSubmit) or by a run in flight. Beyond this the shopper is let through: the setup
+    //  reference and the browser fields are both stored server side by then, so enrollment has
+    //  everything it needs. It doubles as the backstop for holdSubmit - see there.
     var MAX_BUTTON_HOLD_MS = 3000;
     //  Longest the final Place Order click waits for a collection run that is still in flight. The
     //  browser backup fields are already stored by then, so this only buys Cardinal time to finish
@@ -128,6 +129,28 @@
         if (!state.blocked) {
             $('body').trigger('checkout:enableButton', '.submit-payment');
         }
+    }
+
+    /**
+     * Holds the button for a run a trigger has armed but not started yet.
+     *
+     * Both triggers debounce before they run the chain, and on Flex the debounce is followed by a
+     * tokenization round trip. Holding only from runSetupAndDdc would leave that whole window open:
+     * the shopper could click through and reach the billing POST with no setup reference stored.
+     *
+     * No caller has to guarantee the matching release. This arms the same MAX_BUTTON_HOLD_MS timer
+     * the in-flight hold uses, so a trigger that ends up not running at all cannot strand the
+     * shopper; releaseSubmit only exists to give the button back straight away in that case.
+     */
+    function holdSubmit() {
+        holdSubmitButton(true);
+    }
+
+    /**
+     * Releases a holdSubmit hold, for a trigger that armed a run and then decided against it.
+     */
+    function releaseSubmit() {
+        holdSubmitButton(false);
     }
 
     /**
@@ -534,6 +557,8 @@
         collectBrowserProperties: collectBrowserProperties,
         runDdc: runDdc,
         runSetupAndDdc: runSetupAndDdc,
+        holdSubmit: holdSubmit,
+        releaseSubmit: releaseSubmit,
         clearFailure: clearFailure,
         clear: clear
     };

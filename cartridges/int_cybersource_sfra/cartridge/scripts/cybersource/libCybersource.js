@@ -191,7 +191,7 @@ function replaceCharsInSessionID(sessionID) {
 
 var CybersourceHelper = {
 
-    getcsReference: function() {
+    getcsReference: function () {
         var webref = webreferences2["CyberSourceTransaction"];
         return webref;
     },
@@ -204,15 +204,11 @@ var CybersourceHelper = {
         return Site.getCurrent().getCustomPreferenceValue('CsAuth_Alias');
     },
 
-    isMLEEnabled: function () {
-        return Site.getCurrent().getCustomPreferenceValue('CsMLE_Enabled');
-    },
-
     getAliasForMLE: function () {
         return Site.getCurrent().getCustomPreferenceValue('CsMLE_Alias');
     },
 
-    getklarnaPrivateKeyAlias: function() {
+    getklarnaPrivateKeyAlias: function () {
         return Site.getCurrent().getCustomPreferenceValue('klarnaPrivateKeyAlias');
     },
 
@@ -618,13 +614,13 @@ var CybersourceHelper = {
         var transientToken = form.creditCardFields.flexresponse.value;
         // check here for transient token and assign
         if (transientToken) {
-                request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
-                request.tokenSource.transientToken = transientToken;
-                var cardTypeValue = form.creditCardFields.cardType.value;
-                if (cardTypeValue) {
-                    request.card = new CybersourceHelper.getcsReference().Card();
-                    request.card.cardType = cardHelper.ReturnCardType(cardTypeValue);
-                }
+            request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
+            request.tokenSource.transientToken = transientToken;
+            var cardTypeValue = form.creditCardFields.cardType.value;
+            if (cardTypeValue) {
+                request.card = new CybersourceHelper.getcsReference().Card();
+                request.card.cardType = cardHelper.ReturnCardType(cardTypeValue);
+            }
         } else if (!empty(card)) {
             if (empty(card.getCreditCardToken())) {
                 request.card = copyCreditCard(card);
@@ -672,18 +668,18 @@ var CybersourceHelper = {
         // CMCIC
         request.cardTypeSelectionIndicator = '1';
         request.ccAuthService = new CybersourceHelper.getcsReference().CCAuthService();
-        request.ccAuthService.run = true;    
+        request.ccAuthService.run = true;
         //Sale Transaction
         if (paymentMethod === 'CREDIT_CARD' && CybersourceHelper.getCsTransactionType().value === 'sale') {
             request.ccCaptureService = new CybersourceHelper.getcsReference().CCCaptureService();
             request.ccCaptureService.run = true;
-        }else if (paymentMethod === 'VISA_CHECKOUT' && CybersourceHelper.getVisaTransactionType().value === 'sale') {
+        } else if (paymentMethod === 'VISA_CHECKOUT' && CybersourceHelper.getVisaTransactionType().value === 'sale') {
             request.ccCaptureService = new CybersourceHelper.getcsReference().CCCaptureService();
             request.ccCaptureService.run = true;
-        }else if (paymentMethod === 'DW_GOOGLE_PAY' && CybersourceHelper.getGooglePayTransactionType().value === 'sale') {
+        } else if (paymentMethod === 'DW_GOOGLE_PAY' && CybersourceHelper.getGooglePayTransactionType().value === 'sale') {
             request.ccCaptureService = new CybersourceHelper.getcsReference().CCCaptureService();
             request.ccCaptureService.run = true;
-        }else if (paymentMethod === 'DW_APPLE_PAY' && CybersourceHelper.getApplePayTransactionType().value === 'sale') {
+        } else if (paymentMethod === 'DW_APPLE_PAY' && CybersourceHelper.getApplePayTransactionType().value === 'sale') {
             request.ccCaptureService = new CybersourceHelper.getcsReference().CCCaptureService();
             request.ccCaptureService.run = true;
         }
@@ -748,9 +744,8 @@ var CybersourceHelper = {
             request.tokenSource = new CybersourceHelper.getcsReference().TokenSource();
             request.tokenSource.transientToken = transientToken;
         } else if (card !== null) {
-            request.card = copyCreditCard( card );
+            request.card = copyCreditCard(card);
         }
-        session.custom.isScaEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('IsSCAEnabled');
         request.cardTypeSelectionIndicator = '1';
         request.recurringSubscriptionInfo = new CybersourceHelper.getcsReference().RecurringSubscriptionInfo();
         request.recurringSubscriptionInfo.frequency = 'on-demand';
@@ -758,7 +753,7 @@ var CybersourceHelper = {
         request.paySubscriptionCreateService.disableAutoAuth = 'false';
         request.paySubscriptionCreateService.run = true;
         if (CybersourceHelper.getDigitalFingerprintEnabled()) {
-            request.deviceFingerprintID =  replaceCharsInSessionID(session.sessionID);
+            request.deviceFingerprintID = replaceCharsInSessionID(session.sessionID);
         }
         request.decisionManager = new CybersourceHelper.getcsReference().DecisionManager();
         request.decisionManager.enabled = true;
@@ -947,13 +942,13 @@ var CybersourceHelper = {
 
         if (billTo !== null) {
             // Set browser fields on billTo
-            if(browserFields.httpBrowserScreenHeight) billTo.httpBrowserScreenHeight = browserFields.httpBrowserScreenHeight;
-            if(browserFields.httpBrowserScreenWidth) billTo.httpBrowserScreenWidth = browserFields.httpBrowserScreenWidth;
-            if(browserFields.httpBrowserColorDepth) billTo.httpBrowserColorDepth = browserFields.httpBrowserColorDepth;
-            if(browserFields.httpBrowserJavaEnabled !== undefined) billTo.httpBrowserJavaEnabled = browserFields.httpBrowserJavaEnabled;
-            if(browserFields.httpBrowserJavaScriptEnabled !== undefined) billTo.httpBrowserJavaScriptEnabled = browserFields.httpBrowserJavaScriptEnabled;
-            if(browserFields.httpBrowserLanguage) billTo.httpBrowserLanguage = browserFields.httpBrowserLanguage;
-            if(browserFields.httpBrowserTimeDifference !== undefined) billTo.httpBrowserTimeDifference = browserFields.httpBrowserTimeDifference;
+            if (browserFields.httpBrowserScreenHeight) billTo.httpBrowserScreenHeight = browserFields.httpBrowserScreenHeight;
+            if (browserFields.httpBrowserScreenWidth) billTo.httpBrowserScreenWidth = browserFields.httpBrowserScreenWidth;
+            if (browserFields.httpBrowserColorDepth) billTo.httpBrowserColorDepth = browserFields.httpBrowserColorDepth;
+            if (browserFields.httpBrowserJavaEnabled !== undefined) billTo.httpBrowserJavaEnabled = browserFields.httpBrowserJavaEnabled;
+            if (browserFields.httpBrowserJavaScriptEnabled !== undefined) billTo.httpBrowserJavaScriptEnabled = browserFields.httpBrowserJavaScriptEnabled;
+            if (browserFields.httpBrowserLanguage) billTo.httpBrowserLanguage = browserFields.httpBrowserLanguage;
+            if (browserFields.httpBrowserTimeDifference !== undefined) billTo.httpBrowserTimeDifference = browserFields.httpBrowserTimeDifference;
             //  Taken from the live request rather than the client payload, which never sends it.
             billTo.ipAddress = request.httpRemoteAddress;
             serviceRequest.billTo = copyBillTo(billTo);
@@ -994,10 +989,25 @@ var CybersourceHelper = {
         //  The reference ID may sit on the payment instrument (order-time setup) or on the session
         //  (setup ran at card entry, before a payment instrument existed).
         serviceRequest.payerAuthEnrollService.referenceID = PayerAuthSetupHelper.getSetupReferenceID(paymentInstrument);
-        if(session.custom.SCA == false || session.custom.isScaEnabled == true) {
+
+        var isCreditCard = paymentInstrument.paymentMethod === Resource.msg('paymentmethodname.creditcard', 'cybersource', null);
+        var scaTokenFlag = false;
+
+        //creditCardForm.securityCode.htmlValue !== 'undefined' tells that its the new credit card entry flow and not the saved card flow. holds true for all SA types(flex, none, silentpost)
+        if (creditCardForm && creditCardForm.saveCard && creditCardForm.saveCard.checked && creditCardForm.securityCode.htmlValue !== 'undefined' && isCreditCard) {
+            if (dw.system.Site.getCurrent().getCustomPreferenceValue('IsSCAEnabled')) {
+                scaTokenFlag = true;
+            }
+        }
+
+        if (session.custom.SCA == false || scaTokenFlag == true) {
             serviceRequest.payerAuthEnrollService.challengeCode = '04';
         }
 
+        delete session.custom.scaConditionMetForTokenFlow;
+        if (scaTokenFlag === true) { // This flag indicates that the SCA condition for tokenized card flow, so we don't have to retrigger the transaction again.
+            session.custom.scaConditionMetForTokenFlow = true;
+        }
         // Set payerAuthEnrollService fields from browser data, falling back to the live request
         serviceRequest.payerAuthEnrollService.httpUserAgent = browserFields.httpUserAgent || request.httpUserAgent;
         serviceRequest.payerAuthEnrollService.httpUserAccept = request.httpHeaders.get('accept');
@@ -1457,7 +1467,7 @@ var CybersourceHelper = {
     /* payPalCaptureService: function (request, paypalAuthorizationRequestToken, paypalAuthorizationRequestId, transactionType, transactionId, refCode) {
         request.merchantID = CybersourceHelper.getMerchantID();
         setClientData(request, refCode);
-
+ 
         var paypalCaptureService = new CybersourceHelper.getcsReference().PayPalDoCaptureService();
         paypalCaptureService.paypalAuthorizationId = transactionId;
         paypalCaptureService.completeType = transactionType;
@@ -1632,7 +1642,7 @@ var CybersourceHelper = {
             flag = CybersourceHelper.getCardDecisionManagerEnable();
         }
         // DM standalone
-        if(flag){
+        if (flag) {
             request.afsService = new CybersourceHelper.getcsReference().AFSService();
             request.afsService.run = true;
         }
