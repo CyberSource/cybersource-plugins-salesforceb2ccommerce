@@ -114,7 +114,7 @@ function CreateSaleServiceRequest(Basket) {
     // call session method of facade to create session request
     var response = WeChatFacade.WeChatSaleService(sessionObject);
     Transaction.wrap(function () {
-        pi.paymentTransaction.transactionID = response.apSaleReply.processorTransactionID;
+        pi.paymentTransaction.transactionID = response.requestID;
     });
     var saleReplyURL = response.apSaleReply.merchantURL;
     var returnURL = saleReplyURL.substring(0, saleReplyURL.length - 1);

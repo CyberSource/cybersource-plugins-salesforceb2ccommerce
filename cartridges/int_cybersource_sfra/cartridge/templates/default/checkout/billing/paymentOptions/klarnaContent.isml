@@ -5,7 +5,7 @@
         <p class="error" id="klarna-error-message">There was an error generating your Klarna session.</p>
 
         <div id="klarna-container" class="klarna-container-for-widget"></div>
-        <button class="btn btn-primary btn-block klarna-submit-payment" id = "klarna-submit-paymentButton" type="submit" name="submit" value="submit-payment">
+        <button class="btn btn-primary btn-block klarna-submit-payment" id = "klarna-submit-paymentButton" type="button" name="submit" value="submit-payment">
                     ${Resource.msg('button.next.place.order', 'checkout', null)}
         </button>
         <isscript>

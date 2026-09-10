@@ -136,31 +136,26 @@ var CyberSourceTransactionService = LocalServiceRegistry.createService('cybersou
         var alisForSignature = CybersourceHelper.getAliasForSignature();
 
         var aliasForEncryption = CybersourceHelper.getAliasForMLE();
-        var isMLEEnabled = CybersourceHelper.isMLEEnabled();
         var secretsMap = new HashMap();
 
         var requestCfg = new HashMap();
 
-        if (isMLEEnabled) {
-            requestCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP + " " + WSUtil.WS_SIGNATURE + " " + WSUtil.WS_ENCRYPT);
-              // define enrcryption properties
-              requestCfg.put(WSUtil.WS_ENCRYPTION_USER, aliasForEncryption);
-              requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_TYPE, "managed");
-              requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_ALIAS, aliasForEncryption);  
-              requestCfg.put(WSUtil.WS_ENC_KEY_ID, WSUtil.KEY_ID_TYPE_X509_KEY_IDENTIFIER);
-  
-  
-              requestCfg.put(
-                  WSUtil.WS_ENCRYPTION_PARTS,
-                  "{Element}{" +
-                  WSU_NS +
-                  "}Timestamp;" +
-                  "{Content}{http://schemas.xmlsoap.org/soap/envelope/}Body"
-              );
-        }
-        else {
-            requestCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP + " " + WSUtil.WS_SIGNATURE);
-        }
+        // Request MLE is always applied - it is no longer switchable by site preference.
+        requestCfg.put(WSUtil.WS_ACTION, WSUtil.WS_TIMESTAMP + " " + WSUtil.WS_SIGNATURE + " " + WSUtil.WS_ENCRYPT);
+        // define enrcryption properties
+        requestCfg.put(WSUtil.WS_ENCRYPTION_USER, aliasForEncryption);
+        requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_TYPE, "managed");
+        requestCfg.put(WSUtil.WS_ENC_PROP_KEYSTORE_ALIAS, aliasForEncryption);
+        requestCfg.put(WSUtil.WS_ENC_KEY_ID, WSUtil.KEY_ID_TYPE_X509_KEY_IDENTIFIER);
+
+        requestCfg.put(
+            WSUtil.WS_ENCRYPTION_PARTS,
+            "{Element}{" +
+            WSU_NS +
+            "}Timestamp;" +
+            "{Content}{http://schemas.xmlsoap.org/soap/envelope/}Body"
+        );
+
         requestCfg.put(WSUtil.WS_SIGNATURE_USER, alisForSignature);
         requestCfg.put(WSUtil.WS_PASSWORD_TYPE, WSUtil.WS_PW_TEXT);
         requestCfg.put(WSUtil.WS_SIG_DIGEST_ALGO, "http://www.w3.org/2001/04/xmlenc#sha256");

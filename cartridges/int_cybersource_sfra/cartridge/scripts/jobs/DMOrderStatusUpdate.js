@@ -89,60 +89,6 @@ function setDateTimeForParameter() {
 }
 
 /**
- * calculates time for script
- * @returns {*} obj
- */
-function getTime() {
-    var Calendar = require('dw/util/Calendar');
-    var StringUtils = require('dw/util/StringUtils');
-
-    try {
-        // eslint-disable-next-line
-        var date = StringUtils.formatCalendar(new dw.util.Calendar(), 'en_US', Calendar.LONG_DATE_PATTERN);
-        return date;
-    } catch (exception) {
-        logger.error('Error in Secure acceptance create request data' + exception.message);
-        return { error: true, errorMsg: exception.message };
-    }
-}
-
-/**
- * Creates the signature
- * @param {*} signedHeaders signedHeaders
- * @param {*} keyID keyID
- * @param {*} sharedSecret sharedSecret
- * @param {*} date date
- * @param {*} merchantId merchantId
- * @param {*} time time
- * @returns {*} obj
- */
-function generateSignature(signedHeaders, keyID, sharedSecret, date, merchantId, time) {
-    var Bytes = require('dw/util/Bytes');
-    var Mac = require('dw/crypto/Mac');
-    var Encoding = require('dw/crypto/Encoding');
-    // eslint-disable-next-line
-    var host = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_HostName');
-
-    try {
-        var encryptor = new Mac(Mac.HMAC_SHA_256);
-        var secret = Encoding.fromBase64(sharedSecret);
-        var signatureString = '';
-        // var headerString = '';
-        signatureString = signatureString + 'host: ' + host + '\n';
-        signatureString = signatureString + 'date: ' + date + '\n';
-        signatureString = signatureString + 'request-target: get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId + '\n';
-        signatureString = signatureString + 'v-c-merchant-id: ' + merchantId;
-
-        var signatureDigest = encryptor.digest(new Bytes(signatureString.toString(), 'UTF-8'), secret);
-        var signature = Encoding.toBase64(signatureDigest);
-        return signature;
-    } catch (exception) {
-        logger.error('Error in Secure acceptance create request data' + exception.message);
-        return { error: true, errorMsg: exception.message };
-    }
-}
-
-/**
  * Function to handle multiple error scenarios in case of error
  * returned form Service
  * @param {*} responseObj responeObj
@@ -172,7 +118,6 @@ function handleErrorCases(responseObj) {
  * @param {*} jobParams jobParams
  */
 function orderStatusUpdate(jobParams) {
-    var collections = require('*/cartridge/scripts/util/collections');
     logger.debug('ConversionDetailReport---------------- -');
     var message;
 
@@ -208,28 +153,16 @@ function orderStatusUpdate(jobParams) {
         var host = dw.system.Site.getCurrent().getCustomPreferenceValue('SA_Flex_HostName');
         // eslint-disable-next-line
         var targetOrigin = 'https://' + host;
-        signedHeaders.put('host', host);
-        signedHeaders.put('date', getTime());
-        signedHeaders.put('request-target', 'get /reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId);
-        signedHeaders.put('v-c-merchant-id', merchantId);
 
-        var signature = generateSignature(signedHeaders, keyID, sharedSecret, signedHeaders.get('date'), merchantId, time);
-        var headerString = '';
-        collections.forEach(signedHeaders.keySet(), function (key) {
-            // for each(var key in signedHeaders.keySet()){
-            headerString = headerString + ' ' + key;
+        var jwtAuthBuilder = require('*/cartridge/scripts/mle/jwtAuthBuilder');
+        jwtAuthBuilder.applyJWTAuth(signedHeaders, {
+            keyID: keyID,
+            merchantId: merchantId,
+            sharedSecret: sharedSecret,
+            requestHost: host,
+            requestMethod: 'get',
+            requestResourcePath: '/reporting/v3/conversion-details?startTime=' + time.start + '&endTime=' + time.end + '&organizationId=' + merchantId
         });
-        var signatureMap = new HashMap();
-        signatureMap.put('keyid', keyID);
-        signatureMap.put('algorithm', 'HmacSHA256');
-        signatureMap.put('headers', headerString);
-        signatureMap.put('signature', signature);
-        var signaturefields = '';
-
-        signaturefields = 'keyid="' + signatureMap.get('keyid') + '", algorithm="HmacSHA256", headers="host date request-target v-c-merchant-id", signature="' + signatureMap.get('signature') + '"';
-
-        signedHeaders.put('Signature', signaturefields);
-        signedHeaders.remove('request-target');
 
         var service = CRServices.CyberSourceDMService;
         responseObj = service.call(signedHeaders, time.start, time.end, merchantId);

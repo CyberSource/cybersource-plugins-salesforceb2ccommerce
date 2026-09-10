@@ -22,6 +22,11 @@ $(document).ready(function () {
     setupAttempted: false
   };
   var earlyTriggerTimeoutId = null;
+  //  True while this file is holding the submit button for a chain it has armed but not started.
+  //  Tracked so releaseHold only ever gives back a hold this file took: payerAuthCardFields.js holds
+  //  for stored cards on this same page, and releasing unconditionally could hand the button back
+  //  while its run is still working.
+  var holdingSubmit = false;
 
   var cardNumberplaceholder = $("#credit-card-content.cardNumber").attr(
     "data-cardNumber"
@@ -387,15 +392,45 @@ $(document).ready(function () {
   }
 
   /**
+   * Holds the submit button for the chain armed below, so neither the debounce nor the tokenization
+   * round trip is a window in which the shopper can click "Next: Place Order" and submit the billing
+   * form before setup has run.
+   */
+  function takeHold() {
+    holdingSubmit = true;
+    ddc().holdSubmit();
+  }
+
+  /**
+   * Gives the button back, for a card this file held for and is no longer going to run for.
+   */
+  function releaseHold() {
+    if (!holdingSubmit || !ddc()) {
+      return;
+    }
+    holdingSubmit = false;
+    ddc().releaseSubmit();
+  }
+
+  /**
    * Arms the debounced early Payer Auth Setup + DDC run.
    */
   function scheduleEarlyPayerAuth() {
     window.clearTimeout(earlyTriggerTimeoutId);
 
-    if (!ddc() || !allCardFieldsValid()) {
+    if (!ddc()) {
       return;
     }
 
+    if (!allCardFieldsValid()) {
+      //  The card has stopped being complete - a digit deleted from a number that was valid, say.
+      //  Nothing is going to run, so a hold taken for the previous state has to go now rather than
+      //  sit on the button until the backstop expires.
+      releaseHold();
+      return;
+    }
+
+    takeHold();
     earlyTriggerTimeoutId = window.setTimeout(runEarlyPayerAuth, EARLY_TRIGGER_DEBOUNCE_MS);
   }
 
@@ -404,7 +439,12 @@ $(document).ready(function () {
    * done by the time the shopper submits the billing form.
    */
   function runEarlyPayerAuth() {
-    if (!ddc() || state.tokenizing || state.tokenReady || state.setupAttempted || !allCardFieldsValid()) {
+    if (!ddc()) {
+      return;
+    }
+
+    if (state.tokenizing || state.tokenReady || state.setupAttempted || !allCardFieldsValid()) {
+      releaseHold();
       return;
     }
 
@@ -413,10 +453,15 @@ $(document).ready(function () {
     //  the type in its own casing ('mastercard'), which the lookup normalises.
     if (!ddc().isPayerAuthEnabledForCardType($("#cardType").val())) {
       state.setupAttempted = true;
+      releaseHold();
       return;
     }
 
     state.setupAttempted = true;
+
+    //  Re-armed so the hold covers the tokenization round trip from its own start: it was taken when
+    //  the fields went valid, and the debounce has eaten into it since.
+    takeHold();
 
     createFlexToken({ showErrors: false }, function (err) {
       if (err) {
@@ -424,11 +469,14 @@ $(document).ready(function () {
         //  still on the form, so rebuilding the fields to recover a capture context here would wipe
         //  the card number and security code they had already typed. The submit handler will surface
         //  any real validation problem, and the order-time setup route remains as the fallback.
+        releaseHold();
         return;
       }
 
       assignCorrectCardType();
 
+      //  runSetupAndDdc owns the hold from here, and re-arms it for the length of the run.
+      holdingSubmit = false;
       ddc().runSetupAndDdc({
         flexToken: $("#flex-response").val(),
         cardType: $("#cardType").val(),
@@ -499,6 +547,10 @@ $(document).ready(function () {
         $("#flex-response").val() === undefined
       ) {
         window.clearTimeout(earlyTriggerTimeoutId);
+        //  The armed early run is cancelled, so this file is no longer holding for it. Dropped
+        //  rather than released: SFRA owns the button from here, and handing it back now would
+        //  re-enable it mid-submit.
+        holdingSubmit = false;
         flexTokenCreation();
         assignCorrectCardType();
         event.stopImmediatePropagation();
@@ -512,6 +564,7 @@ $(document).ready(function () {
       $("#flex-response").val() === undefined
     ) {
       window.clearTimeout(earlyTriggerTimeoutId);
+      holdingSubmit = false;
       flexTokenCreation();
       assignCorrectCardType();
       event.preventDefault();

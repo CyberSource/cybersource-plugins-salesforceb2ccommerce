@@ -30,25 +30,41 @@ Merchants can generate either a p12 key or a meta key to authenticate requests.
 
 #### 3.1. Create a p12 key
 
-We can use p12 key generated for a specific MID from which it is created. Follow the steps mentioned in [link] (https://developer.cybersource.com/docs/cybs/en-us/security-keys/user/all/ada/security-keys/keys-manage/keys-simple-order-intro.html) that you can use to authenticate requests. Convert the P12 file to JKS type by following `Cybersource B2C Commerce - SOAP Authentication Guide.pdf` under cartridge documentation folder. 
+We can use p12 key generated for a specific MID from which it is created. Follow the steps mentioned in [link] (https://developer.cybersource.com/docs/cybs/en-us/security-keys/user/all/ada/security-keys/keys-manage/keys-simple-order-intro.html) that you can use to authenticate requests.
 
-Place the file generated in `webreferences2` folder of the same cartridge as the WSDL file and the file extension must be `jks` or `pkcs12`. Duplicate the `CyberSourceTransaction.wsdl` file, `CyberSourceTransaction.wsdl.properties` file and rename them with the same name as your respective keystore files.
+Place the file generated in `webreferences2` folder of the same cartridge as the WSDL file with the `pkcs12` file extension. Duplicate the `CyberSourceTransaction.wsdl` file, `CyberSourceTransaction.wsdl.properties` file and rename them with the same name as your respective keystore files.
 
 #### 3.2. Create Meta Key
 
-We can assign a single meta key to dozens or hundreds of transacting MIDs simultaneously. Follow the steps mentioned in [link] (https://developer.cybersource.com/docs/cybs/en-us/security-keys/user/all/ada/security-keys/keys-meta-intro.html) that you can use to authenticate requests. Convert the P12 file to JKS type by following `Cybersource B2C Commerce - SOAP Authentication Guide.pdf` under cartridge documentation folder. 
+We can assign a single meta key to dozens or hundreds of transacting MIDs simultaneously. Follow the steps mentioned in [link] (https://developer.cybersource.com/docs/cybs/en-us/security-keys/user/all/ada/security-keys/keys-meta-intro.html) that you can use to authenticate requests.
 
-Place the file generated in `webreferences2` folder of the same cartridge as the WSDL file and the file extension must be `jks` or `pkcs12`. Duplicate the `CyberSourceTransaction.wsdl` file, `CyberSourceTransaction.wsdl.properties` file and rename them with the same name as your respective keystore files.
+Place the file generated in `webreferences2` folder of the same cartridge as the WSDL file with the `pkcs12` file extension. Duplicate the `CyberSourceTransaction.wsdl` file, `CyberSourceTransaction.wsdl.properties` file and rename them with the same name as your respective keystore files.
 
 Repeat the above step to use multiple p12 files as per requirements.
 
 #### Message-Level Encryption (MLE)
 
-**Message-Level Encryption (MLE)** enables you to store information or communicate with other parties while helping to prevent uninvolved parties from understanding the stored information. MLE is optional and supported only for payments services.
-
-If you choose to use MLE, it is mandatory to use **JKS** as the Keystore type. If you are using MLE, the JKS keystore can be used for Authentication and MLE.
+**Message-Level Encryption (MLE)** enables you to store information or communicate with other parties while helping to prevent uninvolved parties from understanding the stored information. MLE is supported only for payment services.
 
 **NOTE**: If you are using different IDE, refer to the respective developer guide to setup
+
+##### Response Message-Level Encryption (Response MLE)
+
+Response MLE uses a separate key, generated in Business Center rather than reused from the p12/Meta key setup above.
+
+Step 1: Create the REST API Response MLE Key in EBC
+
+1. Log in to Business Center (EBC): Test: https://businesscentertest.visaacceptance.com/ebc2; Production: https://businesscenter.visaacceptance.com/ebc2.
+2. Navigate to **Payment Configuration > Key Management > + Generate Key**.
+3. Under REST APIs, select **REST — API Response MLE**.
+4. Click **Generate Key**.
+5. Set a password when prompted. You will need this password in Step 2. The p12 file is downloaded to your desktop.
+
+Step 2: Import the certificate into Business Manager
+
+1. In Business Manager, go to **Administration > Operations > Private Keys and Certificates**.
+2. Import the certificate using the Export Password.
+3. Note the Alias you assigned. This alias is used to configure the `Response MLE Key Alias` site preference (see Configure-cartridge.md).
 
 
 ### Step 4: Build and Upload the code

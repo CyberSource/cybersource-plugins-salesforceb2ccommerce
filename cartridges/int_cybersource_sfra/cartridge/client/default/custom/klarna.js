@@ -103,7 +103,8 @@ KlarnaHelper.handleKlarnaSubmitPaymentButton = function (defer) {
     var $submitPaymentBtn = $('.submit-payment');
     var $klarnaSubmitPaymentBtn = $('.klarna-submit-payment');
 
-    $klarnaSubmitPaymentBtn.on('click', function () {
+    $klarnaSubmitPaymentBtn.on('click', function (event) {
+        event.preventDefault();
         // Track grand total sum changes
         var currentGrandTotal = String($('.grand-total-sum').text()).trim();
         if (this.grandTotalSum !== null && this.grandTotalSum !== currentGrandTotal) {

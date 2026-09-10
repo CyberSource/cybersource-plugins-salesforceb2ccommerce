@@ -173,6 +173,12 @@ function Process3DRequestParent(args) {
             var items = payerAuthsitems.items;
             var result = CardFacade.PayerAuthValidation(PAResponsePARes, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, paymentInstrument.getCreditCardToken(), transactionId, payerAuthbillTo.billTo, paymentInstrument, payerAuthshipTo.shipTo, purchaseObject.purchaseTotals, items);
           
+            Transaction.wrap(function () {
+                if (result.serviceResponse && result.serviceResponse.RequestID) {
+                    paymentInstrument.paymentTransaction.transactionID = result.serviceResponse.RequestID;
+                }
+            });
+
             if (result.success && (result.serviceResponse.ReasonCode === 100 || result.serviceResponse.ReasonCode == '480' || result.serviceResponse.ReasonCode === 478) && (!empty(PAXID) ? PAXID === result.serviceResponse.PAVXID : true)) {
                 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
                 result = secureAcceptanceHelper.HookIn3DRequest({
@@ -184,7 +190,8 @@ function Process3DRequestParent(args) {
                 if (result.review) {
                     return { review: true };
                 }
-                if(result.sca && session.custom.SCA == true){
+                if(result.sca && session.custom.SCA == true && session.custom.scaConditionMetForTokenFlow != true){
+                    delete session.custom.scaConditionMetForTokenFlow;
                     session.custom.SCA = false;
                     return {sca:true};
                 }

@@ -5,7 +5,7 @@ var Logger = require('dw/system/Logger');
 var URLUtils = require('dw/web/URLUtils');
 var Site = require('dw/system/Site');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
-
+var Transaction = require('dw/system/Transaction');
 var secureAcceptanceHelper = require(CybersourceConstants.SECUREACCEPTANCEHELPER);
 
 /**
@@ -144,10 +144,8 @@ function SAHandleResponse(httpParameterMap) {
         if (order !== null && !empty(paymentInstrument)) {
             // paymentMethod = paymentInstrument.paymentMethod;
             saResponse = secureAcceptanceHelper.CreateHMACSignature(paymentInstrument, null, httpParameterMap, null);
-            if (saResponse.success && saResponse.signatureAuthorize) {
-                var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
-                return updateSAResponse(request.httpParameterMap, order, paymentInstrument, customerObj);
-            }
+            var customerObj = (!empty(customer) && customer.authenticated) ? customer : null;
+            return updateSAResponse(request.httpParameterMap, order, paymentInstrument, customerObj);
         }
     }
     return { error: true };

@@ -1,6 +1,17 @@
 ## <ins>Release History
 
 
+**Version 26.1.3 (September, 2026)**
+Enhancement:
+• Added support for Response MLE
+• Enhanced the Klarna payment flow to ensurecheckout processing proceeds only after the pre-authorization token is successfully received.
+
+Bug Fix:
+• Resolved an issue in the Iframe/Redirect Payment Flow to ensure proper customer redirection 
+and accurate order status updates on payment failure.
+• Resolved an issue preventing Transaction IDs from being associated with orders when payer 
+authentication failed, improving transaction traceability.
+
 **Version 26.1.2 (August, 2026)**
 Enhancement:
 • Refined the payer authentication workflow to initiate Device Data Collection (DDC) only after customer card details are received. 

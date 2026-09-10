@@ -4,6 +4,7 @@ var Logger = require('dw/system/Logger');
 var Site = require('dw/system/Site');
 var CommonHelper = require('*/cartridge/scripts/helper/CommonHelper');
 var CybersourceConstants = require('*/cartridge/scripts/utils/CybersourceConstants');
+var Transaction = require('dw/system/Transaction');
 
 /**
  * Add or Update Token details in customer payment cards from order payment instrument card details
@@ -992,7 +993,8 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo, payerauthAr
         // eslint-disable-next-line
         result = CardFacade.PayerAuthEnrollCheck(LineItemCtnrObj, paymentInstrument.paymentTransaction.amount, orderNo, session.forms.billing.creditCardFields, payerauthArgs);
         serviceResponse = result.serviceResponse;
-        if (serviceResponse.ReasonCode === 478 && session.custom.SCA == true) {
+        if (serviceResponse.ReasonCode === 478 && session.custom.SCA == true && session.custom.scaConditionMetForTokenFlow != true) {
+            delete session.custom.scaConditionMetForTokenFlow;
             session.custom.SCA = false;
             return { sca: true };
         }
@@ -1022,7 +1024,11 @@ function AuthorizePayer(LineItemCtnrObj, paymentInstrument, orderNo, payerauthAr
             return { payerauthentication: true, serviceResponse: serviceResponse };
         }
         /* eslint-enable */
+
         Logger.error('An error occured during PayerAuthEnroll check. (ReasonCode: {0} , RequestID: {1}', serviceResponse.ReasonCode, serviceResponse.RequestID);
+        Transaction.wrap(function () {
+             paymentInstrument.paymentTransaction.transactionID = serviceResponse.RequestID;
+        });
         return { error: true, serviceResponse: serviceResponse };
         // eslint-disable-next-line
     } if (paEnabled && !empty(LineItemCtnrObj.getPaymentInstruments(CybersourceConstants.METHOD_VISA_CHECKOUT))) {
